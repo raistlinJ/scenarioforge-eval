@@ -127,55 +127,106 @@ class Executor:
             xml_path = self._generate_xml()
             result['stages']['topology'] = 'PASS'
             
-            # 2. Run Preview/Execution via CLI
-            # We mock sys.argv to drive the CLI
-            from scenarioforge.cli import main as sf_cli_main
-            
-            sys.argv = [
-                'scenarioforge',
-                '--xml', xml_path,
-                '--plan-output', os.path.join(self.out_dir, 'plan.json'),
-                '--verbose'
-            ]
-            
             if not self.execute:
-                sys.argv.append('--preview-full')
-            
-            if self.verbose:
-                sys.argv.append('--verbose')
-            
-            # Change working directory so any generated artifacts (e.g. docker-compose.yml) 
-            # are dumped directly into this scenario's out_dir
-            original_cwd = os.getcwd()
-            os.chdir(self.out_dir)
-            
-            # Monkeypatch the report writer to redirect reports into this output directory 
-            # instead of trying to write them into the scenarioforge codebase's reports/ folder
-            import scenarioforge.cli
-            original_write_report = scenarioforge.cli.write_report
-            
-            def mocked_write_report(report_path, *args, **kwargs):
-                new_report_path = os.path.join(self.out_dir, os.path.basename(report_path))
-                return original_write_report(new_report_path, *args, **kwargs)
+                # 2. Run Preview via CLI (Local)
+                # We mock sys.argv to drive the CLI
+                from scenarioforge.cli import main as sf_cli_main
                 
-            scenarioforge.cli.write_report = mocked_write_report
-            
-            try:
-                sf_cli_main()
-                result['stages']['preview'] = 'PASS'
-                if self.execute:
-                    result['stages']['execute'] = 'PASS'
-                result['success'] = True
-            except SystemExit as e:
-                if e.code == 0:
+                sys.argv = [
+                    'scenarioforge',
+                    '--xml', xml_path,
+                    '--plan-output', os.path.join(self.out_dir, 'plan.json'),
+                    '--preview-full'
+                ]
+                
+                if self.verbose:
+                    sys.argv.append('--verbose')
+                
+                # Change working directory so any generated artifacts (e.g. docker-compose.yml) 
+                # are dumped directly into this scenario's out_dir
+                original_cwd = os.getcwd()
+                os.chdir(self.out_dir)
+                
+                # Monkeypatch the report writer to redirect reports into this output directory 
+                # instead of trying to write them into the scenarioforge codebase's reports/ folder
+                import scenarioforge.cli
+                original_write_report = scenarioforge.cli.write_report
+                
+                def mocked_write_report(report_path, *args, **kwargs):
+                    new_report_path = os.path.join(self.out_dir, os.path.basename(report_path))
+                    return original_write_report(new_report_path, *args, **kwargs)
+                    
+                scenarioforge.cli.write_report = mocked_write_report
+                
+                try:
+                    sf_cli_main()
                     result['stages']['preview'] = 'PASS'
-                    if self.execute:
-                        result['stages']['execute'] = 'PASS'
                     result['success'] = True
+                except SystemExit as e:
+                    if e.code == 0:
+                        result['stages']['preview'] = 'PASS'
+                        result['success'] = True
+                    else:
+                        raise RuntimeError(f"CLI exited with code {e.code}")
+                finally:
+                    os.chdir(original_cwd)
+                    scenarioforge.cli.write_report = original_write_report
+            else:
+                # 2. Run Execution via SSH (Remote)
+                import uuid
+                from webapp.app_backend import (
+                    _core_backend_defaults,
+                    _open_ssh_client,
+                    _exec_ssh_command,
+                    _push_repo_to_remote,
+                )
+                
+                print(f"Deploying scenario {self.spec.get('name', 'unknown')} to remote VM...")
+                core_cfg = _core_backend_defaults(include_password=True)
+                
+                # Step 2a: Push the codebase to remote
+                print("  Syncing codebase to remote VM...")
+                repo_sync = _push_repo_to_remote(core_cfg, upload_only_injected_artifacts=False)
+                remote_repo = repo_sync.get('repo_path')
+                if not remote_repo:
+                    raise RuntimeError("Failed to sync codebase to remote VM: repo_path not returned")
+                
+                # Step 2b: Push the mock XML via SFTP
+                print("  Pushing mock XML topology to remote VM...")
+                client = _open_ssh_client(core_cfg)
+                sftp = client.open_sftp()
+                
+                remote_xml = f"/tmp/scenarioforge_eval_mock_{uuid.uuid4().hex[:8]}.xml"
+                sftp.put(xml_path, remote_xml)
+                sftp.close()
+                
+                # Step 2c: Execute CLI on remote VM
+                print("  Executing scenario via SSH (this may take 5-10 minutes)...")
+                # app_backend.py uses 'core-python' or '/opt/core/venv/bin/python3' or 'python3'
+                # We assume python3 is available in PATH or inside the venv
+                cmd = (
+                    f"cd {remote_repo} && "
+                    f"python3 scenarioforge/cli.py --xml {remote_xml} "
+                    f"--plan-output /tmp/scenarioforge_eval_plan.json"
+                )
+                if self.verbose:
+                    cmd += " --verbose"
+                    
+                code, stdout, stderr = _exec_ssh_command(client, cmd, timeout=3600.0)
+                
+                # Clean up XML
+                _exec_ssh_command(client, f"rm -f {remote_xml}")
+                
+                if code == 0:
+                    result['stages']['preview'] = 'PASS'
+                    result['stages']['execute'] = 'PASS'
+                    result['success'] = True
+                    print(f"  Successfully deployed scenario!")
                 else:
-                    raise RuntimeError(f"CLI exited with code {e.code}")
-            finally:
-                os.chdir(original_cwd)
+                    if self.verbose:
+                        print(f"\n--- REMOTE STDOUT ---\n{stdout}")
+                        print(f"\n--- REMOTE STDERR ---\n{stderr}")
+                    raise RuntimeError(f"Remote execution failed with exit code {code}")
                     
         except Exception as e:
             result['error'] = traceback.format_exc()
