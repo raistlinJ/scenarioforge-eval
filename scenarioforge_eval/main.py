@@ -62,6 +62,11 @@ def main():
             result = executor.run()
             
             reporter.log_result(spec_name, result)
+            
+            if not result['success']:
+                print(f"\n[FATAL] Evaluation failed for {spec_name}. Stopping batch execution.")
+                import sys
+                sys.exit(1)
 
 if __name__ == '__main__':
     main()
