@@ -63,6 +63,15 @@ class Executor:
         from pathlib import Path
         load_runtime_env_files(base_dir=Path(self.sf_path))
         
+        # Enforce VM mode for scenarioforge-eval
+        webui_mode = os.environ.get('CORETG_WEBUI_MODE', 'native').lower()
+        if webui_mode != 'vm':
+            raise RuntimeError(
+                f"scenarioforge-eval only supports 'vm' mode. Your .scenarioforge.env "
+                f"is currently set to CORETG_WEBUI_MODE='{webui_mode}'. Please update "
+                f"it to 'vm' to run the evaluation."
+            )
+        
         # Inject HITL
         hitl_spec = self.spec.get('hitl', {})
         if hitl_spec.get('use_env'):
