@@ -1,0 +1,13 @@
+name: "eval-test-1"
+topology:
+  type: "star"
+  routers: 1
+  hosts: 2
+  randomize: true
+services:
+  randomize: true
+vulns:
+  randomize: true
+  count: 2
+flows:
+  randomize: true
