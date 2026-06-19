@@ -58,24 +58,17 @@ class Executor:
                 'density_input': seg_spec.get('density', 0.5)
             }
             
+        # Load environment variables (CORE_HOST, SSH credentials, etc) using scenarioforge's native loader
+        from webapp.env_loader import load_runtime_env_files
+        from pathlib import Path
+        load_runtime_env_files(base_dir=Path(self.sf_path))
+        
         # Inject HITL
         hitl_spec = self.spec.get('hitl', {})
         if hitl_spec.get('use_env'):
-            env_path = os.path.join(self.sf_path, '.scenarioforge.env')
-            hitl_enabled = False
-            hitl_iface = None
-            hitl_attachment = None
-            
-            if os.path.exists(env_path):
-                with open(env_path, 'r') as f:
-                    for line in f:
-                        line = line.strip()
-                        if line.startswith('CORETG_VM_MODE_HITL_ENABLED='):
-                            hitl_enabled = line.split('=')[1].lower() in ('true', '1', 'yes')
-                        elif line.startswith('CORETG_VM_MODE_HITL_CORE_IFX_NAME='):
-                            hitl_iface = line.split('=')[1]
-                        elif line.startswith('CORETG_VM_MODE_HITL_CORE_IFX_ATTACHMENT='):
-                            hitl_attachment = line.split('=')[1]
+            hitl_enabled = str(os.environ.get('CORETG_VM_MODE_HITL_ENABLED', '')).lower() in ('true', '1', 'yes')
+            hitl_iface = os.environ.get('CORETG_VM_MODE_HITL_CORE_IFX_NAME')
+            hitl_attachment = os.environ.get('CORETG_VM_MODE_HITL_CORE_IFX_ATTACHMENT')
                             
             if hitl_enabled and hitl_iface:
                 scen_payload['hitl'] = {
