@@ -4,12 +4,12 @@ topology:
   type: "star"
   routers: 1
   hosts: 1
-  enabled: false
+  randomize: false
 services:
-  enabled: true
+  randomize: true
 vulns:
-  enabled: true
+  randomize: true
   count: 1
 flows:
-  enabled: false
+  randomize: false
   count: 1

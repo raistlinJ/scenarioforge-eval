@@ -3,11 +3,11 @@ topology:
   type: "star"
   routers: 0
   hosts: 20
-  enabled: true
+  randomize: true
 services:
-  enabled: true
+  randomize: true
 vulns:
-  enabled: true
+  randomize: true
   count: 5
 flows:
-  enabled: true
+  randomize: true

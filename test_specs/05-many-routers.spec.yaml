@@ -3,11 +3,11 @@ topology:
   type: "linear"
   routers: 15
   hosts: 5
-  enabled: true
+  randomize: true
 services:
-  enabled: true
+  randomize: true
 vulns:
-  enabled: true
+  randomize: true
   count: 3
 flows:
-  enabled: true
+  randomize: true
