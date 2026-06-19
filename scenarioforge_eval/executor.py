@@ -208,10 +208,16 @@ class Executor:
                 # Step 2c: Execute CLI on remote VM
                 print("  Executing scenario via SSH (this may take 5-10 minutes)...")
                 # app_backend.py uses 'core-python' or '/opt/core/venv/bin/python3' or 'python3'
-                # We assume python3 is available in PATH or inside the venv
+                # We use a bash one-liner to find the first python that has the core gRPC library
                 cmd = (
                     f"cd {remote_repo} && "
-                    f"python3 -m scenarioforge.cli --xml {remote_xml} "
+                    f"PYTHON=\"python3\"; "
+                    f"for py in core-python /opt/core/venv/bin/python python3 python; do "
+                    f"  if command -v $py >/dev/null 2>&1; then "
+                    f"    $py -c 'import core.api.grpc' 2>/dev/null && PYTHON=$py && break; "
+                    f"  fi; "
+                    f"done; "
+                    f"$PYTHON -m scenarioforge.cli --xml {remote_xml} "
                     f"--plan-output /tmp/scenarioforge_eval_plan.json"
                 )
                 if self.verbose:
@@ -227,7 +233,10 @@ class Executor:
                     result['stages']['execute'] = 'PASS'
                     result['success'] = True
                     print(f"  Successfully deployed scenario!")
+                    if self.verbose:
+                        print(f"\n--- REMOTE STDOUT ---\n{stdout}")
                 else:
+                    print(f"  Execution failed with code {code}!")
                     if self.verbose:
                         print(f"\n--- REMOTE STDOUT ---\n{stdout}")
                         print(f"\n--- REMOTE STDERR ---\n{stderr}")
