@@ -309,13 +309,21 @@ class Executor:
                     output_lines.append(cleaned)
                     
                     # Print to console
-                    if self.verbose:
-                        print(cleaned, end='', flush=True)
-                    else:
-                        # In normal mode, print lines that indicate progress
-                        for line in cleaned.split('\n'):
+                    lines = cleaned.split('\n')
+                    for i, line in enumerate(lines):
+                        # Paramiko/SSH spam we want to hide even in verbose mode
+                        is_noise = ('[chan ' in line or 'Secsh channel' in line)
+                        
+                        if self.verbose:
+                            if not is_noise:
+                                if i == len(lines) - 1:
+                                    print(line, end='', flush=True)
+                                else:
+                                    print(line)
+                        else:
+                            # In normal mode, print lines that indicate progress
                             stripped = line.strip()
-                            if not stripped:
+                            if not stripped or is_noise:
                                 continue
                             if any(p in stripped for p in _PROGRESS_PATTERNS):
                                 print(f"  {stripped}")
