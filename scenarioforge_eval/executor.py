@@ -123,8 +123,8 @@ class Executor:
         }
         
         try:
-            print(">> Phase: topology gen")
-            # 1. Generate XML Topology
+            # ── Phase 1: Topology Generation (local) ──
+            print(">> Phase: topology")
             xml_path = self._generate_xml()
             result['stages']['topology'] = 'PASS'
             
@@ -132,157 +132,166 @@ class Executor:
                 result['success'] = True
                 return result
             
-            if self.target_phase in ('flow-sequencing', 'preview-gen'):
-                print(">> Phase: flow-generation")
-                if self.target_phase == 'preview-gen':
-                    print(">> Phase: preview gen")
-                    
-                # 2. Run Preview via CLI (Local)
-                # We mock sys.argv to drive the CLI
-                from scenarioforge.cli import main as sf_cli_main
+            # ── Phase 2: Flag Sequencing (preview-full + push to CORE VM) ──
+            print(">> Phase: flag-sequencing")
+            
+            # 2a. Run preview-full locally to generate the full plan
+            print("  Generating full preview plan locally...")
+            from scenarioforge.cli import main as sf_cli_main
+            import scenarioforge.cli
+            
+            plan_output_path = os.path.join(self.out_dir, 'plan.json')
+            sys.argv = [
+                'scenarioforge',
+                '--xml', xml_path,
+                '--plan-output', plan_output_path,
+                '--preview-full',
+            ]
+            
+            if self.verbose:
+                sys.argv.append('--verbose')
+            
+            original_cwd = os.getcwd()
+            os.chdir(self.out_dir)
+            
+            original_write_report = scenarioforge.cli.write_report
+            
+            def mocked_write_report(report_path, *args, **kwargs):
+                new_report_path = os.path.join(self.out_dir, os.path.basename(report_path))
+                return original_write_report(new_report_path, *args, **kwargs)
                 
-                sys.argv = [
-                    'scenarioforge',
-                    '--xml', xml_path,
-                    '--plan-output', os.path.join(self.out_dir, 'plan.json'),
-                ]
-                
-                if self.target_phase == 'preview-gen':
-                    sys.argv.append('--preview-full')
-                else:
-                    sys.argv.append('--preview')
-                
-                if self.verbose:
-                    sys.argv.append('--verbose')
-                
-                # Change working directory so any generated artifacts (e.g. docker-compose.yml) 
-                # are dumped directly into this scenario's out_dir
-                original_cwd = os.getcwd()
-                os.chdir(self.out_dir)
-                
-                # Monkeypatch the report writer to redirect reports into this output directory 
-                # instead of trying to write them into the scenarioforge codebase's reports/ folder
-                import scenarioforge.cli
-                original_write_report = scenarioforge.cli.write_report
-                
-                def mocked_write_report(report_path, *args, **kwargs):
-                    new_report_path = os.path.join(self.out_dir, os.path.basename(report_path))
-                    return original_write_report(new_report_path, *args, **kwargs)
-                    
-                scenarioforge.cli.write_report = mocked_write_report
-                
-                try:
-                    sf_cli_main()
+            scenarioforge.cli.write_report = mocked_write_report
+            
+            try:
+                sf_cli_main()
+                result['stages']['preview'] = 'PASS'
+            except SystemExit as e:
+                if e.code == 0:
                     result['stages']['preview'] = 'PASS'
-                    result['success'] = True
-                except SystemExit as e:
-                    if e.code == 0:
-                        result['stages']['preview'] = 'PASS'
-                        result['success'] = True
-                    else:
-                        raise RuntimeError(f"CLI exited with code {e.code}")
-                finally:
-                    os.chdir(original_cwd)
-                    scenarioforge.cli.write_report = original_write_report
-            elif self.target_phase == 'execute':
-                # 2. Run Execution via SSH (Remote)
-                import uuid
-                from webapp.app_backend import (
-                    _core_backend_defaults,
-                    _open_ssh_client,
-                    _exec_ssh_command,
-                    _push_repo_to_remote,
-                )
-                
-                print(f"Deploying scenario {self.spec.get('name', 'unknown')} to remote VM...")
-                core_cfg = _core_backend_defaults(include_password=True)
-                
-                # Step 2a: Push the codebase to remote
-                print("  Syncing codebase to remote VM...")
-                repo_sync = _push_repo_to_remote(core_cfg, upload_only_injected_artifacts=False)
-                remote_repo = repo_sync.get('repo_path')
-                if not remote_repo:
-                    raise RuntimeError("Failed to sync codebase to remote VM: repo_path not returned")
-                
-                # Step 2b: Push the mock XML via SFTP
-                print("  Pushing mock XML topology to remote VM...")
-                client = _open_ssh_client(core_cfg)
-                sftp = client.open_sftp()
-                
-                remote_xml = f"/tmp/scenarioforge_eval_mock_{uuid.uuid4().hex[:8]}.xml"
-                sftp.put(xml_path, remote_xml)
-                sftp.close()
-                
-                # Step 2c: Execute CLI on remote VM
-                print("  Executing scenario via SSH (this may take 5-10 minutes)...")
-                # Find correct python interpreter (including scenarioforge's local .venv)
-                cmd = (
-                    f"cd {remote_repo} && "
-                    f"PYTHON=\"\"; "
-                    f"for py in {self.sf_path}/.venv/bin/python {remote_repo}/.venv/bin/python core-python /opt/core/venv/bin/python python3 python; do "
-                    f"  if command -v $py >/dev/null 2>&1; then "
-                    f"    if $py -c 'import core.api.grpc' 2>/dev/null; then PYTHON=$py; break; fi; "
-                    f"  fi; "
-                    f"done; "
-                    f"if [ -z \"$PYTHON\" ]; then echo \"ERROR: Could not find Python interpreter with core.api.grpc on remote VM!\" >&2; exit 1; fi; "
-                    f"$PYTHON -m scenarioforge.cli --xml {remote_xml} "
-                    f"--plan-output /tmp/scenarioforge_eval_plan.json"
-                )
-                if self.verbose:
-                    cmd += " --verbose"
-                    
-                stdin, stdout, stderr = client.exec_command(cmd)
-                
-                # We stream stderr line-by-line because Python's logging (where PHASE: prints) goes to stderr
-                # We will capture it all for the final string, but print relevant lines immediately.
-                import select
-                channel = stdout.channel
-                stderr_lines = []
-                stdout_lines = []
-                while True:
-                    if channel.exit_status_ready() and not channel.recv_ready() and not channel.recv_stderr_ready():
-                        break
-                    
-                    # Paramiko multiplexes stdout and stderr into the single channel object.
-                    r, _, _ = select.select([channel], [], [], 1.0)
-                    
-                    if channel in r:
-                        if channel.recv_ready():
-                            chunk = channel.recv(4096).decode('utf-8', errors='replace')
-                            if chunk:
-                                stdout_lines.append(chunk)
-                                if self.verbose:
-                                    print(chunk, end="", flush=True)
-                        
-                        if channel.recv_stderr_ready():
-                            chunk = channel.recv_stderr(4096).decode('utf-8', errors='replace')
-                            if chunk:
-                                stderr_lines.append(chunk)
-                                # Print immediately if it's a PHASE or verbose
-                                lines = chunk.split('\n')
-                                for line in lines:
-                                    if "PHASE:" in line or self.verbose:
-                                        print(line)
-                
-                code = channel.recv_exit_status()
-                
-                full_stdout = "".join(stdout_lines)
-                full_stderr = "".join(stderr_lines)
-                
-                # Clean up XML
-                client.exec_command(f"rm -f {remote_xml}")
-                
-                if code == 0:
-                    result['stages']['preview'] = 'PASS'
-                    result['stages']['execute'] = 'PASS'
-                    result['success'] = True
-                    print(f"  Successfully deployed scenario!")
                 else:
-                    print(f"  Execution failed with code {code}!")
-                    if not self.verbose: # If verbose, we already printed it
-                        print(f"\n--- REMOTE STDOUT ---\n{full_stdout}")
-                        print(f"\n--- REMOTE STDERR ---\n{full_stderr}")
-                    raise RuntimeError(f"Remote execution failed with exit code {code}")
+                    raise RuntimeError(f"CLI preview-full exited with code {e.code}")
+            finally:
+                os.chdir(original_cwd)
+                scenarioforge.cli.write_report = original_write_report
+            
+            # 2b. Push artifacts to CORE VM via SSH/SFTP
+            print("  Preparing remote context on CORE VM...")
+            import uuid as _uuid
+            from webapp.app_backend import (
+                _core_backend_defaults,
+                _open_ssh_client,
+                _push_repo_to_remote,
+                _prepare_remote_cli_context,
+            )
+            
+            core_cfg = _core_backend_defaults(include_password=True)
+            
+            # Sync the codebase
+            print("  Syncing codebase to remote VM...")
+            repo_sync = _push_repo_to_remote(core_cfg, upload_only_injected_artifacts=False)
+            remote_repo = repo_sync.get('repo_path')
+            if not remote_repo:
+                raise RuntimeError("Failed to sync codebase to remote VM: repo_path not returned")
+            
+            # Prepare remote CLI context (uploads XML, compose files, flow artifacts, vuln catalogs)
+            print("  Uploading scenario artifacts to remote VM...")
+            client = _open_ssh_client(core_cfg)
+            run_id = f"eval-{self.spec.get('name', 'unknown')}-{_uuid.uuid4().hex[:8]}"
+            
+            log_handle = open(os.path.join(self.out_dir, 'remote_prepare.log'), 'w', encoding='utf-8')
+            try:
+                remote_ctx = _prepare_remote_cli_context(
+                    client=client,
+                    run_id=run_id,
+                    xml_path=xml_path,
+                    preview_plan_path=plan_output_path if os.path.exists(plan_output_path) else None,
+                    log_handle=log_handle,
+                    upload_only_injected_artifacts=False,
+                    core_cfg=core_cfg,
+                )
+            finally:
+                log_handle.close()
+            
+            result['stages']['flag_sequencing'] = 'PASS'
+            
+            if self.target_phase == 'flag-sequencing':
+                result['success'] = True
+                # Clean up the SSH client since we're stopping here
+                client.close()
+                return result
+            
+            # ── Phase 3: Execute (launch CLI on remote CORE VM) ──
+            print(">> Phase: execute")
+            print(f"  Executing scenario {self.spec.get('name', 'unknown')} on remote VM...")
+            
+            # Find correct python interpreter on the remote
+            remote_xml = remote_ctx['xml_path']
+            remote_preview_plan = remote_ctx.get('preview_plan_path')
+            
+            cmd = (
+                f"cd {remote_ctx['repo_dir']} && "
+                f"PYTHON=\"\"; "
+                f"for py in {self.sf_path}/.venv/bin/python {remote_ctx['repo_dir']}/.venv/bin/python core-python /opt/core/venv/bin/python python3 python; do "
+                f"  if command -v $py >/dev/null 2>&1; then "
+                f"    if $py -c 'import core.api.grpc' 2>/dev/null; then PYTHON=$py; break; fi; "
+                f"  fi; "
+                f"done; "
+                f"if [ -z \"$PYTHON\" ]; then echo \"ERROR: Could not find Python interpreter with core.api.grpc on remote VM!\" >&2; exit 1; fi; "
+                f"$PYTHON -u -m scenarioforge.cli --xml {remote_xml} "
+                f"--plan-output /tmp/scenarioforge_eval_plan.json"
+            )
+            if remote_preview_plan:
+                cmd += f" --preview-plan {remote_preview_plan}"
+            if self.verbose:
+                cmd += " --verbose"
+                
+            stdin, stdout, stderr = client.exec_command(cmd)
+            
+            # Stream stdout/stderr from the remote channel
+            import select
+            channel = stdout.channel
+            stderr_lines = []
+            stdout_lines = []
+            while True:
+                if channel.exit_status_ready() and not channel.recv_ready() and not channel.recv_stderr_ready():
+                    break
+                
+                r, _, _ = select.select([channel], [], [], 1.0)
+                
+                if channel in r:
+                    if channel.recv_ready():
+                        chunk = channel.recv(4096).decode('utf-8', errors='replace')
+                        if chunk:
+                            stdout_lines.append(chunk)
+                            if self.verbose:
+                                print(chunk, end="", flush=True)
+                    
+                    if channel.recv_stderr_ready():
+                        chunk = channel.recv_stderr(4096).decode('utf-8', errors='replace')
+                        if chunk:
+                            stderr_lines.append(chunk)
+                            lines = chunk.split('\n')
+                            for line in lines:
+                                if "PHASE:" in line or self.verbose:
+                                    print(line)
+            
+            code = channel.recv_exit_status()
+            
+            full_stdout = "".join(stdout_lines)
+            full_stderr = "".join(stderr_lines)
+            
+            client.close()
+            
+            if code == 0:
+                result['stages']['execute'] = 'PASS'
+                result['success'] = True
+                print(f"  Successfully deployed scenario!")
+            else:
+                print(f"  Execution failed with code {code}!")
+                if not self.verbose:
+                    print(f"\n--- REMOTE STDOUT ---\n{full_stdout}")
+                    print(f"\n--- REMOTE STDERR ---\n{full_stderr}")
+                raise RuntimeError(f"Remote execution failed with exit code {code}")
                     
         except Exception as e:
             result['error'] = traceback.format_exc()

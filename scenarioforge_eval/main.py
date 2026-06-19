@@ -12,10 +12,12 @@ def main():
     parser.add_argument('--sf-path', required=True, help="Path to the scenarioforge codebase")
     
     phase_group = parser.add_mutually_exclusive_group()
-    phase_group.add_argument("--topology", action="store_true", help="Stop after topology generation")
-    phase_group.add_argument("--flow-sequencing", action="store_true", help="Stop after flow sequencing")
-    phase_group.add_argument("--preview-gen", action="store_true", help="Stop after preview generation")
-    phase_group.add_argument("--execute", action="store_true", help="Execute all the way to CORE VM deployment")
+    phase_group.add_argument("--topology", action="store_true",
+                             help="Stop after topology XML generation (local only)")
+    phase_group.add_argument("--flag-sequencing", action="store_true",
+                             help="Generate full preview + push artifacts to CORE VM via SSH (stops before execution)")
+    phase_group.add_argument("--execute", action="store_true",
+                             help="Full pipeline: topology, flag-sequencing, and execute on CORE VM")
     
     parser.add_argument('--out', default="/tmp/scenarioforge-eval-out", help="Output directory for logs and results")
     parser.add_argument('--verbose', '-v', action='store_true', help="Enable verbose debug logging")
@@ -65,10 +67,9 @@ def main():
             }
             
             if args.execute: target_phase = 'execute'
-            elif args.preview_gen: target_phase = 'preview-gen'
-            elif args.flow_sequencing: target_phase = 'flow-sequencing'
+            elif args.flag_sequencing: target_phase = 'flag-sequencing'
             elif args.topology: target_phase = 'topology'
-            else: target_phase = 'preview-gen'
+            else: target_phase = 'flag-sequencing'
             
             executor = Executor(resolved_spec, spec_out_dir, args.sf_path, target_phase, args.verbose)
             result = executor.run()
