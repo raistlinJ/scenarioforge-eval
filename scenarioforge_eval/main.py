@@ -27,9 +27,11 @@ def main():
         logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
         # Suppress paramiko debug logging (SSH channels, EOF, packet tracing) 
         # so it doesn't flood the console, matching WebUI behavior.
-        logging.getLogger("paramiko").setLevel(logging.WARNING)
+        logging.getLogger("paramiko").setLevel(logging.CRITICAL)
     else:
         logging.basicConfig(level=logging.INFO, format='%(message)s')
+        # Also suppress in normal mode to prevent connection reset error logs
+        logging.getLogger("paramiko").setLevel(logging.CRITICAL)
 
     os.makedirs(args.out, exist_ok=True)
     reporter = Reporter(args.out)
