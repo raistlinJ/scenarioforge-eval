@@ -62,6 +62,9 @@ class Executor:
                 'density_input': seg_spec.get('density', 0.5)
             }
             
+        # Add default Node Information section to avoid parser warnings
+        scen_payload['sections']['Node Information'] = {'items': []}
+            
         # Load environment variables (CORE_HOST, SSH credentials, etc) using scenarioforge's native loader
         from webapp.env_loader import load_runtime_env_files
         from pathlib import Path
@@ -387,6 +390,7 @@ class Executor:
                 "CORETG_DOCKER_BUILD_PULL=0 "
                 "CORETG_COMPOSE_SET_CONTAINER_NAME=1 "
                 "CORETG_FLOW_ARTIFACTS_MODE=copy "
+                "CORETG_COMPOSE_ALLOW_INTERNAL_NETWORKING=1 "
             )
             if core_cfg.get('ssh_password'):
                 env_vars += "CORETG_DOCKER_SUDO_PASSWORD_STDIN=1 "
