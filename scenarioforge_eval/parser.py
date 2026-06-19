@@ -24,21 +24,24 @@ class SpecParser:
         return res
 
     def get_services_spec(self) -> dict:
-        return self.spec.get('services', {'randomize': True})
+        s = self.spec.get('services', {})
+        return {'enabled': s.get('enabled', s.get('randomize', True))}
 
     def get_vulns_spec(self) -> dict:
-        return self.spec.get('vulns', {'randomize': True, 'count': self._resolve_value([1, 3])})
+        v = self.spec.get('vulns', {})
+        return {'enabled': v.get('enabled', v.get('randomize', True)), 'count': self._resolve_value(v.get('count', [1, 3]))}
 
     def get_flows_spec(self) -> dict:
-        flows = self.spec.get('flows', {'randomize': True})
+        flows = self.spec.get('flows', {})
         return {
-            'randomize': flows.get('randomize', True),
+            'enabled': flows.get('enabled', flows.get('randomize', True)),
             'chain_length': self._resolve_value(flows.get('chain_length', [3, 5])),
             'allow_duplicates': flows.get('allow_duplicates', False)
         }
 
     def get_segmentation_spec(self) -> dict:
-        return self.spec.get('segmentation', {'randomize': True, 'density': 0.5})
+        seg = self.spec.get('segmentation', {})
+        return {'enabled': seg.get('enabled', seg.get('randomize', True)), 'density': seg.get('density', 0.5)}
 
     def get_hitl_spec(self) -> dict:
         return self.spec.get('hitl', {'use_env': True})

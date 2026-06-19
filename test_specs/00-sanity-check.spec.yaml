@@ -6,10 +6,10 @@ topology:
   hosts: 1
   randomize: false
 services:
-  randomize: true
+  enabled: true
 vulns:
-  randomize: true
+  enabled: true
   count: 1
 flows:
-  randomize: false
+  enabled: false
   count: 1

@@ -31,7 +31,7 @@ class Executor:
         
         # Inject vulnerabilities count into sections
         vulns_spec = self.spec.get('vulns', {})
-        if vulns_spec.get('randomize'):
+        if vulns_spec.get('enabled', vulns_spec.get('randomize')):
             count = vulns_spec.get('count', 1)
             density = min(1.0, count / 10.0)
             scen_payload['sections']['Vulnerabilities'] = {
@@ -41,14 +41,14 @@ class Executor:
             
         # Inject services count into sections
         services_spec = self.spec.get('services', {})
-        if services_spec.get('randomize'):
+        if services_spec.get('enabled', services_spec.get('randomize')):
             scen_payload['sections']['Services'] = {
                 'items': [{'v_metric': 'Count', 'v_count': 3}] # Default to 3 random services
             }
             
         # Inject flow_state
         flows_spec = self.spec.get('flows', {})
-        if flows_spec.get('randomize'):
+        if flows_spec.get('enabled', flows_spec.get('randomize')):
             scen_payload['flow_state'] = {
                 'auto_chain': True,
                 'chain_length': flows_spec.get('chain_length', 3),
@@ -57,7 +57,7 @@ class Executor:
             
         # Inject Segmentation
         seg_spec = self.spec.get('segmentation', {})
-        if seg_spec.get('randomize'):
+        if seg_spec.get('enabled', seg_spec.get('randomize')):
             scen_payload['sections']['Segmentation'] = {
                 'density_input': seg_spec.get('density', 0.5)
             }
