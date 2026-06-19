@@ -1,0 +1,13 @@
+name: "no-vulns-mesh"
+topology:
+  type: "mesh"
+  routers: 4
+  hosts: 16
+  randomize: true
+services:
+  randomize: true
+vulns:
+  randomize: true
+  count: 0
+flows:
+  randomize: true

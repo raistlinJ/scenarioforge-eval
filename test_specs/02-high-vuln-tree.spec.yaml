@@ -1,0 +1,13 @@
+name: "high-vuln-tree"
+topology:
+  type: "tree"
+  routers: 5
+  hosts: 15
+  randomize: true
+services:
+  randomize: true
+vulns:
+  randomize: true
+  count: 10
+flows:
+  randomize: true

@@ -1,0 +1,15 @@
+name: "sanity-check"
+iterations: 1
+topology:
+  type: "star"
+  routers: 1
+  hosts: 1
+  randomize: false
+services:
+  randomize: true
+vulns:
+  randomize: true
+  count: 1
+flows:
+  randomize: false
+  count: 1

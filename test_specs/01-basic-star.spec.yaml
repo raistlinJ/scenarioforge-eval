@@ -1,0 +1,13 @@
+name: "basic-star"
+topology:
+  type: "star"
+  routers: 2
+  hosts: 18
+  randomize: true
+services:
+  randomize: true
+vulns:
+  randomize: true
+  count: 1
+flows:
+  randomize: true

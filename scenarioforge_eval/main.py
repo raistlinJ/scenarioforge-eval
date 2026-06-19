@@ -23,13 +23,27 @@ def main():
         print(f"Evaluating {spec_file}...")
         spec = SpecParser(spec_file)
         
-        spec_name = spec.get_name()
-        spec_out_dir = os.path.join(args.out, spec_name)
-        
-        executor = Executor(spec.spec, spec_out_dir)
-        result = executor.run()
-        
-        reporter.log_result(spec_name, result)
+        iterations = spec.spec.get('iterations', 1)
+        for i in range(iterations):
+            spec_name = spec.get_name()
+            if iterations > 1:
+                spec_name = f"{spec_name}_run{i+1}"
+            
+            spec_out_dir = os.path.join(args.out, spec_name)
+            
+            # Resolve the spec dynamically on each iteration to generate random variations
+            resolved_spec = {
+                'name': spec_name,
+                'topology': spec.get_topology_spec(),
+                'services': spec.get_services_spec(),
+                'vulns': spec.get_vulns_spec(),
+                'flows': spec.get_flows_spec(),
+            }
+            
+            executor = Executor(resolved_spec, spec_out_dir)
+            result = executor.run()
+            
+            reporter.log_result(spec_name, result)
 
 if __name__ == '__main__':
     main()

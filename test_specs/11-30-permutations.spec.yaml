@@ -1,0 +1,14 @@
+name: "batch-30-scenarios"
+iterations: 30
+topology:
+  type: "mesh"
+  routers: [2, 5]
+  hosts: [8, 15]
+  randomize: true
+services:
+  randomize: true
+vulns:
+  randomize: true
+  count: [3, 12]
+flows:
+  randomize: true
