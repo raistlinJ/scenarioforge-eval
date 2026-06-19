@@ -43,7 +43,8 @@ class Executor:
         services_spec = self.spec.get('services', {})
         if services_spec.get('enabled', services_spec.get('randomize')):
             scen_payload['sections']['Services'] = {
-                'items': [{'v_metric': 'Count', 'v_count': 3}] # Default to 3 random services
+                'density': services_spec.get('density', 1.0),
+                'items': [{'v_metric': 'Count', 'v_count': services_spec.get('count', 3)}]
             }
             
         # Inject flow_state
