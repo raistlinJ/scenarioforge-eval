@@ -206,7 +206,7 @@ class Executor:
                 # We assume python3 is available in PATH or inside the venv
                 cmd = (
                     f"cd {remote_repo} && "
-                    f"python3 scenarioforge/cli.py --xml {remote_xml} "
+                    f"python3 -m scenarioforge.cli --xml {remote_xml} "
                     f"--plan-output /tmp/scenarioforge_eval_plan.json"
                 )
                 if self.verbose:
