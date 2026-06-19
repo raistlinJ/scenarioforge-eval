@@ -207,39 +207,74 @@ class Executor:
                 
                 # Step 2c: Execute CLI on remote VM
                 print("  Executing scenario via SSH (this may take 5-10 minutes)...")
-                # app_backend.py uses 'core-python' or '/opt/core/venv/bin/python3' or 'python3'
-                # We use a bash one-liner to find the first python that has the core gRPC library
+                # Find correct python interpreter (including scenarioforge's local .venv)
                 cmd = (
                     f"cd {remote_repo} && "
-                    f"PYTHON=\"python3\"; "
-                    f"for py in core-python /opt/core/venv/bin/python python3 python; do "
+                    f"PYTHON=\"\"; "
+                    f"for py in {self.sf_path}/.venv/bin/python {remote_repo}/.venv/bin/python core-python /opt/core/venv/bin/python python3 python; do "
                     f"  if command -v $py >/dev/null 2>&1; then "
-                    f"    $py -c 'import core.api.grpc' 2>/dev/null && PYTHON=$py && break; "
+                    f"    if $py -c 'import core.api.grpc' 2>/dev/null; then PYTHON=$py; break; fi; "
                     f"  fi; "
                     f"done; "
+                    f"if [ -z \"$PYTHON\" ]; then echo \"ERROR: Could not find Python interpreter with core.api.grpc on remote VM!\" >&2; exit 1; fi; "
                     f"$PYTHON -m scenarioforge.cli --xml {remote_xml} "
                     f"--plan-output /tmp/scenarioforge_eval_plan.json"
                 )
                 if self.verbose:
                     cmd += " --verbose"
                     
-                code, stdout, stderr = _exec_ssh_command(client, cmd, timeout=3600.0)
+                stdin, stdout, stderr = client.exec_command(cmd)
+                
+                # We stream stderr line-by-line because Python's logging (where PHASE: prints) goes to stderr
+                # We will capture it all for the final string, but print relevant lines immediately.
+                import select
+                channel = stdout.channel
+                stderr_lines = []
+                stdout_lines = []
+                
+                while not channel.exit_status_ready():
+                    r, _, _ = select.select([channel, channel.stderr], [], [], 1.0)
+                    if channel in r and channel.recv_ready():
+                        chunk = channel.recv(4096).decode('utf-8', errors='replace')
+                        if chunk:
+                            stdout_lines.append(chunk)
+                            if self.verbose:
+                                print(chunk, end="", flush=True)
+                    
+                    if channel.stderr in r and channel.recv_stderr_ready():
+                        chunk = channel.recv_stderr(4096).decode('utf-8', errors='replace')
+                        if chunk:
+                            stderr_lines.append(chunk)
+                            # Print immediately if it's a PHASE or verbose
+                            lines = chunk.split('\n')
+                            for line in lines:
+                                if "PHASE:" in line or self.verbose:
+                                    print(line)
+                
+                code = channel.recv_exit_status()
+                
+                # Drain remaining output
+                if channel.recv_ready():
+                    stdout_lines.append(channel.recv(4096).decode('utf-8', errors='replace'))
+                if channel.recv_stderr_ready():
+                    stderr_lines.append(channel.recv_stderr(4096).decode('utf-8', errors='replace'))
+                    
+                full_stdout = "".join(stdout_lines)
+                full_stderr = "".join(stderr_lines)
                 
                 # Clean up XML
-                _exec_ssh_command(client, f"rm -f {remote_xml}")
+                client.exec_command(f"rm -f {remote_xml}")
                 
                 if code == 0:
                     result['stages']['preview'] = 'PASS'
                     result['stages']['execute'] = 'PASS'
                     result['success'] = True
                     print(f"  Successfully deployed scenario!")
-                    if self.verbose:
-                        print(f"\n--- REMOTE STDOUT ---\n{stdout}")
                 else:
                     print(f"  Execution failed with code {code}!")
-                    if self.verbose:
-                        print(f"\n--- REMOTE STDOUT ---\n{stdout}")
-                        print(f"\n--- REMOTE STDERR ---\n{stderr}")
+                    if not self.verbose: # If verbose, we already printed it
+                        print(f"\n--- REMOTE STDOUT ---\n{full_stdout}")
+                        print(f"\n--- REMOTE STDERR ---\n{full_stderr}")
                     raise RuntimeError(f"Remote execution failed with exit code {code}")
                     
         except Exception as e:
