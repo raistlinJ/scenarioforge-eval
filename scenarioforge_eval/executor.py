@@ -231,8 +231,9 @@ class Executor:
                 channel = stdout.channel
                 stderr_lines = []
                 stdout_lines = []
-                
-                while not channel.exit_status_ready():
+                while True:
+                    if channel.exit_status_ready() and not channel.recv_ready() and not channel.recv_stderr_ready():
+                        break
                     r, _, _ = select.select([channel, channel.stderr], [], [], 1.0)
                     if channel in r and channel.recv_ready():
                         chunk = channel.recv(4096).decode('utf-8', errors='replace')
@@ -253,12 +254,6 @@ class Executor:
                 
                 code = channel.recv_exit_status()
                 
-                # Drain remaining output
-                if channel.recv_ready():
-                    stdout_lines.append(channel.recv(4096).decode('utf-8', errors='replace'))
-                if channel.recv_stderr_ready():
-                    stderr_lines.append(channel.recv_stderr(4096).decode('utf-8', errors='replace'))
-                    
                 full_stdout = "".join(stdout_lines)
                 full_stderr = "".join(stderr_lines)
                 
