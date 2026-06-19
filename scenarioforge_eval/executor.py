@@ -198,27 +198,58 @@ class Executor:
                     print(f"\r    [{fields['percent']:>5.1f}%] {fields['detail']}", end="", flush=True)
                 original_update_progress(progress_id, **fields)
             
-            def sftp_progress(transferred, total, label):
-                if total > 0:
-                    percent = (transferred / total) * 100
-                    print(f"\r    [{percent:>5.1f}%] {label}", end="", flush=True)
-                if transferred >= total:
-                    print()
+            class SFTPState:
+                uploaded_files = 0
+                uploaded_bytes = 0
+                downloaded_files = 0
+                downloaded_bytes = 0
+                last_label = ""
+            
+            sftp_state = SFTPState()
+            
+            def sftp_progress(transferred, total, label, is_upload=True):
+                # We update the line in place. Since we don't know the batch total size beforehand,
+                # we show an aggregate count of files and MBs transferred.
+                if is_upload:
+                    mb = sftp_state.uploaded_bytes / (1024 * 1024)
+                    count = sftp_state.uploaded_files
+                    dir_str = "Uploaded"
+                else:
+                    mb = sftp_state.downloaded_bytes / (1024 * 1024)
+                    count = sftp_state.downloaded_files
+                    dir_str = "Downloaded"
+                    
+                # Pad with spaces to overwrite previous longer filenames
+                line = f"\r    [SFTP] {dir_str} {count} files ({mb:.1f} MB) - {label}"
+                print(f"{line:<80}", end="", flush=True)
                     
             def mocked_sftp_put(self, localpath, remotepath, callback=None, confirm=True):
                 filename = os.path.basename(localpath)
-                label = f"Uploading {filename}..."
+                sftp_state.uploaded_files += 1
+                sftp_state.last_label = filename
+                
+                # We track bytes manually since callback is per-chunk
+                last_transferred = [0]
                 def cb(transferred, total):
-                    sftp_progress(transferred, total, label)
+                    chunk = transferred - last_transferred[0]
+                    last_transferred[0] = transferred
+                    sftp_state.uploaded_bytes += chunk
+                    sftp_progress(transferred, total, filename, is_upload=True)
                     if callback:
                         callback(transferred, total)
                 return original_sftp_put(self, localpath, remotepath, callback=cb, confirm=confirm)
                 
             def mocked_sftp_get(self, remotepath, localpath, callback=None):
                 filename = os.path.basename(remotepath)
-                label = f"Downloading {filename}..."
+                sftp_state.downloaded_files += 1
+                sftp_state.last_label = filename
+                
+                last_transferred = [0]
                 def cb(transferred, total):
-                    sftp_progress(transferred, total, label)
+                    chunk = transferred - last_transferred[0]
+                    last_transferred[0] = transferred
+                    sftp_state.downloaded_bytes += chunk
+                    sftp_progress(transferred, total, filename, is_upload=False)
                     if callback:
                         callback(transferred, total)
                 return original_sftp_get(self, remotepath, localpath, callback=cb)
@@ -250,7 +281,8 @@ class Executor:
                             if '[remote]' in line:
                                 # Clean it up a bit for the console
                                 clean = line.replace('[remote] Repo upload:', 'Repo:').replace('[remote]', '').strip()
-                                print(f"    - {clean}")
+                                # Clear the SFTP progress bar line before printing
+                                print(f"\r{' '*80}\r    - {clean}")
                     def flush(self):
                         self.fd.flush()
                     def close(self):
@@ -270,6 +302,7 @@ class Executor:
                     )
                 finally:
                     log_handle.close()
+                    print() # newline after SFTP progress bar
             finally:
                 webapp.app_backend._update_repo_push_progress = original_update_progress
                 paramiko.SFTPClient.put = original_sftp_put
