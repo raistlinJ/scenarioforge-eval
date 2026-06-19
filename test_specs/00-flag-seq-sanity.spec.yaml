@@ -1,0 +1,15 @@
+name: "flag-seq-sanity"
+iterations: 1
+topology:
+  type: "star"
+  routers: 2
+  hosts: 10
+  randomize: true
+services:
+  randomize: true
+vulns:
+  randomize: true
+  count: 1
+flows:
+  randomize: true
+  count: 1
