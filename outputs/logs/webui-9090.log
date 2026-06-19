@@ -2,3 +2,17 @@
 2026-06-19 00:26:41,599 WARNING scenarioforge.parsers.node_info: 'Node Information' section not found; defaulting values
 2026-06-19 11:56:52,397 WARNING scenarioforge.parsers.node_info: 'Node Information' section not found; defaulting values
 2026-06-19 11:56:52,397 WARNING scenarioforge.parsers.node_info: 'Node Information' section not found; defaulting values
+2026-06-19 13:00:25,907 INFO root: PHASE: Parse scenario inputs
+2026-06-19 13:00:25,908 WARNING scenarioforge.parsers.node_info: 'Node Information' section not found; defaulting values
+2026-06-19 13:00:25,908 INFO root: PHASE: Role counts computed (hosts=10)
+2026-06-19 13:00:25,908 INFO root: PHASE: Planning topology
+2026-06-19 13:00:25,908 WARNING scenarioforge.parsers.node_info: 'Node Information' section not found; defaulting values
+2026-06-19 13:00:25,908 INFO scenarioforge.planning.router_plan: [router.plan] ---- ROUTER PLANNING START ----
+2026-06-19 13:00:25,908 INFO scenarioforge.planning.router_plan: [router.plan] inputs: total_hosts=11 base_host_pool(raw)=10 routing_density(raw)=0.000000 items=0
+2026-06-19 13:00:25,908 INFO scenarioforge.planning.router_plan: [router.plan] eligibility: has_weight_based=False rd_raw=0.000000 rd_clamped=0.000000
+2026-06-19 13:00:25,908 INFO scenarioforge.planning.router_plan: [router.plan] density_component=floor(rd_clamped * effective_base)=floor(0.000000 * 10)=0
+2026-06-19 13:00:25,908 INFO scenarioforge.planning.router_plan: [router.plan] components: count_based=0 + density_component=0 => raw_total=0
+2026-06-19 13:00:25,908 INFO scenarioforge.planning.router_plan: [router.plan] ---- ROUTER PLANNING END (final=0) ----
+2026-06-19 13:00:25,909 INFO root: PHASE: Planning complete (routers=0 hosts=10)
+2026-06-19 13:18:41,343 INFO webapp.app_backend: [remote-sync] starting repo sync to CORE VM
+2026-06-19 13:18:41,343 INFO webapp.app_backend: [remote-sync] starting repo sync to CORE VM
