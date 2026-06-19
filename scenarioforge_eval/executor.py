@@ -179,49 +179,33 @@ class Executor:
                 print(">> Phase: execute")
                 # 2. Run Execution via SSH (Remote)
                 import uuid
-                import logging
                 from webapp.app_backend import (
                     _core_backend_defaults,
                     _open_ssh_client,
                     _exec_ssh_command,
                     _push_repo_to_remote,
-                    _install_custom_services_to_core_vm,
                 )
                 
                 print(f"Deploying scenario {self.spec.get('name', 'unknown')} to remote VM...")
                 core_cfg = _core_backend_defaults(include_password=True)
                 
-                # Step 2a: Open SSH Client
-                client = _open_ssh_client(core_cfg)
-                
-                # Step 2b: Install custom services to core VM
-                print("  Installing custom services to remote CORE VM...")
-                try:
-                    _install_custom_services_to_core_vm(
-                        client,
-                        sudo_password=core_cfg.get('ssh_password'),
-                        logger=logging.getLogger('eval'),
-                        core_cfg=core_cfg,
-                    )
-                except Exception as e:
-                    print(f"  WARNING: Failed to install custom services: {e}")
-                
-                # Step 2c: Push the codebase to remote
+                # Step 2a: Push the codebase to remote
                 print("  Syncing codebase to remote VM...")
                 repo_sync = _push_repo_to_remote(core_cfg, upload_only_injected_artifacts=False)
                 remote_repo = repo_sync.get('repo_path')
                 if not remote_repo:
                     raise RuntimeError("Failed to sync codebase to remote VM: repo_path not returned")
                 
-                # Step 2d: Push the mock XML via SFTP
+                # Step 2b: Push the mock XML via SFTP
                 print("  Pushing mock XML topology to remote VM...")
+                client = _open_ssh_client(core_cfg)
                 sftp = client.open_sftp()
                 
                 remote_xml = f"/tmp/scenarioforge_eval_mock_{uuid.uuid4().hex[:8]}.xml"
                 sftp.put(xml_path, remote_xml)
                 sftp.close()
                 
-                # Step 2e: Execute CLI on remote VM
+                # Step 2c: Execute CLI on remote VM
                 print("  Executing scenario via SSH (this may take 5-10 minutes)...")
                 # Find correct python interpreter (including scenarioforge's local .venv)
                 cmd = (
