@@ -47,6 +47,8 @@ def main():
                 'services': spec.get_services_spec(),
                 'vulns': spec.get_vulns_spec(),
                 'flows': spec.get_flows_spec(),
+                'segmentation': spec.get_segmentation_spec(),
+                'hitl': spec.get_hitl_spec(),
             }
             
             executor = Executor(resolved_spec, spec_out_dir, args.sf_path, args.execute)
