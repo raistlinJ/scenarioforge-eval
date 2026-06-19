@@ -5,11 +5,12 @@ import json
 import traceback
 
 class Executor:
-    def __init__(self, spec: dict, out_dir: str, sf_path: str, execute: bool = False):
+    def __init__(self, spec: dict, out_dir: str, sf_path: str, execute: bool = False, verbose: bool = False):
         self.spec = spec
         self.out_dir = out_dir
         self.sf_path = os.path.abspath(sf_path)
         self.execute = execute
+        self.verbose = verbose
         os.makedirs(self.out_dir, exist_ok=True)
         
         # Dynamically add scenarioforge to the path
@@ -139,6 +140,9 @@ class Executor:
             
             if not self.execute:
                 sys.argv.append('--preview-full')
+            
+            if self.verbose:
+                sys.argv.append('--verbose')
             
             # Change working directory so any generated artifacts (e.g. docker-compose.yml) 
             # are dumped directly into this scenario's out_dir
