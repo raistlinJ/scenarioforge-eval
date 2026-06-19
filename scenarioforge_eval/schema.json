@@ -57,7 +57,14 @@
     "flows": {
       "type": "object",
       "properties": {
-        "randomize": { "type": "boolean" }
+        "randomize": { "type": "boolean" },
+        "chain_length": {
+          "oneOf": [
+            { "type": "integer" },
+            { "type": "array", "items": { "type": "integer" }, "minItems": 2, "maxItems": 2 }
+          ]
+        },
+        "allow_duplicates": { "type": "boolean" }
       }
     }
   }

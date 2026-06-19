@@ -30,7 +30,12 @@ class SpecParser:
         return self.spec.get('vulns', {'randomize': True, 'count': self._resolve_value([1, 3])})
 
     def get_flows_spec(self) -> dict:
-        return self.spec.get('flows', {'randomize': True})
+        flows = self.spec.get('flows', {'randomize': True})
+        return {
+            'randomize': flows.get('randomize', True),
+            'chain_length': self._resolve_value(flows.get('chain_length', [3, 5])),
+            'allow_duplicates': flows.get('allow_duplicates', False)
+        }
 
     def _resolve_value(self, val):
         """Resolves a value that could be a static int/string or a range [min, max]."""
