@@ -22,6 +22,7 @@ Create a `.spec.yaml` file (e.g., `test.spec.yaml`):
 
 ```yaml
 name: "eval-test-1"
+iterations: 10 # Number of times to generate and test this scenario
 topology:
   type: "star"
   routers: [1, 3] # Can be a range for random generation
@@ -36,10 +37,10 @@ flows:
   randomize: true
 ```
 
-Run the evaluator by passing the directory containing your `.spec.yaml` files:
+Run the evaluator by passing the directory containing your `.spec.yaml` files (or a single file), along with the path to the `scenarioforge` codebase:
 
 ```bash
-python3 scenarioforge_eval/main.py .
+python3 scenarioforge_eval/main.py --sf-path /path/to/scenarioforge --execute .
 ```
 
 By default, the logs and plans will be written to `/tmp/scenarioforge-eval-out/`.
