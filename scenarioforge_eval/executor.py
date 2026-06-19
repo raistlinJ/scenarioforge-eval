@@ -186,19 +186,49 @@ class Executor:
             
             core_cfg = _core_backend_defaults(include_password=True)
             
-            # Sync the codebase
-            print("  Syncing codebase to remote VM...")
-            repo_sync = _push_repo_to_remote(core_cfg, upload_only_injected_artifacts=False)
-            remote_repo = repo_sync.get('repo_path')
-            if not remote_repo:
-                raise RuntimeError("Failed to sync codebase to remote VM: repo_path not returned")
+            import webapp.app_backend
+            original_update_progress = webapp.app_backend._update_repo_push_progress
+            
+            def mocked_update_progress(progress_id, **fields):
+                if 'percent' in fields and 'detail' in fields:
+                    print(f"\r    [{fields['percent']:>5.1f}%] {fields['detail']}", end="", flush=True)
+                original_update_progress(progress_id, **fields)
+                
+            webapp.app_backend._update_repo_push_progress = mocked_update_progress
+            
+            try:
+                # Sync the codebase
+                print("  Syncing codebase to remote VM...")
+                repo_sync = _push_repo_to_remote(core_cfg, upload_only_injected_artifacts=False, progress_id="cli-eval-sync")
+                remote_repo = repo_sync.get('repo_path')
+                if not remote_repo:
+                    raise RuntimeError("Failed to sync codebase to remote VM: repo_path not returned")
+                print() # newline after progress bar
+            finally:
+                webapp.app_backend._update_repo_push_progress = original_update_progress
             
             # Prepare remote CLI context (uploads XML, compose files, flow artifacts, vuln catalogs)
             print("  Uploading scenario artifacts to remote VM...")
             client = _open_ssh_client(core_cfg)
             run_id = f"eval-{self.spec.get('name', 'unknown')}-{_uuid.uuid4().hex[:8]}"
             
-            log_handle = open(os.path.join(self.out_dir, 'remote_prepare.log'), 'w', encoding='utf-8')
+            class TeeLogHandle:
+                def __init__(self, fd):
+                    self.fd = fd
+                def write(self, s):
+                    self.fd.write(s)
+                    for line in s.splitlines():
+                        if '[remote]' in line:
+                            # Clean it up a bit for the console
+                            clean = line.replace('[remote] Repo upload:', 'Repo:').replace('[remote]', '').strip()
+                            print(f"    - {clean}")
+                def flush(self):
+                    self.fd.flush()
+                def close(self):
+                    self.fd.close()
+                    
+            raw_log_fd = open(os.path.join(self.out_dir, 'remote_prepare.log'), 'w', encoding='utf-8')
+            log_handle = TeeLogHandle(raw_log_fd)
             try:
                 remote_ctx = _prepare_remote_cli_context(
                     client=client,
