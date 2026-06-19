@@ -187,14 +187,46 @@ class Executor:
             core_cfg = _core_backend_defaults(include_password=True)
             
             import webapp.app_backend
+            import paramiko
+            import os
+            
             original_update_progress = webapp.app_backend._update_repo_push_progress
+            original_sftp_put = paramiko.SFTPClient.put
+            original_sftp_get = paramiko.SFTPClient.get
             
             def mocked_update_progress(progress_id, **fields):
                 if 'percent' in fields and 'detail' in fields:
                     print(f"\r    [{fields['percent']:>5.1f}%] {fields['detail']}", end="", flush=True)
                 original_update_progress(progress_id, **fields)
+            
+            def sftp_progress(transferred, total, label):
+                if total > 0:
+                    percent = (transferred / total) * 100
+                    print(f"\r    [{percent:>5.1f}%] {label}", end="", flush=True)
+                if transferred >= total:
+                    print()
+                    
+            def mocked_sftp_put(self, localpath, remotepath, callback=None, confirm=True):
+                filename = os.path.basename(localpath)
+                label = f"Uploading {filename}..."
+                def cb(transferred, total):
+                    sftp_progress(transferred, total, label)
+                    if callback:
+                        callback(transferred, total)
+                return original_sftp_put(self, localpath, remotepath, callback=cb, confirm=confirm)
+                
+            def mocked_sftp_get(self, remotepath, localpath, callback=None):
+                filename = os.path.basename(remotepath)
+                label = f"Downloading {filename}..."
+                def cb(transferred, total):
+                    sftp_progress(transferred, total, label)
+                    if callback:
+                        callback(transferred, total)
+                return original_sftp_get(self, remotepath, localpath, callback=cb)
                 
             webapp.app_backend._update_repo_push_progress = mocked_update_progress
+            paramiko.SFTPClient.put = mocked_sftp_put
+            paramiko.SFTPClient.get = mocked_sftp_get
             
             try:
                 # Sync the codebase
@@ -204,43 +236,45 @@ class Executor:
                 if not remote_repo:
                     raise RuntimeError("Failed to sync codebase to remote VM: repo_path not returned")
                 print() # newline after progress bar
+                
+                # Prepare remote CLI context (uploads XML, compose files, flow artifacts, vuln catalogs)
+                print("  Uploading scenario artifacts to remote VM...")
+                client = _open_ssh_client(core_cfg)
+                run_id = f"eval-{self.spec.get('name', 'unknown')}-{_uuid.uuid4().hex[:8]}"
+                
+                class TeeLogHandle:
+                    def __init__(self, fd):
+                        self.fd = fd
+                    def write(self, s):
+                        self.fd.write(s)
+                        for line in s.splitlines():
+                            if '[remote]' in line:
+                                # Clean it up a bit for the console
+                                clean = line.replace('[remote] Repo upload:', 'Repo:').replace('[remote]', '').strip()
+                                print(f"    - {clean}")
+                    def flush(self):
+                        self.fd.flush()
+                    def close(self):
+                        self.fd.close()
+                        
+                raw_log_fd = open(os.path.join(self.out_dir, 'remote_prepare.log'), 'w', encoding='utf-8')
+                log_handle = TeeLogHandle(raw_log_fd)
+                try:
+                    remote_ctx = _prepare_remote_cli_context(
+                        client=client,
+                        run_id=run_id,
+                        xml_path=xml_path,
+                        preview_plan_path=plan_output_path if os.path.exists(plan_output_path) else None,
+                        log_handle=log_handle,
+                        upload_only_injected_artifacts=False,
+                        core_cfg=core_cfg,
+                    )
+                finally:
+                    log_handle.close()
             finally:
                 webapp.app_backend._update_repo_push_progress = original_update_progress
-            
-            # Prepare remote CLI context (uploads XML, compose files, flow artifacts, vuln catalogs)
-            print("  Uploading scenario artifacts to remote VM...")
-            client = _open_ssh_client(core_cfg)
-            run_id = f"eval-{self.spec.get('name', 'unknown')}-{_uuid.uuid4().hex[:8]}"
-            
-            class TeeLogHandle:
-                def __init__(self, fd):
-                    self.fd = fd
-                def write(self, s):
-                    self.fd.write(s)
-                    for line in s.splitlines():
-                        if '[remote]' in line:
-                            # Clean it up a bit for the console
-                            clean = line.replace('[remote] Repo upload:', 'Repo:').replace('[remote]', '').strip()
-                            print(f"    - {clean}")
-                def flush(self):
-                    self.fd.flush()
-                def close(self):
-                    self.fd.close()
-                    
-            raw_log_fd = open(os.path.join(self.out_dir, 'remote_prepare.log'), 'w', encoding='utf-8')
-            log_handle = TeeLogHandle(raw_log_fd)
-            try:
-                remote_ctx = _prepare_remote_cli_context(
-                    client=client,
-                    run_id=run_id,
-                    xml_path=xml_path,
-                    preview_plan_path=plan_output_path if os.path.exists(plan_output_path) else None,
-                    log_handle=log_handle,
-                    upload_only_injected_artifacts=False,
-                    core_cfg=core_cfg,
-                )
-            finally:
-                log_handle.close()
+                paramiko.SFTPClient.put = original_sftp_put
+                paramiko.SFTPClient.get = original_sftp_get
             
             result['stages']['flag_sequencing'] = 'PASS'
             
