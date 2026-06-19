@@ -4,11 +4,11 @@ topology:
   type: "mesh"
   routers: [2, 5]
   hosts: [8, 15]
-  randomize: true
+  enabled: true
 services:
-  randomize: true
+  enabled: true
 vulns:
-  randomize: true
+  enabled: true
   count: [3, 12]
 flows:
-  randomize: true
+  enabled: true

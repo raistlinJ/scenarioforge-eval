@@ -3,11 +3,11 @@ topology:
   type: "ring"
   routers: 3
   hosts: 17
-  randomize: true
+  enabled: true
 services:
-  randomize: true
+  enabled: true
 vulns:
-  randomize: true
+  enabled: true
   count: [2, 8]
 flows:
-  randomize: true
+  enabled: true
