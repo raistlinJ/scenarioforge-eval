@@ -237,48 +237,93 @@ class Executor:
                 f"  fi; "
                 f"done; "
                 f"if [ -z \"$PYTHON\" ]; then echo \"ERROR: Could not find Python interpreter with core.api.grpc on remote VM!\" >&2; exit 1; fi; "
-                f"$PYTHON -u -m scenarioforge.cli --xml {remote_xml} "
+                f"PYTHONUNBUFFERED=1 $PYTHON -u -m scenarioforge.cli --xml {remote_xml} "
                 f"--plan-output /tmp/scenarioforge_eval_plan.json"
             )
             if remote_preview_plan:
                 cmd += f" --preview-plan {remote_preview_plan}"
             if self.verbose:
                 cmd += " --verbose"
-                
-            stdin, stdout, stderr = client.exec_command(cmd)
             
-            # Stream stdout/stderr from the remote channel
-            import select
+            # Use get_pty=True to merge stdout/stderr into a single stream,
+            # exactly like the WebUI does (app_backend.py:39281)
+            stdin, stdout, stderr = client.exec_command(cmd, get_pty=True, timeout=None)
+            try:
+                stdin.close()
+            except Exception:
+                pass
+            
+            import re
+            import time
+            _ANSI_RE = re.compile(r'\x1b\[[0-9;]*[a-zA-Z]')
+            
+            # Patterns that indicate meaningful progress (shown in non-verbose mode)
+            _PROGRESS_PATTERNS = (
+                'PHASE:',
+                '[grpc]',
+                '[router.',
+                '[docker',
+                '[compose',
+                '[remote]',
+                'CORE session',
+                'Starting',
+                'Building',
+                'Waiting',
+                'ERROR',
+                'WARNING',
+                'Traceback',
+                'Exception',
+                'FATAL',
+            )
+            
             channel = stdout.channel
-            stderr_lines = []
-            stdout_lines = []
-            while True:
-                if channel.exit_status_ready() and not channel.recv_ready() and not channel.recv_stderr_ready():
-                    break
-                
-                r, _, _ = select.select([channel], [], [], 1.0)
-                
-                if channel in r:
+            output_lines = []
+            exec_log_path = os.path.join(self.out_dir, 'execute.log')
+            exec_log = open(exec_log_path, 'w', encoding='utf-8')
+            
+            try:
+                while True:
                     if channel.recv_ready():
-                        chunk = channel.recv(4096).decode('utf-8', errors='replace')
-                        if chunk:
-                            stdout_lines.append(chunk)
-                            if self.verbose:
-                                print(chunk, end="", flush=True)
+                        chunk = channel.recv(4096)
+                    elif channel.exit_status_ready():
+                        # Drain any remaining bytes
+                        chunk = channel.recv(4096)
+                        if not chunk:
+                            break
+                    else:
+                        time.sleep(0.2)
+                        continue
                     
-                    if channel.recv_stderr_ready():
-                        chunk = channel.recv_stderr(4096).decode('utf-8', errors='replace')
-                        if chunk:
-                            stderr_lines.append(chunk)
-                            lines = chunk.split('\n')
-                            for line in lines:
-                                if "PHASE:" in line or self.verbose:
-                                    print(line)
+                    if not chunk:
+                        if channel.exit_status_ready():
+                            break
+                        continue
+                    
+                    text = chunk.decode('utf-8', errors='replace')
+                    cleaned = _ANSI_RE.sub('', text)
+                    
+                    # Write everything to the log file
+                    exec_log.write(cleaned)
+                    exec_log.flush()
+                    
+                    output_lines.append(cleaned)
+                    
+                    # Print to console
+                    if self.verbose:
+                        print(cleaned, end='', flush=True)
+                    else:
+                        # In normal mode, print lines that indicate progress
+                        for line in cleaned.split('\n'):
+                            stripped = line.strip()
+                            if not stripped:
+                                continue
+                            if any(p in stripped for p in _PROGRESS_PATTERNS):
+                                print(f"  {stripped}")
+            finally:
+                exec_log.close()
             
             code = channel.recv_exit_status()
-            
-            full_stdout = "".join(stdout_lines)
-            full_stderr = "".join(stderr_lines)
+            full_output = "".join(output_lines)
             
             client.close()
             
@@ -289,8 +334,11 @@ class Executor:
             else:
                 print(f"  Execution failed with code {code}!")
                 if not self.verbose:
-                    print(f"\n--- REMOTE STDOUT ---\n{full_stdout}")
-                    print(f"\n--- REMOTE STDERR ---\n{full_stderr}")
+                    print(f"\n--- REMOTE OUTPUT (last 50 lines) ---")
+                    last_lines = full_output.strip().split('\n')[-50:]
+                    for line in last_lines:
+                        print(line)
+                print(f"\n  Full log: {exec_log_path}")
                 raise RuntimeError(f"Remote execution failed with exit code {code}")
                     
         except Exception as e:
