@@ -10,7 +10,13 @@ def main():
     parser = argparse.ArgumentParser(description="ScenarioForge Batch Evaluator")
     parser.add_argument('spec_path', help="Path to a specific .spec.yaml file, or a directory containing them")
     parser.add_argument('--sf-path', required=True, help="Path to the scenarioforge codebase")
-    parser.add_argument('--execute', action='store_true', help="Perform full execution instead of just previewing")
+    
+    phase_group = parser.add_mutually_exclusive_group()
+    phase_group.add_argument("--topology", action="store_true", help="Stop after topology generation")
+    phase_group.add_argument("--flow-sequencing", action="store_true", help="Stop after flow sequencing")
+    phase_group.add_argument("--preview-gen", action="store_true", help="Stop after preview generation")
+    phase_group.add_argument("--execute", action="store_true", help="Execute all the way to CORE VM deployment")
+    
     parser.add_argument('--out', default="/tmp/scenarioforge-eval-out", help="Output directory for logs and results")
     parser.add_argument('--verbose', '-v', action='store_true', help="Enable verbose debug logging")
     args = parser.parse_args()
@@ -58,7 +64,13 @@ def main():
                 'hitl': spec.get_hitl_spec(),
             }
             
-            executor = Executor(resolved_spec, spec_out_dir, args.sf_path, args.execute, args.verbose)
+            if args.execute: target_phase = 'execute'
+            elif args.preview_gen: target_phase = 'preview-gen'
+            elif args.flow_sequencing: target_phase = 'flow-sequencing'
+            elif args.topology: target_phase = 'topology'
+            else: target_phase = 'preview-gen'
+            
+            executor = Executor(resolved_spec, spec_out_dir, args.sf_path, target_phase, args.verbose)
             result = executor.run()
             
             reporter.log_result(spec_name, result)

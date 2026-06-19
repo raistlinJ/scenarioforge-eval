@@ -5,11 +5,11 @@ import json
 import traceback
 
 class Executor:
-    def __init__(self, spec: dict, out_dir: str, sf_path: str, execute: bool = False, verbose: bool = False):
+    def __init__(self, spec: dict, out_dir: str, sf_path: str, target_phase: str = "execute", verbose: bool = False):
         self.spec = spec
         self.out_dir = out_dir
         self.sf_path = os.path.abspath(sf_path)
-        self.execute = execute
+        self.target_phase = target_phase
         self.verbose = verbose
         os.makedirs(self.out_dir, exist_ok=True)
         
@@ -124,13 +124,19 @@ class Executor:
         
         try:
             print(">> Phase: topology gen")
-            print(">> Phase: flow-generation")
             # 1. Generate XML Topology
             xml_path = self._generate_xml()
             result['stages']['topology'] = 'PASS'
             
-            if not self.execute:
-                print(">> Phase: preview gen")
+            if self.target_phase == 'topology':
+                result['success'] = True
+                return result
+            
+            if self.target_phase in ('flow-sequencing', 'preview-gen'):
+                print(">> Phase: flow-generation")
+                if self.target_phase == 'preview-gen':
+                    print(">> Phase: preview gen")
+                    
                 # 2. Run Preview via CLI (Local)
                 # We mock sys.argv to drive the CLI
                 from scenarioforge.cli import main as sf_cli_main
@@ -139,8 +145,12 @@ class Executor:
                     'scenarioforge',
                     '--xml', xml_path,
                     '--plan-output', os.path.join(self.out_dir, 'plan.json'),
-                    '--preview-full'
                 ]
+                
+                if self.target_phase == 'preview-gen':
+                    sys.argv.append('--preview-full')
+                else:
+                    sys.argv.append('--preview')
                 
                 if self.verbose:
                     sys.argv.append('--verbose')
@@ -174,9 +184,7 @@ class Executor:
                 finally:
                     os.chdir(original_cwd)
                     scenarioforge.cli.write_report = original_write_report
-            else:
-                print(">> Phase: preview gen")
-                print(">> Phase: execute")
+            elif self.target_phase == 'execute':
                 # 2. Run Execution via SSH (Remote)
                 import uuid
                 from webapp.app_backend import (
