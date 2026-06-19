@@ -37,10 +37,15 @@ flows:
   randomize: true
 ```
 
-Run the evaluator by passing the directory containing your `.spec.yaml` files (or a single file), along with the path to the `scenarioforge` codebase:
+Run the evaluator by passing the directory containing your `.spec.yaml` files (or a single file), along with the path to the `scenarioforge` codebase. 
 
+**Important:** If you are using `uv` to manage dependencies, the virtual environment is strictly isolated by default. Because `scenarioforge` requires the `core` gRPC library (which is typically installed system-wide on the VM), `uv` will not be able to find it and `scenarioforge` will instantly fallback to an offline report (taking only 3-4 seconds).
+
+To fix this, ensure you create your `uv` environment with system package access before running:
 ```bash
-python3 scenarioforge_eval/main.py --sf-path /path/to/scenarioforge --execute .
+uv venv --system-site-packages
+uv sync
+uv run python scenarioforge_eval/main.py test_specs/00-sanity-check.spec.yaml --sf-path ../scenarioforge/ --execute
 ```
 
 By default, the logs and plans will be written to `/tmp/scenarioforge-eval-out/`.
