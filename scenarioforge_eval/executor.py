@@ -299,6 +299,26 @@ class Executor:
             try:
                 # Sync the codebase
                 print("  Syncing codebase to remote VM...")
+                try:
+                    cleanup_client = _open_ssh_client(core_cfg)
+                    cleanup_sftp = cleanup_client.open_sftp()
+                    cleanup_repo = webapp.app_backend._remote_static_repo_dir(cleanup_sftp)
+                    cleanup_sftp.close()
+                    if cleanup_repo and cleanup_repo.startswith('/tmp/'):
+                        pwd = core_cfg.get('ssh_password')
+                        stdin, stdout, stderr = cleanup_client.exec_command(f"sudo -S rm -rf {cleanup_repo}")
+                        if pwd:
+                            stdin.write(str(pwd) + '\n')
+                            stdin.flush()
+                        stdout.channel.recv_exit_status()
+                except Exception as e:
+                    print(f"    - Warning: could not pre-clean remote repo: {e}")
+                finally:
+                    try:
+                        cleanup_client.close()
+                    except Exception:
+                        pass
+                
                 repo_sync = _push_repo_to_remote(core_cfg, upload_only_injected_artifacts=False, progress_id="cli-eval-sync")
                 remote_repo = repo_sync.get('repo_path')
                 if not remote_repo:
