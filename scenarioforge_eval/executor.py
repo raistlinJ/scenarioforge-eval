@@ -130,10 +130,12 @@ class Executor:
             sys.argv = [
                 'scenarioforge',
                 '--xml', xml_path,
-                '--execute' if self.execute else '--preview-full',
                 '--plan-output', os.path.join(self.out_dir, 'plan.json'),
                 '--verbose'
             ]
+            
+            if not self.execute:
+                sys.argv.append('--preview-full')
             
             # Change working directory so any generated artifacts (e.g. docker-compose.yml) 
             # are dumped directly into this scenario's out_dir
