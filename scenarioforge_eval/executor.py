@@ -234,23 +234,27 @@ class Executor:
                 while True:
                     if channel.exit_status_ready() and not channel.recv_ready() and not channel.recv_stderr_ready():
                         break
-                    r, _, _ = select.select([channel, channel.stderr], [], [], 1.0)
-                    if channel in r and channel.recv_ready():
-                        chunk = channel.recv(4096).decode('utf-8', errors='replace')
-                        if chunk:
-                            stdout_lines.append(chunk)
-                            if self.verbose:
-                                print(chunk, end="", flush=True)
                     
-                    if channel.stderr in r and channel.recv_stderr_ready():
-                        chunk = channel.recv_stderr(4096).decode('utf-8', errors='replace')
-                        if chunk:
-                            stderr_lines.append(chunk)
-                            # Print immediately if it's a PHASE or verbose
-                            lines = chunk.split('\n')
-                            for line in lines:
-                                if "PHASE:" in line or self.verbose:
-                                    print(line)
+                    # Paramiko multiplexes stdout and stderr into the single channel object.
+                    r, _, _ = select.select([channel], [], [], 1.0)
+                    
+                    if channel in r:
+                        if channel.recv_ready():
+                            chunk = channel.recv(4096).decode('utf-8', errors='replace')
+                            if chunk:
+                                stdout_lines.append(chunk)
+                                if self.verbose:
+                                    print(chunk, end="", flush=True)
+                        
+                        if channel.recv_stderr_ready():
+                            chunk = channel.recv_stderr(4096).decode('utf-8', errors='replace')
+                            if chunk:
+                                stderr_lines.append(chunk)
+                                # Print immediately if it's a PHASE or verbose
+                                lines = chunk.split('\n')
+                                for line in lines:
+                                    if "PHASE:" in line or self.verbose:
+                                        print(line)
                 
                 code = channel.recv_exit_status()
                 
