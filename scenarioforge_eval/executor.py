@@ -51,6 +51,40 @@ class Executor:
                 'allow_node_duplicates': flows_spec.get('allow_duplicates', False)
             }
             
+        # Inject Segmentation
+        seg_spec = self.spec.get('segmentation', {})
+        if seg_spec.get('randomize'):
+            scen_payload['sections']['Segmentation'] = {
+                'density_input': seg_spec.get('density', 0.5)
+            }
+            
+        # Inject HITL
+        hitl_spec = self.spec.get('hitl', {})
+        if hitl_spec.get('use_env'):
+            env_path = os.path.join(self.sf_path, '.scenarioforge.env')
+            hitl_enabled = False
+            hitl_iface = None
+            hitl_attachment = None
+            
+            if os.path.exists(env_path):
+                with open(env_path, 'r') as f:
+                    for line in f:
+                        line = line.strip()
+                        if line.startswith('CORETG_VM_MODE_HITL_ENABLED='):
+                            hitl_enabled = line.split('=')[1].lower() in ('true', '1', 'yes')
+                        elif line.startswith('CORETG_VM_MODE_HITL_CORE_IFX_NAME='):
+                            hitl_iface = line.split('=')[1]
+                        elif line.startswith('CORETG_VM_MODE_HITL_CORE_IFX_ATTACHMENT='):
+                            hitl_attachment = line.split('=')[1]
+                            
+            if hitl_enabled and hitl_iface:
+                scen_payload['hitl'] = {
+                    'enabled': True,
+                    'interfaces': [
+                        {'name': hitl_iface, 'attachment': hitl_attachment or 'existing_router'}
+                    ]
+                }
+            
         scenarios_inline = [scen_payload]
         
         # Build XML

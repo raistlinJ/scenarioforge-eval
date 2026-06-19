@@ -37,6 +37,12 @@ class SpecParser:
             'allow_duplicates': flows.get('allow_duplicates', False)
         }
 
+    def get_segmentation_spec(self) -> dict:
+        return self.spec.get('segmentation', {'randomize': True, 'density': 0.5})
+
+    def get_hitl_spec(self) -> dict:
+        return self.spec.get('hitl', {'use_env': True})
+
     def _resolve_value(self, val):
         """Resolves a value that could be a static int/string or a range [min, max]."""
         if isinstance(val, list) and len(val) == 2:

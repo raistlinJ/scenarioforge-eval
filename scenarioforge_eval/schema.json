@@ -66,6 +66,19 @@
         },
         "allow_duplicates": { "type": "boolean" }
       }
+    },
+    "segmentation": {
+      "type": "object",
+      "properties": {
+        "randomize": { "type": "boolean" },
+        "density": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "hitl": {
+      "type": "object",
+      "properties": {
+        "use_env": { "type": "boolean", "description": "If true, extracts hitl config from .scenarioforge.env" }
+      }
     }
   }
 }
