@@ -336,9 +336,15 @@ class Executor:
             client.close()
             
             if code == 0:
-                result['stages']['execute'] = 'PASS'
+                warnings = [line.strip() for line in full_output.split('\n') if 'WARNING' in line]
+                if warnings:
+                    result['stages']['execute'] = 'SOFT PASS'
+                    result['warnings'] = list(set(warnings)) # Deduplicate
+                    print(f"  Successfully deployed scenario with {len(result['warnings'])} WARNINGs!")
+                else:
+                    result['stages']['execute'] = 'PASS'
+                    print(f"  Successfully deployed scenario!")
                 result['success'] = True
-                print(f"  Successfully deployed scenario!")
             else:
                 print(f"  Execution failed with code {code}!")
                 if not self.verbose:

@@ -15,7 +15,12 @@ class Reporter:
         for stage, status in result['stages'].items():
             print(f"  {stage}: {status}")
             
-        if result['error']:
+        if result.get('warnings'):
+            print("\nWarnings encountered:")
+            for w in result['warnings']:
+                print(f"  - {w}")
+            
+        if result.get('error'):
             print("\nError encountered:")
             print(result['error'])
             
