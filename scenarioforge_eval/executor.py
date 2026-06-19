@@ -292,6 +292,16 @@ class Executor:
             remote_xml = remote_ctx['xml_path']
             remote_preview_plan = remote_ctx.get('preview_plan_path')
             
+            env_vars = (
+                "CORETG_DOCKER_USE_SUDO=1 "
+                "CORETG_DOCKER_STRICT_PULL=1 "
+                "CORETG_DOCKER_BUILD_PULL=0 "
+                "CORETG_COMPOSE_SET_CONTAINER_NAME=1 "
+                "CORETG_FLOW_ARTIFACTS_MODE=copy "
+            )
+            if core_cfg.get('ssh_password'):
+                env_vars += "CORETG_DOCKER_SUDO_PASSWORD_STDIN=1 "
+                
             cmd = (
                 f"cd {remote_ctx['repo_dir']} && "
                 f"PYTHON=\"\"; "
@@ -301,7 +311,7 @@ class Executor:
                 f"  fi; "
                 f"done; "
                 f"if [ -z \"$PYTHON\" ]; then echo \"ERROR: Could not find Python interpreter with core.api.grpc on remote VM!\" >&2; exit 1; fi; "
-                f"PYTHONUNBUFFERED=1 $PYTHON -u -m scenarioforge.cli --xml {remote_xml} "
+                f"{env_vars}PYTHONUNBUFFERED=1 $PYTHON -u -m scenarioforge.cli --xml {remote_xml} "
                 f"--plan-output /tmp/scenarioforge_eval_plan.json"
             )
             if remote_preview_plan:
@@ -312,6 +322,15 @@ class Executor:
             # Use get_pty=True to merge stdout/stderr into a single stream,
             # exactly like the WebUI does (app_backend.py:39281)
             stdin, stdout, stderr = client.exec_command(cmd, get_pty=True, timeout=None)
+            
+            # Pass sudo password to stdin if requested so Docker commands inside the CLI don't fail
+            if core_cfg.get('ssh_password'):
+                try:
+                    stdin.write(str(core_cfg.get('ssh_password')) + '\n')
+                    stdin.flush()
+                except Exception:
+                    pass
+                    
             try:
                 stdin.close()
             except Exception:
