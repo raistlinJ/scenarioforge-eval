@@ -174,6 +174,41 @@ class Executor:
                 os.chdir(original_cwd)
                 scenarioforge.cli.write_report = original_write_report
             
+            flows_spec = self.spec.get('flows', {})
+            if flows_spec.get('enabled', flows_spec.get('randomize')):
+                print("  Auto-generating flow state (chain + assignments) locally...")
+                import json
+                from webapp import app_backend as backend
+                
+                with open(plan_output_path, 'r') as f:
+                    preview = json.load(f)
+                    
+                nodes, _links, adj = backend._build_topology_graph_from_preview_plan(preview)
+                length = flows_spec.get('chain_length', 3)
+                allow_duplicates = flows_spec.get('allow_duplicates', False)
+                
+                if allow_duplicates:
+                    chain_nodes = backend._pick_flag_chain_nodes_allow_duplicates(nodes, adj, length=length)
+                else:
+                    chain_nodes = backend._pick_flag_chain_nodes(nodes, adj, length=length)
+                    
+                scen_name = self.spec.get('name', 'eval-scen')
+                flag_assignments = backend._flow_compute_flag_assignments(preview, chain_nodes, scen_name)
+                flag_assignments = backend._flow_apply_pivot_context_to_assignments(flag_assignments, preview)
+                chain_nodes, flag_assignments, _ = backend._flow_reorder_chain_by_generator_dag(chain_nodes, flag_assignments, scenario_label=scen_name)
+                flag_assignments = backend._flow_apply_pivot_context_to_assignments(flag_assignments, preview)
+                
+                fs = backend._flow_state_from_xml_path(xml_path, scen_name) or {}
+                fs['flag_assignments'] = flag_assignments
+                fs['chain_ids'] = [n['id'] for n in chain_nodes]
+                backend._update_flow_state_in_xml(xml_path, scen_name, fs)
+                
+                if 'plan' not in preview:
+                    preview['plan'] = {}
+                preview['plan']['flow_state'] = fs
+                with open(plan_output_path, 'w') as f:
+                    json.dump(preview, f, indent=2)
+            
             # 2b. Push artifacts to CORE VM via SSH/SFTP
             print("  Preparing remote context on CORE VM...")
             import uuid as _uuid
@@ -290,6 +325,28 @@ class Executor:
                         
                 raw_log_fd = open(os.path.join(self.out_dir, 'remote_prepare.log'), 'w', encoding='utf-8')
                 log_handle = TeeLogHandle(raw_log_fd)
+                
+                if flows_spec.get('enabled', flows_spec.get('randomize')):
+                    sftp = client.open_sftp()
+                    try:
+                        import webapp.app_backend as backend
+                        fs = backend._flow_state_from_xml_path(xml_path, self.spec.get('name', 'eval-scen')) or {}
+                        assignments = fs.get('flag_assignments') or []
+                        if assignments:
+                            backend._regenerate_missing_remote_flow_artifacts_for_plan(
+                                sftp=sftp,
+                                preview_plan_path=xml_path,
+                                remote_repo=remote_repo,
+                                core_cfg=core_cfg,
+                                log_handle=log_handle,
+                                assignments_override=assignments,
+                                verify_after=False
+                            )
+                    except Exception as e:
+                        print(f"    - Error regenerating flow artifacts remotely: {e}")
+                    finally:
+                        sftp.close()
+
                 try:
                     remote_ctx = _prepare_remote_cli_context(
                         client=client,
