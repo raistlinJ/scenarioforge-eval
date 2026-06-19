@@ -257,8 +257,12 @@ class Executor:
                     count = sftp_state.downloaded_files
                     dir_str = "Downloaded"
                     
+                pct_str = ""
+                if total and total > 0:
+                    pct_str = f" [{int(transferred/total*100):3d}%]"
+                    
                 # Pad with spaces to overwrite previous longer filenames
-                line = f"\r    [SFTP] {dir_str} {count} files ({mb:.1f} MB) - {label}"
+                line = f"\r    [SFTP] {dir_str} {count} files ({mb:.1f} MB){pct_str} - {label}"
                 print(f"{line:<80}", end="", flush=True)
                     
             def mocked_sftp_put(self, localpath, remotepath, callback=None, confirm=True):
