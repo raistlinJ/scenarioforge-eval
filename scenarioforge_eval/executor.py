@@ -188,7 +188,6 @@ class Executor:
             
             import webapp.app_backend
             import paramiko
-            import os
             
             original_update_progress = webapp.app_backend._update_repo_push_progress
             original_sftp_put = paramiko.SFTPClient.put
