@@ -123,11 +123,14 @@ class Executor:
         }
         
         try:
+            print(">> Phase: topology gen")
+            print(">> Phase: flow-generation")
             # 1. Generate XML Topology
             xml_path = self._generate_xml()
             result['stages']['topology'] = 'PASS'
             
             if not self.execute:
+                print(">> Phase: preview gen")
                 # 2. Run Preview via CLI (Local)
                 # We mock sys.argv to drive the CLI
                 from scenarioforge.cli import main as sf_cli_main
@@ -172,6 +175,8 @@ class Executor:
                     os.chdir(original_cwd)
                     scenarioforge.cli.write_report = original_write_report
             else:
+                print(">> Phase: preview gen")
+                print(">> Phase: execute")
                 # 2. Run Execution via SSH (Remote)
                 import uuid
                 from webapp.app_backend import (
