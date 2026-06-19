@@ -32,14 +32,14 @@ class Executor:
         vulns_spec = self.spec.get('vulns', {})
         if vulns_spec.get('randomize'):
             scen_payload['sections']['Vulnerabilities'] = {
-                'items': [{'v_metric': 'Count', 'factor': vulns_spec.get('count', 1)}]
+                'items': [{'v_metric': 'Count', 'abs_count': vulns_spec.get('count', 1)}]
             }
             
         # Inject services count into sections
         services_spec = self.spec.get('services', {})
         if services_spec.get('randomize'):
             scen_payload['sections']['Services'] = {
-                'items': [{'v_metric': 'Count', 'factor': 3}] # Default to 3 random services
+                'items': [{'v_metric': 'Count', 'abs_count': 3}] # Default to 3 random services
             }
             
         # Inject flow_state
