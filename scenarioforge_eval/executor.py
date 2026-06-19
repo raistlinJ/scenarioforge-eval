@@ -142,6 +142,17 @@ class Executor:
             original_cwd = os.getcwd()
             os.chdir(self.out_dir)
             
+            # Monkeypatch the report writer to redirect reports into this output directory 
+            # instead of trying to write them into the scenarioforge codebase's reports/ folder
+            import scenarioforge.cli
+            original_write_report = scenarioforge.cli.write_report
+            
+            def mocked_write_report(report_path, *args, **kwargs):
+                new_report_path = os.path.join(self.out_dir, os.path.basename(report_path))
+                return original_write_report(new_report_path, *args, **kwargs)
+                
+            scenarioforge.cli.write_report = mocked_write_report
+            
             try:
                 sf_cli_main()
                 result['stages']['preview'] = 'PASS'
