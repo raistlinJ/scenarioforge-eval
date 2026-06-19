@@ -306,7 +306,13 @@ class Executor:
                     cleanup_sftp.close()
                     if cleanup_repo and cleanup_repo.startswith('/tmp/'):
                         pwd = core_cfg.get('ssh_password')
-                        stdin, stdout, stderr = cleanup_client.exec_command(f"sudo -S rm -rf {cleanup_repo}")
+                        cmd = (
+                            f"sudo -S rm -rf {cleanup_repo}; "
+                            f"sudo -S mkdir -p /tmp/vulns; "
+                            f"sudo -S chown -R $USER /tmp/vulns; "
+                            f"sudo -S chmod -R 777 /tmp/vulns"
+                        )
+                        stdin, stdout, stderr = cleanup_client.exec_command(cmd)
                         if pwd:
                             stdin.write(str(pwd) + '\n')
                             stdin.flush()
