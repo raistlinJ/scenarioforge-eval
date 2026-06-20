@@ -42,6 +42,28 @@ class SpecParserServiceSpecTests(unittest.TestCase):
 
 
 class ExecutorServiceItemTests(unittest.TestCase):
+    def test_topology_payload_uses_current_section_model(self):
+        executor = Executor(spec={}, out_dir=tempfile.gettempdir(), sf_path='.')
+
+        payload = executor._build_topology_payload({'hosts': 10, 'routers': 2})
+
+        self.assertEqual(payload['density_count'], 10)
+        self.assertEqual(
+            payload['sections']['Node Information'],
+            {'items': [{'selected': 'Workstation', 'factor': 1.0}]},
+        )
+        self.assertEqual(
+            payload['sections']['Routing'],
+            {
+                'density': 0.0,
+                'items': [],
+                'node_count_min_enabled': True,
+                'node_count_min': 2,
+                'node_count_max_enabled': True,
+                'node_count_max': 2,
+            },
+        )
+
     def test_default_vm_safe_pool_excludes_dhcpclient(self):
         executor = Executor(spec={}, out_dir=tempfile.gettempdir(), sf_path='.')
 
