@@ -3,6 +3,7 @@ import sys
 import uuid
 import json
 import traceback
+from typing import Any
 
 class Executor:
     def __init__(self, spec: dict, out_dir: str, sf_path: str, target_phase: str = "execute", verbose: bool = False):
@@ -345,7 +346,7 @@ class Executor:
                 print("  Uploading scenario artifacts to remote VM...")
                 client = _open_ssh_client(core_cfg)
                 run_id = f"eval-{self.spec.get('name', 'unknown')}-{_uuid.uuid4().hex[:8]}"
-                
+
                 class TeeLogHandle:
                     def __init__(self, fd):
                         self.fd = fd
@@ -364,6 +365,109 @@ class Executor:
                         
                 raw_log_fd = open(os.path.join(self.out_dir, 'remote_prepare.log'), 'w', encoding='utf-8')
                 log_handle = TeeLogHandle(raw_log_fd)
+
+                # 2c. Explicitly synchronize vulnerability catalogs, standard compose templates, and flag generators
+                # to prevent core-daemon from failing due to missing compose files.
+                sftp = client.open_sftp()
+                try:
+                    # Sync runtime subset using corrected function to fix NameError bug
+                    print("  Syncing runtime subset (scenarioforge/generators) to remote VM...")
+                    self._corrected_sync_runtime_subset_to_remote_repo(remote_repo, sftp, log_handle)
+
+                    import posixpath
+                    
+                    def _sftp_mkdir_p(sftp_client, remote_path):
+                        parts = remote_path.strip('/').split('/')
+                        current = ''
+                        if remote_path.startswith('/'):
+                            current = '/'
+                        for part in parts:
+                            if not part:
+                                continue
+                            current = posixpath.join(current, part)
+                            try:
+                                sftp_client.stat(current)
+                            except IOError:
+                                try:
+                                    sftp_client.mkdir(current)
+                                except Exception:
+                                    pass
+                                    
+                    def _sftp_upload_dir(sftp_client, local_dir, remote_dir):
+                        _sftp_mkdir_p(sftp_client, remote_dir)
+                        for root, dirs, files in os.walk(local_dir):
+                            rel_path = os.path.relpath(root, local_dir)
+                            if rel_path == '.':
+                                rem_dir = remote_dir
+                            else:
+                                rem_dir = posixpath.join(remote_dir, rel_path.replace('\\', '/'))
+                                _sftp_mkdir_p(sftp_client, rem_dir)
+                            for f in files:
+                                local_file = os.path.join(root, f)
+                                remote_file = posixpath.join(rem_dir, f)
+                                try:
+                                    sftp_client.put(local_file, remote_file)
+                                except Exception as upload_err:
+                                    print(f"      - Warning: failed to upload {f} to {remote_file}: {upload_err}")
+                                    
+                    # Parse plan.json to find used vulnerability names
+                    vuln_names = set()
+                    if os.path.exists(plan_output_path):
+                        try:
+                            with open(plan_output_path, 'r') as f:
+                                plan_data = json.load(f)
+                            vbn = plan_data.get('full_preview', {}).get('vulnerabilities_by_node') or {}
+                            if isinstance(vbn, dict):
+                                for names in vbn.values():
+                                    if isinstance(names, list):
+                                        for name in names:
+                                            vuln_names.add(str(name).strip())
+                                    elif isinstance(names, str):
+                                        vuln_names.add(str(names).strip())
+                            vp = plan_data.get('plan', {}).get('vulnerabilities_plan') or {}
+                            if isinstance(vp, dict):
+                                for name in vp.keys():
+                                    vuln_names.add(str(name).strip())
+                        except Exception as parse_err:
+                            print(f"    - Warning: could not parse preview plan for vulnerabilities: {parse_err}")
+                            
+                    local_repo_root = os.path.abspath(self.sf_path)
+                    
+                    # Sync standard compose templates directory
+                    standard_local_dir = os.path.join(local_repo_root, 'scripts', 'standard-ubuntu-docker-core')
+                    if os.path.exists(standard_local_dir):
+                        print("  Syncing standard compose templates to remote VM...")
+                        remote_standard_dir = posixpath.join(remote_repo, 'scripts', 'standard-ubuntu-docker-core')
+                        _sftp_upload_dir(sftp, standard_local_dir, remote_standard_dir)
+                    else:
+                        print("    - Warning: standard compose template directory not found locally")
+                        
+                    # Sync selected vulnerability catalogs
+                    if vuln_names:
+                        try:
+                            from scenarioforge.utils.vuln_process import load_vuln_catalog
+                            catalog = load_vuln_catalog(local_repo_root)
+                            vuln_records = []
+                            for name in vuln_names:
+                                for record in catalog:
+                                    if record.get('Name') == name:
+                                        vuln_records.append(record)
+                                        break
+                                        
+                            if vuln_records:
+                                print(f"  Syncing {len(vuln_records)} vulnerability compose templates to remote VM...")
+                                for record in vuln_records:
+                                    local_path = os.path.abspath(record.get('Path'))
+                                    local_dir = os.path.dirname(local_path)
+                                    rel_dir = os.path.relpath(local_dir, local_repo_root)
+                                    remote_dir = posixpath.join(remote_repo, rel_dir.replace('\\', '/'))
+                                    _sftp_upload_dir(sftp, local_dir, remote_dir)
+                        except Exception as sync_err:
+                            print(f"    - Warning: failed to sync vulnerability catalogs: {sync_err}")
+                except Exception as sftp_err:
+                    print(f"    - Warning: SFTP error during template synchronization: {sftp_err}")
+                finally:
+                    sftp.close()
                 
                 if flows_spec.get('enabled', flows_spec.get('randomize')):
                     sftp = client.open_sftp()
@@ -572,3 +676,72 @@ class Executor:
             result['stages']['failed_at'] = str(e)
             
         return result
+
+    def _corrected_sync_runtime_subset_to_remote_repo(self, repo_dir: str, sftp: Any, log_handle_local: Any) -> None:
+        from webapp.app_backend import _get_repo_root, _remote_path_join, _remote_mkdirs
+        import posixpath
+        import shlex
+        repo_root = _get_repo_root()
+        transport = sftp.get_channel().get_transport()
+
+        class MockClient:
+            def exec_command(self, command, bufsize=-1, timeout=None, get_pty=False, environment=None):
+                chan = transport.open_session()
+                if timeout is not None:
+                    chan.settimeout(timeout)
+                if get_pty:
+                    chan.get_pty()
+                chan.exec_command(command)
+                stdin = chan.makefile_stdin('wb', bufsize)
+                stdout = chan.makefile('r', bufsize)
+                stderr = chan.makefile_stderr('r', bufsize)
+                return stdin, stdout, stderr
+
+        client_to_use = MockClient()
+
+        def _put_file(rel_path: str) -> None:
+            rel = str(rel_path or '').strip().replace('\\', '/')
+            if not rel:
+                return
+            local_path = os.path.join(repo_root, rel)
+            if not os.path.isfile(local_path):
+                return
+            remote_path = _remote_path_join(repo_dir, rel)
+            remote_parent = posixpath.dirname(remote_path)
+            _remote_mkdirs(client_to_use, remote_parent)
+            sftp.put(local_path, remote_path)
+
+        def _put_tree(rel_dir: str) -> None:
+            rel = str(rel_dir or '').strip().replace('\\', '/')
+            if not rel:
+                return
+            local_dir = os.path.join(repo_root, rel)
+            if not os.path.isdir(local_dir):
+                return
+            allowed_names = {'.coretg_pack.json', 'Dockerfile', 'docker-compose.yml', 'manifest.yaml', 'manifest.yml', 'generator.py'}
+            allowed_ext = {'.py', '.yaml', '.yml', '.json'}
+            for root, _dirs, files in os.walk(local_dir):
+                for fn in files:
+                    if fn not in allowed_names and os.path.splitext(fn)[1].lower() not in allowed_ext:
+                        continue
+                    local_file = os.path.join(root, fn)
+                    rel_file = os.path.relpath(local_file, repo_root).replace('\\', '/')
+                    remote_path = _remote_path_join(repo_dir, rel_file)
+                    remote_parent = posixpath.dirname(remote_path)
+                    _remote_mkdirs(client_to_use, remote_parent)
+                    try:
+                        sftp.put(local_file, remote_path)
+                    except Exception:
+                        continue
+
+        _put_tree('scenarioforge')
+        _put_file('scripts/run_flag_generator.py')
+        _put_tree('outputs/installed_generators/flag_generators')
+        _put_tree('outputs/installed_generators/flag_node_generators')
+        _put_tree('flag_generators')
+        _put_tree('flag_node_generators')
+        try:
+            if log_handle_local:
+                log_handle_local.write('[remote] synced runtime subset (core package/runner/generators)\n')
+        except Exception:
+            pass
