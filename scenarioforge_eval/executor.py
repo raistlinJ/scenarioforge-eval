@@ -2,9 +2,12 @@ import os
 import sys
 import uuid
 import json
+import random
 import traceback
 
 class Executor:
+    DEFAULT_VM_SAFE_SERVICES = ("SSH", "HTTP")
+
     def __init__(self, spec: dict, out_dir: str, sf_path: str, target_phase: str = "execute", verbose: bool = False):
         self.spec = spec
         self.out_dir = out_dir
@@ -16,6 +19,47 @@ class Executor:
         # Dynamically add scenarioforge to the path
         if self.sf_path not in sys.path:
             sys.path.insert(0, self.sf_path)
+
+    def _build_service_items(self, services_spec: dict) -> list[dict]:
+        try:
+            requested_count = max(0, int(services_spec.get('count', 3)))
+        except Exception:
+            requested_count = 0
+
+        if requested_count == 0:
+            return []
+
+        include = [name for name in services_spec.get('include', []) if name]
+        exclude = {name for name in services_spec.get('exclude', []) if name}
+
+        if include:
+            service_pool = [name for name in include if name not in exclude]
+        else:
+            service_pool = [name for name in self.DEFAULT_VM_SAFE_SERVICES if name not in exclude]
+
+        if not service_pool:
+            raise ValueError(
+                "services configuration excludes every evaluator-supported VM service; "
+                "set services.enabled=false, services.count=0, or provide services.include"
+            )
+
+        assigned_counts = {name: 0 for name in service_pool}
+        for _ in range(requested_count):
+            selected = random.choice(service_pool)
+            assigned_counts[selected] += 1
+
+        items = []
+        for service_name in service_pool:
+            service_count = assigned_counts[service_name]
+            if service_count <= 0:
+                continue
+            items.append({
+                'selected': service_name,
+                'factor': 1.0,
+                'v_metric': 'Count',
+                'v_count': service_count,
+            })
+        return items
 
     def _generate_xml(self) -> str:
         """Uses the UI's XML generator to build a random topology XML."""
@@ -42,10 +86,12 @@ class Executor:
         # Inject services count into sections
         services_spec = self.spec.get('services', {})
         if services_spec.get('enabled', services_spec.get('randomize')):
-            scen_payload['sections']['Services'] = {
-                'density': services_spec.get('density', 1.0),
-                'items': [{'v_metric': 'Count', 'v_count': services_spec.get('count', 3)}]
-            }
+                service_items = self._build_service_items(services_spec)
+                if service_items:
+                    scen_payload['sections']['Services'] = {
+                        'density': services_spec.get('density', 1.0),
+                        'items': service_items,
+                    }
             
         # Inject flow_state
         flows_spec = self.spec.get('flows', {})

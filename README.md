@@ -30,6 +30,7 @@ topology:
   randomize: true
 services:
   randomize: true
+  count: 3
 vulns:
   randomize: true
   count: 2
@@ -49,3 +50,25 @@ uv run python scenarioforge_eval/main.py test_specs/00-sanity-check.spec.yaml --
 ```
 
 By default, the logs and plans will be written to `/tmp/scenarioforge-eval-out/`.
+
+## Services in VM Mode
+
+`scenarioforge-eval` only supports ScenarioForge's `vm` mode, and the stock CORE docker image used in that mode does not include `dhclient`. To avoid boot failures from CORE's `DHCPClient` service, the evaluator now defaults its randomized service pool to `SSH` and `HTTP`.
+
+If your environment has a compatible image and you intentionally want DHCP client startup, opt in explicitly:
+
+```yaml
+services:
+  randomize: true
+  count: 2
+  include: [SSH, HTTP, DHCPClient]
+```
+
+You can also blacklist individual service types when narrowing a failing spec:
+
+```yaml
+services:
+  randomize: true
+  count: 4
+  exclude: [DHCPClient]
+```

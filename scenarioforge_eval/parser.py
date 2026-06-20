@@ -1,6 +1,16 @@
 import yaml
 import random
 
+
+SERVICE_NAME_ALIASES = {
+    'ssh': 'SSH',
+    'http': 'HTTP',
+    'https': 'HTTP',
+    'web': 'HTTP',
+    'dhcp': 'DHCPClient',
+    'dhcpclient': 'DHCPClient',
+}
+
 class SpecParser:
     def __init__(self, spec_path: str):
         self.spec_path = spec_path
@@ -25,7 +35,13 @@ class SpecParser:
 
     def get_services_spec(self) -> dict:
         s = self.spec.get('services', {})
-        return {'enabled': s.get('enabled', s.get('randomize', True))}
+        return {
+            'enabled': s.get('enabled', s.get('randomize', True)),
+            'count': self._resolve_value(s.get('count', 3)),
+            'density': s.get('density', 1.0),
+            'include': self._normalize_service_names(s.get('include')),
+            'exclude': self._normalize_service_names(s.get('exclude')),
+        }
 
     def get_vulns_spec(self) -> dict:
         v = self.spec.get('vulns', {})
@@ -51,3 +67,24 @@ class SpecParser:
         if isinstance(val, list) and len(val) == 2:
             return random.randint(val[0], val[1])
         return val
+
+    def _normalize_service_names(self, names) -> list[str]:
+        if not names:
+            return []
+        if isinstance(names, str):
+            names = [names]
+
+        normalized = []
+        seen = set()
+        for raw_name in names:
+            if raw_name in (None, ''):
+                continue
+            name = str(raw_name).strip()
+            if not name:
+                continue
+            canonical = SERVICE_NAME_ALIASES.get(name.lower(), name)
+            if canonical in seen:
+                continue
+            normalized.append(canonical)
+            seen.add(canonical)
+        return normalized

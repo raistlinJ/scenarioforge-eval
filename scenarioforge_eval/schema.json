@@ -39,7 +39,22 @@
     "services": {
       "type": "object",
       "properties": {
-        "randomize": { "type": "boolean" }
+        "randomize": { "type": "boolean" },
+        "count": {
+          "oneOf": [
+            { "type": "integer" },
+            { "type": "array", "items": { "type": "integer" }, "minItems": 2, "maxItems": 2 }
+          ]
+        },
+        "density": { "type": "number", "minimum": 0, "maximum": 1 },
+        "include": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "exclude": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
       }
     },
     "vulns": {
