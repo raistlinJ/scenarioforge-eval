@@ -2,9 +2,25 @@ import argparse
 import os
 import glob
 import logging
-from parser import SpecParser
-from executor import Executor
-from reporter import Reporter
+
+try:
+    from .parser import SpecParser
+    from .executor import Executor
+    from .reporter import Reporter
+except ImportError:
+    from parser import SpecParser
+    from executor import Executor
+    from reporter import Reporter
+
+
+def resolve_target_phase(args: argparse.Namespace) -> str:
+    if args.execute:
+        return 'execute'
+    if args.flag_sequencing:
+        return 'flag-sequencing'
+    if args.topology:
+        return 'topology'
+    return 'execute'
 
 def main():
     parser = argparse.ArgumentParser(description="ScenarioForge Batch Evaluator")
@@ -13,11 +29,11 @@ def main():
     
     phase_group = parser.add_mutually_exclusive_group()
     phase_group.add_argument("--topology", action="store_true",
-                             help="Stop after topology XML generation (local only)")
+                             help="Run ScenarioForge's topo phase and stop after the CORE topology is built")
     phase_group.add_argument("--flag-sequencing", action="store_true",
-                             help="Generate full preview + push artifacts to CORE VM via SSH (stops before execution)")
+                             help="Run preview-plan and flag-sequencing, then stop before execute")
     phase_group.add_argument("--execute", action="store_true",
-                             help="Full pipeline: topology, flag-sequencing, and execute on CORE VM")
+                             help="Run the full evaluator pipeline: preview-plan, optional flag-sequencing, and execute")
     
     parser.add_argument('--out', default="/tmp/scenarioforge-eval-out", help="Output directory for logs and results")
     parser.add_argument('--verbose', '-v', action='store_true', help="Enable verbose debug logging")
@@ -71,10 +87,7 @@ def main():
                 'hitl': spec.get_hitl_spec(),
             }
             
-            if args.execute: target_phase = 'execute'
-            elif args.flag_sequencing: target_phase = 'flag-sequencing'
-            elif args.topology: target_phase = 'topology'
-            else: target_phase = 'flag-sequencing'
+            target_phase = resolve_target_phase(args)
             
             executor = Executor(resolved_spec, spec_out_dir, args.sf_path, target_phase, args.verbose)
             result = executor.run()

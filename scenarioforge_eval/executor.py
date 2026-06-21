@@ -1,9 +1,10 @@
 import os
 import sys
-import uuid
-import json
 import random
+import subprocess
 import traceback
+from copy import deepcopy
+from pathlib import Path
 
 class Executor:
     DEFAULT_VM_SAFE_SERVICES = ("SSH", "HTTP")
@@ -19,6 +20,112 @@ class Executor:
         # Dynamically add scenarioforge to the path
         if self.sf_path not in sys.path:
             sys.path.insert(0, self.sf_path)
+
+    def _load_runtime_env(self) -> None:
+        from pathlib import Path
+        from webapp.env_loader import load_runtime_env_files
+
+        load_runtime_env_files(base_dir=Path(self.sf_path), include_example=False)
+
+    def _cli_python(self) -> str:
+        override = str(os.environ.get('SCENARIOFORGE_EVAL_SCENARIOFORGE_PYTHON') or '').strip()
+        if override:
+            return override
+        repo_python = os.path.join(self.sf_path, '.venv', 'bin', 'python')
+        if os.path.exists(repo_python):
+            return repo_python
+        return sys.executable
+
+    def _cli_env(self) -> dict[str, str]:
+        env = dict(os.environ)
+        existing = str(env.get('PYTHONPATH') or '').strip()
+        pieces = [self.sf_path]
+        if existing:
+            pieces.append(existing)
+        env['PYTHONPATH'] = os.pathsep.join(pieces)
+        return env
+
+    def _artifact_path(self, file_name: str | None) -> str | None:
+        if not file_name:
+            return None
+        return os.path.join(self.out_dir, file_name)
+
+    def _stream_cli_output(self, text: str) -> None:
+        if not text:
+            return
+        progress_patterns = (
+            'PHASE:',
+            'Delegating CLI',
+            'Scenario report written to',
+            'Scenario summary written to',
+            'WARNING',
+            'ERROR',
+            'Traceback',
+            'FATAL',
+        )
+        for raw_line in text.splitlines():
+            line = raw_line.strip()
+            if not line:
+                continue
+            if self.verbose or any(pattern in line for pattern in progress_patterns):
+                print(f"  {line}")
+
+    def _run_cli_phase(
+        self,
+        phase: str,
+        xml_path: str,
+        scenario_name: str,
+        *,
+        extra_args: list[str] | None = None,
+        json_output_name: str | None = None,
+        log_name: str | None = None,
+    ) -> dict | None:
+        cmd = [
+            self._cli_python(),
+            '-m',
+            'scenarioforge.cli',
+            phase,
+            '--xml',
+            xml_path,
+            '--scenario',
+            scenario_name,
+        ]
+        if self.verbose:
+            cmd.append('--verbose')
+
+        output_path = None
+        if json_output_name:
+            output_path = os.path.join(self.out_dir, json_output_name)
+            cmd.extend(['--plan-output', output_path])
+        if extra_args:
+            cmd.extend(extra_args)
+
+        proc = subprocess.run(
+            cmd,
+            cwd=self.sf_path,
+            env=self._cli_env(),
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+
+        combined = (proc.stdout or '') + (("\n" + proc.stderr) if proc.stderr else '')
+        log_path = os.path.join(self.out_dir, log_name or f'{phase}.log')
+        with open(log_path, 'w', encoding='utf-8') as handle:
+            handle.write(combined)
+
+        self._stream_cli_output(combined)
+
+        if proc.returncode != 0:
+            raise RuntimeError(f"scenarioforge.cli {phase} failed with exit code {proc.returncode}. See {log_path}")
+
+        if output_path and os.path.exists(output_path):
+            try:
+                with open(output_path, 'r', encoding='utf-8') as handle:
+                    return __import__('json').load(handle)
+            except Exception:
+                return None
+        return None
 
     def _build_topology_payload(self, topo_spec: dict) -> dict:
         try:
@@ -94,6 +201,7 @@ class Executor:
     def _generate_xml(self) -> str:
         """Uses the UI's XML generator to build a random topology XML."""
         from webapp import app_backend as backend
+        self._load_runtime_env()
         # Translate spec to the payload expected by _build_scenarios_xml
         topo_spec = self.spec.get('topology', {})
         topology_payload = self._build_topology_payload(topo_spec)
@@ -141,11 +249,6 @@ class Executor:
                 'density_input': seg_spec.get('density', 0.5)
             }
             
-        # Load environment variables (CORE_HOST, SSH credentials, etc) using scenarioforge's native loader
-        from webapp.env_loader import load_runtime_env_files
-        from pathlib import Path
-        load_runtime_env_files(base_dir=Path(self.sf_path))
-        
         # Enforce VM mode for scenarioforge-eval
         webui_mode = os.environ.get('CORETG_WEBUI_MODE', 'native').lower()
         if webui_mode != 'vm':
@@ -154,6 +257,12 @@ class Executor:
                 f"is currently set to CORETG_WEBUI_MODE='{webui_mode}'. Please update "
                 f"it to 'vm' to run the evaluation."
             )
+
+        vm_defaults = backend._webui_vm_mode_defaults(include_password=True)
+        core_defaults = deepcopy(vm_defaults.get('core') if isinstance(vm_defaults.get('core'), dict) else {})
+        if core_defaults:
+            scen_payload['hitl'] = dict(scen_payload.get('hitl') or {})
+            scen_payload['hitl'].setdefault('core', deepcopy(core_defaults))
         
         # Inject HITL
         hitl_spec = self.spec.get('hitl', {})
@@ -167,13 +276,14 @@ class Executor:
                     'enabled': True,
                     'interfaces': [
                         {'name': hitl_iface, 'attachment': hitl_attachment or 'existing_router'}
-                    ]
+                    ],
+                    'core': deepcopy(core_defaults) if core_defaults else None,
                 }
             
         scenarios_inline = [scen_payload]
         
         # Build XML
-        tree = backend._build_scenarios_xml({'scenarios': scenarios_inline})
+        tree = backend._build_scenarios_xml({'scenarios': scenarios_inline, 'core': core_defaults})
         xml_path = os.path.join(self.out_dir, 'scenario.xml')
         tree.write(xml_path, encoding='utf-8', xml_declaration=True)
         return xml_path
@@ -213,450 +323,65 @@ class Executor:
         result = {
             'success': False,
             'stages': {},
-            'error': None
+            'error': None,
+            'artifacts': {
+                'output_dir': self.out_dir,
+            },
         }
         
         try:
-            # ── Phase 1: Topology Generation (local) ──
-            print(">> Phase: topology")
+            # ── Phase 1: Scenario XML generation ──
+            print(">> Phase: scenario-xml")
             xml_path = self._generate_xml()
             scenario_name = self._resolve_xml_scenario_name(xml_path)
-            result['stages']['topology'] = 'PASS'
+            result['artifacts']['scenario_xml'] = xml_path
+            result['stages']['scenario_xml'] = 'PASS'
             
             if self.target_phase == 'topology':
+                print(">> Phase: topo")
+                result['artifacts']['topo_json'] = self._artifact_path('topo.json')
+                result['artifacts']['topo_log'] = self._artifact_path('topo.log')
+                self._run_cli_phase('topo', xml_path, scenario_name, json_output_name='topo.json', log_name='topo.log')
+                result['stages']['topology'] = 'PASS'
                 result['success'] = True
                 return result
             
-            # ── Phase 2: Flag Sequencing (preview-full + push to CORE VM) ──
-            print(">> Phase: flag-sequencing")
-            
-            # 2a. Run preview-full locally to generate the full plan
-            print("  Generating full preview plan locally...")
-            from scenarioforge.cli import main as sf_cli_main
-            import scenarioforge.cli
-            
-            plan_output_path = os.path.join(self.out_dir, 'plan.json')
-            sys.argv = [
-                'scenarioforge',
-                '--xml', xml_path,
-                '--scenario', scenario_name,
-                '--plan-output', plan_output_path,
-                '--preview-full',
-            ]
-            
-            if self.verbose:
-                sys.argv.append('--verbose')
-            
-            original_cwd = os.getcwd()
-            os.chdir(self.out_dir)
-            
-            original_write_report = scenarioforge.cli.write_report
-            
-            def mocked_write_report(report_path, *args, **kwargs):
-                new_report_path = os.path.join(self.out_dir, os.path.basename(report_path))
-                return original_write_report(new_report_path, *args, **kwargs)
-                
-            scenarioforge.cli.write_report = mocked_write_report
-            
-            try:
-                sf_cli_main()
-                result['stages']['preview'] = 'PASS'
-            except SystemExit as e:
-                if e.code == 0:
-                    result['stages']['preview'] = 'PASS'
-                else:
-                    raise RuntimeError(f"CLI preview-full exited with code {e.code}")
-            finally:
-                os.chdir(original_cwd)
-                scenarioforge.cli.write_report = original_write_report
-            
+            # ── Phase 2: Preview plan ──
+            print(">> Phase: preview-plan")
+            result['artifacts']['preview_plan_json'] = self._artifact_path('preview-plan.json')
+            result['artifacts']['preview_plan_log'] = self._artifact_path('preview-plan.log')
+            self._run_cli_phase('preview-plan', xml_path, scenario_name, json_output_name='preview-plan.json', log_name='preview-plan.log')
+            result['stages']['preview_plan'] = 'PASS'
+
+            # ── Phase 3: Flag sequencing ──
             flows_spec = self.spec.get('flows', {})
             if flows_spec.get('enabled', flows_spec.get('randomize')):
-                print("  Auto-generating flow state (chain + assignments) locally...")
-                import json
-                from webapp import app_backend as backend
-                
-                with open(plan_output_path, 'r') as f:
-                    preview = json.load(f)
-                    
-                nodes, _links, adj = backend._build_topology_graph_from_preview_plan(preview)
-                length = flows_spec.get('chain_length', 3)
-                allow_duplicates = flows_spec.get('allow_duplicates', False)
-                
-                if allow_duplicates:
-                    chain_nodes = backend._pick_flag_chain_nodes_allow_duplicates(nodes, adj, length=length)
+                print(">> Phase: flag-sequencing")
+                result['artifacts']['flag_sequencing_json'] = self._artifact_path('flag-sequencing.json')
+                result['artifacts']['flag_sequencing_log'] = self._artifact_path('flag-sequencing.log')
+                flow_args = [
+                    '--flow-mode', 'resolve',
+                    '--flow-length', str(flows_spec.get('chain_length', 3)),
+                ]
+                if flows_spec.get('allow_duplicates', False):
+                    flow_args.append('--flow-allow-node-duplicates')
                 else:
-                    chain_nodes = backend._pick_flag_chain_nodes(nodes, adj, length=length)
-                    
-                flag_assignments = backend._flow_compute_flag_assignments(preview, chain_nodes, scenario_name)
-                flag_assignments = backend._flow_apply_pivot_context_to_assignments(flag_assignments, preview)
-                chain_nodes, flag_assignments, _ = backend._flow_reorder_chain_by_generator_dag(chain_nodes, flag_assignments, scenario_label=scenario_name)
-                flag_assignments = backend._flow_apply_pivot_context_to_assignments(flag_assignments, preview)
-                
-                fs = backend._flow_state_from_xml_path(xml_path, scenario_name) or {}
-                fs['flag_assignments'] = flag_assignments
-                fs['chain_ids'] = [n['id'] for n in chain_nodes]
-                backend._update_flow_state_in_xml(xml_path, scenario_name, fs)
-                
-                if 'plan' not in preview:
-                    preview['plan'] = {}
-                preview['plan']['flow_state'] = fs
-                with open(plan_output_path, 'w') as f:
-                    json.dump(preview, f, indent=2)
-            
-            # 2b. Push artifacts to CORE VM via SSH/SFTP
-            print("  Preparing remote context on CORE VM...")
-            import uuid as _uuid
-            from webapp.app_backend import (
-                _core_backend_defaults,
-                _open_ssh_client,
-                _push_repo_to_remote,
-                _prepare_remote_cli_context,
-            )
-            
-            core_cfg = _core_backend_defaults(include_password=True)
-            
-            import webapp.app_backend
-            import paramiko
-            
-            original_update_progress = webapp.app_backend._update_repo_push_progress
-            original_sftp_put = paramiko.SFTPClient.put
-            original_sftp_get = paramiko.SFTPClient.get
-            
-            def mocked_update_progress(progress_id, **fields):
-                if 'percent' in fields and 'detail' in fields:
-                    print(f"\r    [{fields['percent']:>5.1f}%] {fields['detail']}", end="", flush=True)
-                original_update_progress(progress_id, **fields)
-            
-            class SFTPState:
-                uploaded_files = 0
-                uploaded_bytes = 0
-                downloaded_files = 0
-                downloaded_bytes = 0
-                last_label = ""
-            
-            sftp_state = SFTPState()
-            
-            def sftp_progress(transferred, total, label, is_upload=True):
-                # We update the line in place. Since we don't know the batch total size beforehand,
-                # we show an aggregate count of files and MBs transferred.
-                if is_upload:
-                    mb = sftp_state.uploaded_bytes / (1024 * 1024)
-                    count = sftp_state.uploaded_files
-                    dir_str = "Uploaded"
-                else:
-                    mb = sftp_state.downloaded_bytes / (1024 * 1024)
-                    count = sftp_state.downloaded_files
-                    dir_str = "Downloaded"
-                    
-                pct_str = ""
-                if total and total > 0:
-                    pct_str = f" [{int(transferred/total*100):3d}%]"
-                    
-                # Pad with spaces to overwrite previous longer filenames
-                line = f"\r    [SFTP] {dir_str} {count} files ({mb:.1f} MB){pct_str} - {label}"
-                print(f"{line:<80}", end="", flush=True)
-                    
-            def mocked_sftp_put(self, localpath, remotepath, callback=None, confirm=True):
-                filename = os.path.basename(localpath)
-                sftp_state.uploaded_files += 1
-                sftp_state.last_label = filename
-                
-                # We track bytes manually since callback is per-chunk
-                last_transferred = [0]
-                def cb(transferred, total):
-                    chunk = transferred - last_transferred[0]
-                    last_transferred[0] = transferred
-                    sftp_state.uploaded_bytes += chunk
-                    sftp_progress(transferred, total, filename, is_upload=True)
-                    if callback:
-                        callback(transferred, total)
-                return original_sftp_put(self, localpath, remotepath, callback=cb, confirm=confirm)
-                
-            def mocked_sftp_get(self, remotepath, localpath, callback=None):
-                filename = os.path.basename(remotepath)
-                sftp_state.downloaded_files += 1
-                sftp_state.last_label = filename
-                
-                last_transferred = [0]
-                def cb(transferred, total):
-                    chunk = transferred - last_transferred[0]
-                    last_transferred[0] = transferred
-                    sftp_state.downloaded_bytes += chunk
-                    sftp_progress(transferred, total, filename, is_upload=False)
-                    if callback:
-                        callback(transferred, total)
-                return original_sftp_get(self, remotepath, localpath, callback=cb)
-                
-            webapp.app_backend._update_repo_push_progress = mocked_update_progress
-            paramiko.SFTPClient.put = mocked_sftp_put
-            paramiko.SFTPClient.get = mocked_sftp_get
-            
-            try:
-                # Sync the codebase
-                print("  Syncing codebase to remote VM...")
-                try:
-                    cleanup_client = _open_ssh_client(core_cfg)
-                    cleanup_sftp = cleanup_client.open_sftp()
-                    cleanup_repo = webapp.app_backend._remote_static_repo_dir(cleanup_sftp)
-                    cleanup_sftp.close()
-                    if cleanup_repo and cleanup_repo.startswith('/tmp/'):
-                        pwd = core_cfg.get('ssh_password')
-                        ssh_user = cleanup_client.get_transport().get_username()
-                        cmd = (
-                            f"sudo -S rm -rf {cleanup_repo}; "
-                            f"sudo -S mkdir -p /tmp/vulns; "
-                            f"sudo -S chown -R {ssh_user} /tmp/vulns; "
-                            f"sudo -S chmod -R 777 /tmp/vulns"
-                        )
-                        stdin, stdout, stderr = cleanup_client.exec_command(cmd)
-                        if pwd:
-                            stdin.write(str(pwd) + '\n')
-                            stdin.flush()
-                        try:
-                            stdin.close()
-                        except Exception:
-                            pass
-                        stdout.channel.recv_exit_status()
-                except Exception as e:
-                    print(f"    - Warning: could not pre-clean remote repo: {e}")
-                finally:
-                    try:
-                        cleanup_client.close()
-                    except Exception:
-                        pass
-                
-                repo_sync = _push_repo_to_remote(core_cfg, upload_only_injected_artifacts=False, progress_id="cli-eval-sync")
-                remote_repo = repo_sync.get('repo_path')
-                if not remote_repo:
-                    raise RuntimeError("Failed to sync codebase to remote VM: repo_path not returned")
-                print() # newline after progress bar
-                
-                # Prepare remote CLI context (uploads XML, compose files, flow artifacts, vuln catalogs)
-                print("  Uploading scenario artifacts to remote VM...")
-                client = _open_ssh_client(core_cfg)
-                run_id = f"eval-{self.spec.get('name', 'unknown')}-{_uuid.uuid4().hex[:8]}"
-                
-                class TeeLogHandle:
-                    def __init__(self, fd):
-                        self.fd = fd
-                    def write(self, s):
-                        self.fd.write(s)
-                        for line in s.splitlines():
-                            if '[remote]' in line:
-                                # Clean it up a bit for the console
-                                clean = line.replace('[remote] Repo upload:', 'Repo:').replace('[remote]', '').strip()
-                                # Clear the SFTP progress bar line before printing
-                                print(f"\r{' '*80}\r    - {clean}")
-                    def flush(self):
-                        self.fd.flush()
-                    def close(self):
-                        self.fd.close()
-                        
-                raw_log_fd = open(os.path.join(self.out_dir, 'remote_prepare.log'), 'w', encoding='utf-8')
-                log_handle = TeeLogHandle(raw_log_fd)
-                
-                if flows_spec.get('enabled', flows_spec.get('randomize')):
-                    sftp = client.open_sftp()
-                    try:
-                        import webapp.app_backend as backend
-                        fs = backend._flow_state_from_xml_path(xml_path, scenario_name) or {}
-                        assignments = fs.get('flag_assignments') or []
-                        if assignments:
-                            backend._regenerate_missing_remote_flow_artifacts_for_plan(
-                                sftp=sftp,
-                                preview_plan_path=xml_path,
-                                remote_repo=remote_repo,
-                                core_cfg=core_cfg,
-                                log_handle=log_handle,
-                                assignments_override=assignments,
-                                verify_after=False
-                            )
-                    except Exception as e:
-                        print(f"    - Error regenerating flow artifacts remotely: {e}")
-                    finally:
-                        sftp.close()
+                    flow_args.append('--flow-best-effort')
+                self._run_cli_phase('flag-sequencing', xml_path, scenario_name, extra_args=flow_args, json_output_name='flag-sequencing.json', log_name='flag-sequencing.log')
+                result['stages']['flag_sequencing'] = 'PASS'
+            else:
+                result['stages']['flag_sequencing'] = 'SKIP'
 
-                try:
-                    remote_ctx = _prepare_remote_cli_context(
-                        client=client,
-                        run_id=run_id,
-                        xml_path=xml_path,
-                        preview_plan_path=plan_output_path if os.path.exists(plan_output_path) else None,
-                        log_handle=log_handle,
-                        upload_only_injected_artifacts=False,
-                        core_cfg=core_cfg,
-                    )
-                finally:
-                    log_handle.close()
-                    print() # newline after SFTP progress bar
-            finally:
-                webapp.app_backend._update_repo_push_progress = original_update_progress
-                paramiko.SFTPClient.put = original_sftp_put
-                paramiko.SFTPClient.get = original_sftp_get
-            
-            result['stages']['flag_sequencing'] = 'PASS'
-            
             if self.target_phase == 'flag-sequencing':
                 result['success'] = True
-                # Clean up the SSH client since we're stopping here
-                client.close()
                 return result
-            
-            # ── Phase 3: Execute (launch CLI on remote CORE VM) ──
+
+            # ── Phase 4: Execute ──
             print(">> Phase: execute")
-            print(f"  Executing scenario {self.spec.get('name', 'unknown')} on remote VM...")
-            
-            # Find correct python interpreter on the remote
-            remote_xml = remote_ctx['xml_path']
-            remote_preview_plan = remote_ctx.get('preview_plan_path')
-            
-            env_vars = (
-                "CORETG_DOCKER_USE_SUDO=1 "
-                "CORETG_DOCKER_STRICT_PULL=1 "
-                "CORETG_DOCKER_BUILD_PULL=0 "
-                "CORETG_COMPOSE_SET_CONTAINER_NAME=1 "
-                "CORETG_FLOW_ARTIFACTS_MODE=copy "
-                "CORETG_COMPOSE_ALLOW_INTERNAL_NETWORKING=1 "
-            )
-            if core_cfg.get('ssh_password'):
-                env_vars += "CORETG_DOCKER_SUDO_PASSWORD_STDIN=1 "
-                
-            cmd = (
-                f"cd {remote_ctx['repo_dir']} && "
-                f"PYTHON=\"\"; "
-                f"for py in {self.sf_path}/.venv/bin/python {remote_ctx['repo_dir']}/.venv/bin/python core-python /opt/core/venv/bin/python python3 python; do "
-                f"  if command -v $py >/dev/null 2>&1; then "
-                f"    if $py -c 'import core.api.grpc' 2>/dev/null; then PYTHON=$py; break; fi; "
-                f"  fi; "
-                f"done; "
-                f"if [ -z \"$PYTHON\" ]; then echo \"ERROR: Could not find Python interpreter with core.api.grpc on remote VM!\" >&2; exit 1; fi; "
-                f"{env_vars}PYTHONUNBUFFERED=1 $PYTHON -u -m scenarioforge.cli --xml {remote_xml} --scenario {scenario_name} "
-                f"--plan-output /tmp/scenarioforge_eval_plan.json"
-            )
-            if remote_preview_plan:
-                cmd += f" --preview-plan {remote_preview_plan}"
-            if self.verbose:
-                cmd += " --verbose"
-            
-            # Use get_pty=True to merge stdout/stderr into a single stream,
-            # exactly like the WebUI does (app_backend.py:39281)
-            stdin, stdout, stderr = client.exec_command(cmd, get_pty=True, timeout=None)
-            
-            # Pass sudo password to stdin if requested so Docker commands inside the CLI don't fail
-            if core_cfg.get('ssh_password'):
-                try:
-                    stdin.write(str(core_cfg.get('ssh_password')) + '\n')
-                    stdin.flush()
-                except Exception:
-                    pass
-                    
-            try:
-                stdin.close()
-            except Exception:
-                pass
-            
-            import re
-            import time
-            _ANSI_RE = re.compile(r'\x1b\[[0-9;]*[a-zA-Z]')
-            
-            # Patterns that indicate meaningful progress (shown in non-verbose mode)
-            _PROGRESS_PATTERNS = (
-                'PHASE:',
-                '[grpc]',
-                '[router.',
-                '[docker',
-                '[compose',
-                '[remote]',
-                'CORE session',
-                'Starting',
-                'Building',
-                'Waiting',
-                'ERROR',
-                'WARNING',
-                'Traceback',
-                'Exception',
-                'FATAL',
-            )
-            
-            channel = stdout.channel
-            output_lines = []
-            exec_log_path = os.path.join(self.out_dir, 'execute.log')
-            exec_log = open(exec_log_path, 'w', encoding='utf-8')
-            
-            try:
-                while True:
-                    if channel.recv_ready():
-                        chunk = channel.recv(4096)
-                    elif channel.exit_status_ready():
-                        # Drain any remaining bytes
-                        chunk = channel.recv(4096)
-                        if not chunk:
-                            break
-                    else:
-                        time.sleep(0.2)
-                        continue
-                    
-                    if not chunk:
-                        if channel.exit_status_ready():
-                            break
-                        continue
-                    
-                    text = chunk.decode('utf-8', errors='replace')
-                    cleaned = _ANSI_RE.sub('', text)
-                    
-                    # Write everything to the log file
-                    exec_log.write(cleaned)
-                    exec_log.flush()
-                    
-                    output_lines.append(cleaned)
-                    
-                    # Print to console
-                    lines = cleaned.split('\n')
-                    for i, line in enumerate(lines):
-                        # Paramiko/SSH spam we want to hide even in verbose mode
-                        is_noise = ('[chan ' in line or 'Secsh channel' in line)
-                        
-                        if self.verbose:
-                            if not is_noise:
-                                if i == len(lines) - 1:
-                                    print(line, end='', flush=True)
-                                else:
-                                    print(line)
-                        else:
-                            # In normal mode, print lines that indicate progress
-                            stripped = line.strip()
-                            if not stripped or is_noise:
-                                continue
-                            if any(p in stripped for p in _PROGRESS_PATTERNS):
-                                print(f"  {stripped}")
-            finally:
-                exec_log.close()
-            
-            code = channel.recv_exit_status()
-            full_output = "".join(output_lines)
-            
-            client.close()
-            
-            if code == 0:
-                warnings = [line.strip() for line in full_output.split('\n') if 'WARNING' in line]
-                if warnings:
-                    result['stages']['execute'] = 'SOFT PASS'
-                    result['warnings'] = list(set(warnings)) # Deduplicate
-                    print(f"  Successfully deployed scenario with {len(result['warnings'])} WARNINGs!")
-                else:
-                    result['stages']['execute'] = 'PASS'
-                    print(f"  Successfully deployed scenario!")
-                result['success'] = True
-            else:
-                print(f"  Execution failed with code {code}!")
-                if not self.verbose:
-                    print(f"\n--- REMOTE OUTPUT (last 50 lines) ---")
-                    last_lines = full_output.strip().split('\n')[-50:]
-                    for line in last_lines:
-                        print(line)
-                print(f"\n  Full log: {exec_log_path}")
-                raise RuntimeError(f"Remote execution failed with exit code {code}")
+            result['artifacts']['execute_log'] = self._artifact_path('execute.log')
+            self._run_cli_phase('execute', xml_path, scenario_name, log_name='execute.log')
+            result['stages']['execute'] = 'PASS'
+            result['success'] = True
                     
         except Exception as e:
             result['error'] = traceback.format_exc()

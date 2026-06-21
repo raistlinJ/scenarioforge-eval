@@ -1,19 +1,19 @@
 # ScenarioForge-Eval
 
-ScenarioForge-Eval is a batch-testing harness and evaluation tool for `scenarioforge`. It allows you to define scenario specifications in `.spec.yaml` files and automatically executes the `scenarioforge` pipeline (Topology Generation, Flag Sequencing, Preview, and Execution) to validate the underlying scenario generators.
+ScenarioForge-Eval is a batch-testing harness and evaluation tool for `scenarioforge`. It allows you to define scenario specifications in `.spec.yaml` files and automatically executes the current ScenarioForge CLI pipeline: `preview-plan`, optional `flag-sequencing`, and `execute`, or `topo` when requested.
 
 ## Features
 
 - **Batch Execution**: Run thousands of scenario permutations automatically.
 - **Specification Files**: Define simple bounds for topology and parameters in YAML format.
 - **Automated Logging**: Output success/failure reports and capture execution plans.
-- **AI-Friendly Error Reporting**: Automatically extracts full stack traces, `injects_missing` summaries, and generated `docker-compose.yml` outputs into an AI-ready Markdown format when a scenario fails.
+- **AI-Friendly Error Reporting**: Automatically writes an AI-ready Markdown prompt with the stack trace plus any captured `scenario.xml`, phase JSON, and phase logs when a scenario fails.
 
 ## Project Structure
 
 - `scenarioforge_eval/parser.py`: Parses `.spec.yaml` bounds and handles random ranges.
-- `scenarioforge_eval/executor.py`: Hooks into the `scenarioforge` internal python API to generate topologies and execute runs.
-- `scenarioforge_eval/reporter.py`: Manages the output directory, logs pass/fail statuses, and creates `_ai_prompt.md` files upon failure.
+- `scenarioforge_eval/executor.py`: Generates a ScenarioForge XML, embeds VM-mode CORE connection data from the environment, and drives the real `scenarioforge` CLI phases for batch execution.
+- `scenarioforge_eval/reporter.py`: Manages the output directory, logs pass/fail statuses, and creates `_ai_prompt.md` files from the captured phase artifacts upon failure.
 - `scenarioforge_eval/main.py`: The CLI entry point.
 
 ## Usage
@@ -38,22 +38,32 @@ flows:
   randomize: true
 ```
 
-Run the evaluator by passing the directory containing your `.spec.yaml` files (or a single file), along with the path to the `scenarioforge` codebase. 
+Run the evaluator by passing the directory containing your `.spec.yaml` files (or a single file), along with the path to the `scenarioforge` codebase.
 
-**Important:** If you are using `uv` to manage dependencies, the virtual environment is strictly isolated by default. Because `scenarioforge` requires the `core` gRPC library (which is typically installed system-wide on the VM), `uv` will not be able to find it and `scenarioforge` will instantly fallback to an offline report (taking only 3-4 seconds).
+Without a phase flag, the evaluator defaults to the full `execute` path to match ScenarioForge's CLI default phase.
+
+**Important:** If you are using `uv` to manage dependencies, the virtual environment is strictly isolated by default. Because `scenarioforge` requires the `core` gRPC library (which is typically installed system-wide on the VM), `uv` will not be able to find it and the CLI phases will fail or fallback unexpectedly.
 
 To fix this, ensure you create your `uv` environment with system package access before running:
 ```bash
 uv venv --system-site-packages
 uv sync
-uv run python scenarioforge_eval/main.py test_specs/00-sanity-check.spec.yaml --sf-path ../scenarioforge/ --execute
+uv run scenarioforge-eval test_specs/00-sanity-check.spec.yaml --sf-path ../scenarioforge --execute
 ```
 
 By default, the logs and plans will be written to `/tmp/scenarioforge-eval-out/`.
 
+Phase selection mirrors ScenarioForge's CLI semantics:
+
+- `--topology`: run the upstream `topo` phase and stop after the CORE topology is built.
+- `--flag-sequencing`: run `preview-plan` and `flag-sequencing`, then stop before `execute`.
+- `--execute` or no phase flag: run the full evaluator pipeline through `execute`.
+
 ## Services in VM Mode
 
-`scenarioforge-eval` only supports ScenarioForge's `vm` mode, and the stock CORE docker image used in that mode does not include `dhclient`. To avoid boot failures from CORE's `DHCPClient` service, the evaluator now defaults its randomized service pool to `SSH` and `HTTP`.
+`scenarioforge-eval` only supports ScenarioForge's `vm` mode. It now writes the VM-mode CORE connection values from the environment directly into the generated ScenarioForge XML so the downstream CLI phases behave the same way as the Web UI given the same XML.
+
+Because the stock CORE docker image used in VM mode does not include `dhclient`, the evaluator defaults its randomized service pool to `SSH` and `HTTP`.
 
 If your environment has a compatible image and you intentionally want DHCP client startup, opt in explicitly:
 

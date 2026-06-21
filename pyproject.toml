@@ -1,7 +1,8 @@
 [project]
 name = "scenarioforge-eval"
 version = "0.1.0"
-description = "Add your description here"
+description = "Batch evaluator for ScenarioForge CLI workflows"
+readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "bleach>=6.1.0",
@@ -19,3 +20,10 @@ dependencies = [
     "requests>=2.31.0",
     "werkzeug==3.1.8",
 ]
+
+[project.scripts]
+scenarioforge-eval = "scenarioforge_eval.main:main"
+
+[build-system]
+requires = ["hatchling>=1.27.0"]
+build-backend = "hatchling.build"

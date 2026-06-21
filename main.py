@@ -1,5 +1,4 @@
-def main():
-    print("Hello from scenarioforge-eval!")
+from scenarioforge_eval.main import main
 
 
 if __name__ == "__main__":
