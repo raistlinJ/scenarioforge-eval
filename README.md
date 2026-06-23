@@ -101,6 +101,11 @@ The evaluator retains the authoritative `scenario.xml` generated at the start of
 
 Full execute runs always add `--post-execution-validation`, parse the last `VALIDATION_SUMMARY_JSON:` marker from combined stdout/stderr, and save the parsed payload as `execute-validation.json`.
 
+Current ScenarioForge also emits that marker when CORE startup fails before the
+detailed validator can run. The evaluator streams and reports its
+`validation_unavailable`, startup error, session id, and daemon hint rather than
+collapsing the failure into a missing-marker message.
+
 Before invoking ScenarioForge CLI phases, the evaluator ensures the minimal sibling-repo runtime roots exist under `outputs/` and `uploads/`.
 
 Before `topo` or `execute`, when the generated XML targets a loopback CORE gRPC endpoint such as `127.0.0.1:50051` and does not already carry a usable remote-delegation SSH path, the evaluator performs a local socket preflight and fails early with a direct message if the local CORE daemon is unreachable.

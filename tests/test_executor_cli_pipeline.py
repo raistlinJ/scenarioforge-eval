@@ -396,6 +396,33 @@ class ExecutorCliPipelineTests(unittest.TestCase):
             self.assertFalse(result['success'])
             self.assertIn('CORE_SESSION_ID', result.get('error', ''))
 
+    def test_execute_nonzero_with_validation_summary_reports_validation_error(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            executor = Executor(
+                spec={
+                    'name': 'eval-scenario',
+                    'seed': 2026,
+                    'validation': {'policy': 'strict'},
+                },
+                out_dir=temp_dir,
+                sf_path='/Users/jcacosta/Documents/GitHub/scenarioforge',
+            )
+            phase_result = {
+                'returncode': 1,
+                'validation_summary': {
+                    'ok': False,
+                    'validation_unavailable': True,
+                    'error': 'CORE session stayed in configuration',
+                },
+            }
+
+            passed, warnings, message = executor._execute_success(phase_result)
+
+            self.assertFalse(passed)
+            self.assertEqual(warnings, [])
+            self.assertIn('CORE session stayed in configuration', message or '')
+            self.assertIn('validation_unavailable=true', message or '')
+
     def test_execute_failure_without_validation_marker_preserves_cli_error(self):
         spec = {
             'name': 'eval-scenario',

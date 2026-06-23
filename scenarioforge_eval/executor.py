@@ -148,6 +148,12 @@ class Executor:
         progress_patterns = (
             'PHASE:',
             'Delegating CLI',
+            'CORE_SESSION_ID:',
+            'CORE_SESSION_VALIDATION_JSON:',
+            'Post-execution validation:',
+            'VALIDATION_SUMMARY_JSON:',
+            '[validate]',
+            'CORE daemon runtime hint:',
             'Scenario report written to',
             'Scenario summary written to',
             'WARNING',
@@ -286,10 +292,16 @@ class Executor:
         warnings = self._validation_messages(validation_summary, self.VALIDATION_WARNING_FIELDS)
 
         if phase_result.get('returncode') != 0:
+            error_messages = self._validation_messages(
+                validation_summary,
+                self.VALIDATION_ERROR_FIELDS,
+            )
+            detail = f" Validation: {', '.join(error_messages)}." if error_messages else ''
             return (
                 False,
                 warnings,
-                f"scenarioforge.cli execute failed with exit code {phase_result.get('returncode')}. See execute.log",
+                f"scenarioforge.cli execute failed with exit code "
+                f"{phase_result.get('returncode')}.{detail} See execute.log",
             )
 
         if not str(phase_result.get('session_id') or '').strip():
