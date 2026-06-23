@@ -184,6 +184,37 @@ class ExecutorCliPipelineTests(unittest.TestCase):
             self.assertEqual(phase_result['report_path'], '/tmp/report.md')
             self.assertEqual(phase_result['summary_path'], '/tmp/summary.json')
 
+    def test_run_cli_phase_failure_includes_last_output_line(self):
+        spec = {
+            'name': 'eval-scenario',
+            'seed': 778,
+            'validation': {'policy': 'strict'},
+        }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            executor = Executor(spec=spec, out_dir=temp_dir, sf_path='/Users/jcacosta/Documents/GitHub/scenarioforge')
+
+            proc = subprocess.CompletedProcess(
+                args=['python'],
+                returncode=1,
+                stdout='PHASE: Planning topology\n',
+                stderr='ValueError: missing vulnerability catalog\n',
+            )
+
+            with mock.patch('scenarioforge_eval.executor.subprocess.run', return_value=proc):
+                with self.assertRaisesRegex(
+                    Exception,
+                    r'scenarioforge\.cli preview-plan failed with exit code 1\. Last output: ValueError: missing vulnerability catalog',
+                ):
+                    executor._run_cli_phase(
+                        'preview-plan',
+                        '/tmp/scenario.xml',
+                        'eval-scenario',
+                        seed=778,
+                        json_output_name='preview-plan.json',
+                        log_name='preview-plan.log',
+                    )
+
     def test_warning_tolerant_policy_accepts_warning_only_validation(self):
         warning_summary = {'ok': False, 'extra_nodes': ['node-1']}
 

@@ -457,13 +457,21 @@ class Executor:
         phase_result = self._phase_result(phase, returncode, combined, log_path, plan_payload, timed_out=timed_out)
 
         if timed_out:
+            last_line = self._last_output_line(combined)
+            message = f"scenarioforge.cli {phase} timed out after {self.phase_timeout_s} seconds."
+            if last_line:
+                message = f"{message} Last output: {last_line}"
             raise PhaseExecutionError(
-                f"scenarioforge.cli {phase} timed out after {self.phase_timeout_s} seconds. See {log_path}",
+                f"{message} See {log_path}",
                 phase_result,
             )
         if returncode != 0 and not allow_nonzero:
+            last_line = self._last_output_line(combined)
+            message = f"scenarioforge.cli {phase} failed with exit code {returncode}."
+            if last_line:
+                message = f"{message} Last output: {last_line}"
             raise PhaseExecutionError(
-                f"scenarioforge.cli {phase} failed with exit code {returncode}. See {log_path}",
+                f"{message} See {log_path}",
                 phase_result,
             )
         return phase_result
