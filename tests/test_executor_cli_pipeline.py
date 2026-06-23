@@ -228,12 +228,8 @@ class ExecutorCliPipelineTests(unittest.TestCase):
             executor = Executor(spec=spec, out_dir=temp_dir, sf_path=sf_root)
 
             expected_dirs = [
-                os.path.join(sf_root, 'reports'),
                 os.path.join(sf_root, 'outputs'),
                 os.path.join(sf_root, 'uploads'),
-                os.path.join(sf_root, 'outputs', 'installed_generators'),
-                os.path.join(sf_root, 'outputs', 'installed_vuln_catalogs'),
-                os.path.join(sf_root, 'outputs', 'plans'),
             ]
 
             def _fake_run(*args, **kwargs):
@@ -273,14 +269,14 @@ class ExecutorCliPipelineTests(unittest.TestCase):
             original_makedirs = os.makedirs
 
             def _fake_makedirs(path, exist_ok=False):
-                if path == os.path.join(sf_root, 'outputs', 'plans'):
+                if path == os.path.join(sf_root, 'outputs'):
                     raise PermissionError(13, 'Permission denied', path)
                 return original_makedirs(path, exist_ok=exist_ok)
 
             with mock.patch('scenarioforge_eval.executor.os.makedirs', side_effect=_fake_makedirs):
                 with self.assertRaisesRegex(
                     RuntimeError,
-                    r"ScenarioForge CLI needs a writable sibling repo checkout.*outputs/plans",
+                    r"ScenarioForge CLI needs a writable sibling repo checkout.*scenarioforge/outputs",
                 ):
                     executor._run_cli_phase(
                         'preview-plan',

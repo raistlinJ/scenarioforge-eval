@@ -110,46 +110,19 @@ class Executor:
     def _scenarioforge_repo_write_error(self, directory: str, exc: OSError) -> RuntimeError:
         repo_root = self.sf_path
         outputs_root = os.path.join(repo_root, 'outputs')
-        reports_root = os.path.join(repo_root, 'reports')
         uploads_root = os.path.join(repo_root, 'uploads')
         return RuntimeError(
             "ScenarioForge CLI needs a writable sibling repo checkout for runtime artifacts. "
             f"Failed to create or access {directory!r}: {exc}. "
-            f"Ensure the evaluator user can write under {outputs_root!r}, {reports_root!r}, and {uploads_root!r}."
+            f"Ensure the evaluator user can write under {outputs_root!r} and {uploads_root!r}."
         )
 
     def _ensure_scenarioforge_repo_dirs(self) -> None:
         outputs_root = os.path.join(self.sf_path, 'outputs')
         candidate_dirs = {
-            os.path.join(self.sf_path, 'reports'),
             outputs_root,
             os.path.join(self.sf_path, 'uploads'),
-            os.path.join(outputs_root, 'installed_generators'),
-            os.path.join(outputs_root, 'installed_vuln_catalogs'),
-            os.path.join(outputs_root, 'plans'),
         }
-
-        try:
-            from webapp import app_backend as backend
-
-            for helper_name in (
-                '_reports_dir',
-                '_outputs_dir',
-                '_uploads_dir',
-                '_installed_generators_root',
-                '_installed_vuln_catalogs_root',
-            ):
-                helper = getattr(backend, helper_name, None)
-                if not callable(helper):
-                    continue
-                try:
-                    resolved = helper()
-                except Exception:
-                    continue
-                if resolved:
-                    candidate_dirs.add(os.path.abspath(str(resolved)))
-        except Exception:
-            pass
 
         for directory in sorted(candidate_dirs):
             try:

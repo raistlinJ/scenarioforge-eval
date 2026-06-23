@@ -69,7 +69,7 @@ One supported deployment model is:
 
 In that setup, the evaluator does not need a local CORE daemon. It only needs the generated XML to contain a usable remote delegation path, which ScenarioForge then uses to stage artifacts and launch the remote CLI on the CORE VM.
 
-The sibling `scenarioforge` checkout on the helper VM must still be writable by the evaluator user. `preview-plan` and later phases write repo-local artifacts under `outputs/`, `reports/`, and `uploads/`, including `outputs/plans`.
+The sibling `scenarioforge` checkout on the helper VM must still be writable by the evaluator user. Current CLI and backend startup paths expect writable repo-local artifact roots under `outputs/` and `uploads/`, and later execute/report phases may also write under `reports/`.
 
 The evaluator's local loopback preflight is intentionally narrow:
 
@@ -101,7 +101,7 @@ The evaluator retains the authoritative `scenario.xml` generated at the start of
 
 Full execute runs always add `--post-execution-validation`, parse the last `VALIDATION_SUMMARY_JSON:` marker from combined stdout/stderr, and save the parsed payload as `execute-validation.json`.
 
-Before invoking ScenarioForge CLI phases, the evaluator also ensures the standard sibling-repo output roots exist, including `reports/`, `outputs/`, `uploads/`, and the installed-catalog / installed-generator subdirectories under `outputs/`.
+Before invoking ScenarioForge CLI phases, the evaluator ensures the minimal sibling-repo runtime roots exist under `outputs/` and `uploads/`.
 
 Before `topo` or `execute`, when the generated XML targets a loopback CORE gRPC endpoint such as `127.0.0.1:50051` and does not already carry a usable remote-delegation SSH path, the evaluator performs a local socket preflight and fails early with a direct message if the local CORE daemon is unreachable.
 
