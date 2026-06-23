@@ -258,6 +258,39 @@ class ExecutorCliPipelineTests(unittest.TestCase):
 
             self.assertEqual(phase_result['returncode'], 0)
 
+    def test_run_cli_phase_reports_repo_write_permission_error_clearly(self):
+        spec = {
+            'name': 'eval-scenario',
+            'seed': 780,
+            'validation': {'policy': 'strict'},
+        }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            sf_root = os.path.join(temp_dir, 'scenarioforge')
+            os.makedirs(sf_root, exist_ok=True)
+            executor = Executor(spec=spec, out_dir=temp_dir, sf_path=sf_root)
+
+            original_makedirs = os.makedirs
+
+            def _fake_makedirs(path, exist_ok=False):
+                if path == os.path.join(sf_root, 'outputs', 'plans'):
+                    raise PermissionError(13, 'Permission denied', path)
+                return original_makedirs(path, exist_ok=exist_ok)
+
+            with mock.patch('scenarioforge_eval.executor.os.makedirs', side_effect=_fake_makedirs):
+                with self.assertRaisesRegex(
+                    RuntimeError,
+                    r"ScenarioForge CLI needs a writable sibling repo checkout.*outputs/plans",
+                ):
+                    executor._run_cli_phase(
+                        'preview-plan',
+                        os.path.join(temp_dir, 'scenario.xml'),
+                        'eval-scenario',
+                        seed=780,
+                        json_output_name='preview-plan.json',
+                        log_name='preview-plan.log',
+                    )
+
     def test_warning_tolerant_policy_accepts_warning_only_validation(self):
         warning_summary = {'ok': False, 'extra_nodes': ['node-1']}
 

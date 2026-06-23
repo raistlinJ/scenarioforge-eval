@@ -107,6 +107,17 @@ class Executor:
             return None
         return os.path.join(self.out_dir, file_name)
 
+    def _scenarioforge_repo_write_error(self, directory: str, exc: OSError) -> RuntimeError:
+        repo_root = self.sf_path
+        outputs_root = os.path.join(repo_root, 'outputs')
+        reports_root = os.path.join(repo_root, 'reports')
+        uploads_root = os.path.join(repo_root, 'uploads')
+        return RuntimeError(
+            "ScenarioForge CLI needs a writable sibling repo checkout for runtime artifacts. "
+            f"Failed to create or access {directory!r}: {exc}. "
+            f"Ensure the evaluator user can write under {outputs_root!r}, {reports_root!r}, and {uploads_root!r}."
+        )
+
     def _ensure_scenarioforge_repo_dirs(self) -> None:
         outputs_root = os.path.join(self.sf_path, 'outputs')
         candidate_dirs = {
@@ -141,7 +152,10 @@ class Executor:
             pass
 
         for directory in sorted(candidate_dirs):
-            os.makedirs(directory, exist_ok=True)
+            try:
+                os.makedirs(directory, exist_ok=True)
+            except PermissionError as exc:
+                raise self._scenarioforge_repo_write_error(directory, exc) from exc
 
     def _write_json_artifact(self, file_name: str, payload: dict) -> str:
         artifact_path = os.path.join(self.out_dir, file_name)

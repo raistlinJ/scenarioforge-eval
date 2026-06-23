@@ -69,6 +69,8 @@ One supported deployment model is:
 
 In that setup, the evaluator does not need a local CORE daemon. It only needs the generated XML to contain a usable remote delegation path, which ScenarioForge then uses to stage artifacts and launch the remote CLI on the CORE VM.
 
+The sibling `scenarioforge` checkout on the helper VM must still be writable by the evaluator user. `preview-plan` and later phases write repo-local artifacts under `outputs/`, `reports/`, and `uploads/`, including `outputs/plans`.
+
 The evaluator's local loopback preflight is intentionally narrow:
 
 - if the XML points at loopback CORE gRPC and does not contain a usable remote SSH path, the evaluator fails early
