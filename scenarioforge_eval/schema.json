@@ -19,7 +19,7 @@
       "properties": {
         "type": {
           "type": "string",
-          "enum": ["star", "segmented"]
+          "enum": ["star", "tree", "mesh", "segmented"]
         },
         "routers": {
           "oneOf": [
@@ -39,6 +39,7 @@
     "services": {
       "type": "object",
       "properties": {
+        "enabled": { "type": "boolean" },
         "randomize": { "type": "boolean" },
         "count": {
           "oneOf": [
@@ -60,6 +61,7 @@
     "vulns": {
       "type": "object",
       "properties": {
+        "enabled": { "type": "boolean" },
         "randomize": { "type": "boolean" },
         "count": {
           "oneOf": [
@@ -72,7 +74,15 @@
     "flows": {
       "type": "object",
       "properties": {
+        "enabled": { "type": "boolean" },
         "randomize": { "type": "boolean" },
+        "count": {
+          "oneOf": [
+            { "type": "integer" },
+            { "type": "array", "items": { "type": "integer" }, "minItems": 2, "maxItems": 2 }
+          ],
+          "description": "Legacy alias for chain_length."
+        },
         "chain_length": {
           "oneOf": [
             { "type": "integer" },
@@ -85,6 +95,7 @@
     "segmentation": {
       "type": "object",
       "properties": {
+        "enabled": { "type": "boolean" },
         "randomize": { "type": "boolean" },
         "density": { "type": "number", "minimum": 0, "maximum": 1 }
       }

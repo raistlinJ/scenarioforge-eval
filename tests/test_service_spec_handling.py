@@ -1,4 +1,5 @@
 import os
+import random
 import tempfile
 import textwrap
 import unittest
@@ -35,6 +36,88 @@ class SpecParserServiceSpecTests(unittest.TestCase):
                     'density': 1.0,
                     'include': ['SSH', 'HTTP', 'DHCPClient'],
                     'exclude': ['DHCPClient'],
+                },
+            )
+        finally:
+            os.unlink(spec_path)
+
+    def test_services_fixed_count_stays_enabled_when_randomize_false(self):
+        spec_text = textwrap.dedent(
+            """
+            name: parser-check
+            services:
+              randomize: false
+              count: 2
+            """
+        )
+
+        with tempfile.NamedTemporaryFile('w', suffix='.spec.yaml', delete=False) as handle:
+            handle.write(spec_text)
+            spec_path = handle.name
+
+        try:
+            parser = SpecParser(spec_path)
+            self.assertEqual(
+                parser.get_services_spec(),
+                {
+                    'enabled': True,
+                    'count': 2,
+                    'density': 1.0,
+                    'include': [],
+                    'exclude': [],
+                },
+            )
+        finally:
+            os.unlink(spec_path)
+
+    def test_flows_legacy_count_alias_enables_fixed_flag_sequencing(self):
+        spec_text = textwrap.dedent(
+            """
+            name: parser-check
+            flows:
+              randomize: false
+              count: 1
+            """
+        )
+
+        with tempfile.NamedTemporaryFile('w', suffix='.spec.yaml', delete=False) as handle:
+            handle.write(spec_text)
+            spec_path = handle.name
+
+        try:
+            parser = SpecParser(spec_path)
+            self.assertEqual(
+                parser.get_flows_spec(),
+                {
+                    'enabled': True,
+                    'chain_length': 1,
+                    'allow_duplicates': False,
+                },
+            )
+        finally:
+            os.unlink(spec_path)
+
+    def test_flows_randomize_false_without_length_disables_flag_sequencing(self):
+        spec_text = textwrap.dedent(
+            """
+            name: parser-check
+            flows:
+              randomize: false
+            """
+        )
+
+        with tempfile.NamedTemporaryFile('w', suffix='.spec.yaml', delete=False) as handle:
+            handle.write(spec_text)
+            spec_path = handle.name
+
+        try:
+            parser = SpecParser(spec_path)
+            self.assertEqual(
+                parser.get_flows_spec(rng=random.Random(0)),
+                {
+                    'enabled': False,
+                    'chain_length': 4,
+                    'allow_duplicates': False,
                 },
             )
         finally:

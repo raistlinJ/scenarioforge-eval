@@ -36,7 +36,7 @@ class SpecParser:
     def get_services_spec(self, rng: random.Random | None = None) -> dict:
         s = self.spec.get('services', {})
         return {
-            'enabled': s.get('enabled', s.get('randomize', True)),
+            'enabled': self._feature_enabled(s, activation_keys=('count', 'include', 'exclude')),
             'count': self._resolve_value(s.get('count', 3), rng=rng),
             'density': s.get('density', 1.0),
             'include': self._normalize_service_names(s.get('include')),
@@ -45,19 +45,25 @@ class SpecParser:
 
     def get_vulns_spec(self, rng: random.Random | None = None) -> dict:
         v = self.spec.get('vulns', {})
-        return {'enabled': v.get('enabled', v.get('randomize', True)), 'count': self._resolve_value(v.get('count', [1, 3]), rng=rng)}
+        return {
+            'enabled': self._feature_enabled(v, activation_keys=('count',)),
+            'count': self._resolve_value(v.get('count', [1, 3]), rng=rng),
+        }
 
     def get_flows_spec(self, rng: random.Random | None = None) -> dict:
         flows = self.spec.get('flows', {})
         return {
-            'enabled': flows.get('enabled', flows.get('randomize', True)),
-            'chain_length': self._resolve_value(flows.get('chain_length', [3, 5]), rng=rng),
+            'enabled': self._feature_enabled(flows, activation_keys=('chain_length', 'count')),
+            'chain_length': self._resolve_value(flows.get('chain_length', flows.get('count', [3, 5])), rng=rng),
             'allow_duplicates': flows.get('allow_duplicates', False)
         }
 
     def get_segmentation_spec(self) -> dict:
         seg = self.spec.get('segmentation', {})
-        return {'enabled': seg.get('enabled', seg.get('randomize', True)), 'density': seg.get('density', 0.5)}
+        return {
+            'enabled': self._feature_enabled(seg, activation_keys=('density',)),
+            'density': seg.get('density', 0.5),
+        }
 
     def get_hitl_spec(self) -> dict:
         return self.spec.get('hitl', {'use_env': True})
@@ -94,3 +100,27 @@ class SpecParser:
             normalized.append(canonical)
             seen.add(canonical)
         return normalized
+
+    def _feature_enabled(self, section: dict, *, activation_keys: tuple[str, ...], default: bool = True) -> bool:
+        if not isinstance(section, dict):
+            return default
+        if 'enabled' in section:
+            return bool(section.get('enabled'))
+        if 'randomize' in section:
+            if bool(section.get('randomize')):
+                return True
+            return any(self._has_activation_value(section, key) for key in activation_keys)
+        return default
+
+    @staticmethod
+    def _has_activation_value(section: dict, key: str) -> bool:
+        if key not in section:
+            return False
+        value = section.get(key)
+        if value in (None, ''):
+            return False
+        if isinstance(value, (list, tuple, set, dict)):
+            return len(value) > 0
+        if isinstance(value, (int, float)):
+            return value != 0
+        return bool(value)

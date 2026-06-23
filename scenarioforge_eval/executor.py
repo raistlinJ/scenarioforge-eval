@@ -107,6 +107,50 @@ class Executor:
             return None
         return os.path.join(self.out_dir, file_name)
 
+    def _ensure_scenarioforge_repo_dirs(self) -> None:
+        outputs_root = os.path.join(self.sf_path, 'outputs')
+        candidate_dirs = {
+            os.path.join(self.sf_path, 'reports'),
+            outputs_root,
+            os.path.join(self.sf_path, 'uploads'),
+            os.path.join(outputs_root, 'installed_generators'),
+            os.path.join(outputs_root, 'installed_generators', 'flag_generators'),
+            os.path.join(outputs_root, 'installed_generators', 'flag_node_generators'),
+            os.path.join(outputs_root, 'installed_vuln_catalogs'),
+            os.path.join(outputs_root, 'plans'),
+            os.path.join(outputs_root, 'logs'),
+            os.path.join(outputs_root, 'traffic'),
+            os.path.join(outputs_root, 'segmentation'),
+            os.path.join(outputs_root, 'vulns'),
+            os.path.join(outputs_root, 'flag_generators_runs'),
+            os.path.join(outputs_root, 'flag_node_generators_runs'),
+        }
+
+        try:
+            from webapp import app_backend as backend
+
+            for helper_name in (
+                '_reports_dir',
+                '_outputs_dir',
+                '_uploads_dir',
+                '_installed_generators_root',
+                '_installed_vuln_catalogs_root',
+            ):
+                helper = getattr(backend, helper_name, None)
+                if not callable(helper):
+                    continue
+                try:
+                    resolved = helper()
+                except Exception:
+                    continue
+                if resolved:
+                    candidate_dirs.add(os.path.abspath(str(resolved)))
+        except Exception:
+            pass
+
+        for directory in sorted(candidate_dirs):
+            os.makedirs(directory, exist_ok=True)
+
     def _write_json_artifact(self, file_name: str, payload: dict) -> str:
         artifact_path = os.path.join(self.out_dir, file_name)
         with open(artifact_path, 'w', encoding='utf-8') as handle:
@@ -395,6 +439,8 @@ class Executor:
         log_name: str | None = None,
         allow_nonzero: bool = False,
     ) -> dict:
+        self._ensure_scenarioforge_repo_dirs()
+
         cmd = [
             self._cli_python(),
             '-m',

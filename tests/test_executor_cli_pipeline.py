@@ -215,6 +215,49 @@ class ExecutorCliPipelineTests(unittest.TestCase):
                         log_name='preview-plan.log',
                     )
 
+    def test_run_cli_phase_creates_standard_repo_output_dirs(self):
+        spec = {
+            'name': 'eval-scenario',
+            'seed': 779,
+            'validation': {'policy': 'strict'},
+        }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            sf_root = os.path.join(temp_dir, 'scenarioforge')
+            os.makedirs(sf_root, exist_ok=True)
+            executor = Executor(spec=spec, out_dir=temp_dir, sf_path=sf_root)
+
+            expected_dirs = [
+                os.path.join(sf_root, 'reports'),
+                os.path.join(sf_root, 'outputs'),
+                os.path.join(sf_root, 'uploads'),
+                os.path.join(sf_root, 'outputs', 'installed_generators'),
+                os.path.join(sf_root, 'outputs', 'installed_vuln_catalogs'),
+                os.path.join(sf_root, 'outputs', 'plans'),
+            ]
+
+            def _fake_run(*args, **kwargs):
+                for directory in expected_dirs:
+                    self.assertTrue(os.path.isdir(directory), directory)
+                return subprocess.CompletedProcess(
+                    args=['python'],
+                    returncode=0,
+                    stdout='{"phase":"preview-plan"}\n',
+                    stderr='',
+                )
+
+            with mock.patch('scenarioforge_eval.executor.subprocess.run', side_effect=_fake_run):
+                phase_result = executor._run_cli_phase(
+                    'preview-plan',
+                    os.path.join(temp_dir, 'scenario.xml'),
+                    'eval-scenario',
+                    seed=779,
+                    json_output_name='preview-plan.json',
+                    log_name='preview-plan.log',
+                )
+
+            self.assertEqual(phase_result['returncode'], 0)
+
     def test_warning_tolerant_policy_accepts_warning_only_validation(self):
         warning_summary = {'ok': False, 'extra_nodes': ['node-1']}
 

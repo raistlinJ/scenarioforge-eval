@@ -41,6 +41,8 @@ validation:
   policy: strict
 ```
 
+For Flow specs, prefer `chain_length`. The evaluator also accepts legacy `flows.count` as an alias.
+
 Run the evaluator by passing the directory containing your `.spec.yaml` files (or a single file), along with the path to the `scenarioforge` codebase.
 
 Without a phase flag, the evaluator defaults to the full `execute` path to match ScenarioForge's CLI default phase.
@@ -97,6 +99,8 @@ The evaluator retains the authoritative `scenario.xml` generated at the start of
 
 Full execute runs always add `--post-execution-validation`, parse the last `VALIDATION_SUMMARY_JSON:` marker from combined stdout/stderr, and save the parsed payload as `execute-validation.json`.
 
+Before invoking ScenarioForge CLI phases, the evaluator also ensures the standard sibling-repo output roots exist, including `reports/`, `outputs/`, `uploads/`, and the installed-catalog / installed-generator subdirectories under `outputs/`.
+
 Before `topo` or `execute`, when the generated XML targets a loopback CORE gRPC endpoint such as `127.0.0.1:50051` and does not already carry a usable remote-delegation SSH path, the evaluator performs a local socket preflight and fails early with a direct message if the local CORE daemon is unreachable.
 
 Validation policy is explicit in the spec:
@@ -110,6 +114,12 @@ Supported policies:
 
 - `strict`: require process exit `0` and `validation_summary.ok == true`.
 - `warning_tolerant`: allow warning-only validation summaries while still failing on validation error fields.
+
+Legacy spec compatibility notes:
+
+- `flows.count` is treated as an alias for `flows.chain_length`.
+- `randomize: false` with no explicit count/length disables the feature.
+- `randomize: false` with an explicit count/length keeps the feature enabled and uses the fixed value.
 
 When multiple evaluator iterations target the same CORE VM, runtime phases that can interfere with each other are serialized using a per-VM lock derived from the embedded CORE connection in `scenario.xml`.
 
