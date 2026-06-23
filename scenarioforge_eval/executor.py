@@ -114,16 +114,8 @@ class Executor:
             outputs_root,
             os.path.join(self.sf_path, 'uploads'),
             os.path.join(outputs_root, 'installed_generators'),
-            os.path.join(outputs_root, 'installed_generators', 'flag_generators'),
-            os.path.join(outputs_root, 'installed_generators', 'flag_node_generators'),
             os.path.join(outputs_root, 'installed_vuln_catalogs'),
             os.path.join(outputs_root, 'plans'),
-            os.path.join(outputs_root, 'logs'),
-            os.path.join(outputs_root, 'traffic'),
-            os.path.join(outputs_root, 'segmentation'),
-            os.path.join(outputs_root, 'vulns'),
-            os.path.join(outputs_root, 'flag_generators_runs'),
-            os.path.join(outputs_root, 'flag_node_generators_runs'),
         }
 
         try:
