@@ -1,23 +1,23 @@
-name: "sanity-check"
-iterations: 1
+name: "integrated-services-flow"
+iterations: 2
 topology:
   type: "star"
-  routers: 1
-  hosts: 1
+  routers: 3
+  hosts: 8
   randomize: false
 services:
   enabled: true
-  randomize: false
-  count: 1
-  include: ["SSH"]
+  randomize: true
+  count: 6
+  include: ["SSH", "HTTP"]
 vulns:
   enabled: true
-  randomize: false
-  count: 1
+  randomize: true
+  count: 4
 flows:
   enabled: true
-  randomize: false
-  chain_length: 1
+  randomize: true
+  chain_length: 4
   allow_duplicates: false
 segmentation:
   enabled: false

@@ -1,4 +1,4 @@
-name: "sanity-check"
+name: "duplicate-flow-chain"
 iterations: 1
 topology:
   type: "star"
@@ -6,10 +6,8 @@ topology:
   hosts: 1
   randomize: false
 services:
-  enabled: true
-  randomize: false
-  count: 1
-  include: ["SSH"]
+  enabled: false
+  count: 0
 vulns:
   enabled: true
   randomize: false
@@ -17,8 +15,8 @@ vulns:
 flows:
   enabled: true
   randomize: false
-  chain_length: 1
-  allow_duplicates: false
+  chain_length: 3
+  allow_duplicates: true
 segmentation:
   enabled: false
 hitl:

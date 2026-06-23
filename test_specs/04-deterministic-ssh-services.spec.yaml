@@ -1,24 +1,21 @@
-name: "sanity-check"
+name: "deterministic-ssh-services"
 iterations: 1
 topology:
   type: "star"
   routers: 1
-  hosts: 1
+  hosts: 3
   randomize: false
 services:
   enabled: true
   randomize: false
-  count: 1
+  count: 3
   include: ["SSH"]
 vulns:
-  enabled: true
-  randomize: false
-  count: 1
+  enabled: false
+  count: 0
 flows:
-  enabled: true
-  randomize: false
-  chain_length: 1
-  allow_duplicates: false
+  enabled: false
+  chain_length: 0
 segmentation:
   enabled: false
 hitl:

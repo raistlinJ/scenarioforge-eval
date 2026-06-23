@@ -584,6 +584,23 @@ class Executor:
             })
         return items
 
+    def _build_vulnerability_section(self, vulns_spec: dict) -> dict | None:
+        try:
+            requested_count = max(0, int(vulns_spec.get('count', 0) or 0))
+        except Exception:
+            requested_count = 0
+        if requested_count <= 0:
+            return None
+        return {
+            'density': 0.0,
+            'items': [{
+                'selected': 'Random',
+                'v_metric': 'Count',
+                'v_count': requested_count,
+                'factor': 1.0,
+            }],
+        }
+
     def _generate_xml(self) -> str:
         """Uses the UI's XML generator to build a random topology XML."""
         from webapp import app_backend as backend
@@ -602,12 +619,9 @@ class Executor:
         # Inject vulnerabilities count into sections
         vulns_spec = self.spec.get('vulns', {})
         if vulns_spec.get('enabled', vulns_spec.get('randomize')):
-            count = vulns_spec.get('count', 1)
-            density = min(1.0, count / 10.0)
-            scen_payload['sections']['Vulnerabilities'] = {
-                'density': density,
-                'items': [{'selected': 'Random', 'v_metric': 'Weight', 'factor': 1.0}]
-            }
+            vulnerability_section = self._build_vulnerability_section(vulns_spec)
+            if vulnerability_section:
+                scen_payload['sections']['Vulnerabilities'] = vulnerability_section
             
         # Inject services count into sections
         services_spec = self.spec.get('services', {})

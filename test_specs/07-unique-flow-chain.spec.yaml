@@ -1,23 +1,21 @@
-name: "sanity-check"
+name: "unique-flow-chain"
 iterations: 1
 topology:
   type: "star"
-  routers: 1
-  hosts: 1
+  routers: 2
+  hosts: 6
   randomize: false
 services:
-  enabled: true
-  randomize: false
-  count: 1
-  include: ["SSH"]
+  enabled: false
+  count: 0
 vulns:
   enabled: true
-  randomize: false
-  count: 1
+  randomize: true
+  count: 3
 flows:
   enabled: true
   randomize: false
-  chain_length: 1
+  chain_length: 3
   allow_duplicates: false
 segmentation:
   enabled: false

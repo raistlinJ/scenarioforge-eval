@@ -1,0 +1,25 @@
+name: "mixed-safe-services"
+iterations: 2
+topology:
+  type: "star"
+  routers: 2
+  hosts: 6
+  randomize: false
+services:
+  enabled: true
+  randomize: true
+  count: 6
+  include: ["SSH", "HTTP"]
+  exclude: ["DHCPClient"]
+vulns:
+  enabled: false
+  count: 0
+flows:
+  enabled: false
+  chain_length: 0
+segmentation:
+  enabled: false
+hitl:
+  use_env: false
+validation:
+  policy: "strict"

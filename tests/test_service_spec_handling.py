@@ -174,6 +174,29 @@ class ExecutorServiceItemTests(unittest.TestCase):
             ],
         )
 
+    def test_vulnerability_count_is_encoded_as_exact_count(self):
+        executor = Executor(spec={'seed': 789}, out_dir=tempfile.gettempdir(), sf_path='.')
+
+        section = executor._build_vulnerability_section({'count': 1})
+
+        self.assertEqual(
+            section,
+            {
+                'density': 0.0,
+                'items': [{
+                    'selected': 'Random',
+                    'v_metric': 'Count',
+                    'v_count': 1,
+                    'factor': 1.0,
+                }],
+            },
+        )
+
+    def test_zero_vulnerability_count_omits_section(self):
+        executor = Executor(spec={'seed': 790}, out_dir=tempfile.gettempdir(), sf_path='.')
+
+        self.assertIsNone(executor._build_vulnerability_section({'count': 0}))
+
 
 if __name__ == '__main__':
     unittest.main()

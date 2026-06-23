@@ -1,0 +1,22 @@
+name: "router-count-only"
+iterations: 1
+topology:
+  type: "star"
+  routers: 3
+  hosts: 0
+  randomize: false
+services:
+  enabled: false
+  count: 0
+vulns:
+  enabled: false
+  count: 0
+flows:
+  enabled: false
+  chain_length: 0
+segmentation:
+  enabled: false
+hitl:
+  use_env: false
+validation:
+  policy: "strict"
