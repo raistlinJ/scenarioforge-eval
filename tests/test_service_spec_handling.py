@@ -65,9 +65,9 @@ class ExecutorServiceItemTests(unittest.TestCase):
         )
 
     def test_default_vm_safe_pool_excludes_dhcpclient(self):
-        executor = Executor(spec={}, out_dir=tempfile.gettempdir(), sf_path='.')
+        executor = Executor(spec={'seed': 123}, out_dir=tempfile.gettempdir(), sf_path='.')
 
-        with mock.patch('scenarioforge_eval.executor.random.choice', side_effect=['HTTP', 'SSH', 'HTTP', 'SSH']):
+        with mock.patch.object(executor._rng, 'choice', side_effect=['HTTP', 'SSH', 'HTTP', 'SSH']):
             items = executor._build_service_items({'count': 4})
 
         self.assertEqual(
@@ -79,9 +79,9 @@ class ExecutorServiceItemTests(unittest.TestCase):
         )
 
     def test_explicit_include_can_opt_into_dhcpclient(self):
-        executor = Executor(spec={}, out_dir=tempfile.gettempdir(), sf_path='.')
+        executor = Executor(spec={'seed': 456}, out_dir=tempfile.gettempdir(), sf_path='.')
 
-        with mock.patch('scenarioforge_eval.executor.random.choice', side_effect=['DHCPClient']):
+        with mock.patch.object(executor._rng, 'choice', side_effect=['DHCPClient']):
             items = executor._build_service_items({'count': 1, 'include': ['DHCPClient']})
 
         self.assertEqual(

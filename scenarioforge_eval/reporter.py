@@ -1,9 +1,11 @@
 import os
 import json
+import xml.etree.ElementTree as ET
 
 class Reporter:
     ARTIFACT_SECTIONS = (
         ('scenario_xml', 'Generated Scenario XML', 'xml'),
+        ('seed_txt', 'Iteration Seed', 'text'),
         ('preview_plan_json', 'Preview Plan JSON', 'json'),
         ('flag_sequencing_json', 'Flag Sequencing JSON', 'json'),
         ('topo_json', 'Topo Phase JSON', 'json'),
@@ -11,6 +13,9 @@ class Reporter:
         ('flag_sequencing_log', 'Flag Sequencing Log', 'text'),
         ('topo_log', 'Topo Phase Log', 'text'),
         ('execute_log', 'Execute Log', 'text'),
+        ('execute_validation_json', 'Execute Validation JSON', 'json'),
+        ('execute_report', 'Scenario Report', 'markdown'),
+        ('execute_summary', 'Scenario Summary', 'json'),
     )
 
     def __init__(self, out_dir: str):
@@ -38,12 +43,31 @@ class Reporter:
             # Pack the available phase artifacts into a prompt payload for follow-up debugging.
             self._generate_ai_prompt(spec_name, result)
 
-    def _write_artifact_section(self, handle, title: str, artifact_path: str, fence: str) -> None:
+    @staticmethod
+    def _redacted_xml_text(xml_path: str) -> str:
+        try:
+            tree = ET.parse(xml_path)
+        except Exception as exc:
+            return f"[XML redaction unavailable: failed to parse {xml_path}: {exc}]"
+
+        for element in tree.getroot().iter('CoreConnection'):
+            if 'ssh_password' in element.attrib:
+                element.set('ssh_password', '[REDACTED]')
+        return ET.tostring(tree.getroot(), encoding='unicode')
+
+    def _write_artifact_section(self, handle, artifact_key: str, title: str, artifact_path: str, fence: str) -> None:
+        source_label = artifact_path
+        if artifact_key == 'scenario_xml':
+            source_label = f"{artifact_path} (ssh_password redacted)"
+
         handle.write(f"## {title}\n")
-        handle.write(f"Source: {artifact_path}\n\n")
+        handle.write(f"Source: {source_label}\n\n")
         handle.write(f"```{fence}\n")
-        with open(artifact_path, 'r', encoding='utf-8') as artifact_file:
-            content = artifact_file.read()
+        if artifact_key == 'scenario_xml':
+            content = self._redacted_xml_text(artifact_path)
+        else:
+            with open(artifact_path, 'r', encoding='utf-8') as artifact_file:
+                content = artifact_file.read()
         handle.write(content)
         if content and not content.endswith('\n'):
             handle.write('\n')
@@ -66,7 +90,7 @@ class Reporter:
                 artifact_path = artifacts.get(artifact_key)
                 if not artifact_path or not os.path.exists(artifact_path):
                     continue
-                self._write_artifact_section(f, title, artifact_path, fence)
+                self._write_artifact_section(f, artifact_key, title, artifact_path, fence)
                 wrote_artifact = True
 
             if not wrote_artifact:

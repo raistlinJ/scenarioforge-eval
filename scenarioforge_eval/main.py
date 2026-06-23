@@ -2,6 +2,7 @@ import argparse
 import os
 import glob
 import logging
+import random
 
 try:
     from .parser import SpecParser
@@ -75,16 +76,20 @@ def main():
                 spec_name = f"{spec_name}_run{i+1}"
             
             spec_out_dir = os.path.join(args.out, spec_name)
+            iteration_seed = random.SystemRandom().randint(0, 2**31 - 1)
+            iteration_rng = random.Random(iteration_seed)
             
             # Resolve the spec dynamically on each iteration to generate random variations
             resolved_spec = {
                 'name': spec_name,
-                'topology': spec.get_topology_spec(),
-                'services': spec.get_services_spec(),
-                'vulns': spec.get_vulns_spec(),
-                'flows': spec.get_flows_spec(),
+                'seed': iteration_seed,
+                'topology': spec.get_topology_spec(rng=iteration_rng),
+                'services': spec.get_services_spec(rng=iteration_rng),
+                'vulns': spec.get_vulns_spec(rng=iteration_rng),
+                'flows': spec.get_flows_spec(rng=iteration_rng),
                 'segmentation': spec.get_segmentation_spec(),
                 'hitl': spec.get_hitl_spec(),
+                'validation': spec.get_validation_spec(),
             }
             
             target_phase = resolve_target_phase(args)

@@ -94,6 +94,16 @@
       "properties": {
         "use_env": { "type": "boolean", "description": "If true, extracts hitl config from .scenarioforge.env" }
       }
+    },
+    "validation": {
+      "type": "object",
+      "properties": {
+        "policy": {
+          "type": "string",
+          "enum": ["strict", "warning_tolerant", "warning-tolerant"],
+          "description": "Validation pass policy for execute. strict requires validation_summary.ok=true; warning_tolerant allows warning-only validation summaries."
+        }
+      }
     }
   }
 }

@@ -23,35 +23,35 @@ class SpecParser:
     def get_name(self) -> str:
         return self.spec.get('name', 'eval-scenario')
 
-    def get_topology_spec(self) -> dict:
+    def get_topology_spec(self, rng: random.Random | None = None) -> dict:
         """Returns normalized topology parameters."""
         topo = self.spec.get('topology', {})
         res = {
             'type': topo.get('type', 'star'),
-            'routers': self._resolve_value(topo.get('routers', [2, 5])),
-            'hosts': self._resolve_value(topo.get('hosts', [3, 10])),
+            'routers': self._resolve_value(topo.get('routers', [2, 5]), rng=rng),
+            'hosts': self._resolve_value(topo.get('hosts', [3, 10]), rng=rng),
         }
         return res
 
-    def get_services_spec(self) -> dict:
+    def get_services_spec(self, rng: random.Random | None = None) -> dict:
         s = self.spec.get('services', {})
         return {
             'enabled': s.get('enabled', s.get('randomize', True)),
-            'count': self._resolve_value(s.get('count', 3)),
+            'count': self._resolve_value(s.get('count', 3), rng=rng),
             'density': s.get('density', 1.0),
             'include': self._normalize_service_names(s.get('include')),
             'exclude': self._normalize_service_names(s.get('exclude')),
         }
 
-    def get_vulns_spec(self) -> dict:
+    def get_vulns_spec(self, rng: random.Random | None = None) -> dict:
         v = self.spec.get('vulns', {})
-        return {'enabled': v.get('enabled', v.get('randomize', True)), 'count': self._resolve_value(v.get('count', [1, 3]))}
+        return {'enabled': v.get('enabled', v.get('randomize', True)), 'count': self._resolve_value(v.get('count', [1, 3]), rng=rng)}
 
-    def get_flows_spec(self) -> dict:
+    def get_flows_spec(self, rng: random.Random | None = None) -> dict:
         flows = self.spec.get('flows', {})
         return {
             'enabled': flows.get('enabled', flows.get('randomize', True)),
-            'chain_length': self._resolve_value(flows.get('chain_length', [3, 5])),
+            'chain_length': self._resolve_value(flows.get('chain_length', [3, 5]), rng=rng),
             'allow_duplicates': flows.get('allow_duplicates', False)
         }
 
@@ -62,10 +62,16 @@ class SpecParser:
     def get_hitl_spec(self) -> dict:
         return self.spec.get('hitl', {'use_env': True})
 
-    def _resolve_value(self, val):
+    def get_validation_spec(self) -> dict:
+        validation = self.spec.get('validation', {})
+        policy = str(validation.get('policy', 'strict')).strip() or 'strict'
+        return {'policy': policy}
+
+    def _resolve_value(self, val, *, rng: random.Random | None = None):
         """Resolves a value that could be a static int/string or a range [min, max]."""
         if isinstance(val, list) and len(val) == 2:
-            return random.randint(val[0], val[1])
+            chooser = rng or random
+            return chooser.randint(val[0], val[1])
         return val
 
     def _normalize_service_names(self, names) -> list[str]:
