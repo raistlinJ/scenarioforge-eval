@@ -45,8 +45,8 @@ class Executor:
 
     def __init__(self, spec: dict, out_dir: str, sf_path: str, target_phase: str = "execute", verbose: bool = False):
         self.spec = spec
-        self.out_dir = out_dir
-        self.sf_path = os.path.abspath(sf_path)
+        self.out_dir = os.path.abspath(os.path.expanduser(out_dir))
+        self.sf_path = os.path.abspath(os.path.expanduser(sf_path))
         self.target_phase = target_phase
         self.verbose = verbose
         self.seed = self._resolve_seed(self.spec.get('seed'))

@@ -1,7 +1,10 @@
 import argparse
+import os
+import tempfile
 import unittest
 
 from scenarioforge_eval.main import resolve_target_phase
+from scenarioforge_eval.reporter import Reporter
 
 
 class MainCliPhaseSelectionTests(unittest.TestCase):
@@ -19,6 +22,20 @@ class MainCliPhaseSelectionTests(unittest.TestCase):
         args = argparse.Namespace(execute=False, flag_sequencing=False, topology=True)
 
         self.assertEqual(resolve_target_phase(args), 'topology')
+
+    def test_reporter_normalizes_relative_output_directory(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            original_cwd = os.getcwd()
+            try:
+                os.chdir(temp_dir)
+                reporter = Reporter('test-outs')
+            finally:
+                os.chdir(original_cwd)
+
+            self.assertEqual(
+                os.path.realpath(reporter.out_dir),
+                os.path.realpath(os.path.join(temp_dir, 'test-outs')),
+            )
 
 
 if __name__ == '__main__':

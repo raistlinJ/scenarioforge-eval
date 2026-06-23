@@ -50,8 +50,9 @@ def main():
         # Also suppress in normal mode to prevent connection reset error logs
         logging.getLogger("paramiko").setLevel(logging.CRITICAL)
 
-    os.makedirs(args.out, exist_ok=True)
-    reporter = Reporter(args.out)
+    output_root = os.path.abspath(os.path.expanduser(args.out))
+    os.makedirs(output_root, exist_ok=True)
+    reporter = Reporter(output_root)
 
     if os.path.isfile(args.spec_path):
         spec_files = [args.spec_path]
@@ -75,7 +76,7 @@ def main():
             if iterations > 1:
                 spec_name = f"{spec_name}_run{i+1}"
             
-            spec_out_dir = os.path.join(args.out, spec_name)
+            spec_out_dir = os.path.join(output_root, spec_name)
             iteration_seed = random.SystemRandom().randint(0, 2**31 - 1)
             iteration_rng = random.Random(iteration_seed)
             

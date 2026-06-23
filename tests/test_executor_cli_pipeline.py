@@ -12,6 +12,93 @@ from scenarioforge_eval.executor import Executor
 
 
 class ExecutorCliPipelineTests(unittest.TestCase):
+    def test_relative_output_directory_becomes_absolute_for_cli_artifacts(self):
+        spec = {
+            'name': 'eval-scenario',
+            'seed': 12345,
+            'validation': {'policy': 'strict'},
+        }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            original_cwd = os.getcwd()
+            try:
+                os.chdir(temp_dir)
+                executor = Executor(
+                    spec=spec,
+                    out_dir='test-outs/sanity-check',
+                    sf_path='/Users/jcacosta/Documents/GitHub/scenarioforge',
+                )
+            finally:
+                os.chdir(original_cwd)
+
+            expected = os.path.join(temp_dir, 'test-outs', 'sanity-check')
+            self.assertEqual(os.path.realpath(executor.out_dir), os.path.realpath(expected))
+            self.assertEqual(
+                os.path.realpath(executor._artifact_path('preview-plan.json')),
+                os.path.realpath(os.path.join(expected, 'preview-plan.json')),
+            )
+            self.assertTrue(os.path.isdir(expected))
+
+    def test_relative_output_directory_passes_absolute_plan_output_to_cli(self):
+        spec = {
+            'name': 'eval-scenario',
+            'seed': 12345,
+            'validation': {'policy': 'strict'},
+        }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            sf_root = os.path.join(temp_dir, 'scenarioforge')
+            os.makedirs(sf_root, exist_ok=True)
+            original_cwd = os.getcwd()
+            try:
+                os.chdir(temp_dir)
+                executor = Executor(
+                    spec=spec,
+                    out_dir='test-outs/sanity-check',
+                    sf_path=sf_root,
+                )
+            finally:
+                os.chdir(original_cwd)
+
+            captured = {}
+
+            def _fake_run(cmd, **kwargs):
+                captured['cmd'] = list(cmd)
+                captured['cwd'] = kwargs.get('cwd')
+                return subprocess.CompletedProcess(
+                    args=cmd,
+                    returncode=0,
+                    stdout='',
+                    stderr='',
+                )
+
+            with mock.patch(
+                'scenarioforge_eval.executor.subprocess.run',
+                side_effect=_fake_run,
+            ):
+                executor._run_cli_phase(
+                    'preview-plan',
+                    os.path.join(temp_dir, 'scenario.xml'),
+                    'eval-scenario',
+                    seed=12345,
+                    json_output_name='preview-plan.json',
+                    log_name='preview-plan.log',
+                )
+
+            plan_index = captured['cmd'].index('--plan-output')
+            self.assertEqual(
+                os.path.realpath(captured['cmd'][plan_index + 1]),
+                os.path.realpath(
+                    os.path.join(
+                        temp_dir,
+                        'test-outs',
+                        'sanity-check',
+                        'preview-plan.json',
+                    )
+                ),
+            )
+            self.assertEqual(os.path.realpath(captured['cwd']), os.path.realpath(sf_root))
+
     def test_generate_xml_embeds_vm_core_connection_defaults(self):
         spec = {
             'name': 'eval-scenario',

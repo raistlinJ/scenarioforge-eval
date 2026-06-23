@@ -19,7 +19,7 @@ class Reporter:
     )
 
     def __init__(self, out_dir: str):
-        self.out_dir = out_dir
+        self.out_dir = os.path.abspath(os.path.expanduser(out_dir))
 
     def log_result(self, spec_name: str, result: dict):
         log_path = os.path.join(self.out_dir, f"{spec_name}_result.json")
