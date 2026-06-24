@@ -99,6 +99,56 @@ class ExecutorCliPipelineTests(unittest.TestCase):
             )
             self.assertEqual(os.path.realpath(captured['cwd']), os.path.realpath(sf_root))
 
+    def test_cli_env_does_not_inherit_ambient_pythonpath_by_default(self):
+        spec = {
+            'name': 'eval-scenario',
+            'seed': 12345,
+            'validation': {'policy': 'strict'},
+        }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            sf_root = os.path.join(temp_dir, 'scenarioforge')
+            os.makedirs(sf_root, exist_ok=True)
+            executor = Executor(
+                spec=spec,
+                out_dir=os.path.join(temp_dir, 'out'),
+                sf_path=sf_root,
+            )
+
+            with mock.patch.dict(os.environ, {'PYTHONPATH': os.path.join(temp_dir, 'meshroom_cuda13')}, clear=False):
+                env = executor._cli_env()
+
+            self.assertEqual(env['PYTHONPATH'], sf_root)
+
+    def test_cli_env_can_preserve_ambient_pythonpath_when_requested(self):
+        spec = {
+            'name': 'eval-scenario',
+            'seed': 12345,
+            'validation': {'policy': 'strict'},
+        }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            sf_root = os.path.join(temp_dir, 'scenarioforge')
+            ambient_path = os.path.join(temp_dir, 'extra-pythonpath')
+            os.makedirs(sf_root, exist_ok=True)
+            executor = Executor(
+                spec=spec,
+                out_dir=os.path.join(temp_dir, 'out'),
+                sf_path=sf_root,
+            )
+
+            with mock.patch.dict(
+                os.environ,
+                {
+                    'PYTHONPATH': ambient_path,
+                    'SCENARIOFORGE_EVAL_PRESERVE_PYTHONPATH': '1',
+                },
+                clear=False,
+            ):
+                env = executor._cli_env()
+
+            self.assertEqual(env['PYTHONPATH'], os.pathsep.join([sf_root, ambient_path]))
+
     def test_generate_xml_embeds_vm_core_connection_defaults(self):
         spec = {
             'name': 'eval-scenario',

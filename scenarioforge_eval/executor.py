@@ -93,9 +93,16 @@ class Executor:
 
     def _cli_env(self) -> dict[str, str]:
         env = dict(os.environ)
-        existing = str(env.get('PYTHONPATH') or '').strip()
         pieces = [self.sf_path]
-        if existing:
+        preserve_pythonpath = str(env.get('SCENARIOFORGE_EVAL_PRESERVE_PYTHONPATH') or '').strip().lower() in {
+            '1',
+            'true',
+            'yes',
+            'y',
+            'on',
+        }
+        existing = str(env.get('PYTHONPATH') or '').strip()
+        if preserve_pythonpath and existing:
             pieces.append(existing)
         env['PYTHONPATH'] = os.pathsep.join(pieces)
         env['NO_COLOR'] = '1'
