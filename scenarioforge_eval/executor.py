@@ -43,15 +43,25 @@ class Executor:
         'generator_injects_missing',
     )
 
-    def __init__(self, spec: dict, out_dir: str, sf_path: str, target_phase: str = "execute", verbose: bool = False):
+    def __init__(
+        self,
+        spec: dict,
+        out_dir: str,
+        sf_path: str,
+        target_phase: str = "execute",
+        verbose: bool = False,
+        dangerous_cleanup_between_runs: bool = False,
+    ):
         self.spec = spec
         self.out_dir = os.path.abspath(os.path.expanduser(out_dir))
         self.sf_path = os.path.abspath(os.path.expanduser(sf_path))
         self.target_phase = target_phase
         self.verbose = verbose
+        self.dangerous_cleanup_between_runs = bool(dangerous_cleanup_between_runs)
         self.seed = self._resolve_seed(self.spec.get('seed'))
         self._rng = random.Random(self.seed)
         self.phase_timeout_s = self._resolve_phase_timeout()
+        self.cleanup_timeout_s = self._resolve_cleanup_timeout()
         os.makedirs(self.out_dir, exist_ok=True)
         try:
             os.chmod(self.out_dir, 0o700)
@@ -74,6 +84,14 @@ class Executor:
             timeout_s = int(raw_timeout)
         except Exception:
             timeout_s = 1200
+        return max(timeout_s, 1)
+
+    def _resolve_cleanup_timeout(self) -> int:
+        raw_timeout = str(os.environ.get('SCENARIOFORGE_EVAL_CLEANUP_TIMEOUT_S') or '900').strip()
+        try:
+            timeout_s = int(raw_timeout)
+        except Exception:
+            timeout_s = 900
         return max(timeout_s, 1)
 
     def _load_runtime_env(self) -> None:
@@ -167,6 +185,7 @@ class Executor:
             'ERROR',
             'Traceback',
             'FATAL',
+            '[cleanup]',
         )
         for raw_line in text.splitlines():
             line = raw_line.strip()
@@ -520,6 +539,90 @@ class Executor:
             )
         return phase_result
 
+    def _run_dangerous_cleanup(self) -> dict:
+        self._ensure_scenarioforge_repo_dirs()
+
+        cmd = [
+            self._cli_python(),
+            '-m',
+            'scenarioforge.cleanup_scenarioforge_docker',
+            '--force',
+            '--timeout',
+            str(self.cleanup_timeout_s),
+        ]
+
+        returncode: int | None = None
+        stdout_text = ''
+        stderr_text = ''
+        timed_out = False
+        try:
+            proc = subprocess.run(
+                cmd,
+                cwd=self.sf_path,
+                env=self._cli_env(),
+                capture_output=True,
+                text=True,
+                check=False,
+                timeout=self.cleanup_timeout_s + 30,
+            )
+            returncode = proc.returncode
+            stdout_text = proc.stdout or ''
+            stderr_text = proc.stderr or ''
+        except subprocess.TimeoutExpired as exc:
+            timed_out = True
+            stdout_text = self._coerce_subprocess_text(exc.stdout)
+            stderr_text = self._coerce_subprocess_text(exc.stderr)
+
+        combined = stdout_text + (("\n" + stderr_text) if stderr_text else '')
+        log_path = os.path.join(self.out_dir, 'dangerous-cleanup.log')
+        with open(log_path, 'w', encoding='utf-8') as handle:
+            handle.write(combined)
+
+        self._stream_cli_output(combined)
+        phase_result = self._phase_result(
+            'dangerous-cleanup',
+            returncode,
+            combined,
+            log_path,
+            None,
+            timed_out=timed_out,
+        )
+
+        if timed_out:
+            last_line = self._last_output_line(combined)
+            message = f"cleanup-scenarioforge-docker timed out after {self.cleanup_timeout_s} seconds."
+            if last_line:
+                message = f"{message} Last output: {last_line}"
+            raise PhaseExecutionError(
+                f"{message} See {log_path}",
+                phase_result,
+            )
+        if returncode != 0:
+            last_line = self._last_output_line(combined)
+            message = f"cleanup-scenarioforge-docker failed with exit code {returncode}."
+            if last_line:
+                message = f"{message} Last output: {last_line}"
+            raise PhaseExecutionError(
+                f"{message} See {log_path}",
+                phase_result,
+            )
+        return phase_result
+
+    def _run_dangerous_cleanup_if_requested(self, result: dict) -> None:
+        if not self.dangerous_cleanup_between_runs:
+            return
+
+        print(">> Phase: dangerous-cleanup")
+        result['artifacts']['dangerous_cleanup_log'] = self._artifact_path('dangerous-cleanup.log')
+        try:
+            cleanup_phase = self._run_dangerous_cleanup()
+        except PhaseExecutionError as exc:
+            self._record_phase_result(result, exc.phase_result)
+            result['stages']['dangerous_cleanup'] = 'FAIL'
+            raise
+        self._record_phase_result(result, cleanup_phase)
+        result['stages']['dangerous_cleanup'] = 'PASS'
+
     def _build_topology_payload(self, topo_spec: dict) -> dict:
         try:
             host_count = max(0, int(topo_spec.get('hosts', 0) or 0))
@@ -725,6 +828,7 @@ class Executor:
             'metadata': {
                 'seed': self.seed,
                 'validation_policy': self._validation_policy(),
+                'dangerous_cleanup_between_runs': self.dangerous_cleanup_between_runs,
             },
             'artifacts': {
                 'output_dir': self.out_dir,
@@ -750,6 +854,7 @@ class Executor:
                 with self._shared_vm_lock(xml_path) as lock_info:
                     if lock_info:
                         result['metadata']['shared_vm_lock'] = lock_info
+                    self._run_dangerous_cleanup_if_requested(result)
                     try:
                         topo_phase = self._run_cli_phase('topo', xml_path, scenario_name, seed=self.seed, json_output_name='topo.json', log_name='topo.log')
                     except PhaseExecutionError as exc:
@@ -779,6 +884,8 @@ class Executor:
             with runtime_lock_context as lock_info:
                 if lock_info:
                     result['metadata']['shared_vm_lock'] = lock_info
+
+                self._run_dangerous_cleanup_if_requested(result)
 
                 if flows_spec.get('enabled', flows_spec.get('randomize')):
                     print(">> Phase: flag-sequencing")

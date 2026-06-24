@@ -8,7 +8,7 @@ import unittest
 from contextlib import contextmanager
 from unittest import mock
 
-from scenarioforge_eval.executor import Executor
+from scenarioforge_eval.executor import Executor, PhaseExecutionError
 
 
 class ExecutorCliPipelineTests(unittest.TestCase):
@@ -424,6 +424,115 @@ class ExecutorCliPipelineTests(unittest.TestCase):
                         log_name='preview-plan.log',
                     )
 
+    def test_dangerous_cleanup_invokes_scenarioforge_cleanup_module(self):
+        spec = {
+            'name': 'eval-scenario',
+            'seed': 781,
+            'validation': {'policy': 'strict'},
+        }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            sf_root = os.path.join(temp_dir, 'scenarioforge')
+            os.makedirs(sf_root, exist_ok=True)
+            executor = Executor(
+                spec=spec,
+                out_dir=temp_dir,
+                sf_path=sf_root,
+                dangerous_cleanup_between_runs=True,
+            )
+            executor.cleanup_timeout_s = 42
+
+            proc = subprocess.CompletedProcess(
+                args=['python'],
+                returncode=0,
+                stdout='[cleanup] starting destructive Docker cleanup\nRemote ScenarioForge Docker cleanup complete.\n',
+                stderr='',
+            )
+
+            with mock.patch('scenarioforge_eval.executor.subprocess.run', return_value=proc) as run_mock:
+                phase_result = executor._run_dangerous_cleanup()
+
+            cmd = run_mock.call_args.args[0]
+            self.assertEqual(cmd[:3], [executor._cli_python(), '-m', 'scenarioforge.cleanup_scenarioforge_docker'])
+            self.assertIn('--force', cmd)
+            self.assertEqual(cmd[cmd.index('--timeout') + 1], '42')
+            self.assertEqual(run_mock.call_args.kwargs['cwd'], sf_root)
+            self.assertEqual(run_mock.call_args.kwargs['timeout'], 72)
+            self.assertEqual(phase_result['phase'], 'dangerous-cleanup')
+            self.assertEqual(phase_result['returncode'], 0)
+            with open(os.path.join(temp_dir, 'dangerous-cleanup.log'), 'r', encoding='utf-8') as handle:
+                self.assertIn('Remote ScenarioForge Docker cleanup complete.', handle.read())
+
+    def test_dangerous_cleanup_failure_stops_run_before_execute(self):
+        spec = {
+            'name': 'eval-scenario',
+            'seed': 782,
+            'topology': {'routers': 1, 'hosts': 2},
+            'services': {'enabled': False, 'count': 0},
+            'vulns': {'enabled': False, 'count': 0},
+            'flows': {'enabled': False, 'chain_length': 0},
+            'segmentation': {'enabled': False, 'density': 0.0},
+            'hitl': {'use_env': True},
+            'validation': {'policy': 'strict'},
+        }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            executor = Executor(
+                spec=spec,
+                out_dir=temp_dir,
+                sf_path='/Users/jcacosta/Documents/GitHub/scenarioforge',
+                dangerous_cleanup_between_runs=True,
+            )
+            phase_calls = []
+
+            def _fake_generate_xml():
+                xml_path = os.path.join(temp_dir, 'scenario.xml')
+                with open(xml_path, 'w', encoding='utf-8') as handle:
+                    handle.write('<Scenarios><Scenario name="eval-scenario"><ScenarioEditor /></Scenario></Scenarios>')
+                return xml_path
+
+            def _fake_run_cli_phase(phase, *args, **kwargs):
+                phase_calls.append(phase)
+                return {
+                    'phase': phase,
+                    'returncode': 0,
+                    'combined_output': '',
+                    'log_path': os.path.join(temp_dir, f'{phase}.log'),
+                    'plan_payload': {},
+                    'session_id': None,
+                    'validation_summary': None,
+                    'report_path': None,
+                    'summary_path': None,
+                    'timed_out': False,
+                }
+
+            failed_cleanup = {
+                'phase': 'dangerous-cleanup',
+                'returncode': 1,
+                'combined_output': 'cleanup failed\n',
+                'log_path': os.path.join(temp_dir, 'dangerous-cleanup.log'),
+                'plan_payload': None,
+                'session_id': None,
+                'validation_summary': None,
+                'report_path': None,
+                'summary_path': None,
+                'timed_out': False,
+            }
+
+            with mock.patch.object(executor, '_generate_xml', side_effect=_fake_generate_xml), \
+                 mock.patch.object(executor, '_run_cli_phase', side_effect=_fake_run_cli_phase), \
+                 mock.patch.object(
+                     executor,
+                     '_run_dangerous_cleanup',
+                     side_effect=PhaseExecutionError('cleanup-scenarioforge-docker failed with exit code 1. See dangerous-cleanup.log', failed_cleanup),
+                 ):
+                result = executor.run()
+
+            self.assertFalse(result['success'])
+            self.assertEqual(phase_calls, ['preview-plan'])
+            self.assertEqual(result['stages']['dangerous_cleanup'], 'FAIL')
+            self.assertIn('cleanup-scenarioforge-docker failed', result.get('error', ''))
+
     def test_warning_tolerant_policy_accepts_warning_only_validation(self):
         warning_summary = {'ok': False, 'extra_nodes': ['node-1']}
 
@@ -763,6 +872,80 @@ class ExecutorCliPipelineTests(unittest.TestCase):
 
             self.assertTrue(result['success'])
             self.assertEqual(events, ['preview-plan', 'enter-lock', 'flag-sequencing', 'execute', 'exit-lock'])
+
+    def test_dangerous_cleanup_runs_inside_shared_vm_lock_before_runtime_phases(self):
+        spec = {
+            'name': 'eval-scenario',
+            'seed': 1000,
+            'topology': {'routers': 1, 'hosts': 2},
+            'services': {'enabled': False, 'count': 0},
+            'vulns': {'enabled': False, 'count': 0},
+            'flows': {'enabled': True, 'chain_length': 3, 'allow_duplicates': False},
+            'segmentation': {'enabled': False, 'density': 0.0},
+            'hitl': {'use_env': True},
+            'validation': {'policy': 'strict'},
+        }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            executor = Executor(
+                spec=spec,
+                out_dir=temp_dir,
+                sf_path='/Users/jcacosta/Documents/GitHub/scenarioforge',
+                dangerous_cleanup_between_runs=True,
+            )
+            events = []
+
+            def _fake_generate_xml():
+                xml_path = os.path.join(temp_dir, 'scenario.xml')
+                with open(xml_path, 'w', encoding='utf-8') as handle:
+                    handle.write('<Scenarios><CoreConnection host="10.0.0.50" port="50051" ssh_host="10.0.0.50" ssh_port="22" ssh_username="corevm" vmid="100" /><Scenario name="eval-scenario"><ScenarioEditor><HardwareInLoop><CoreConnection host="10.0.0.50" port="50051" ssh_host="10.0.0.50" ssh_port="22" ssh_username="corevm" vmid="100" /></HardwareInLoop></ScenarioEditor></Scenario></Scenarios>')
+                return xml_path
+
+            def _fake_run_cli_phase(phase, *args, **kwargs):
+                events.append(phase)
+                return {
+                    'phase': phase,
+                    'returncode': 0,
+                    'combined_output': '',
+                    'log_path': os.path.join(temp_dir, f'{phase}.log'),
+                    'plan_payload': {},
+                    'session_id': '3' if phase == 'execute' else None,
+                    'validation_summary': {'ok': True} if phase == 'execute' else None,
+                    'report_path': None,
+                    'summary_path': None,
+                    'timed_out': False,
+                }
+
+            def _fake_cleanup():
+                events.append('dangerous-cleanup')
+                return {
+                    'phase': 'dangerous-cleanup',
+                    'returncode': 0,
+                    'combined_output': '',
+                    'log_path': os.path.join(temp_dir, 'dangerous-cleanup.log'),
+                    'plan_payload': None,
+                    'session_id': None,
+                    'validation_summary': None,
+                    'report_path': None,
+                    'summary_path': None,
+                    'timed_out': False,
+                }
+
+            @contextmanager
+            def _fake_lock(_xml_path):
+                events.append('enter-lock')
+                yield {'key': '10.0.0.50:22:corevm:100', 'path': os.path.join(temp_dir, 'vm.lock')}
+                events.append('exit-lock')
+
+            with mock.patch.object(executor, '_generate_xml', side_effect=_fake_generate_xml), \
+                 mock.patch.object(executor, '_run_cli_phase', side_effect=_fake_run_cli_phase), \
+                 mock.patch.object(executor, '_run_dangerous_cleanup', side_effect=_fake_cleanup), \
+                 mock.patch.object(executor, '_shared_vm_lock', side_effect=_fake_lock):
+                result = executor.run()
+
+            self.assertTrue(result['success'])
+            self.assertEqual(events, ['preview-plan', 'enter-lock', 'dangerous-cleanup', 'flag-sequencing', 'execute', 'exit-lock'])
+            self.assertEqual(result['stages']['dangerous_cleanup'], 'PASS')
 
 
 if __name__ == '__main__':

@@ -130,6 +130,16 @@ Legacy spec compatibility notes:
 
 When multiple evaluator iterations target the same CORE VM, runtime phases that can interfere with each other are serialized using a per-VM lock derived from the embedded CORE connection in `scenario.xml`.
 
+For large execute batches, you can opt in to destructive remote Docker cleanup before each runtime run:
+
+```bash
+uv run scenarioforge-eval test_specs --sf-path ../scenarioforge --execute \
+  --dangerous-cleanup-between-runs \
+  --out /tmp/scenarioforge-eval-clean-batch
+```
+
+This calls ScenarioForge's `cleanup-scenarioforge-docker --force` while holding the same shared VM lock. It removes all Docker containers, images, build cache, and unused Docker volumes/networks on the configured remote CORE host before each `topo`, `flag-sequencing`, or `execute` runtime run. Use it only on disposable CORE VMs dedicated to evaluation.
+
 Failure prompts redact `CoreConnection/@ssh_password` before copying XML into `_ai_prompt.md`.
 
 Common per-run artifacts include:
@@ -178,6 +188,14 @@ Run every spec in the test directory:
 
 ```bash
 uv run scenarioforge-eval test_specs --sf-path ../scenarioforge --execute --out /tmp/scenarioforge-eval-batch
+```
+
+Run every spec with destructive remote Docker cleanup before each runtime run:
+
+```bash
+uv run scenarioforge-eval test_specs --sf-path ../scenarioforge --execute \
+  --dangerous-cleanup-between-runs \
+  --out /tmp/scenarioforge-eval-clean-batch
 ```
 
 Increase the per-phase timeout for slower remote runs:

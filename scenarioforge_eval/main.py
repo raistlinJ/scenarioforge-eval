@@ -38,6 +38,15 @@ def main():
     
     parser.add_argument('--out', default="/tmp/scenarioforge-eval-out", help="Output directory for logs and results")
     parser.add_argument('--verbose', '-v', action='store_true', help="Enable verbose debug logging")
+    parser.add_argument(
+        '--dangerous-cleanup-between-runs',
+        action='store_true',
+        help=(
+            "Before each runtime run, call ScenarioForge's dangerous remote Docker cleanup "
+            "while holding the shared VM lock. This removes all Docker containers, images, "
+            "build cache, and unused volumes/networks on the configured remote CORE host."
+        ),
+    )
     args = parser.parse_args()
 
     if args.verbose:
@@ -95,7 +104,14 @@ def main():
             
             target_phase = resolve_target_phase(args)
             
-            executor = Executor(resolved_spec, spec_out_dir, args.sf_path, target_phase, args.verbose)
+            executor = Executor(
+                resolved_spec,
+                spec_out_dir,
+                args.sf_path,
+                target_phase,
+                args.verbose,
+                dangerous_cleanup_between_runs=args.dangerous_cleanup_between_runs,
+            )
             result = executor.run()
             
             reporter.log_result(spec_name, result)
