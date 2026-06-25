@@ -3,6 +3,8 @@ import os
 import glob
 import logging
 import random
+import sys
+import time
 
 try:
     from .parser import SpecParser
@@ -12,6 +14,131 @@ except ImportError:
     from parser import SpecParser
     from executor import Executor
     from reporter import Reporter
+
+
+def _format_elapsed(seconds: float) -> str:
+    seconds = max(0, int(seconds))
+    hours, remainder = divmod(seconds, 3600)
+    minutes, seconds = divmod(remainder, 60)
+    if hours:
+        return f"{hours}:{minutes:02d}:{seconds:02d}"
+    return f"{minutes:02d}:{seconds:02d}"
+
+
+def _supports_color(stream) -> bool:
+    if os.environ.get("NO_COLOR") is not None:
+        return False
+    if os.environ.get("FORCE_COLOR"):
+        return True
+    return bool(getattr(stream, "isatty", lambda: False)())
+
+
+def _paint(text: str, code: str, enabled: bool) -> str:
+    if not enabled:
+        return text
+    return f"\033[{code}m{text}\033[0m"
+
+
+def _first_failed_stage(result: dict) -> str | None:
+    stages = result.get('stages') or {}
+    for stage, status in stages.items():
+        if status is False:
+            return stage
+        if isinstance(status, str) and status.strip().upper().startswith('FAIL'):
+            return stage
+    return None
+
+
+def _spec_iterations(spec: SpecParser) -> int:
+    return max(0, int(spec.spec.get('iterations', 1)))
+
+
+class BatchStatusFooter:
+    def __init__(
+        self,
+        total_iterations: int,
+        target_phase: str,
+        output_root: str,
+        stream=None,
+        use_color: bool | None = None,
+    ):
+        self.total_iterations = total_iterations
+        self.target_phase = target_phase
+        self.output_root = output_root
+        self.stream = stream or sys.stdout
+        self.use_color = _supports_color(self.stream) if use_color is None else use_color
+        self.started_at = time.monotonic()
+        self.completed = 0
+        self.successes = 0
+        self.failures = 0
+        self.current_name: str | None = None
+        self.current_seed: int | None = None
+        self.last_failure: str | None = None
+
+    def start_iteration(self, spec_name: str, seed: int) -> None:
+        self.current_name = spec_name
+        self.current_seed = seed
+        self.render("running")
+
+    def finish_iteration(self, spec_name: str, result: dict) -> None:
+        self.completed += 1
+        if result.get('success'):
+            self.successes += 1
+        else:
+            self.failures += 1
+            failed_stage = _first_failed_stage(result) or result.get('failed_at') or 'unknown stage'
+            self.last_failure = f"{spec_name} ({failed_stage})"
+
+        self.current_name = None
+        self.current_seed = None
+        self.render("failed" if not result.get('success') else "running")
+
+    def stop(self) -> None:
+        self.current_name = None
+        self.current_seed = None
+        self.render("stopped")
+
+    def complete(self) -> None:
+        self.current_name = None
+        self.current_seed = None
+        self.render("done" if self.failures == 0 else "stopped")
+
+    def render(self, state: str) -> None:
+        line = self._line(state)
+        print(line, file=self.stream, flush=True)
+
+    def _line(self, state: str) -> str:
+        pending = max(0, self.total_iterations - self.completed)
+        elapsed = _format_elapsed(time.monotonic() - self.started_at)
+        pass_rate = "--" if self.completed == 0 else f"{(self.successes / self.completed) * 100:.0f}%"
+        badge_color = {
+            "running": "36;1",
+            "failed": "31;1",
+            "stopped": "33;1",
+            "done": "32;1",
+            "ready": "34;1",
+        }.get(state, "36;1")
+
+        parts = [
+            _paint(f"[{state.upper()}]", badge_color, self.use_color),
+            _paint(f"runs {self.completed}/{self.total_iterations}", "36;1", self.use_color),
+            _paint(f"ok {self.successes}", "32;1", self.use_color),
+            _paint(f"fail {self.failures}", "31;1" if self.failures else "2", self.use_color),
+            f"pending {pending}",
+            f"pass {pass_rate}",
+            f"elapsed {elapsed}",
+            f"phase {self.target_phase}",
+        ]
+
+        if self.current_name:
+            current = f"current {self.current_name}"
+            if self.current_seed is not None:
+                current = f"{current} seed={self.current_seed}"
+            parts.append(_paint(current, "33;1", self.use_color))
+        if self.last_failure:
+            parts.append(_paint(f"last failure {self.last_failure}", "31", self.use_color))
+
+        return " | ".join(parts)
 
 
 def resolve_target_phase(args: argparse.Namespace) -> str:
@@ -75,11 +202,16 @@ def main():
         print(f"No .spec.yaml files found for {args.spec_path}")
         return
 
-    for spec_file in spec_files:
+    target_phase = resolve_target_phase(args)
+    spec_entries = [(spec_file, SpecParser(spec_file)) for spec_file in spec_files]
+    total_iterations = sum(_spec_iterations(spec) for _, spec in spec_entries)
+    footer = BatchStatusFooter(total_iterations, target_phase, output_root)
+    footer.render("ready")
+
+    for spec_file, spec in spec_entries:
         print(f"Evaluating {spec_file}...")
-        spec = SpecParser(spec_file)
         
-        iterations = spec.spec.get('iterations', 1)
+        iterations = _spec_iterations(spec)
         for i in range(iterations):
             spec_name = spec.get_name()
             if iterations > 1:
@@ -102,7 +234,7 @@ def main():
                 'validation': spec.get_validation_spec(),
             }
             
-            target_phase = resolve_target_phase(args)
+            footer.start_iteration(spec_name, iteration_seed)
             
             executor = Executor(
                 resolved_spec,
@@ -115,11 +247,14 @@ def main():
             result = executor.run()
             
             reporter.log_result(spec_name, result)
+            footer.finish_iteration(spec_name, result)
             
             if not result['success']:
                 print(f"\n[FATAL] Evaluation failed for {spec_name}. Stopping batch execution.")
-                import sys
+                footer.stop()
                 sys.exit(1)
+
+    footer.complete()
 
 if __name__ == '__main__':
     main()
