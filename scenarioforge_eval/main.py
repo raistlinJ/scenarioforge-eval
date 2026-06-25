@@ -166,6 +166,11 @@ def main():
     parser.add_argument('--out', default="/tmp/scenarioforge-eval-out", help="Output directory for logs and results")
     parser.add_argument('--verbose', '-v', action='store_true', help="Enable verbose debug logging")
     parser.add_argument(
+        '--stop-on-error',
+        action='store_true',
+        help="Stop the batch execution if a single run fails"
+    )
+    parser.add_argument(
         '--dangerous-cleanup-between-runs',
         action='store_true',
         help=(
@@ -250,9 +255,12 @@ def main():
             footer.finish_iteration(spec_name, result)
             
             if not result['success']:
-                print(f"\n[FATAL] Evaluation failed for {spec_name}. Stopping batch execution.")
-                footer.stop()
-                sys.exit(1)
+                if args.stop_on_error:
+                    print(f"\n[FATAL] Evaluation failed for {spec_name}. Stopping batch execution.")
+                    footer.stop()
+                    sys.exit(1)
+                else:
+                    print(f"\n[ERROR] Evaluation failed for {spec_name}. Continuing to next run...")
 
     footer.complete()
 
