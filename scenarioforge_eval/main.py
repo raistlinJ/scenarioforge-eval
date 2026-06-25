@@ -194,6 +194,13 @@ def main():
     output_root = os.path.abspath(os.path.expanduser(args.out))
     os.makedirs(output_root, exist_ok=True)
     reporter = Reporter(output_root)
+    
+    combined_errors_path = os.path.join(output_root, "combined_latest.errors")
+    if os.path.exists(combined_errors_path):
+        try:
+            os.remove(combined_errors_path)
+        except Exception:
+            pass
 
     if os.path.isfile(args.spec_path):
         spec_files = [args.spec_path]
@@ -250,6 +257,19 @@ def main():
                 dangerous_cleanup_between_runs=args.dangerous_cleanup_between_runs,
             )
             result = executor.run()
+            
+            run_errors_path = os.path.join(spec_out_dir, "latest.errors")
+            if os.path.isfile(run_errors_path):
+                import datetime
+                try:
+                    with open(combined_errors_path, "a", encoding="utf-8") as f_out:
+                        f_out.write(f"\nRUN ERROR SEPARATOR---\n")
+                        f_out.write(f"Timestamp: {datetime.datetime.now().isoformat()}\n")
+                        f_out.write(f"Run: {spec_name}\n\n")
+                        with open(run_errors_path, "r", encoding="utf-8") as f_in:
+                            f_out.write(f_in.read())
+                except Exception:
+                    pass
             
             reporter.log_result(spec_name, result)
             footer.finish_iteration(spec_name, result)
