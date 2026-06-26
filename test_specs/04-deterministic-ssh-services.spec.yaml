@@ -1,7 +1,6 @@
 name: "deterministic-ssh-services"
 iterations: 1
 topology:
-  type: "star"
   routers: 1
   hosts: 3
   randomize: false

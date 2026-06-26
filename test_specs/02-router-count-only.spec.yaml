@@ -1,7 +1,6 @@
 name: "router-count-only"
 iterations: 1
 topology:
-  type: "star"
   routers: 3
   hosts: 0
   randomize: false

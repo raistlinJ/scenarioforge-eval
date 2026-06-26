@@ -1,7 +1,6 @@
 name: "unique-flow-chain"
 iterations: 1
 topology:
-  type: "star"
   routers: 2
   hosts: 6
   randomize: false

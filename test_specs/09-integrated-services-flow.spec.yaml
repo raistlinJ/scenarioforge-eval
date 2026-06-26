@@ -1,7 +1,6 @@
 name: "integrated-services-flow"
 iterations: 2
 topology:
-  type: "star"
   routers: 3
   hosts: 8
   randomize: false

@@ -1,7 +1,6 @@
 name: "routed-host-baseline"
 iterations: 1
 topology:
-  type: "star"
   routers: 2
   hosts: 4
   randomize: false

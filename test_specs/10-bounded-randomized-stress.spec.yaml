@@ -1,7 +1,6 @@
 name: "bounded-randomized-stress"
 iterations: 5
 topology:
-  type: "star"
   routers: [1, 4]
   hosts: [6, 10]
   randomize: true

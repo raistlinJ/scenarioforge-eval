@@ -1,7 +1,6 @@
 name: "minimal-host-only"
 iterations: 1
 topology:
-  type: "star"
   routers: 0
   hosts: 1
   randomize: false

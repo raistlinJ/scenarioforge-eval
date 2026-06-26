@@ -1,7 +1,6 @@
 name: "mixed-safe-services"
 iterations: 2
 topology:
-  type: "star"
   routers: 2
   hosts: 6
   randomize: false

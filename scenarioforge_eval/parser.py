@@ -27,7 +27,6 @@ class SpecParser:
         """Returns normalized topology parameters."""
         topo = self.spec.get('topology', {})
         res = {
-            'type': topo.get('type', 'star'),
             'routers': self._resolve_value(topo.get('routers', [2, 5]), rng=rng),
             'hosts': self._resolve_value(topo.get('hosts', [3, 10]), rng=rng),
         }

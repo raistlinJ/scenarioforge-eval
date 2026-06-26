@@ -1,7 +1,6 @@
 name: "duplicate-flow-chain"
 iterations: 1
 topology:
-  type: "star"
   routers: 1
   hosts: 1
   randomize: false
