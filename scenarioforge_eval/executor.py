@@ -228,11 +228,12 @@ class Executor:
             return value or None
         return None
 
-    def _phase_result(self, phase: str, returncode: int | None, combined: str, log_path: str, plan_payload: dict | None, *, timed_out: bool = False) -> dict:
+    def _phase_result(self, phase: str, returncode: int | None, combined: str, log_path: str, plan_payload: dict | None, *, timed_out: bool = False, stderr_output: str = '') -> dict:
         result = {
             'phase': phase,
             'returncode': returncode,
             'combined_output': combined,
+            'stderr_output': stderr_output,
             'log_path': log_path,
             'plan_payload': plan_payload,
             'session_id': None,
@@ -517,7 +518,7 @@ class Executor:
             except Exception:
                 plan_payload = None
 
-        phase_result = self._phase_result(phase, returncode, combined, log_path, plan_payload, timed_out=timed_out)
+        phase_result = self._phase_result(phase, returncode, combined, log_path, plan_payload, timed_out=timed_out, stderr_output=stderr_text)
 
         if timed_out:
             last_line = self._last_output_line(combined)

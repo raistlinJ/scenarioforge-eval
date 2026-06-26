@@ -258,16 +258,29 @@ def main():
             )
             result = executor.run()
             
-            run_errors_path = os.path.join(spec_out_dir, "latest.errors")
-            if os.path.isfile(run_errors_path):
+            exec_phase = result.get('phase_results', {}).get('execute', {})
+            stderr_text = exec_phase.get('stderr_output', '')
+            
+            validation_errors = []
+            val_summary = exec_phase.get('validation_summary')
+            if val_summary:
+                for field in executor.VALIDATION_ERROR_FIELDS:
+                    if val_summary.get(field):
+                        validation_errors.append(f"{field}: {val_summary[field]}")
+                        
+            if stderr_text or validation_errors:
                 import datetime
                 try:
                     with open(combined_errors_path, "a", encoding="utf-8") as f_out:
                         f_out.write(f"\nRUN ERROR SEPARATOR---\n")
                         f_out.write(f"Timestamp: {datetime.datetime.now().isoformat()}\n")
                         f_out.write(f"Run: {spec_name}\n\n")
-                        with open(run_errors_path, "r", encoding="utf-8") as f_in:
-                            f_out.write(f_in.read())
+                        if stderr_text:
+                            f_out.write("--- STDERR ---\n")
+                            f_out.write(stderr_text.strip() + "\n\n")
+                        if validation_errors:
+                            f_out.write("--- VALIDATION ERRORS ---\n")
+                            f_out.write("\n".join(validation_errors) + "\n\n")
                 except Exception:
                     pass
             
