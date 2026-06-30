@@ -7,6 +7,7 @@ ScenarioForge-Eval is a batch-testing harness and evaluation tool for `scenariof
 - **Batch Execution**: Run thousands of scenario permutations automatically.
 - **Specification Files**: Define simple bounds for topology and parameters in YAML format.
 - **Automated Logging**: Output success/failure reports, per-phase logs, and parsed validation artifacts.
+- **Batch Metrics**: Captures per-run and per-phase timing, estimated output tokens, artifact sizes, CPU/resource counters, pass rates, and validation outcomes.
 - **Compatibility Tracking**: Persists one random seed per iteration, reuses the same authoritative XML across phases, and serializes runtime phases that share one CORE VM target.
 - **AI-Friendly Error Reporting**: Automatically writes an AI-ready Markdown prompt with the stack trace plus captured phase artifacts when a scenario fails, while redacting embedded CORE SSH passwords from copied XML.
 
@@ -14,7 +15,7 @@ ScenarioForge-Eval is a batch-testing harness and evaluation tool for `scenariof
 
 - `scenarioforge_eval/parser.py`: Parses `.spec.yaml` bounds and handles random ranges.
 - `scenarioforge_eval/executor.py`: Generates a ScenarioForge XML, writes it atomically, embeds mode-aware CORE connection data from the environment, and drives the real `scenarioforge` CLI phases for batch execution.
-- `scenarioforge_eval/reporter.py`: Manages the output directory, logs pass/fail statuses, and creates `_ai_prompt.md` files from the captured phase artifacts upon failure.
+- `scenarioforge_eval/reporter.py`: Manages the output directory, logs pass/fail statuses, writes batch metrics exports, and creates `_ai_prompt.md` files from the captured phase artifacts upon failure.
 - `scenarioforge_eval/main.py`: The CLI entry point.
 
 ## Usage
@@ -150,6 +151,24 @@ Common per-run artifacts include:
 - `flag-sequencing.json` and `flag-sequencing.log` when Flow is enabled
 - `execute.log`
 - `execute-validation.json` for full execute runs
+
+Each per-run `<spec>_result.json` includes a `metrics` object with:
+
+- run start/end timestamps and duration
+- resolved spec counts for routers, hosts, services, vulnerabilities, and flow length
+- per-phase duration, return code, timeout flag, stdout/stderr/log sizes, and estimated output tokens
+- process resource counters from `resource.getrusage`, including CPU time, max RSS, block I/O, page faults, and context switches
+- artifact file sizes and output-directory totals
+
+Token counts are deterministic text estimates for logs and CLI output, using a regex word/punctuation estimator. They are intended for trend analysis and graphing, not for API billing reconciliation.
+
+At the end of every batch, the evaluator also writes graph/table-friendly files in the output root:
+
+- `batch_metrics_summary.json`: machine-readable aggregate pass rate, duration, token, artifact, and resource summaries.
+- `batch_metrics_summary.md`: quick human-readable summary tables.
+- `batch_metrics_raw.jsonl`: one full result object per run.
+- `batch_metrics_runs.csv`: one flat row per run.
+- `batch_metrics_phases.csv`: one flat row per run phase.
 
 ## Sample Commands
 

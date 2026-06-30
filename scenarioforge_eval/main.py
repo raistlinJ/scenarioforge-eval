@@ -219,6 +219,7 @@ def main():
     total_iterations = sum(_spec_iterations(spec) for _, spec in spec_entries)
     footer = BatchStatusFooter(total_iterations, target_phase, output_root)
     footer.render("ready")
+    batch_results = []
 
     for spec_file, spec in spec_entries:
         print(f"Evaluating {spec_file}...")
@@ -257,6 +258,14 @@ def main():
                 dangerous_cleanup_between_runs=args.dangerous_cleanup_between_runs,
             )
             result = executor.run()
+            result.setdefault('metadata', {}).update({
+                'spec_file': os.path.abspath(spec_file),
+                'spec_name': spec_name,
+                'iteration_index': i + 1,
+                'iteration_count': iterations,
+                'target_phase': target_phase,
+            })
+            batch_results.append(result)
             
             exec_phase = result.get('phase_results', {}).get('execute', {})
             stderr_text = exec_phase.get('stderr_output', '')
@@ -291,11 +300,13 @@ def main():
                 if args.stop_on_error:
                     print(f"\n[FATAL] Evaluation failed for {spec_name}. Stopping batch execution.")
                     footer.stop()
+                    reporter.write_batch_metrics(batch_results)
                     sys.exit(1)
                 else:
                     print(f"\n[ERROR] Evaluation failed for {spec_name}. Continuing to next run...")
 
     footer.complete()
+    reporter.write_batch_metrics(batch_results)
 
 if __name__ == '__main__':
     main()

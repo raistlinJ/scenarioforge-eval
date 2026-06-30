@@ -321,6 +321,46 @@ class ExecutorCliPipelineTests(unittest.TestCase):
             self.assertEqual(phase_result['report_path'], '/tmp/report.md')
             self.assertEqual(phase_result['summary_path'], '/tmp/summary.json')
 
+    def test_run_cli_phase_records_timing_output_token_and_resource_metrics(self):
+        spec = {
+            'name': 'eval-scenario',
+            'seed': 777,
+            'validation': {'policy': 'strict'},
+        }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            sf_root = os.path.join(temp_dir, 'scenarioforge')
+            os.makedirs(sf_root, exist_ok=True)
+            executor = Executor(spec=spec, out_dir=temp_dir, sf_path=sf_root)
+
+            proc = subprocess.CompletedProcess(
+                args=['python'],
+                returncode=0,
+                stdout='PHASE: preview-plan\ncreated plan\n',
+                stderr='',
+            )
+
+            with mock.patch('scenarioforge_eval.executor.subprocess.run', return_value=proc):
+                phase_result = executor._run_cli_phase(
+                    'preview-plan',
+                    os.path.join(temp_dir, 'scenario.xml'),
+                    'eval-scenario',
+                    seed=777,
+                    json_output_name='preview-plan.json',
+                    log_name='preview-plan.log',
+                )
+
+            metrics = phase_result['metrics']
+            self.assertGreaterEqual(metrics['duration_s'], 0.0)
+            self.assertEqual(metrics['returncode'], 0)
+            self.assertFalse(metrics['timed_out'])
+            self.assertEqual(metrics['outputs']['stdout']['lines'], 2)
+            self.assertGreater(metrics['outputs']['combined']['estimated_tokens'], 0)
+            self.assertTrue(metrics['log']['exists'])
+            self.assertGreater(metrics['log']['size_bytes'], 0)
+            self.assertIn('cpu_total_s', metrics['resources'])
+            self.assertEqual(metrics['command']['cwd'], sf_root)
+
     def test_run_cli_phase_failure_includes_last_output_line(self):
         spec = {
             'name': 'eval-scenario',

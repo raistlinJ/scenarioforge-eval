@@ -10,9 +10,15 @@ import subprocess
 import sys
 import tempfile
 import traceback
+import time
 import xml.etree.ElementTree as ET
 from contextlib import contextmanager, nullcontext
 from copy import deepcopy
+
+try:
+    from .metrics import MetricSpan, directory_metrics, file_metrics, rounded_seconds, text_metrics
+except ImportError:
+    from metrics import MetricSpan, directory_metrics, file_metrics, rounded_seconds, text_metrics
 
 
 class PhaseExecutionError(RuntimeError):
@@ -228,7 +234,18 @@ class Executor:
             return value or None
         return None
 
-    def _phase_result(self, phase: str, returncode: int | None, combined: str, log_path: str, plan_payload: dict | None, *, timed_out: bool = False, stderr_output: str = '') -> dict:
+    def _phase_result(
+        self,
+        phase: str,
+        returncode: int | None,
+        combined: str,
+        log_path: str | None,
+        plan_payload: dict | None,
+        *,
+        timed_out: bool = False,
+        stderr_output: str = '',
+        metrics: dict | None = None,
+    ) -> dict:
         result = {
             'phase': phase,
             'returncode': returncode,
@@ -241,6 +258,7 @@ class Executor:
             'report_path': None,
             'summary_path': None,
             'timed_out': timed_out,
+            'metrics': metrics or {},
         }
         if phase == 'execute':
             result['session_id'] = self._extract_last_marker_value(combined, 'CORE_SESSION_ID:')
@@ -259,8 +277,107 @@ class Executor:
             'report_path': phase_result.get('report_path'),
             'summary_path': phase_result.get('summary_path'),
             'timed_out': bool(phase_result.get('timed_out')),
+            'stderr_output': phase_result.get('stderr_output') or '',
+            'metrics': phase_result.get('metrics') or {},
         }
         result.setdefault('phase_results', {})[phase_result['phase']] = metadata
+
+    def _record_internal_phase_result(self, result: dict, phase: str, metrics: dict) -> None:
+        self._record_phase_result(
+            result,
+            {
+                'phase': phase,
+                'returncode': None,
+                'combined_output': '',
+                'stderr_output': '',
+                'log_path': None,
+                'plan_payload': None,
+                'session_id': None,
+                'validation_summary': None,
+                'report_path': None,
+                'summary_path': None,
+                'timed_out': False,
+                'metrics': metrics,
+            },
+        )
+
+    @staticmethod
+    def _safe_int(value, default: int = 0) -> int:
+        try:
+            return int(value)
+        except Exception:
+            return default
+
+    def _spec_metrics(self) -> dict:
+        topology = self.spec.get('topology') or {}
+        services = self.spec.get('services') or {}
+        vulns = self.spec.get('vulns') or {}
+        flows = self.spec.get('flows') or {}
+        segmentation = self.spec.get('segmentation') or {}
+
+        router_count = max(0, self._safe_int(topology.get('routers')))
+        host_count = max(0, self._safe_int(topology.get('hosts')))
+        service_count = max(0, self._safe_int(services.get('count'))) if services.get('enabled', services.get('randomize')) else 0
+        vulnerability_count = max(0, self._safe_int(vulns.get('count'))) if vulns.get('enabled', vulns.get('randomize')) else 0
+        flow_enabled = bool(flows.get('enabled', flows.get('randomize')))
+        flow_chain_length = max(0, self._safe_int(flows.get('chain_length'))) if flow_enabled else 0
+
+        return {
+            'name': self.spec.get('name', 'eval'),
+            'seed': self.seed,
+            'target_phase': self.target_phase,
+            'validation_policy': self._validation_policy(),
+            'topology': {
+                'routers': router_count,
+                'hosts': host_count,
+                'nodes': router_count + host_count,
+            },
+            'services': {
+                'enabled': bool(services.get('enabled', services.get('randomize'))),
+                'count': service_count,
+            },
+            'vulnerabilities': {
+                'enabled': bool(vulns.get('enabled', vulns.get('randomize'))),
+                'count': vulnerability_count,
+            },
+            'flows': {
+                'enabled': flow_enabled,
+                'chain_length': flow_chain_length,
+                'allow_duplicates': bool(flows.get('allow_duplicates', False)),
+            },
+            'segmentation': {
+                'enabled': bool(segmentation.get('enabled', segmentation.get('randomize'))),
+                'density': segmentation.get('density'),
+            },
+        }
+
+    def _artifact_metrics(self, artifacts: dict) -> dict:
+        metrics = {}
+        for artifact_key, artifact_path in sorted((artifacts or {}).items()):
+            if not isinstance(artifact_path, str):
+                continue
+            if artifact_key == 'output_dir':
+                metrics[artifact_key] = directory_metrics(artifact_path)
+            else:
+                metrics[artifact_key] = file_metrics(artifact_path)
+        return metrics
+
+    def _finalize_result_metrics(self, result: dict, run_metrics: dict) -> None:
+        phase_metrics = {}
+        for phase, phase_result in (result.get('phase_results') or {}).items():
+            metrics = phase_result.get('metrics')
+            if metrics:
+                phase_metrics[phase] = metrics
+
+        artifact_metrics = self._artifact_metrics(result.get('artifacts') or {})
+        result['metrics'] = {
+            'schema_version': 1,
+            'token_estimator': 'regex_word_or_punctuation',
+            'run': run_metrics,
+            'spec': self._spec_metrics(),
+            'phases': phase_metrics,
+            'artifacts': artifact_metrics,
+        }
 
     def _validation_policy(self) -> str:
         validation = self.spec.get('validation') or {}
@@ -393,9 +510,11 @@ class Executor:
         digest = hashlib.sha256(lock_key.encode('utf-8')).hexdigest()[:16]
         lock_path = os.path.join(tempfile.gettempdir(), f'scenarioforge-eval-{digest}.lock')
         with open(lock_path, 'a+', encoding='utf-8') as handle:
+            wait_started = time.perf_counter()
             fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+            wait_s = rounded_seconds(time.perf_counter() - wait_started)
             try:
-                yield {'key': lock_key, 'path': lock_path}
+                yield {'key': lock_key, 'path': lock_path, 'wait_s': wait_s}
             finally:
                 fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
 
@@ -485,23 +604,24 @@ class Executor:
         stdout_text = ''
         stderr_text = ''
         timed_out = False
-        try:
-            proc = subprocess.run(
-                cmd,
-                cwd=self.sf_path,
-                env=self._cli_env(),
-                capture_output=True,
-                text=True,
-                check=False,
-                timeout=self.phase_timeout_s,
-            )
-            returncode = proc.returncode
-            stdout_text = proc.stdout or ''
-            stderr_text = proc.stderr or ''
-        except subprocess.TimeoutExpired as exc:
-            timed_out = True
-            stdout_text = self._coerce_subprocess_text(exc.stdout)
-            stderr_text = self._coerce_subprocess_text(exc.stderr)
+        with MetricSpan('children') as phase_span:
+            try:
+                proc = subprocess.run(
+                    cmd,
+                    cwd=self.sf_path,
+                    env=self._cli_env(),
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                    timeout=self.phase_timeout_s,
+                )
+                returncode = proc.returncode
+                stdout_text = proc.stdout or ''
+                stderr_text = proc.stderr or ''
+            except subprocess.TimeoutExpired as exc:
+                timed_out = True
+                stdout_text = self._coerce_subprocess_text(exc.stdout)
+                stderr_text = self._coerce_subprocess_text(exc.stderr)
 
         combined = stdout_text + (("\n" + stderr_text) if stderr_text else '')
         log_path = os.path.join(self.out_dir, log_name or f'{phase}.log')
@@ -518,7 +638,35 @@ class Executor:
             except Exception:
                 plan_payload = None
 
-        phase_result = self._phase_result(phase, returncode, combined, log_path, plan_payload, timed_out=timed_out, stderr_output=stderr_text)
+        phase_metrics = phase_span.finish()
+        phase_metrics.update({
+            'command': {
+                'argv': cmd,
+                'cwd': self.sf_path,
+                'timeout_s': self.phase_timeout_s,
+            },
+            'returncode': returncode,
+            'timed_out': timed_out,
+            'outputs': {
+                'stdout': text_metrics(stdout_text),
+                'stderr': text_metrics(stderr_text),
+                'combined': text_metrics(combined),
+            },
+            'log': file_metrics(log_path),
+        })
+        if output_path:
+            phase_metrics['plan_output'] = file_metrics(output_path)
+
+        phase_result = self._phase_result(
+            phase,
+            returncode,
+            combined,
+            log_path,
+            plan_payload,
+            timed_out=timed_out,
+            stderr_output=stderr_text,
+            metrics=phase_metrics,
+        )
 
         if timed_out:
             last_line = self._last_output_line(combined)
@@ -556,23 +704,25 @@ class Executor:
         stdout_text = ''
         stderr_text = ''
         timed_out = False
-        try:
-            proc = subprocess.run(
-                cmd,
-                cwd=self.sf_path,
-                env=self._cli_env(),
-                capture_output=True,
-                text=True,
-                check=False,
-                timeout=self.cleanup_timeout_s + 30,
-            )
-            returncode = proc.returncode
-            stdout_text = proc.stdout or ''
-            stderr_text = proc.stderr or ''
-        except subprocess.TimeoutExpired as exc:
-            timed_out = True
-            stdout_text = self._coerce_subprocess_text(exc.stdout)
-            stderr_text = self._coerce_subprocess_text(exc.stderr)
+        timeout_s = self.cleanup_timeout_s + 30
+        with MetricSpan('children') as phase_span:
+            try:
+                proc = subprocess.run(
+                    cmd,
+                    cwd=self.sf_path,
+                    env=self._cli_env(),
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                    timeout=timeout_s,
+                )
+                returncode = proc.returncode
+                stdout_text = proc.stdout or ''
+                stderr_text = proc.stderr or ''
+            except subprocess.TimeoutExpired as exc:
+                timed_out = True
+                stdout_text = self._coerce_subprocess_text(exc.stdout)
+                stderr_text = self._coerce_subprocess_text(exc.stderr)
 
         combined = stdout_text + (("\n" + stderr_text) if stderr_text else '')
         log_path = os.path.join(self.out_dir, 'dangerous-cleanup.log')
@@ -580,6 +730,22 @@ class Executor:
             handle.write(combined)
 
         self._stream_cli_output(combined)
+        phase_metrics = phase_span.finish()
+        phase_metrics.update({
+            'command': {
+                'argv': cmd,
+                'cwd': self.sf_path,
+                'timeout_s': timeout_s,
+            },
+            'returncode': returncode,
+            'timed_out': timed_out,
+            'outputs': {
+                'stdout': text_metrics(stdout_text),
+                'stderr': text_metrics(stderr_text),
+                'combined': text_metrics(combined),
+            },
+            'log': file_metrics(log_path),
+        })
         phase_result = self._phase_result(
             'dangerous-cleanup',
             returncode,
@@ -587,6 +753,8 @@ class Executor:
             log_path,
             None,
             timed_out=timed_out,
+            stderr_output=stderr_text,
+            metrics=phase_metrics,
         )
 
         if timed_out:
@@ -821,6 +989,8 @@ class Executor:
         return nodes
 
     def run(self):
+        run_span = MetricSpan('self_children')
+        run_span.__enter__()
         result = {
             'success': False,
             'stages': {},
@@ -839,11 +1009,16 @@ class Executor:
         try:
             # ── Phase 1: Scenario XML generation ──
             print(">> Phase: scenario-xml")
-            result['artifacts']['seed_txt'] = self._persist_seed_artifact()
-            xml_path = self._generate_xml()
-            scenario_name = self._resolve_xml_scenario_name(xml_path)
-            result['artifacts']['scenario_xml'] = xml_path
-            result['stages']['scenario_xml'] = 'PASS'
+            scenario_span = MetricSpan('self')
+            scenario_span.__enter__()
+            try:
+                result['artifacts']['seed_txt'] = self._persist_seed_artifact()
+                xml_path = self._generate_xml()
+                scenario_name = self._resolve_xml_scenario_name(xml_path)
+                result['artifacts']['scenario_xml'] = xml_path
+                result['stages']['scenario_xml'] = 'PASS'
+            finally:
+                self._record_internal_phase_result(result, 'scenario-xml', scenario_span.finish())
             
             if self.target_phase == 'topology':
                 print(">> Phase: topo")
@@ -962,5 +1137,7 @@ class Executor:
         except Exception as e:
             result['error'] = traceback.format_exc()
             result['stages']['failed_at'] = str(e)
+        finally:
+            self._finalize_result_metrics(result, run_span.finish())
             
         return result
