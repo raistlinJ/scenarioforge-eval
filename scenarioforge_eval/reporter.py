@@ -9,6 +9,26 @@ except ImportError:
     from metrics import rounded_seconds, utc_now_iso
 
 class Reporter:
+    RUN_METRIC_FIELDS = [
+        'run_index', 'spec_name', 'spec_file', 'iteration_index', 'iteration_count',
+        'target_phase', 'seed', 'success', 'failed_stage', 'failed_at',
+        'started_at', 'ended_at', 'duration_s', 'router_count', 'host_count',
+        'node_count', 'service_count', 'vulnerability_count', 'flow_enabled',
+        'flow_chain_length', 'validation_ok', 'phase_count', 'phase_duration_s',
+        'estimated_output_tokens', 'log_size_bytes', 'artifact_file_count',
+        'artifact_total_size_bytes', 'cpu_user_s', 'cpu_system_s', 'cpu_total_s',
+        'max_rss_bytes', 'input_blocks', 'output_blocks', 'context_switches',
+    ]
+    PHASE_METRIC_FIELDS = [
+        'run_index', 'spec_name', 'spec_file', 'iteration_index', 'target_phase',
+        'seed', 'success', 'phase', 'stage_status', 'returncode', 'timed_out',
+        'started_at', 'ended_at', 'duration_s', 'stdout_bytes', 'stderr_bytes',
+        'combined_bytes', 'combined_lines', 'estimated_output_tokens', 'log_path',
+        'log_size_bytes', 'plan_output_size_bytes', 'cpu_user_s', 'cpu_system_s',
+        'cpu_total_s', 'max_rss_bytes', 'minor_page_faults', 'major_page_faults',
+        'input_blocks', 'output_blocks', 'voluntary_context_switches',
+        'involuntary_context_switches', 'session_id', 'validation_ok',
+    ]
     ARTIFACT_SECTIONS = (
         ('scenario_xml', 'Generated Scenario XML', 'xml'),
         ('seed_txt', 'Iteration Seed', 'text'),
@@ -31,6 +51,7 @@ class Reporter:
         log_path = os.path.join(self.out_dir, f"{spec_name}_result.json")
         with open(log_path, 'w', encoding='utf-8') as f:
             json.dump(result, f, indent=2)
+        self.write_run_metrics(spec_name, result)
             
         print(f"--- Results for {spec_name} ---")
         print(f"Success: {result['success']}")
@@ -263,13 +284,116 @@ class Reporter:
 
     @staticmethod
     def _write_csv(path: str, rows: list[dict], fieldnames: list[str]) -> None:
+        os.makedirs(os.path.dirname(path), exist_ok=True)
         with open(path, 'w', encoding='utf-8', newline='') as handle:
             writer = csv.DictWriter(handle, fieldnames=fieldnames, extrasaction='ignore')
             writer.writeheader()
             for row in rows:
                 writer.writerow(row)
 
+    @staticmethod
+    def _write_json(path: str, payload: dict | list) -> None:
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, 'w', encoding='utf-8') as handle:
+            json.dump(payload, handle, indent=2, sort_keys=True)
+
+    @staticmethod
+    def _safe_metric_dir_name(name: str) -> str:
+        safe = ''.join(ch if ch.isalnum() or ch in ('-', '_', '.') else '_' for ch in str(name or '').strip())
+        return safe.strip('._') or 'run'
+
+    def _run_metrics_dirs(self, spec_name: str, result: dict) -> list[str]:
+        dirs = []
+        artifacts = result.get('artifacts') or {}
+        run_output_dir = artifacts.get('output_dir')
+        if isinstance(run_output_dir, str) and run_output_dir.strip():
+            dirs.append(os.path.join(os.path.abspath(os.path.expanduser(run_output_dir)), 'metrics'))
+
+        root_run_dir = os.path.join(
+            self.out_dir,
+            'metrics',
+            'runs',
+            self._safe_metric_dir_name(spec_name),
+        )
+        dirs.append(root_run_dir)
+        return list(dict.fromkeys(dirs))
+
+    def _write_run_metrics_markdown(self, path: str, spec_name: str, payload: dict) -> None:
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        run_row = payload.get('run') or {}
+        phase_rows = payload.get('phases') or []
+        with open(path, 'w', encoding='utf-8') as handle:
+            handle.write(f"# Run Metrics: {spec_name}\n\n")
+            handle.write(f"Generated: {payload.get('generated_at', '')}\n\n")
+            handle.write("## Summary\n\n")
+            handle.write("| Metric | Value |\n| --- | ---: |\n")
+            handle.write(f"| Success | {run_row.get('success', False)} |\n")
+            handle.write(f"| Duration (s) | {run_row.get('duration_s', 0.0)} |\n")
+            handle.write(f"| Phase duration (s) | {run_row.get('phase_duration_s', 0.0)} |\n")
+            handle.write(f"| Estimated output tokens | {run_row.get('estimated_output_tokens', 0)} |\n")
+            handle.write(f"| Log bytes | {run_row.get('log_size_bytes', 0)} |\n")
+            handle.write(f"| Artifact bytes | {run_row.get('artifact_total_size_bytes', 0)} |\n")
+            handle.write(f"| CPU total (s) | {run_row.get('cpu_total_s', 0.0)} |\n")
+            handle.write(f"| Max RSS bytes | {run_row.get('max_rss_bytes', 0)} |\n\n")
+
+            handle.write("## Phases\n\n")
+            handle.write("| Phase | Status | Return Code | Timeout | Duration (s) | Estimated Tokens | Log Bytes |\n")
+            handle.write("| --- | --- | ---: | --- | ---: | ---: | ---: |\n")
+            for row in phase_rows:
+                handle.write(
+                    f"| {row.get('phase', '')} | {row.get('stage_status', '')} | "
+                    f"{row.get('returncode', '')} | {row.get('timed_out', False)} | "
+                    f"{row.get('duration_s', 0.0)} | {row.get('estimated_output_tokens', 0)} | "
+                    f"{row.get('log_size_bytes', 0)} |\n"
+                )
+
+    def write_run_metrics(self, spec_name: str, result: dict, *, run_index: int | None = None) -> dict:
+        index = int(run_index or result.get('metadata', {}).get('run_index') or result.get('metadata', {}).get('iteration_index') or 1)
+        run_row = self._run_metrics_row(index, result)
+        phase_rows = self._phase_metrics_rows(index, result)
+        payload = {
+            'schema_version': 1,
+            'generated_at': utc_now_iso(),
+            'spec_name': spec_name,
+            'success': bool(result.get('success')),
+            'metadata': result.get('metadata') or {},
+            'stages': result.get('stages') or {},
+            'warnings': result.get('warnings') or [],
+            'run': run_row,
+            'phases': phase_rows,
+            'metrics': result.get('metrics') or {},
+        }
+
+        written = {}
+        for metrics_dir in self._run_metrics_dirs(spec_name, result):
+            os.makedirs(metrics_dir, exist_ok=True)
+            paths = {
+                'summary_json': os.path.join(metrics_dir, 'run_metrics_summary.json'),
+                'raw_json': os.path.join(metrics_dir, 'run_metrics_raw.json'),
+                'summary_markdown': os.path.join(metrics_dir, 'run_metrics_summary.md'),
+                'run_csv': os.path.join(metrics_dir, 'run_metrics.csv'),
+                'phases_csv': os.path.join(metrics_dir, 'phase_metrics.csv'),
+            }
+            self._write_json(paths['summary_json'], {
+                'schema_version': payload['schema_version'],
+                'generated_at': payload['generated_at'],
+                'spec_name': spec_name,
+                'success': payload['success'],
+                'metadata': payload['metadata'],
+                'stages': payload['stages'],
+                'warnings': payload['warnings'],
+                'run': run_row,
+                'phases': phase_rows,
+            })
+            self._write_json(paths['raw_json'], payload)
+            self._write_run_metrics_markdown(paths['summary_markdown'], spec_name, payload)
+            self._write_csv(paths['run_csv'], [run_row], self.RUN_METRIC_FIELDS)
+            self._write_csv(paths['phases_csv'], phase_rows, self.PHASE_METRIC_FIELDS)
+            written[metrics_dir] = paths
+        return written
+
     def _write_metrics_markdown(self, path: str, summary: dict, export_paths: dict) -> None:
+        os.makedirs(os.path.dirname(path), exist_ok=True)
         with open(path, 'w', encoding='utf-8') as handle:
             runs = summary.get('runs') or {}
             handle.write("# ScenarioForge Eval Batch Metrics\n\n")
@@ -305,47 +429,42 @@ class Reporter:
         phase_rows = []
         for index, result in enumerate(results, start=1):
             phase_rows.extend(self._phase_metrics_rows(index, result))
+            spec_name = self._nested(result.get('metrics') or {}, 'spec', 'name', default='')
+            if not spec_name:
+                spec_name = str(result.get('metadata', {}).get('spec_name') or f'run{index}')
+            self.write_run_metrics(spec_name, result, run_index=index)
 
         summary = self._build_batch_metrics_summary(results, run_rows, phase_rows)
+        metrics_dir = os.path.join(self.out_dir, 'metrics')
         paths = {
             'summary_json': os.path.join(self.out_dir, 'batch_metrics_summary.json'),
             'summary_markdown': os.path.join(self.out_dir, 'batch_metrics_summary.md'),
             'raw_jsonl': os.path.join(self.out_dir, 'batch_metrics_raw.jsonl'),
             'runs_csv': os.path.join(self.out_dir, 'batch_metrics_runs.csv'),
             'phases_csv': os.path.join(self.out_dir, 'batch_metrics_phases.csv'),
+            'metrics_summary_json': os.path.join(metrics_dir, 'batch_metrics_summary.json'),
+            'metrics_summary_markdown': os.path.join(metrics_dir, 'batch_metrics_summary.md'),
+            'metrics_raw_jsonl': os.path.join(metrics_dir, 'batch_metrics_raw.jsonl'),
+            'metrics_runs_csv': os.path.join(metrics_dir, 'batch_metrics_runs.csv'),
+            'metrics_phases_csv': os.path.join(metrics_dir, 'batch_metrics_phases.csv'),
         }
         summary['exports'] = paths
 
-        with open(paths['summary_json'], 'w', encoding='utf-8') as handle:
-            json.dump(summary, handle, indent=2, sort_keys=True)
-        with open(paths['raw_jsonl'], 'w', encoding='utf-8') as handle:
-            for result in results:
-                json.dump(result, handle, sort_keys=True)
-                handle.write('\n')
+        self._write_json(paths['summary_json'], summary)
+        self._write_json(paths['metrics_summary_json'], summary)
+        for raw_jsonl_path in (paths['raw_jsonl'], paths['metrics_raw_jsonl']):
+            os.makedirs(os.path.dirname(raw_jsonl_path), exist_ok=True)
+            with open(raw_jsonl_path, 'w', encoding='utf-8') as handle:
+                for result in results:
+                    json.dump(result, handle, sort_keys=True)
+                    handle.write('\n')
 
-        run_fields = [
-            'run_index', 'spec_name', 'spec_file', 'iteration_index', 'iteration_count',
-            'target_phase', 'seed', 'success', 'failed_stage', 'failed_at',
-            'started_at', 'ended_at', 'duration_s', 'router_count', 'host_count',
-            'node_count', 'service_count', 'vulnerability_count', 'flow_enabled',
-            'flow_chain_length', 'validation_ok', 'phase_count', 'phase_duration_s',
-            'estimated_output_tokens', 'log_size_bytes', 'artifact_file_count',
-            'artifact_total_size_bytes', 'cpu_user_s', 'cpu_system_s', 'cpu_total_s',
-            'max_rss_bytes', 'input_blocks', 'output_blocks', 'context_switches',
-        ]
-        phase_fields = [
-            'run_index', 'spec_name', 'spec_file', 'iteration_index', 'target_phase',
-            'seed', 'success', 'phase', 'stage_status', 'returncode', 'timed_out',
-            'started_at', 'ended_at', 'duration_s', 'stdout_bytes', 'stderr_bytes',
-            'combined_bytes', 'combined_lines', 'estimated_output_tokens', 'log_path',
-            'log_size_bytes', 'plan_output_size_bytes', 'cpu_user_s', 'cpu_system_s',
-            'cpu_total_s', 'max_rss_bytes', 'minor_page_faults', 'major_page_faults',
-            'input_blocks', 'output_blocks', 'voluntary_context_switches',
-            'involuntary_context_switches', 'session_id', 'validation_ok',
-        ]
-        self._write_csv(paths['runs_csv'], run_rows, run_fields)
-        self._write_csv(paths['phases_csv'], phase_rows, phase_fields)
+        for runs_csv_path in (paths['runs_csv'], paths['metrics_runs_csv']):
+            self._write_csv(runs_csv_path, run_rows, self.RUN_METRIC_FIELDS)
+        for phases_csv_path in (paths['phases_csv'], paths['metrics_phases_csv']):
+            self._write_csv(phases_csv_path, phase_rows, self.PHASE_METRIC_FIELDS)
         self._write_metrics_markdown(paths['summary_markdown'], summary, paths)
+        self._write_metrics_markdown(paths['metrics_summary_markdown'], summary, paths)
 
         print("\nBatch metrics written:")
         for label, path in paths.items():

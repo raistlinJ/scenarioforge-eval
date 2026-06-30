@@ -1,4 +1,5 @@
 import fcntl
+import fnmatch
 import hashlib
 import ipaddress
 import json
@@ -66,6 +67,7 @@ class Executor:
         self.dangerous_cleanup_between_runs = bool(dangerous_cleanup_between_runs)
         self.seed = self._resolve_seed(self.spec.get('seed'))
         self._rng = random.Random(self.seed)
+        self._vulnerability_selection: dict | None = None
         self.phase_timeout_s = self._resolve_phase_timeout()
         self.cleanup_timeout_s = self._resolve_cleanup_timeout()
         os.makedirs(self.out_dir, exist_ok=True)
@@ -863,6 +865,69 @@ class Executor:
             })
         return items
 
+    def _load_eligible_vulnerability_catalog(self) -> list[dict] | None:
+        if not os.path.isdir(os.path.join(self.sf_path, 'webapp')):
+            return None
+        try:
+            from webapp import app_backend as backend
+        except Exception:
+            return None
+
+        loader = getattr(backend, '_load_backend_vuln_catalog_items', None)
+        if not callable(loader):
+            return None
+
+        try:
+            catalog_items = loader(selectable_only=True)
+        except TypeError:
+            try:
+                catalog_items = loader()
+            except Exception:
+                return None
+        except Exception:
+            return None
+
+        if not isinstance(catalog_items, list):
+            return None
+
+        eligible = []
+        seen = set()
+        for item in catalog_items:
+            if not isinstance(item, dict):
+                continue
+            name = str(item.get('Name') or item.get('name') or '').strip()
+            path = str(item.get('Path') or item.get('path') or '').strip()
+            if not name or not path:
+                continue
+            if not os.path.isfile(path):
+                continue
+            key = (name.lower(), os.path.abspath(path))
+            if key in seen:
+                continue
+            seen.add(key)
+            eligible.append({
+                'name': name,
+                'path': os.path.abspath(path),
+                'validated_ok': item.get('validated_ok'),
+                'validated_at': item.get('validated_at'),
+                'eligible_for_selection': item.get('eligible_for_selection'),
+            })
+        return eligible
+
+    def _vulnerability_matches_filter(self, entry: dict, filters: list[str]) -> bool:
+        haystacks = [
+            str(entry.get('name') or '').lower(),
+            str(entry.get('path') or '').lower(),
+        ]
+        for raw_filter in filters:
+            pattern = str(raw_filter or '').strip().lower()
+            if not pattern:
+                continue
+            for value in haystacks:
+                if fnmatch.fnmatch(value, pattern) or pattern in value:
+                    return True
+        return False
+
     def _build_vulnerability_section(self, vulns_spec: dict) -> dict | None:
         try:
             requested_count = max(0, int(vulns_spec.get('count', 0) or 0))
@@ -870,6 +935,83 @@ class Executor:
             requested_count = 0
         if requested_count <= 0:
             return None
+
+        eligible_catalog = self._load_eligible_vulnerability_catalog()
+        if eligible_catalog is not None:
+            include_filters = [value for value in vulns_spec.get('include', []) if value]
+            exclude_filters = [value for value in vulns_spec.get('exclude', []) if value]
+            unfiltered_eligible_count = len(eligible_catalog)
+            if include_filters:
+                eligible_catalog = [
+                    entry
+                    for entry in eligible_catalog
+                    if self._vulnerability_matches_filter(entry, include_filters)
+                ]
+            if exclude_filters:
+                eligible_catalog = [
+                    entry
+                    for entry in eligible_catalog
+                    if not self._vulnerability_matches_filter(entry, exclude_filters)
+                ]
+
+            if requested_count > len(eligible_catalog):
+                filter_description = ''
+                if include_filters or exclude_filters:
+                    filter_description = (
+                        f" after applying include={include_filters!r} and exclude={exclude_filters!r} "
+                        f"to {unfiltered_eligible_count} catalog entries"
+                    )
+                raise ValueError(
+                    f"vulns.count requested {requested_count} vulnerabilities, but only "
+                    f"{len(eligible_catalog)} validated vulnerability catalog entries{filter_description} with existing "
+                    "docker-compose files are eligible. Validate/install more catalog entries or reduce vulns.count."
+                )
+
+            selection_rng = random.Random(f"{self.seed}:vulnerabilities:{self.spec.get('name', 'eval')}")
+            selected_entries = selection_rng.sample(eligible_catalog, requested_count)
+            self._vulnerability_selection = {
+                'mode': 'specific_from_eligible_catalog',
+                'requested_count': requested_count,
+                'eligible_count_unfiltered': unfiltered_eligible_count,
+                'eligible_count': len(eligible_catalog),
+                'include': include_filters,
+                'exclude': exclude_filters,
+                'selected': [
+                    {
+                        'name': entry['name'],
+                        'path': entry['path'],
+                        'validated_ok': entry.get('validated_ok'),
+                        'validated_at': entry.get('validated_at'),
+                    }
+                    for entry in selected_entries
+                ],
+            }
+            return {
+                'density': 0.0,
+                'flag_type': 'text',
+                'items': [
+                    {
+                        'selected': 'Specific',
+                        'v_name': entry['name'],
+                        'v_path': entry['path'],
+                        'v_metric': 'Count',
+                        'v_count': 1,
+                        'factor': 1.0,
+                    }
+                    for entry in selected_entries
+                ],
+            }
+
+        self._vulnerability_selection = {
+            'mode': 'random_catalog_fallback',
+            'requested_count': requested_count,
+            'eligible_count': 0,
+            'selected': [],
+            'warning': (
+                "Unable to inspect ScenarioForge's selectable vulnerability catalog with existing compose files; "
+                "falling back to upstream Random vulnerability selection."
+            ),
+        }
         return {
             'density': 0.0,
             'items': [{
@@ -1015,6 +1157,8 @@ class Executor:
                 result['artifacts']['seed_txt'] = self._persist_seed_artifact()
                 xml_path = self._generate_xml()
                 scenario_name = self._resolve_xml_scenario_name(xml_path)
+                if self._vulnerability_selection:
+                    result['metadata']['vulnerability_selection'] = self._vulnerability_selection
                 result['artifacts']['scenario_xml'] = xml_path
                 result['stages']['scenario_xml'] = 'PASS'
             finally:

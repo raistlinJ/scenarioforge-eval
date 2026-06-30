@@ -68,6 +68,14 @@
             { "type": "integer" },
             { "type": "array", "items": { "type": "integer" }, "minItems": 2, "maxItems": 2 }
           ]
+        },
+        "include": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "exclude": {
+          "type": "array",
+          "items": { "type": "string" }
         }
       }
     },

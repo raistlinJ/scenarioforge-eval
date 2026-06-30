@@ -62,6 +62,8 @@ class ReporterPromptArtifactTests(unittest.TestCase):
 
     def test_write_batch_metrics_exports_summary_raw_and_csv_files(self):
         with tempfile.TemporaryDirectory() as temp_dir:
+            run_out_dir = os.path.join(temp_dir, 'spec-a')
+            os.makedirs(run_out_dir)
             reporter = Reporter(temp_dir)
             result = {
                 'success': True,
@@ -121,6 +123,9 @@ class ReporterPromptArtifactTests(unittest.TestCase):
                         'output_dir': {'file_count': 3, 'total_size_bytes': 100},
                     },
                 },
+                'artifacts': {
+                    'output_dir': run_out_dir,
+                },
             }
 
             with contextlib.redirect_stdout(io.StringIO()):
@@ -149,6 +154,21 @@ class ReporterPromptArtifactTests(unittest.TestCase):
                 phase_rows = list(csv.DictReader(handle))
             self.assertEqual(phase_rows[0]['phase'], 'preview-plan')
             self.assertEqual(phase_rows[0]['estimated_output_tokens'], '2')
+
+            root_metrics_dir = os.path.join(temp_dir, 'metrics')
+            self.assertTrue(os.path.exists(os.path.join(root_metrics_dir, 'batch_metrics_summary.json')))
+            self.assertTrue(os.path.exists(os.path.join(root_metrics_dir, 'batch_metrics_runs.csv')))
+            self.assertTrue(os.path.exists(os.path.join(root_metrics_dir, 'batch_metrics_phases.csv')))
+
+            root_run_metrics_dir = os.path.join(root_metrics_dir, 'runs', 'spec-a')
+            self.assertTrue(os.path.exists(os.path.join(root_run_metrics_dir, 'run_metrics_summary.json')))
+            self.assertTrue(os.path.exists(os.path.join(root_run_metrics_dir, 'run_metrics.csv')))
+            self.assertTrue(os.path.exists(os.path.join(root_run_metrics_dir, 'phase_metrics.csv')))
+
+            run_metrics_dir = os.path.join(run_out_dir, 'metrics')
+            self.assertTrue(os.path.exists(os.path.join(run_metrics_dir, 'run_metrics_summary.json')))
+            self.assertTrue(os.path.exists(os.path.join(run_metrics_dir, 'run_metrics.csv')))
+            self.assertTrue(os.path.exists(os.path.join(run_metrics_dir, 'phase_metrics.csv')))
 
 
 if __name__ == '__main__':

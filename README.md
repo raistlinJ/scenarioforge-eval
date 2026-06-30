@@ -170,6 +170,13 @@ At the end of every batch, the evaluator also writes graph/table-friendly files 
 - `batch_metrics_runs.csv`: one flat row per run.
 - `batch_metrics_phases.csv`: one flat row per run phase.
 
+The same batch files are also mirrored under `metrics/` in the output root, for example `metrics/batch_metrics_runs.csv`. Each individual run gets its own metrics bundle in two places:
+
+- `<out>/<spec_name>/metrics/`: colocated with that run's logs and artifacts.
+- `<out>/metrics/runs/<spec_name>/`: collected under the batch-level metrics folder.
+
+Each run metrics bundle includes `run_metrics_summary.json`, `run_metrics_raw.json`, `run_metrics_summary.md`, `run_metrics.csv`, and `phase_metrics.csv`.
+
 ## Sample Commands
 
 Set up the environment on the helper VM:
@@ -273,3 +280,20 @@ services:
   count: 4
   exclude: [DHCPClient]
 ```
+
+## Vulnerability Catalog Selection
+
+When `vulns.count` requests randomized vulnerabilities, the evaluator first asks the configured ScenarioForge checkout for selectable vulnerability catalog entries and filters that list to entries whose `docker-compose.yml` exists locally under `--sf-path`. It then writes those selected entries into the generated XML as `Specific` vulnerabilities, and records the names/paths under `metadata.vulnerability_selection` in the per-run result.
+
+Use `vulns.include` and `vulns.exclude` to narrow the eligible catalog when a family is unsuitable for your current CORE/Docker runtime. Filters match either vulnerability name or compose path, using glob-style patterns and substring matches:
+
+```yaml
+vulns:
+  randomize: true
+  count: 2
+  exclude:
+    - nginx/*
+    - php
+```
+
+If the catalog cannot be inspected, the evaluator falls back to ScenarioForge's upstream `Random` vulnerability behavior. If the catalog can be inspected but does not have enough eligible compose entries, the run fails during XML generation with a direct catalog eligibility error instead of failing later during CORE startup.

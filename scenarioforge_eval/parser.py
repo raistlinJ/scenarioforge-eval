@@ -45,8 +45,10 @@ class SpecParser:
     def get_vulns_spec(self, rng: random.Random | None = None) -> dict:
         v = self.spec.get('vulns', {})
         return {
-            'enabled': self._feature_enabled(v, activation_keys=('count',)),
+            'enabled': self._feature_enabled(v, activation_keys=('count', 'include', 'exclude')),
             'count': self._resolve_value(v.get('count', [1, 3]), rng=rng),
+            'include': self._normalize_string_list(v.get('include')),
+            'exclude': self._normalize_string_list(v.get('exclude')),
         }
 
     def get_flows_spec(self, rng: random.Random | None = None) -> dict:
@@ -98,6 +100,26 @@ class SpecParser:
                 continue
             normalized.append(canonical)
             seen.add(canonical)
+        return normalized
+
+    def _normalize_string_list(self, values) -> list[str]:
+        if not values:
+            return []
+        if isinstance(values, str):
+            values = [values]
+
+        normalized = []
+        seen = set()
+        for raw_value in values:
+            if raw_value in (None, ''):
+                continue
+            value = str(raw_value).strip()
+            if not value:
+                continue
+            if value in seen:
+                continue
+            normalized.append(value)
+            seen.add(value)
         return normalized
 
     def _feature_enabled(self, section: dict, *, activation_keys: tuple[str, ...], default: bool = True) -> bool:
