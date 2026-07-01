@@ -1,8 +1,11 @@
 import argparse
+import datetime
+import json
 import os
 import glob
 import logging
 import random
+import re
 import sys
 import time
 
@@ -51,6 +54,257 @@ def _first_failed_stage(result: dict) -> str | None:
 
 def _spec_iterations(spec: SpecParser) -> int:
     return max(0, int(spec.spec.get('iterations', 1)))
+
+
+ANSI_RE = re.compile(r"\x1b\[[0-?]*[ -/]*[@-~]")
+COMBINED_ERROR_FILENAMES = ("combined-latest.errors", "combined_latest.errors")
+LATEST_ERROR_FILENAME = "latest.errors"
+GENERATOR_SUMMARY_KEYS = (
+    'generators_used',
+    'used_generators',
+    'selected_generators',
+    'generator_validation_detail',
+)
+EXTRA_VALIDATION_WARNING_FIELDS = ('flow_artifact_copy_pending',)
+
+
+def _clean_output(text: str) -> str:
+    return ANSI_RE.sub('', text or '')
+
+
+def _read_text_if_available(path: str | None) -> str:
+    if not path:
+        return ''
+    try:
+        with open(path, 'r', encoding='utf-8') as handle:
+            return handle.read()
+    except Exception:
+        return ''
+
+
+def _read_json_if_available(path: str | None):
+    if not path:
+        return None
+    try:
+        with open(path, 'r', encoding='utf-8') as handle:
+            return json.load(handle)
+    except Exception:
+        return None
+
+
+def _is_populated(value) -> bool:
+    if value is None:
+        return False
+    if isinstance(value, str):
+        return bool(value.strip())
+    if isinstance(value, (list, dict, tuple, set)):
+        return len(value) > 0
+    if isinstance(value, (int, float)):
+        return value != 0
+    return bool(value)
+
+
+def _render_value(value) -> str:
+    try:
+        return json.dumps(value, sort_keys=True, default=str)
+    except TypeError:
+        return str(value)
+
+
+def _validation_error_fields() -> tuple[str, ...]:
+    return tuple(getattr(Executor, 'VALIDATION_ERROR_FIELDS', ()))
+
+
+def _validation_warning_fields() -> tuple[str, ...]:
+    fields = list(getattr(Executor, 'VALIDATION_WARNING_FIELDS', ()))
+    for field in EXTRA_VALIDATION_WARNING_FIELDS:
+        if field not in fields:
+            fields.append(field)
+    return tuple(fields)
+
+
+def _validation_field_lines(summary: dict, fields: tuple[str, ...]) -> list[str]:
+    lines = []
+    for field in fields:
+        value = summary.get(field)
+        if _is_populated(value):
+            lines.append(f"{field}: {_render_value(value)}")
+    return lines
+
+
+def _validation_has_issues(summary) -> bool:
+    if not isinstance(summary, dict):
+        return False
+    if summary.get('ok') is False:
+        return True
+    fields = _validation_error_fields() + _validation_warning_fields()
+    return any(_is_populated(summary.get(field)) for field in fields)
+
+
+def _warning_error_lines(text: str) -> list[str]:
+    lines = []
+    for raw_line in _clean_output(text).splitlines():
+        line = raw_line.strip()
+        if not line or 'VALIDATION_SUMMARY_JSON:' in line:
+            continue
+        lowered = line.lower()
+        if re.search(r'\bwarning\b', lowered) or re.search(r'\berror\b', lowered):
+            lines.append(line)
+    return lines
+
+
+def _generator_record_label(record) -> str | None:
+    if isinstance(record, str):
+        value = record.strip()
+        return value or None
+    if not isinstance(record, dict):
+        return None
+
+    generator_id = str(record.get('generator_id') or record.get('id') or '').strip()
+    generator_name = str(record.get('generator_name') or record.get('name') or '').strip()
+    generator_type = str(record.get('generator_type') or record.get('type') or '').strip()
+    node_id = str(record.get('node_id') or '').strip()
+    node_name = str(record.get('node_name') or record.get('container_name') or '').strip()
+
+    if not (generator_id or generator_name or generator_type):
+        return None
+
+    parts = []
+    if generator_id:
+        parts.append(f"id={generator_id}")
+    if generator_name and generator_name != generator_id:
+        parts.append(f"name={generator_name}")
+    if generator_type:
+        parts.append(f"type={generator_type}")
+    node_label = node_name or node_id
+    if node_label:
+        parts.append(f"node={node_label}")
+    return ", ".join(parts)
+
+
+def _collect_generator_lines(value, lines: list[str]) -> None:
+    label = _generator_record_label(value)
+    if label:
+        lines.append(label)
+        return
+
+    if isinstance(value, list):
+        for item in value:
+            _collect_generator_lines(item, lines)
+    elif isinstance(value, dict):
+        for key in GENERATOR_SUMMARY_KEYS:
+            if key in value:
+                _collect_generator_lines(value.get(key), lines)
+
+
+def _generators_used_lines(*payloads) -> list[str]:
+    lines = []
+    for payload in payloads:
+        if payload is not None:
+            _collect_generator_lines(payload, lines)
+
+    deduped = []
+    seen = set()
+    for line in lines:
+        if line in seen:
+            continue
+        seen.add(line)
+        deduped.append(line)
+    return deduped
+
+
+def _build_error_report(spec_name: str, result: dict, timestamp: str | None = None) -> str:
+    phase_results = result.get('phase_results') or {}
+    exec_phase = phase_results.get('execute') or {}
+    artifacts = result.get('artifacts') or {}
+    validation_summary = exec_phase.get('validation_summary')
+    execute_summary = _read_json_if_available(artifacts.get('execute_summary'))
+
+    output_text = _read_text_if_available(exec_phase.get('log_path'))
+    if not output_text:
+        output_text = exec_phase.get('stderr_output') or ''
+    diagnostic_lines = _warning_error_lines(output_text)
+    has_validation_issues = _validation_has_issues(validation_summary)
+    run_error = str(result.get('error') or '').strip()
+
+    if not (diagnostic_lines or has_validation_issues or run_error):
+        return ''
+
+    metadata = result.get('metadata') or {}
+    metrics_spec = (result.get('metrics') or {}).get('spec') or {}
+    seed = metadata.get('seed') or metrics_spec.get('seed')
+    generator_lines = _generators_used_lines(validation_summary, execute_summary)
+    timestamp = timestamp or datetime.datetime.now().isoformat()
+
+    sections = [
+        "RUN ERROR SEPARATOR---",
+        f"Timestamp: {timestamp}",
+        f"Run: {spec_name}",
+    ]
+    if seed not in (None, ''):
+        sections.append(f"Seed: {seed}")
+    sections.append("")
+
+    if generator_lines:
+        sections.append("--- GENERATORS USED ---")
+        sections.extend(f"- {line}" for line in generator_lines)
+        sections.append("")
+
+    if isinstance(validation_summary, dict):
+        sections.append("--- VALIDATION RESULT ---")
+        sections.append(f"ok: {validation_summary.get('ok')}")
+        validation_errors = _validation_field_lines(
+            validation_summary,
+            _validation_error_fields(),
+        )
+        validation_warnings = _validation_field_lines(
+            validation_summary,
+            _validation_warning_fields(),
+        )
+        if validation_errors:
+            sections.append("errors:")
+            sections.extend(f"- {line}" for line in validation_errors)
+        if validation_warnings:
+            sections.append("warnings:")
+            sections.extend(f"- {line}" for line in validation_warnings)
+        sections.append(json.dumps(validation_summary, indent=2, sort_keys=True, default=str))
+        sections.append("")
+
+    if diagnostic_lines:
+        sections.append("--- WARNING/ERROR OUTPUT ---")
+        sections.extend(diagnostic_lines)
+        sections.append("")
+
+    if run_error:
+        sections.append("--- RUN ERROR ---")
+        sections.append(run_error)
+        sections.append("")
+
+    return "\n".join(sections).rstrip() + "\n\n"
+
+
+def _clear_latest_error_files(output_root: str) -> None:
+    for file_name in (*COMBINED_ERROR_FILENAMES, LATEST_ERROR_FILENAME):
+        path = os.path.join(output_root, file_name)
+        if not os.path.exists(path):
+            continue
+        try:
+            os.remove(path)
+        except Exception:
+            pass
+
+
+def _write_latest_error_files(output_root: str, report: str) -> None:
+    if not report:
+        return
+    try:
+        with open(os.path.join(output_root, LATEST_ERROR_FILENAME), "w", encoding="utf-8") as f_out:
+            f_out.write(report)
+        for file_name in COMBINED_ERROR_FILENAMES:
+            with open(os.path.join(output_root, file_name), "a", encoding="utf-8") as f_out:
+                f_out.write("\n" + report)
+    except Exception:
+        pass
 
 
 class BatchStatusFooter:
@@ -195,12 +449,7 @@ def main():
     os.makedirs(output_root, exist_ok=True)
     reporter = Reporter(output_root)
     
-    combined_errors_path = os.path.join(output_root, "combined_latest.errors")
-    if os.path.exists(combined_errors_path):
-        try:
-            os.remove(combined_errors_path)
-        except Exception:
-            pass
+    _clear_latest_error_files(output_root)
 
     if os.path.isfile(args.spec_path):
         spec_files = [args.spec_path]
@@ -267,31 +516,7 @@ def main():
             })
             batch_results.append(result)
             
-            exec_phase = result.get('phase_results', {}).get('execute', {})
-            stderr_text = exec_phase.get('stderr_output', '')
-            
-            validation_errors = []
-            val_summary = exec_phase.get('validation_summary')
-            if val_summary:
-                for field in executor.VALIDATION_ERROR_FIELDS:
-                    if val_summary.get(field):
-                        validation_errors.append(f"{field}: {val_summary[field]}")
-                        
-            if stderr_text or validation_errors:
-                import datetime
-                try:
-                    with open(combined_errors_path, "a", encoding="utf-8") as f_out:
-                        f_out.write(f"\nRUN ERROR SEPARATOR---\n")
-                        f_out.write(f"Timestamp: {datetime.datetime.now().isoformat()}\n")
-                        f_out.write(f"Run: {spec_name}\n\n")
-                        if stderr_text:
-                            f_out.write("--- STDERR ---\n")
-                            f_out.write(stderr_text.strip() + "\n\n")
-                        if validation_errors:
-                            f_out.write("--- VALIDATION ERRORS ---\n")
-                            f_out.write("\n".join(validation_errors) + "\n\n")
-                except Exception:
-                    pass
+            _write_latest_error_files(output_root, _build_error_report(spec_name, result))
             
             reporter.log_result(spec_name, result)
             footer.finish_iteration(spec_name, result)

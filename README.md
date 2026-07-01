@@ -152,6 +152,12 @@ Common per-run artifacts include:
 - `execute.log`
 - `execute-validation.json` for full execute runs
 
+When a run has validation issues, warning/error log lines, or a captured
+exception, the output root also gets `latest.errors` for the most recent
+diagnostic run and `combined-latest.errors` for the batch. These files include
+validation results, generator metadata when ScenarioForge emits it, and filtered
+`WARNING`/`error` output without routine `INFO` chatter.
+
 Each per-run `<spec>_result.json` includes a `metrics` object with:
 
 - run start/end timestamps and duration
