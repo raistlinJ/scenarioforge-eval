@@ -83,13 +83,19 @@ class MainCliPhaseSelectionTests(unittest.TestCase):
             def get_services_spec(self, rng=None):
                 return {'enabled': False, 'count': 0}
 
+            def get_traffic_spec(self, rng=None):
+                return {'enabled': False, 'profile': None, 'payload_types': [], 'density': 0.0, 'items': []}
+
             def get_vulns_spec(self, rng=None):
                 return {'enabled': False, 'count': 0}
+
+            def get_flag_node_generators_spec(self, rng=None):
+                return {'enabled': False, 'count': 0, 'include': [], 'exclude': []}
 
             def get_flows_spec(self, rng=None):
                 return {'enabled': False, 'chain_length': 0}
 
-            def get_segmentation_spec(self):
+            def get_segmentation_spec(self, rng=None):
                 return {'enabled': False, 'density': 0.0}
 
             def get_hitl_spec(self):
@@ -155,13 +161,19 @@ class MainCliPhaseSelectionTests(unittest.TestCase):
             def get_services_spec(self, rng=None):
                 return {'enabled': False, 'count': 0}
 
+            def get_traffic_spec(self, rng=None):
+                return {'enabled': False, 'profile': None, 'payload_types': [], 'density': 0.0, 'items': []}
+
             def get_vulns_spec(self, rng=None):
                 return {'enabled': False, 'count': 0}
+
+            def get_flag_node_generators_spec(self, rng=None):
+                return {'enabled': False, 'count': 0, 'include': [], 'exclude': []}
 
             def get_flows_spec(self, rng=None):
                 return {'enabled': False, 'chain_length': 0}
 
-            def get_segmentation_spec(self):
+            def get_segmentation_spec(self, rng=None):
                 return {'enabled': False, 'density': 0.0}
 
             def get_hitl_spec(self):
@@ -274,13 +286,19 @@ class MainCliPhaseSelectionTests(unittest.TestCase):
             def get_services_spec(self, rng=None):
                 return {'enabled': False, 'count': 0}
 
+            def get_traffic_spec(self, rng=None):
+                return {'enabled': False, 'profile': None, 'payload_types': [], 'density': 0.0, 'items': []}
+
             def get_vulns_spec(self, rng=None):
                 return {'enabled': False, 'count': 0}
+
+            def get_flag_node_generators_spec(self, rng=None):
+                return {'enabled': False, 'count': 0, 'include': [], 'exclude': []}
 
             def get_flows_spec(self, rng=None):
                 return {'enabled': False, 'chain_length': 0}
 
-            def get_segmentation_spec(self):
+            def get_segmentation_spec(self, rng=None):
                 return {'enabled': False, 'density': 0.0}
 
             def get_hitl_spec(self):

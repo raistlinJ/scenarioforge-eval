@@ -68,6 +68,7 @@ class Executor:
         self.seed = self._resolve_seed(self.spec.get('seed'))
         self._rng = random.Random(self.seed)
         self._vulnerability_selection: dict | None = None
+        self._flag_node_generator_selection: dict | None = None
         self.phase_timeout_s = self._resolve_phase_timeout()
         self.cleanup_timeout_s = self._resolve_cleanup_timeout()
         os.makedirs(self.out_dir, exist_ok=True)
@@ -313,14 +314,26 @@ class Executor:
     def _spec_metrics(self) -> dict:
         topology = self.spec.get('topology') or {}
         services = self.spec.get('services') or {}
+        traffic = self.spec.get('traffic') or {}
         vulns = self.spec.get('vulns') or {}
+        flag_node_generators = self.spec.get('flag_node_generators') or {}
         flows = self.spec.get('flows') or {}
         segmentation = self.spec.get('segmentation') or {}
 
         router_count = max(0, self._safe_int(topology.get('routers')))
         host_count = max(0, self._safe_int(topology.get('hosts')))
         service_count = max(0, self._safe_int(services.get('count'))) if services.get('enabled', services.get('randomize')) else 0
+        traffic_count = sum(
+            max(0, self._safe_int(item.get('v_count')))
+            for item in (traffic.get('items') or [])
+            if isinstance(item, dict)
+        ) if traffic.get('enabled', traffic.get('randomize')) else 0
         vulnerability_count = max(0, self._safe_int(vulns.get('count'))) if vulns.get('enabled', vulns.get('randomize')) else 0
+        flag_node_generator_count = (
+            max(0, self._safe_int(flag_node_generators.get('count')))
+            if flag_node_generators.get('enabled', flag_node_generators.get('randomize'))
+            else 0
+        )
         flow_enabled = bool(flows.get('enabled', flows.get('randomize')))
         flow_chain_length = max(0, self._safe_int(flows.get('chain_length'))) if flow_enabled else 0
 
@@ -338,18 +351,31 @@ class Executor:
                 'enabled': bool(services.get('enabled', services.get('randomize'))),
                 'count': service_count,
             },
+            'traffic': {
+                'enabled': bool(traffic.get('enabled', traffic.get('randomize'))),
+                'profile': traffic.get('profile'),
+                'payload_types': list(traffic.get('payload_types') or []),
+                'density': traffic.get('density'),
+                'count': traffic_count,
+            },
             'vulnerabilities': {
                 'enabled': bool(vulns.get('enabled', vulns.get('randomize'))),
                 'count': vulnerability_count,
+            },
+            'flag_node_generators': {
+                'enabled': bool(flag_node_generators.get('enabled', flag_node_generators.get('randomize'))),
+                'count': flag_node_generator_count,
             },
             'flows': {
                 'enabled': flow_enabled,
                 'chain_length': flow_chain_length,
                 'allow_duplicates': bool(flows.get('allow_duplicates', False)),
+                'include_all_topology_pivots': bool(flows.get('include_all_topology_pivots', False)),
             },
             'segmentation': {
                 'enabled': bool(segmentation.get('enabled', segmentation.get('randomize'))),
                 'density': segmentation.get('density'),
+                'items': list(segmentation.get('items') or []),
             },
         }
 
@@ -928,7 +954,230 @@ class Executor:
                     return True
         return False
 
+    def _load_eligible_flag_node_generator_catalog(self) -> list[dict]:
+        """Load only enabled, installed topology flag-node-generators.
+
+        This deliberately uses ScenarioForge's enabled-source loader so an
+        uninstalled or disabled generator can never be selected by an eval run.
+        """
+        if not os.path.isdir(os.path.join(self.sf_path, 'webapp')):
+            raise ValueError(
+                "Unable to inspect ScenarioForge's enabled flag-node-generator catalog: "
+                f"{self.sf_path!r} does not contain webapp."
+            )
+        try:
+            from webapp import app_backend as backend
+            loader = getattr(backend, '_flag_node_generators_from_enabled_sources', None)
+            if not callable(loader):
+                raise RuntimeError('enabled flag-node-generator catalog loader is unavailable')
+            catalog_items, errors = loader()
+        except Exception as exc:
+            raise ValueError(
+                "Unable to inspect ScenarioForge's enabled flag-node-generator catalog: "
+                f"{exc}"
+            ) from exc
+
+        if errors:
+            details = '; '.join(
+                str(item.get('error') or item) if isinstance(item, dict) else str(item)
+                for item in errors
+            )
+            raise ValueError(
+                "ScenarioForge's flag-node-generator catalog contains manifest errors: "
+                f"{details}"
+            )
+
+        eligible = []
+        seen = set()
+        for item in catalog_items or []:
+            if not isinstance(item, dict):
+                continue
+            generator_id = str(item.get('id') or '').strip()
+            name = str(item.get('name') or '').strip()
+            if not generator_id or generator_id in seen:
+                continue
+            seen.add(generator_id)
+            eligible.append({'id': generator_id, 'name': name or generator_id})
+        return eligible
+
+    @staticmethod
+    def _flag_node_generator_matches_filter(entry: dict, filters: list[str]) -> bool:
+        values = [
+            str(entry.get('id') or '').lower(),
+            str(entry.get('name') or '').lower(),
+        ]
+        for raw_filter in filters:
+            pattern = str(raw_filter or '').strip().lower()
+            if not pattern:
+                continue
+            if any(fnmatch.fnmatch(value, pattern) or pattern in value for value in values):
+                return True
+        return False
+
+    def _build_flag_node_generator_section(self, generators_spec: dict) -> dict | None:
+        specific_entries = generators_spec.get('specific') or []
+        if specific_entries:
+            catalog = {entry['id']: entry for entry in self._load_eligible_flag_node_generator_catalog()}
+            selected = []
+            for raw_entry in specific_entries:
+                generator_id = str(raw_entry.get('id') or '').strip()
+                expected_name = str(raw_entry.get('name') or '').strip()
+                try:
+                    count = max(0, int(raw_entry.get('count', 0)))
+                except (TypeError, ValueError):
+                    count = 0
+                entry = catalog.get(generator_id)
+                if not entry or entry['name'] != expected_name or count <= 0:
+                    raise ValueError(
+                        "flag_node_generators.specific contains an unavailable or changed enabled catalog "
+                        f"entry: id={generator_id!r}, name={expected_name!r}. Regenerate dataset-resolved."
+                    )
+                selected.append({'id': generator_id, 'name': expected_name, 'count': count})
+            self._flag_node_generator_selection = {
+                'mode': 'specific_from_resolved_spec',
+                'requested_count': sum(entry['count'] for entry in selected),
+                'eligible_count_unfiltered': len(catalog),
+                'eligible_count': len(catalog),
+                'include': [],
+                'exclude': [],
+                'selected': selected,
+            }
+            return {
+                'density': 0.0,
+                'items': [
+                    {
+                        'selected': 'Specific',
+                        'g_id': entry['id'],
+                        'g_name': entry['name'],
+                        'v_metric': 'Count',
+                        'v_count': entry['count'],
+                        'factor': 1.0,
+                    }
+                    for entry in selected
+                ],
+            }
+        try:
+            requested_count = max(0, int(generators_spec.get('count', 0) or 0))
+        except Exception:
+            requested_count = 0
+        if requested_count <= 0:
+            return None
+
+        catalog = self._load_eligible_flag_node_generator_catalog()
+        include_filters = [value for value in generators_spec.get('include', []) if value]
+        exclude_filters = [value for value in generators_spec.get('exclude', []) if value]
+        unfiltered_eligible_count = len(catalog)
+        if include_filters:
+            catalog = [
+                entry for entry in catalog
+                if self._flag_node_generator_matches_filter(entry, include_filters)
+            ]
+        if exclude_filters:
+            catalog = [
+                entry for entry in catalog
+                if not self._flag_node_generator_matches_filter(entry, exclude_filters)
+            ]
+        if not catalog:
+            filter_description = ''
+            if include_filters or exclude_filters:
+                filter_description = (
+                    f" after applying include={include_filters!r} and exclude={exclude_filters!r}"
+                )
+            raise ValueError(
+                f"flag_node_generators.count requested {requested_count} generator node(s), but no "
+                f"enabled installed flag-node-generators are eligible{filter_description}."
+            )
+
+        selection_rng = random.Random(f"{self.seed}:flag-node-generators:{self.spec.get('name', 'eval')}")
+        selected_entries = [selection_rng.choice(catalog) for _ in range(requested_count)]
+        selected_counts: dict[str, int] = {}
+        selected_by_id: dict[str, dict] = {}
+        for entry in selected_entries:
+            generator_id = entry['id']
+            selected_counts[generator_id] = selected_counts.get(generator_id, 0) + 1
+            selected_by_id[generator_id] = entry
+
+        selected = [
+            {
+                'id': generator_id,
+                'name': selected_by_id[generator_id]['name'],
+                'count': count,
+            }
+            for generator_id, count in selected_counts.items()
+        ]
+        self._flag_node_generator_selection = {
+            'mode': 'specific_from_enabled_catalog',
+            'requested_count': requested_count,
+            'eligible_count_unfiltered': unfiltered_eligible_count,
+            'eligible_count': len(catalog),
+            'include': include_filters,
+            'exclude': exclude_filters,
+            'selected': selected,
+        }
+        return {
+            'density': 0.0,
+            'items': [
+                {
+                    'selected': 'Specific',
+                    'g_id': entry['id'],
+                    'g_name': entry['name'],
+                    'v_metric': 'Count',
+                    'v_count': entry['count'],
+                    'factor': 1.0,
+                }
+                for entry in selected
+            ],
+        }
+
     def _build_vulnerability_section(self, vulns_spec: dict) -> dict | None:
+        specific_entries = vulns_spec.get('specific') or []
+        if specific_entries:
+            eligible_catalog = self._load_eligible_vulnerability_catalog()
+            catalog = {
+                (entry['name'], entry['path']): entry
+                for entry in (eligible_catalog or [])
+            }
+            selected = []
+            for raw_entry in specific_entries:
+                name = str(raw_entry.get('name') or '').strip()
+                path = os.path.abspath(str(raw_entry.get('path') or '').strip())
+                try:
+                    count = max(0, int(raw_entry.get('count', 0)))
+                except (TypeError, ValueError):
+                    count = 0
+                entry = catalog.get((name, path))
+                if not entry or count <= 0:
+                    raise ValueError(
+                        "vulns.specific contains an unavailable or changed validated catalog entry: "
+                        f"name={name!r}, path={path!r}. Regenerate dataset-resolved."
+                    )
+                selected.append({'name': name, 'path': path, 'count': count, **{
+                    key: entry.get(key) for key in ('validated_ok', 'validated_at')
+                }})
+            self._vulnerability_selection = {
+                'mode': 'specific_from_resolved_spec',
+                'requested_count': sum(entry['count'] for entry in selected),
+                'eligible_count_unfiltered': len(catalog),
+                'eligible_count': len(catalog),
+                'include': [],
+                'exclude': [],
+                'selected': selected,
+            }
+            return {
+                'density': 0.0,
+                'flag_type': 'text',
+                'items': [
+                    {
+                        'selected': 'Specific',
+                        'v_name': entry['name'],
+                        'v_path': entry['path'],
+                        'v_metric': 'Count',
+                        'v_count': entry['count'],
+                        'factor': 1.0,
+                    }
+                    for entry in selected
+                ],
+            }
         try:
             requested_count = max(0, int(vulns_spec.get('count', 0) or 0))
         except Exception:
@@ -1043,6 +1292,15 @@ class Executor:
             vulnerability_section = self._build_vulnerability_section(vulns_spec)
             if vulnerability_section:
                 scen_payload['sections']['Vulnerabilities'] = vulnerability_section
+
+        # Flag-node-generators are topology additions, like vulnerabilities.
+        # Their IDs are selected from the enabled installed catalog and written
+        # as Specific rows so the XML remains authoritative and reproducible.
+        generators_spec = self.spec.get('flag_node_generators', {})
+        if generators_spec.get('enabled', generators_spec.get('randomize')):
+            generator_section = self._build_flag_node_generator_section(generators_spec)
+            if generator_section:
+                scen_payload['sections']['Flag Node Generators'] = generator_section
             
         # Inject services count into sections
         services_spec = self.spec.get('services', {})
@@ -1053,6 +1311,15 @@ class Executor:
                         'density': services_spec.get('density', 1.0),
                         'items': service_items,
                     }
+
+        # Traffic is an existing-node workload.  Profile shorthands are
+        # resolved by SpecParser into concrete TCP/UDP rows before this point.
+        traffic_spec = self.spec.get('traffic', {})
+        if traffic_spec.get('enabled', traffic_spec.get('randomize')):
+            scen_payload['sections']['Traffic'] = {
+                'density': traffic_spec.get('density', 0.0),
+                'items': list(traffic_spec.get('items') or []),
+            }
             
         # Inject flow_state
         flows_spec = self.spec.get('flows', {})
@@ -1060,14 +1327,16 @@ class Executor:
             scen_payload['flow_state'] = {
                 'auto_chain': True,
                 'chain_length': flows_spec.get('chain_length', 3),
-                'allow_node_duplicates': flows_spec.get('allow_duplicates', False)
+                'allow_node_duplicates': flows_spec.get('allow_duplicates', False),
+                'include_all_topology_pivots': bool(flows_spec.get('include_all_topology_pivots', False)),
             }
             
         # Inject Segmentation
         seg_spec = self.spec.get('segmentation', {})
         if seg_spec.get('enabled', seg_spec.get('randomize')):
             scen_payload['sections']['Segmentation'] = {
-                'density_input': seg_spec.get('density', 0.5)
+                'density': seg_spec.get('density', 0.5),
+                'items': list(seg_spec.get('items') or []),
             }
             
         core_defaults = deepcopy(backend._core_backend_defaults(include_password=True))
@@ -1159,6 +1428,8 @@ class Executor:
                 scenario_name = self._resolve_xml_scenario_name(xml_path)
                 if self._vulnerability_selection:
                     result['metadata']['vulnerability_selection'] = self._vulnerability_selection
+                if self._flag_node_generator_selection:
+                    result['metadata']['flag_node_generator_selection'] = self._flag_node_generator_selection
                 result['artifacts']['scenario_xml'] = xml_path
                 result['stages']['scenario_xml'] = 'PASS'
             finally:

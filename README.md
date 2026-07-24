@@ -36,6 +36,10 @@ services:
 vulns:
   randomize: true
   count: 2
+flag_node_generators:
+  enabled: true
+  randomize: true
+  count: 2
 flows:
   randomize: true
 validation:
@@ -161,7 +165,7 @@ validation results, generator metadata when ScenarioForge emits it, and filtered
 Each per-run `<spec>_result.json` includes a `metrics` object with:
 
 - run start/end timestamps and duration
-- resolved spec counts for routers, hosts, services, vulnerabilities, and flow length
+- resolved spec counts for routers, hosts, services, vulnerabilities, flag-node-generators, and flow length
 - per-phase duration, return code, timeout flag, stdout/stderr/log sizes, and estimated output tokens
 - process resource counters from `resource.getrusage`, including CPU time, max RSS, block I/O, page faults, and context switches
 - artifact file sizes and output-directory totals
@@ -207,7 +211,7 @@ uv run scenarioforge-eval test_specs/00-sanity-check.spec.yaml --sf-path ../scen
 Run preview-plan plus flag sequencing only:
 
 ```bash
-uv run scenarioforge-eval test_specs/11-30-permutations.spec.yaml --sf-path ../scenarioforge --flag-sequencing --out /tmp/scenarioforge-eval-flag
+uv run scenarioforge-eval test_specs/09-integrated-services-flow.spec.yaml --sf-path ../scenarioforge --flag-sequencing --out /tmp/scenarioforge-eval-flag
 ```
 
 Run topology only:
@@ -303,3 +307,19 @@ vulns:
 ```
 
 If the catalog cannot be inspected, the evaluator falls back to ScenarioForge's upstream `Random` vulnerability behavior. If the catalog can be inspected but does not have enough eligible compose entries, the run fails during XML generation with a direct catalog eligibility error instead of failing later during CORE startup.
+
+## Flag-Node-Generator Selection
+
+`flag_node_generators` adds flag-node-generator nodes at topology generation time. They are additional to the base Docker host count, just like vulnerabilities. The evaluator resolves every requested node from ScenarioForge's enabled, installed flag-node-generator catalog and writes `Specific` rows (stable `g_id`, name, and count) into the XML. It never uses disabled, uninstalled, or stale pack entries.
+
+The section is opt-in: omit it, or set `enabled: false` with `count: 0`, when a test does not need flag-node-generator topology. Its XML representation is the `Flag Node Generators` topology section, so the ScenarioForge UI, XML, flow sequencing, and execution consume the same ground-truth selection.
+
+```yaml
+flag_node_generators:
+  enabled: true
+  count: 3
+  include: [git_*, hash_*]
+  exclude: [git_deploy_key_repo]
+```
+
+`include` and `exclude` use glob/substr matching against a generator's stable ID and display name. Counts may be greater than the number of eligible generator definitions; the evaluator then assigns multiple topology nodes to an enabled definition and records the exact resolved rows under `metadata.flag_node_generator_selection`. An empty eligible catalog is a direct XML-generation error.

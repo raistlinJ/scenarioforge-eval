@@ -92,6 +92,7 @@ class SpecParserServiceSpecTests(unittest.TestCase):
                     'enabled': True,
                     'chain_length': 1,
                     'allow_duplicates': False,
+                    'include_all_topology_pivots': False,
                 },
             )
         finally:
@@ -118,6 +119,110 @@ class SpecParserServiceSpecTests(unittest.TestCase):
                     'enabled': False,
                     'chain_length': 4,
                     'allow_duplicates': False,
+                    'include_all_topology_pivots': False,
+                },
+            )
+        finally:
+            os.unlink(spec_path)
+
+    def test_heavy_traffic_profile_expands_to_concrete_tcp_udp_rows(self):
+        spec_text = textwrap.dedent(
+            """
+            name: parser-check
+            traffic:
+              profile: heavy
+              payload_types: [gibberish, video]
+            """
+        )
+
+        with tempfile.NamedTemporaryFile('w', suffix='.spec.yaml', delete=False) as handle:
+            handle.write(spec_text)
+            spec_path = handle.name
+
+        try:
+            parser = SpecParser(spec_path)
+            self.assertEqual(
+                parser.get_traffic_spec(),
+                {
+                    'enabled': True,
+                    'profile': 'heavy',
+                    'payload_types': ['gibberish', 'video'],
+                    'density': 0.85,
+                    'items': [
+                        {
+                            'selected': 'TCP', 'factor': 1.0, 'v_metric': 'Count',
+                            'v_count': 2, 'pattern': 'continuous', 'rate_kbps': 512.0,
+                            'period_s': 1.0, 'jitter_pct': 10.0, 'content_type': 'gibberish',
+                        },
+                        {
+                            'selected': 'UDP', 'factor': 1.0, 'v_metric': 'Count',
+                            'v_count': 2, 'pattern': 'burst', 'rate_kbps': 256.0,
+                            'period_s': 2.0, 'jitter_pct': 20.0, 'content_type': 'video',
+                        },
+                    ],
+                },
+            )
+        finally:
+            os.unlink(spec_path)
+
+    def test_segmentation_rows_and_pivot_request_are_normalized(self):
+        spec_text = textwrap.dedent(
+            """
+            name: parser-check
+            flows:
+              enabled: true
+              chain_length: 3
+              include_all_topology_pivots: true
+            segmentation:
+              enabled: true
+              density: 0.4
+              items:
+                - type: Firewall
+                  count: 1
+                  pivot_enabled: true
+                  pivot_provider: ssh-fallback
+                - type: nat
+                  count: 2
+            """
+        )
+
+        with tempfile.NamedTemporaryFile('w', suffix='.spec.yaml', delete=False) as handle:
+            handle.write(spec_text)
+            spec_path = handle.name
+
+        try:
+            parser = SpecParser(spec_path)
+            self.assertEqual(
+                parser.get_flows_spec(),
+                {
+                    'enabled': True,
+                    'chain_length': 3,
+                    'allow_duplicates': False,
+                    'include_all_topology_pivots': True,
+                },
+            )
+            self.assertEqual(
+                parser.get_segmentation_spec(),
+                {
+                    'enabled': True,
+                    'density': 0.4,
+                    'items': [
+                        {
+                            'selected': 'Firewall',
+                            'v_metric': 'Count',
+                            'v_count': 1,
+                            'factor': 1.0,
+                            'pivot_enabled': True,
+                            'pivot_provider': 'ssh-fallback',
+                        },
+                        {
+                            'selected': 'NAT',
+                            'v_metric': 'Count',
+                            'v_count': 2,
+                            'factor': 1.0,
+                            'pivot_enabled': False,
+                        },
+                    ],
                 },
             )
         finally:
@@ -148,6 +253,55 @@ class SpecParserServiceSpecTests(unittest.TestCase):
                     'count': 2,
                     'include': ['weblogic/*'],
                     'exclude': ['nginx', 'php'],
+                },
+            )
+        finally:
+            os.unlink(spec_path)
+
+    def test_flag_node_generator_count_and_filters_are_preserved(self):
+        spec_text = textwrap.dedent(
+            """
+            name: parser-check
+            flag_node_generators:
+              randomize: false
+              count: 2
+              include: [git_*]
+              exclude: [git_deploy_key_repo]
+            """
+        )
+
+        with tempfile.NamedTemporaryFile('w', suffix='.spec.yaml', delete=False) as handle:
+            handle.write(spec_text)
+            spec_path = handle.name
+
+        try:
+            parser = SpecParser(spec_path)
+            self.assertEqual(
+                parser.get_flag_node_generators_spec(),
+                {
+                    'enabled': True,
+                    'count': 2,
+                    'include': ['git_*'],
+                    'exclude': ['git_deploy_key_repo'],
+                },
+            )
+        finally:
+            os.unlink(spec_path)
+
+    def test_flag_node_generators_are_disabled_when_omitted(self):
+        with tempfile.NamedTemporaryFile('w', suffix='.spec.yaml', delete=False) as handle:
+            handle.write('name: parser-check\n')
+            spec_path = handle.name
+
+        try:
+            parser = SpecParser(spec_path)
+            self.assertEqual(
+                parser.get_flag_node_generators_spec(),
+                {
+                    'enabled': False,
+                    'count': 0,
+                    'include': [],
+                    'exclude': [],
                 },
             )
         finally:
@@ -332,6 +486,37 @@ class ExecutorServiceItemTests(unittest.TestCase):
         executor = Executor(spec={'seed': 790}, out_dir=tempfile.gettempdir(), sf_path='.')
 
         self.assertIsNone(executor._build_vulnerability_section({'count': 0}))
+
+    def test_flag_node_generators_are_specific_enabled_catalog_rows(self):
+        executor = Executor(
+            spec={'seed': 791, 'name': 'node-generator-check'},
+            out_dir=tempfile.gettempdir(),
+            sf_path='.',
+        )
+        catalog = [
+            {'id': 'git_deploy_key_repo', 'name': 'Git Deploy Key'},
+            {'id': 'hash_shadow_credential', 'name': 'Shadow Credential'},
+        ]
+
+        with mock.patch.object(executor, '_load_eligible_flag_node_generator_catalog', return_value=catalog):
+            section = executor._build_flag_node_generator_section({'count': 3})
+
+        self.assertEqual(section['density'], 0.0)
+        self.assertTrue(section['items'])
+        self.assertEqual({item['selected'] for item in section['items']}, {'Specific'})
+        self.assertEqual({item['v_metric'] for item in section['items']}, {'Count'})
+        self.assertEqual(sum(item['v_count'] for item in section['items']), 3)
+        self.assertTrue({item['g_id'] for item in section['items']} <= {item['id'] for item in catalog})
+        self.assertEqual(executor._flag_node_generator_selection['mode'], 'specific_from_enabled_catalog')
+        self.assertEqual(executor._flag_node_generator_selection['requested_count'], 3)
+
+    def test_flag_node_generator_filters_reject_empty_enabled_catalog(self):
+        executor = Executor(spec={'seed': 792}, out_dir=tempfile.gettempdir(), sf_path='.')
+        catalog = [{'id': 'git_deploy_key_repo', 'name': 'Git Deploy Key'}]
+
+        with mock.patch.object(executor, '_load_eligible_flag_node_generator_catalog', return_value=catalog):
+            with self.assertRaisesRegex(ValueError, 'no enabled installed flag-node-generators are eligible'):
+                executor._build_flag_node_generator_section({'count': 1, 'exclude': ['git_*']})
 
 
 if __name__ == '__main__':

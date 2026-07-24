@@ -56,6 +56,15 @@ def _spec_iterations(spec: SpecParser) -> int:
     return max(0, int(spec.spec.get('iterations', 1)))
 
 
+def _iteration_seed(spec: SpecParser, iteration_index: int) -> int:
+    """Return a reproducible per-iteration seed when a spec supplies one."""
+    try:
+        seed = int(spec.spec['seed'])
+    except (KeyError, TypeError, ValueError):
+        return random.SystemRandom().randint(0, 2**31 - 1)
+    return (seed + iteration_index) % (2**31)
+
+
 ANSI_RE = re.compile(r"\x1b\[[0-?]*[ -/]*[@-~]")
 COMBINED_ERROR_FILENAMES = ("combined-latest.errors", "combined_latest.errors")
 LATEST_ERROR_FILENAME = "latest.errors"
@@ -480,7 +489,7 @@ def main():
                 spec_name = f"{spec_name}_run{i+1}"
             
             spec_out_dir = os.path.join(output_root, spec_name)
-            iteration_seed = random.SystemRandom().randint(0, 2**31 - 1)
+            iteration_seed = _iteration_seed(spec, i)
             iteration_rng = random.Random(iteration_seed)
             
             # Resolve the spec dynamically on each iteration to generate random variations
@@ -489,9 +498,11 @@ def main():
                 'seed': iteration_seed,
                 'topology': spec.get_topology_spec(rng=iteration_rng),
                 'services': spec.get_services_spec(rng=iteration_rng),
+                'traffic': spec.get_traffic_spec(rng=iteration_rng),
                 'vulns': spec.get_vulns_spec(rng=iteration_rng),
+                'flag_node_generators': spec.get_flag_node_generators_spec(rng=iteration_rng),
                 'flows': spec.get_flows_spec(rng=iteration_rng),
-                'segmentation': spec.get_segmentation_spec(),
+                'segmentation': spec.get_segmentation_spec(rng=iteration_rng),
                 'hitl': spec.get_hitl_spec(),
                 'validation': spec.get_validation_spec(),
             }

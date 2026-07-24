@@ -219,6 +219,64 @@ class ExecutorCliPipelineTests(unittest.TestCase):
             self.assertIn('ssh_host="127.0.0.1"', text)
             self.assertIn('ssh_username="localuser"', text)
 
+    def test_generate_xml_writes_explicit_segmentation_rows_and_pivot_flow_state(self):
+        spec = {
+            'name': 'eval-scenario',
+            'topology': {'routers': 2, 'hosts': 4},
+            'services': {'enabled': False, 'count': 0},
+            'traffic': {
+                'enabled': True,
+                'profile': 'light',
+                'density': 0.35,
+                'items': [
+                    {
+                        'selected': 'TCP', 'factor': 1.0, 'v_metric': 'Count',
+                        'v_count': 1, 'pattern': 'periodic', 'rate_kbps': 32.0,
+                        'period_s': 5.0, 'jitter_pct': 10.0, 'content_type': 'text',
+                    },
+                ],
+            },
+            'vulns': {'enabled': False, 'count': 0},
+            'flows': {
+                'enabled': True,
+                'chain_length': 3,
+                'allow_duplicates': False,
+                'include_all_topology_pivots': True,
+            },
+            'segmentation': {
+                'enabled': True,
+                'density': 0.4,
+                'items': [
+                    {
+                        'selected': 'Firewall',
+                        'v_metric': 'Count',
+                        'v_count': 1,
+                        'factor': 1.0,
+                        'pivot_enabled': True,
+                        'pivot_provider': 'ssh-fallback',
+                    },
+                ],
+            },
+            'hitl': {'use_env': False},
+        }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            executor = Executor(spec=spec, out_dir=temp_dir, sf_path='/Users/jcacosta/Documents/GitHub/scenarioforge')
+            with mock.patch.object(executor, '_load_runtime_env', return_value=None):
+                xml_path = executor._generate_xml()
+
+            with open(xml_path, 'r', encoding='utf-8') as handle:
+                text = handle.read()
+
+        self.assertIn('<section name="Segmentation"', text)
+        self.assertIn('<section name="Traffic" density="0.350"', text)
+        self.assertIn('selected="TCP"', text)
+        self.assertIn('pattern="periodic"', text)
+        self.assertIn('selected="Firewall"', text)
+        self.assertIn('pivot_enabled="true"', text)
+        self.assertIn('pivot_provider="ssh-fallback"', text)
+        self.assertIn('"include_all_topology_pivots":true', text)
+
     def test_run_uses_phase_based_cli_sequence(self):
         spec = {
             'name': 'eval-scenario',

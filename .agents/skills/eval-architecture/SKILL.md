@@ -16,3 +16,7 @@ You are working in the `scenarioforge-eval` repository. This is a batch testing 
 ## Constraints
 - Never rewrite the underlying `scenarioforge` generator code from this repository. This repository only contains the *evaluator* code.
 - If you add or modify properties in `.spec.yaml`, you **must** update `scenarioforge_eval/schema.json` to match.
+
+## Topology Flag-Node-Generators
+
+`.spec.yaml` may include an opt-in `flag_node_generators` section with `enabled`, `count`, `include`, and `exclude`. These are topology additions, not part of `topology.hosts`, and the evaluator must write them as `Specific` rows in the XML `Flag Node Generators` section using only ScenarioForge's enabled, installed catalog. Omitted sections must stay disabled so existing evaluation specs do not gain a catalog dependency.
