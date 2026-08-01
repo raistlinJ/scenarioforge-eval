@@ -25,53 +25,163 @@
       "properties": {
         "type": {
           "type": "string",
-          "enum": ["star", "tree", "mesh", "segmented"]
+          "enum": [
+            "star",
+            "tree",
+            "mesh",
+            "segmented"
+          ]
         },
         "routers": {
           "oneOf": [
-            { "type": "integer" },
-            { "type": "array", "items": { "type": "integer" }, "minItems": 2, "maxItems": 2 }
+            {
+              "type": "integer"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              },
+              "minItems": 2,
+              "maxItems": 2
+            }
           ]
         },
         "hosts": {
           "oneOf": [
-            { "type": "integer" },
-            { "type": "array", "items": { "type": "integer" }, "minItems": 2, "maxItems": 2 }
+            {
+              "type": "integer"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              },
+              "minItems": 2,
+              "maxItems": 2
+            }
           ]
         },
-        "randomize": { "type": "boolean" }
+        "randomize": {
+          "type": "boolean"
+        },
+        "docker": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "minItems": 2,
+              "maxItems": 2
+            }
+          ]
+        },
+        "vulnerability_slots": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "minItems": 2,
+              "maxItems": 2
+            }
+          ]
+        },
+        "flag_gen_slots": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "minItems": 2,
+              "maxItems": 2
+            }
+          ]
+        }
       }
     },
     "services": {
       "type": "object",
       "properties": {
-        "enabled": { "type": "boolean" },
-        "randomize": { "type": "boolean" },
+        "enabled": {
+          "type": "boolean"
+        },
+        "randomize": {
+          "type": "boolean"
+        },
         "count": {
           "oneOf": [
-            { "type": "integer" },
-            { "type": "array", "items": { "type": "integer" }, "minItems": 2, "maxItems": 2 }
+            {
+              "type": "integer"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              },
+              "minItems": 2,
+              "maxItems": 2
+            }
           ]
         },
-        "density": { "type": "number", "minimum": 0, "maximum": 1 },
+        "density": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
         "include": {
           "type": "array",
-          "items": { "type": "string" }
+          "items": {
+            "type": "string"
+          }
         },
         "exclude": {
           "type": "array",
-          "items": { "type": "string" }
+          "items": {
+            "type": "string"
+          }
         },
         "specific": {
           "type": "array",
           "description": "Exact resolved Vulhub catalog entries. When supplied, these replace filter-based selection.",
           "items": {
             "type": "object",
-            "required": ["name", "path", "count"],
+            "required": [
+              "name",
+              "path",
+              "count"
+            ],
             "properties": {
-              "name": { "type": "string", "minLength": 1 },
-              "path": { "type": "string", "minLength": 1 },
-              "count": { "type": "integer", "minimum": 1 }
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "path": {
+                "type": "string",
+                "minLength": 1
+              },
+              "count": {
+                "type": "integer",
+                "minimum": 1
+              }
             }
           }
         }
@@ -81,35 +191,111 @@
       "type": "object",
       "description": "Existing-node TCP/UDP workload. A named profile expands to concrete traffic rows.",
       "properties": {
-        "enabled": { "type": "boolean" },
-        "randomize": { "type": "boolean" },
-        "profile": { "type": "string", "enum": ["light", "medium", "heavy"] },
+        "enabled": {
+          "type": "boolean"
+        },
+        "randomize": {
+          "type": "boolean"
+        },
+        "profile": {
+          "type": "string",
+          "enum": [
+            "light",
+            "medium",
+            "heavy"
+          ]
+        },
         "payload_types": {
           "type": "array",
           "description": "Deterministic payload-type overrides, cycled across the profile's concrete traffic rows.",
-          "items": { "type": "string", "enum": ["text", "photo", "audio", "video", "gibberish"] },
+          "items": {
+            "type": "string",
+            "enum": [
+              "text",
+              "photo",
+              "audio",
+              "video",
+              "gibberish"
+            ]
+          },
           "minItems": 1
         },
-        "density": { "type": "number", "minimum": 0, "maximum": 1 },
+        "density": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
         "items": {
           "type": "array",
           "items": {
             "type": "object",
-            "required": ["type"],
+            "required": [
+              "type"
+            ],
             "properties": {
-              "type": { "type": "string", "enum": ["TCP", "UDP", "tcp", "udp"] },
-              "count": {
-                "oneOf": [
-                  { "type": "integer", "minimum": 1 },
-                  { "type": "array", "items": { "type": "integer", "minimum": 1 }, "minItems": 2, "maxItems": 2 }
+              "type": {
+                "type": "string",
+                "enum": [
+                  "TCP",
+                  "UDP",
+                  "tcp",
+                  "udp"
                 ]
               },
-              "factor": { "type": "number", "minimum": 0 },
-              "pattern": { "type": "string", "enum": ["continuous", "periodic", "burst", "poisson", "ramp"] },
-              "rate_kbps": { "type": "number", "minimum": 0 },
-              "period_s": { "type": "number", "exclusiveMinimum": 0 },
-              "jitter_pct": { "type": "number", "minimum": 0, "maximum": 100 },
-              "content_type": { "type": "string", "enum": ["text", "photo", "audio", "video", "gibberish"] }
+              "count": {
+                "oneOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "minimum": 1
+                    },
+                    "minItems": 2,
+                    "maxItems": 2
+                  }
+                ]
+              },
+              "factor": {
+                "type": "number",
+                "minimum": 0
+              },
+              "pattern": {
+                "type": "string",
+                "enum": [
+                  "continuous",
+                  "periodic",
+                  "burst",
+                  "poisson",
+                  "ramp"
+                ]
+              },
+              "rate_kbps": {
+                "type": "number",
+                "minimum": 0
+              },
+              "period_s": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "jitter_pct": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100
+              },
+              "content_type": {
+                "type": "string",
+                "enum": [
+                  "text",
+                  "photo",
+                  "audio",
+                  "video",
+                  "gibberish"
+                ]
+              }
             }
           }
         }
@@ -118,32 +304,62 @@
     "vulns": {
       "type": "object",
       "properties": {
-        "enabled": { "type": "boolean" },
-        "randomize": { "type": "boolean" },
+        "enabled": {
+          "type": "boolean"
+        },
+        "randomize": {
+          "type": "boolean"
+        },
         "count": {
           "oneOf": [
-            { "type": "integer" },
-            { "type": "array", "items": { "type": "integer" }, "minItems": 2, "maxItems": 2 }
+            {
+              "type": "integer"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              },
+              "minItems": 2,
+              "maxItems": 2
+            }
           ]
         },
         "include": {
           "type": "array",
-          "items": { "type": "string" }
+          "items": {
+            "type": "string"
+          }
         },
         "exclude": {
           "type": "array",
-          "items": { "type": "string" }
+          "items": {
+            "type": "string"
+          }
         },
         "specific": {
           "type": "array",
           "description": "Exact resolved Vulhub catalog entries. When supplied, these replace filter-based selection.",
           "items": {
             "type": "object",
-            "required": ["name", "path", "count"],
+            "required": [
+              "name",
+              "path",
+              "count"
+            ],
             "properties": {
-              "name": { "type": "string", "minLength": 1 },
-              "path": { "type": "string", "minLength": 1 },
-              "count": { "type": "integer", "minimum": 1 }
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "path": {
+                "type": "string",
+                "minLength": 1
+              },
+              "count": {
+                "type": "integer",
+                "minimum": 1
+              }
             }
           }
         }
@@ -153,23 +369,43 @@
       "type": "object",
       "description": "Topology-level flag-node-generators. Entries are selected only from enabled installed generators.",
       "properties": {
-        "enabled": { "type": "boolean", "default": false },
-        "randomize": { "type": "boolean" },
+        "enabled": {
+          "type": "boolean",
+          "default": false
+        },
+        "randomize": {
+          "type": "boolean"
+        },
         "count": {
           "default": 0,
           "oneOf": [
-            { "type": "integer", "minimum": 0 },
-            { "type": "array", "items": { "type": "integer", "minimum": 0 }, "minItems": 2, "maxItems": 2 }
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "minItems": 2,
+              "maxItems": 2
+            }
           ]
         },
         "include": {
           "type": "array",
-          "items": { "type": "string" },
+          "items": {
+            "type": "string"
+          },
           "description": "Glob/substr filters matched against generator ID and name."
         },
         "exclude": {
           "type": "array",
-          "items": { "type": "string" },
+          "items": {
+            "type": "string"
+          },
           "description": "Glob/substr filters matched against generator ID and name."
         },
         "specific": {
@@ -177,11 +413,24 @@
           "description": "Exact resolved enabled generator entries. When supplied, these replace filter-based selection.",
           "items": {
             "type": "object",
-            "required": ["id", "name", "count"],
+            "required": [
+              "id",
+              "name",
+              "count"
+            ],
             "properties": {
-              "id": { "type": "string", "minLength": 1 },
-              "name": { "type": "string", "minLength": 1 },
-              "count": { "type": "integer", "minimum": 1 }
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "count": {
+                "type": "integer",
+                "minimum": 1
+              }
             }
           }
         }
@@ -190,22 +439,46 @@
     "flows": {
       "type": "object",
       "properties": {
-        "enabled": { "type": "boolean" },
-        "randomize": { "type": "boolean" },
+        "enabled": {
+          "type": "boolean"
+        },
+        "randomize": {
+          "type": "boolean"
+        },
         "count": {
           "oneOf": [
-            { "type": "integer" },
-            { "type": "array", "items": { "type": "integer" }, "minItems": 2, "maxItems": 2 }
+            {
+              "type": "integer"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              },
+              "minItems": 2,
+              "maxItems": 2
+            }
           ],
           "description": "Legacy alias for chain_length."
         },
         "chain_length": {
           "oneOf": [
-            { "type": "integer" },
-            { "type": "array", "items": { "type": "integer" }, "minItems": 2, "maxItems": 2 }
+            {
+              "type": "integer"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              },
+              "minItems": 2,
+              "maxItems": 2
+            }
           ]
         },
-        "allow_duplicates": { "type": "boolean" },
+        "allow_duplicates": {
+          "type": "boolean"
+        },
         "include_all_topology_pivots": {
           "type": "boolean",
           "description": "Request topology pivot expansion during flag sequencing when ScenarioForge CLI support is available."
@@ -215,28 +488,74 @@
     "segmentation": {
       "type": "object",
       "properties": {
-        "enabled": { "type": "boolean" },
-        "randomize": { "type": "boolean" },
-        "density": { "type": "number", "minimum": 0, "maximum": 1 },
+        "enabled": {
+          "type": "boolean"
+        },
+        "randomize": {
+          "type": "boolean"
+        },
+        "density": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
         "items": {
           "type": "array",
           "description": "Explicit firewall or NAT rows to create in the Segmentation section.",
           "items": {
             "type": "object",
-            "required": ["type"],
+            "required": [
+              "type"
+            ],
             "properties": {
-              "type": { "type": "string", "enum": ["Firewall", "NAT", "firewall", "nat"] },
-              "count": {
-                "oneOf": [
-                  { "type": "integer", "minimum": 1 },
-                  { "type": "array", "items": { "type": "integer", "minimum": 1 }, "minItems": 2, "maxItems": 2 }
+              "type": {
+                "type": "string",
+                "enum": [
+                  "Firewall",
+                  "NAT",
+                  "firewall",
+                  "nat"
                 ]
               },
-              "factor": { "type": "number", "minimum": 0 },
-              "pivot_enabled": { "type": "boolean" },
-              "pivot_provider": { "type": "string", "enum": ["random", "vulnerability", "flag-node-generator", "ssh-fallback"] },
-              "requires": { "type": "string" },
-              "produces": { "type": "string" }
+              "count": {
+                "oneOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "minimum": 1
+                    },
+                    "minItems": 2,
+                    "maxItems": 2
+                  }
+                ]
+              },
+              "factor": {
+                "type": "number",
+                "minimum": 0
+              },
+              "pivot_enabled": {
+                "type": "boolean"
+              },
+              "pivot_provider": {
+                "type": "string",
+                "enum": [
+                  "random",
+                  "vulnerability",
+                  "flag-node-generator",
+                  "ssh-fallback"
+                ]
+              },
+              "requires": {
+                "type": "string"
+              },
+              "produces": {
+                "type": "string"
+              }
             }
           }
         }
@@ -245,7 +564,10 @@
     "hitl": {
       "type": "object",
       "properties": {
-        "use_env": { "type": "boolean", "description": "If true, extracts hitl config from .scenarioforge.env" }
+        "use_env": {
+          "type": "boolean",
+          "description": "If true, extracts hitl config from .scenarioforge.env"
+        }
       }
     },
     "validation": {
@@ -253,7 +575,11 @@
       "properties": {
         "policy": {
           "type": "string",
-          "enum": ["strict", "warning_tolerant", "warning-tolerant"],
+          "enum": [
+            "strict",
+            "warning_tolerant",
+            "warning-tolerant"
+          ],
           "description": "Validation pass policy for execute. strict requires validation_summary.ok=true; warning_tolerant allows warning-only validation summaries."
         }
       }

@@ -1,0 +1,41 @@
+# Declared challenge slots must be reachable.
+#
+# A slot is capacity, not a placement: both kinds materialise empty and
+# flag-sequencing fills one only when the requested chain length needs it. They
+# add to the counts declared in the Vulnerabilities and Flag Node Generators
+# sections, so the ceiling here is 2 vulnerabilities + 2 generators + 2
+# vulnerability slots + 2 flag-gen slots = 8, and the chain asks for all of it.
+#
+# Requesting less than the ceiling leaves slots unfilled, which is correct but
+# exercises nothing; requesting the ceiling is what proves a slot can be reached
+# at all.
+name: "challenge-slots"
+iterations: 1
+topology:
+  routers: 2
+  hosts: 6
+  docker: 1
+  vulnerability_slots: 2
+  flag_gen_slots: 2
+  randomize: false
+services:
+  enabled: false
+  count: 0
+vulns:
+  enabled: true
+  randomize: true
+  count: 2
+flag_node_generators:
+  enabled: true
+  count: 2
+flows:
+  enabled: true
+  randomize: false
+  chain_length: 8
+  allow_duplicates: false
+segmentation:
+  enabled: false
+hitl:
+  use_env: false
+validation:
+  policy: "strict"

@@ -195,6 +195,7 @@ class Executor:
             'Traceback',
             'FATAL',
             '[cleanup]',
+            '[images]',
         )
         for raw_line in text.splitlines():
             line = raw_line.strip()
@@ -820,6 +821,28 @@ class Executor:
         self._record_phase_result(result, cleanup_phase)
         result['stages']['dangerous_cleanup'] = 'PASS'
 
+    def _resolve_topology_count(self, value) -> int:
+        """Resolve a host-role count that may be a number or an inclusive range.
+
+        The schema allows `[min, max]` for these the same way it does for
+        hosts and routers; a range is drawn from the seeded RNG so a spec stays
+        reproducible.
+        """
+        if value is None:
+            return 0
+        if isinstance(value, (list, tuple)):
+            try:
+                low, high = int(value[0]), int(value[1])
+            except Exception:
+                return 0
+            if high < low:
+                low, high = high, low
+            return max(0, self._rng.randint(low, high))
+        try:
+            return max(0, int(value))
+        except Exception:
+            return 0
+
     def _build_topology_payload(self, topo_spec: dict) -> dict:
         try:
             host_count = max(0, int(topo_spec.get('hosts', 0) or 0))
@@ -830,9 +853,30 @@ class Executor:
         except Exception:
             router_count = 0
 
+        items = [{'selected': 'Workstation', 'factor': 1.0}]
+
+        # Docker-backed host roles. `docker` rows accept either challenge kind;
+        # a slot row is capacity reserved for one kind, materialised empty and
+        # filled during flag-sequencing only if the requested chain reaches it.
+        # Both slot kinds raise the challenge ceiling, so a spec that wants them
+        # exercised has to ask for a chain long enough to need them.
+        for spec_key, role in (
+            ('docker', 'Docker'),
+            ('vulnerability_slots', 'VulnerabilitySlot'),
+            ('flag_gen_slots', 'FlagGenSlot'),
+        ):
+            role_count = self._resolve_topology_count(topo_spec.get(spec_key))
+            if role_count > 0:
+                items.append({
+                    'selected': role,
+                    'factor': 1.0,
+                    'v_metric': 'Count',
+                    'v_count': role_count,
+                })
+
         sections = {
             'Node Information': {
-                'items': [{'selected': 'Workstation', 'factor': 1.0}],
+                'items': items,
             }
         }
         if router_count > 0:
