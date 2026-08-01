@@ -496,6 +496,20 @@
           "items": {
             "type": "string"
           }
+        },
+        "timeout_s": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "cleanup_generated_artifacts": {
+          "type": "boolean"
+        },
+        "execution": {
+          "type": "string",
+          "enum": [
+            "local",
+            "remote"
+          ]
         }
       }
     },

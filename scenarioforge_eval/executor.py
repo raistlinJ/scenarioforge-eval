@@ -1573,6 +1573,34 @@ class Executor:
                     ]
                     if chain_ids:
                         flow_args.extend(['--flow-chain-ids', ','.join(chain_ids)])
+                    # Operational knobs. Each is only passed when the spec says
+                    # so, leaving ScenarioForge's own default in charge
+                    # otherwise -- a bounded flag-sequencing phase matters most
+                    # for a long evaluation run that would otherwise hang.
+                    timeout_s = flows_spec.get('timeout_s')
+                    if timeout_s not in (None, ''):
+                        try:
+                            timeout_value = int(timeout_s)
+                        except Exception:
+                            raise ValueError(
+                                f'flows.timeout_s must be an integer, got {timeout_s!r}'
+                            )
+                        if timeout_value <= 0:
+                            raise ValueError(
+                                f'flows.timeout_s must be positive, got {timeout_value}'
+                            )
+                        flow_args.extend(['--flow-timeout-s', str(timeout_value)])
+                    if flows_spec.get('cleanup_generated_artifacts'):
+                        flow_args.append('--flow-cleanup-generated-artifacts')
+                    execution = str(flows_spec.get('execution') or '').strip().lower()
+                    if execution == 'remote':
+                        flow_args.append('--flow-run-remote')
+                    elif execution == 'local':
+                        flow_args.append('--flow-run-local')
+                    elif execution:
+                        raise ValueError(
+                            f"flows.execution must be 'local' or 'remote', got {execution!r}"
+                        )
                     try:
                         flag_phase = self._run_cli_phase(
                             'flag-sequencing',
