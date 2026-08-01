@@ -821,6 +821,29 @@ class Executor:
         self._record_phase_result(result, cleanup_phase)
         result['stages']['dangerous_cleanup'] = 'PASS'
 
+    DEPENDENCY_LEVEL_RANGE = (1, 5)
+
+    def _resolve_dependency_level(self, flows_spec: dict):
+        """Return the flag-sequencing dependency level, or None to leave default.
+
+        ScenarioForge accepts 1-5. A value outside that range is a spec error
+        worth failing on rather than silently clamping, since the whole point of
+        setting it is to pin solver strictness.
+        """
+        raw = flows_spec.get('dependency_level')
+        if raw is None or raw == '':
+            return None
+        try:
+            level = int(raw)
+        except Exception:
+            raise ValueError(f'flows.dependency_level must be an integer, got {raw!r}')
+        low, high = self.DEPENDENCY_LEVEL_RANGE
+        if not (low <= level <= high):
+            raise ValueError(
+                f'flows.dependency_level must be between {low} and {high}, got {level}'
+            )
+        return level
+
     def _resolve_topology_count(self, value) -> int:
         """Resolve a host-role count that may be a number or an inclusive range.
 
@@ -1534,6 +1557,22 @@ class Executor:
                         flow_args.append('--flow-allow-node-duplicates')
                     else:
                         flow_args.append('--flow-best-effort')
+                    # Dependency strictness governs how the solver chains steps.
+                    # Left unset every run used ScenarioForge's default of 3 and
+                    # the other levels went unexercised.
+                    dependency_level = self._resolve_dependency_level(flows_spec)
+                    if dependency_level is not None:
+                        flow_args.extend(['--flow-dependency-level', str(dependency_level)])
+                    preset = str(flows_spec.get('preset') or '').strip()
+                    if preset:
+                        flow_args.extend(['--flow-preset', preset])
+                    chain_ids = [
+                        str(node_id).strip()
+                        for node_id in (flows_spec.get('chain_ids') or [])
+                        if str(node_id).strip()
+                    ]
+                    if chain_ids:
+                        flow_args.extend(['--flow-chain-ids', ','.join(chain_ids)])
                     try:
                         flag_phase = self._run_cli_phase(
                             'flag-sequencing',

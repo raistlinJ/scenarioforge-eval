@@ -482,6 +482,20 @@
         "include_all_topology_pivots": {
           "type": "boolean",
           "description": "Request topology pivot expansion during flag sequencing when ScenarioForge CLI support is available."
+        },
+        "dependency_level": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "preset": {
+          "type": "string"
+        },
+        "chain_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
