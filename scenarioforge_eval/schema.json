@@ -488,9 +488,6 @@
           "minimum": 1,
           "maximum": 5
         },
-        "preset": {
-          "type": "string"
-        },
         "chain_ids": {
           "type": "array",
           "items": {

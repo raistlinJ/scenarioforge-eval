@@ -1563,9 +1563,6 @@ class Executor:
                     dependency_level = self._resolve_dependency_level(flows_spec)
                     if dependency_level is not None:
                         flow_args.extend(['--flow-dependency-level', str(dependency_level)])
-                    preset = str(flows_spec.get('preset') or '').strip()
-                    if preset:
-                        flow_args.extend(['--flow-preset', preset])
                     chain_ids = [
                         str(node_id).strip()
                         for node_id in (flows_spec.get('chain_ids') or [])

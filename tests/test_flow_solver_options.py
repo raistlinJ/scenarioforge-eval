@@ -6,11 +6,6 @@ The one that shapes the scenario rather than the plumbing is
 silently used the default of 3 and the other four levels went unexercised.
 `--flow-chain-ids` pins an explicit chain instead of letting the solver choose.
 
-`--flow-preset` is wired but cannot be exercised yet: ScenarioForge's
-`_flow_preset_steps` is a stub returning [] for every name, so any preset value
-fails with 'unknown preset'. PresetAvailabilityTests fails when that changes,
-as the cue to add a spec.
-
 The remaining options are operational -- timeout, artifact cleanup, execution
 locality -- and each is passed only when a spec asks, so ScenarioForge keeps
 its own default otherwise.
@@ -95,11 +90,6 @@ class FlowArgumentWiringTests(unittest.TestCase):
         self.assertIn('_resolve_dependency_level(flows_spec)', block)
         self.assertIn('if dependency_level is not None', block)
 
-    def test_preset_is_passed_only_when_set(self):
-        block = self._flow_arg_block()
-        self.assertIn("'--flow-preset'", block)
-        self.assertIn('if preset:', block)
-
     def test_chain_ids_are_passed_as_a_csv_list(self):
         block = self._flow_arg_block()
         self.assertIn("'--flow-chain-ids'", block)
@@ -161,27 +151,6 @@ class OperationalOptionTests(unittest.TestCase):
         self.assertIn('elif execution:', block)
 
 
-class PresetAvailabilityTests(unittest.TestCase):
-    def test_scenarioforge_defines_no_presets_yet(self):
-        """Guards a spec being written against a path that cannot work.
-
-        `_flow_preset_steps` is a stub returning [] for every name, so any
-        --flow-preset value fails flag-sequencing with 'unknown preset'. The
-        evaluator can pass the flag, but there is nothing to pass yet. When
-        presets land, this test fails and a spec should be added.
-        """
-        try:
-            from webapp import app_backend as backend
-        except Exception as exc:  # pragma: no cover - depends on sibling checkout
-            self.skipTest(f'ScenarioForge backend not importable: {exc}')
-
-        for name in ('demo', 'linear', 'anything'):
-            self.assertEqual(
-                backend._flow_preset_steps(name), [],
-                'ScenarioForge now defines presets; add an evaluator spec that uses one',
-            )
-
-
 class SchemaTests(unittest.TestCase):
     def test_the_new_keys_are_declared(self):
         import json
@@ -191,7 +160,6 @@ class SchemaTests(unittest.TestCase):
         flows = schema['properties']['flows']['properties']
         self.assertEqual(flows['dependency_level']['minimum'], 1)
         self.assertEqual(flows['dependency_level']['maximum'], 5)
-        self.assertIn('preset', flows)
         self.assertIn('chain_ids', flows)
         self.assertEqual(flows['timeout_s']['minimum'], 1)
         self.assertEqual(sorted(flows['execution']['enum']), ['local', 'remote'])
