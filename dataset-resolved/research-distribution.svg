@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1360" viewBox="0 0 1400 1360" role="img" aria-labelledby="title desc">
+  <title id="title">Resolved ScenarioForge dataset: coverage and balance</title>
+  <desc id="desc">Research-ready bar-chart summary of exact catalog balance, network and traffic variation, payload allocation, and semantic family composition.</desc>
+  <style>
+    text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #1f2937; }
+    .title { font-size: 28px; font-weight: 700; }
+    .subtitle, .note { font-size: 12px; fill: #6b7280; }
+    .panel { fill: #ffffff; stroke: #d1d5db; stroke-width: 1; }
+    .panel-title { font-size: 18px; font-weight: 700; }
+    .label { font-size: 12px; }
+    .value { font-size: 12px; font-weight: 700; }
+    .big { font-size: 27px; font-weight: 700; }
+    .header { font-size: 12px; font-weight: 700; fill: #4b5563; }
+  </style>
+  <rect width="1400" height="1360" fill="#ffffff"/>
+  <text x="50" y="55" class="title">Resolved ScenarioForge dataset: coverage and balance</text>
+  <text x="50" y="80" class="subtitle">Ground truth: 226 fixed scenarios, materialized against one validated catalog snapshot</text>
+  <rect x="40" y="108" width="410" height="108" rx="12" class="panel"/>
+  <text x="64" y="145" class="big">294/294</text><text x="64" y="166" class="note">Vulhub images covered (100%)</text>
+  <text x="64" y="195" class="note">8 semantic families · 443 selections · mean 1.51 ± 1.17</text>
+  <rect x="495" y="108" width="410" height="108" rx="12" class="panel"/>
+  <text x="519" y="145" class="big">85/85</text><text x="519" y="166" class="note">Non-Sample generators covered (100%)</text>
+  <text x="519" y="195" class="note">7 semantic families · 357 selections · mean 4.20 ± 0.40</text>
+  <rect x="950" y="108" width="410" height="108" rx="12" class="panel"/>
+  <text x="974" y="145" class="big">226</text><text x="974" y="166" class="note">fixed, reproducible scenarios</text>
+  <text x="974" y="195" class="note">226 YAMLs · exact catalog rows persisted</text>
+  <rect x="40" y="245" width="620" height="220" rx="12" class="panel"/>
+  <text x="64" y="281" class="panel-title">Concrete Vulhub entry balance</text>
+  <text x="64" y="303" class="note">Bar height = number of images at each exact use count. Population variance 1.372; SD 1.171.</text>
+  <rect x="710" y="245" width="650" height="220" rx="12" class="panel"/>
+  <text x="734" y="281" class="panel-title">Concrete self-generated entry balance</text>
+  <text x="734" y="303" class="note">Bar height = number of generators at each exact use count. Population variance 0.160; SD 0.400.</text>
+  <rect x="75" y="320" width="46" height="105" rx="4" fill="#dc2626"/><text x="92" y="446" class="label">1×</text><text x="83" y="313" class="value">243</text>
+  <rect x="163" y="423" width="46" height="2" rx="4" fill="#dc2626"/><text x="180" y="446" class="label">2×</text><text x="171" y="416" class="value">5</text>
+  <rect x="251" y="422" width="46" height="3" rx="4" fill="#dc2626"/><text x="268" y="446" class="label">3×</text><text x="259" y="415" class="value">7</text>
+  <rect x="339" y="413" width="46" height="12" rx="4" fill="#dc2626"/><text x="356" y="446" class="label">4×</text><text x="347" y="406" class="value">28</text>
+  <rect x="427" y="421" width="46" height="4" rx="4" fill="#dc2626"/><text x="444" y="446" class="label">5×</text><text x="435" y="414" class="value">9</text>
+  <rect x="515" y="424" width="46" height="1" rx="4" fill="#dc2626"/><text x="532" y="446" class="label">6×</text><text x="523" y="417" class="value">2</text>
+  <rect x="770" y="320" width="58" height="105" rx="4" fill="#0f766e"/><text x="791" y="446" class="label">4×</text><text x="782" y="313" class="value">68</text>
+  <rect x="880" y="399" width="58" height="26" rx="4" fill="#0f766e"/><text x="901" y="446" class="label">5×</text><text x="892" y="392" class="value">17</text>
+  <rect x="40" y="500" width="620" height="365" rx="12" class="panel"/>
+  <text x="64" y="536" class="panel-title">Network variation per scenario</text>
+  <text x="64" y="558" class="note">Bar = mean as a share of that row’s observed maximum; labels give mean ± SD and range.</text>
+  <text x="64" y="595" class="label">Routers</text><rect x="225" y="582" width="210" height="15" rx="3" fill="#e5e7eb"/><rect x="225" y="582" width="86" height="15" rx="3" fill="#2563eb"/><text x="450" y="595" class="value">2.05 ± 0.96; 1–5</text>
+  <text x="64" y="631" class="label">Docker hosts</text><rect x="225" y="618" width="210" height="15" rx="3" fill="#e5e7eb"/><rect x="225" y="618" width="95" height="15" rx="3" fill="#2563eb"/><text x="450" y="631" class="value">6.79 ± 2.44; 3–15</text>
+  <text x="64" y="667" class="label">Base nodes</text><rect x="225" y="654" width="210" height="15" rx="3" fill="#e5e7eb"/><rect x="225" y="654" width="93" height="15" rx="3" fill="#2563eb"/><text x="450" y="667" class="value">8.84 ± 3.09; 4–20</text>
+  <text x="64" y="703" class="label">Total planned nodes</text><rect x="225" y="690" width="210" height="15" rx="3" fill="#e5e7eb"/><rect x="225" y="690" width="96" height="15" rx="3" fill="#2563eb"/><text x="450" y="703" class="value">12.38 ± 4.25; 5–27</text>
+  <text x="64" y="739" class="label">Service assignments</text><rect x="225" y="726" width="210" height="15" rx="3" fill="#e5e7eb"/><rect x="225" y="726" width="96" height="15" rx="3" fill="#2563eb"/><text x="450" y="739" class="value">3.67 ± 1.39; 1–8</text>
+  <text x="64" y="775" class="label">Flow hops</text><rect x="225" y="762" width="210" height="15" rx="3" fill="#e5e7eb"/><rect x="225" y="762" width="81" height="15" rx="3" fill="#2563eb"/><text x="450" y="775" class="value">2.31 ± 1.81; 0–6</text>
+  <text x="64" y="811" class="label">Segmentation rows</text><rect x="225" y="798" width="210" height="15" rx="3" fill="#e5e7eb"/><rect x="225" y="798" width="37" height="15" rx="3" fill="#2563eb"/><text x="450" y="811" class="value">0.53 ± 0.90; 0–3</text>
+  <rect x="710" y="500" width="650" height="365" rx="12" class="panel"/>
+  <text x="734" y="536" class="panel-title">Traffic workload and payload types</text>
+  <text x="734" y="558" class="note">Scenario means use fixed Traffic rows; payload bars show requested sender/receiver pairs.</text>
+  <text x="734" y="595" class="label">Traffic density</text><rect x="875" y="582" width="190" height="15" rx="3" fill="#e5e7eb"/><rect x="875" y="582" width="135" height="15" rx="3" fill="#7c3aed"/><text x="1080" y="595" class="value">0.61 ± 0.20; 0.35–0.85</text>
+  <text x="734" y="631" class="label">Traffic rows</text><rect x="875" y="618" width="190" height="15" rx="3" fill="#e5e7eb"/><rect x="875" y="618" width="161" height="15" rx="3" fill="#7c3aed"/><text x="1080" y="631" class="value">1.69 ± 0.46; 1–2</text>
+  <text x="734" y="667" class="label">Requested pairs</text><rect x="875" y="654" width="190" height="15" rx="3" fill="#e5e7eb"/><rect x="875" y="654" width="112" height="15" rx="3" fill="#7c3aed"/><text x="1080" y="667" class="value">2.35 ± 1.23; 1–4</text>
+  <text x="734" y="715" class="header">Payload type: requested pairs</text>
+  <text x="734" y="742" class="label">Audio</text><rect x="820" y="730" width="143" height="15" rx="3" fill="#0891b2"/><text x="971" y="742" class="value">101 pairs · 81 rows</text>
+  <text x="734" y="765" class="label">Gibberish</text><rect x="820" y="753" width="163" height="15" rx="3" fill="#475569"/><text x="991" y="765" class="value">115 pairs · 70 rows</text>
+  <text x="734" y="788" class="label">Photo</text><rect x="820" y="776" width="143" height="15" rx="3" fill="#db2777"/><text x="971" y="788" class="value">101 pairs · 81 rows</text>
+  <text x="734" y="811" class="label">Text</text><rect x="820" y="799" width="135" height="15" rx="3" fill="#2563eb"/><text x="963" y="811" class="value">95 pairs · 75 rows</text>
+  <text x="734" y="834" class="label">Video</text><rect x="820" y="822" width="170" height="15" rx="3" fill="#7c3aed"/><text x="998" y="834" class="value">120 pairs · 75 rows</text>
+  <rect x="40" y="900" width="620" height="345" rx="12" class="panel"/>
+  <text x="64" y="936" class="panel-title">Vulhub semantic families</text>
+  <text x="64" y="958" class="note">Classification by component function (e.g., Struts2 → web framework; Drupal → CMS; Elasticsearch → data/search).</text>
+  <rect x="710" y="900" width="650" height="345" rx="12" class="panel"/>
+  <text x="734" y="936" class="panel-title">Self-generated semantic families</text>
+  <text x="734" y="958" class="note">Classification by service role rather than protocol-name prefixes.</text>
+  <text x="64" y="988" class="label">Web applications, frameworks &amp;…</text><rect x="300" y="976" width="220" height="15" rx="3" fill="#dc2626"/><text x="528" y="988" class="value">222 / 144</text>
+  <text x="64" y="1017" class="label">Data, search &amp; storage</text><rect x="300" y="1005" width="72" height="15" rx="3" fill="#dc2626"/><text x="380" y="1017" class="value">73 / 46</text>
+  <text x="64" y="1046" class="label">Network &amp; web infrastructure</text><rect x="300" y="1034" width="41" height="15" rx="3" fill="#dc2626"/><text x="349" y="1046" class="value">41 / 24</text>
+  <text x="64" y="1075" class="label">Enterprise &amp; collaboration app…</text><rect x="300" y="1063" width="40" height="15" rx="3" fill="#dc2626"/><text x="348" y="1075" class="value">40 / 23</text>
+  <text x="64" y="1104" class="label">DevOps, CI/CD &amp; source control</text><rect x="300" y="1092" width="28" height="15" rx="3" fill="#dc2626"/><text x="336" y="1104" class="value">28 / 18</text>
+  <text x="64" y="1133" class="label">System tools, runtimes &amp; media</text><rect x="300" y="1121" width="16" height="15" rx="3" fill="#dc2626"/><text x="324" y="1133" class="value">16 / 16</text>
+  <text x="64" y="1162" class="label">Messaging, integration &amp; middl…</text><rect x="300" y="1150" width="13" height="15" rx="3" fill="#dc2626"/><text x="321" y="1162" class="value">13 / 13</text>
+  <text x="64" y="1191" class="label">Security, identity &amp; remote ac…</text><rect x="300" y="1179" width="10" height="15" rx="3" fill="#dc2626"/><text x="318" y="1191" class="value">10 / 10</text>
+  <text x="734" y="988" class="label">File sharing</text><rect x="970" y="976" width="220" height="15" rx="3" fill="#0f766e"/><text x="1198" y="988" class="value">68 / 16</text>
+  <text x="734" y="1017" class="label">Web delivery &amp; application access</text><rect x="970" y="1005" width="204" height="15" rx="3" fill="#0f766e"/><text x="1182" y="1017" class="value">63 / 15</text>
+  <text x="734" y="1046" class="label">Data stores</text><rect x="970" y="1034" width="188" height="15" rx="3" fill="#0f766e"/><text x="1166" y="1046" class="value">58 / 14</text>
+  <text x="734" y="1075" class="label">Remote administration &amp; source access</text><rect x="970" y="1063" width="149" height="15" rx="3" fill="#0f766e"/><text x="1127" y="1075" class="value">46 / 11</text>
+  <text x="734" y="1104" class="label">Messaging &amp; transfer</text><rect x="970" y="1092" width="146" height="15" rx="3" fill="#0f766e"/><text x="1124" y="1104" class="value">45 / 11</text>
+  <text x="734" y="1133" class="label">Software supply chain</text><rect x="970" y="1121" width="126" height="15" rx="3" fill="#0f766e"/><text x="1104" y="1133" class="value">39 / 9</text>
+  <text x="734" y="1162" class="label">Identity &amp; discovery</text><rect x="970" y="1150" width="123" height="15" rx="3" fill="#0f766e"/><text x="1101" y="1162" class="value">38 / 9</text>
+  <text x="50" y="1290" class="note">Each family bar shows selections / concrete entries. Every eligible entry is observed at least once; repetition is bounded (Vulhub 1–6, generators 4–5).</text>
+  <text x="50" y="1320" class="note">Definitions, mappings, type membership, and exact population statistics: dataset-resolved/ground-truth-statistics.json. Sample generators are excluded by design.</text>
+</svg>

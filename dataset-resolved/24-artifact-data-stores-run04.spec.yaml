@@ -1,0 +1,68 @@
+name: dataset-artifact-data-stores_run04
+iterations: 1
+seed: 564711452
+topology:
+  routers: 2
+  hosts: 5
+services:
+  enabled: true
+  count: 4
+  density: 1.0
+  include:
+  - HTTP
+  - SSH
+  exclude: []
+traffic:
+  enabled: true
+  density: 0.6
+  items:
+  - type: TCP
+    count: 1
+    factor: 1.0
+    pattern: continuous
+    rate_kbps: 128.0
+    period_s: 2.0
+    jitter_pct: 15.0
+    content_type: photo
+  - type: UDP
+    count: 1
+    factor: 1.0
+    pattern: periodic
+    rate_kbps: 64.0
+    period_s: 5.0
+    jitter_pct: 25.0
+    content_type: video
+vulns:
+  enabled: false
+  count: 0
+  include: []
+  exclude: []
+flag_node_generators:
+  enabled: true
+  count: 4
+  specific:
+  - id: mysql_backup_table
+    name: 'Database: MySQL Backup Table'
+    count: 1
+  - id: redis_exposed_keys
+    name: 'Cache: Exposed Redis Keys'
+    count: 1
+  - id: '131'
+    name: 'Cache: CDN Manifest Cache'
+    count: 1
+  - id: postgres_customer_dump
+    name: 'Database: Postgres Customer Dump'
+    count: 1
+flows:
+  enabled: false
+  chain_length: 0
+  allow_duplicates: false
+  include_all_topology_pivots: false
+segmentation:
+  enabled: true
+  density: 0.4
+  items: []
+hitl:
+  use_env: false
+validation:
+  policy: strict

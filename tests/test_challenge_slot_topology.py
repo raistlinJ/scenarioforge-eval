@@ -100,9 +100,8 @@ class ChallengeSlotTopologyTests(unittest.TestCase):
 
 
 class ChallengeSlotSpecTests(unittest.TestCase):
-    def test_the_shipped_spec_requests_the_full_ceiling(self):
-        """Asking for less than the ceiling never reaches a slot, so a spec that
-        does not ask for it proves nothing."""
+    def test_the_shipped_spec_explicitly_reaches_every_slot(self):
+        """The optional slots must be selected before they can be filled."""
         import yaml
 
         here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -110,13 +109,16 @@ class ChallengeSlotSpecTests(unittest.TestCase):
             spec = yaml.safe_load(handle)
 
         topo = spec['topology']
-        ceiling = (
-            int(spec['vulns']['count'])
+        optional_slots = int(topo['vulnerability_slots']) + int(topo['flag_gen_slots'])
+        concrete_vulns = int(spec['vulns']['count'])
+        effective_ceiling = (
+            concrete_vulns
             + int(spec['flag_node_generators']['count'])
-            + int(topo['vulnerability_slots'])
-            + int(topo['flag_gen_slots'])
+            + optional_slots
         )
-        self.assertEqual(int(spec['flows']['chain_length']), ceiling)
+        self.assertEqual(len(spec['flows']['chain_ids']), optional_slots)
+        self.assertEqual(int(spec['flows']['chain_length']), concrete_vulns + optional_slots)
+        self.assertEqual(effective_ceiling, 8)
 
 
 if __name__ == '__main__':

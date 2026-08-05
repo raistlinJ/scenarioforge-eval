@@ -1,0 +1,59 @@
+name: dataset-mixed-ci-supply-chain_run05
+iterations: 1
+seed: 601539727
+topology:
+  routers: 1
+  hosts: 5
+services:
+  enabled: true
+  count: 2
+  density: 1.0
+  include:
+  - SSH
+  - HTTP
+  exclude: []
+traffic:
+  enabled: true
+  density: 0.35
+  items:
+  - type: TCP
+    count: 1
+    factor: 1.0
+    pattern: periodic
+    rate_kbps: 32.0
+    period_s: 5.0
+    jitter_pct: 10.0
+    content_type: video
+vulns:
+  enabled: true
+  count: 1
+  specific:
+  - name: jenkins/CVE-2018-1000861
+    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/jenkins/CVE-2018-1000861/docker-compose.yml
+    count: 1
+flag_node_generators:
+  enabled: true
+  count: 3
+  specific:
+  - id: http_login_staff_portal
+    name: 'HTTP: Staff Login Portal'
+    count: 1
+  - id: git_deploy_key_repo
+    name: 'Git: Deploy Key Repository'
+    count: 1
+  - id: http_sqli_customer_lookup
+    name: 'HTTP: SQLi Customer Lookup'
+    count: 1
+flows:
+  enabled: true
+  chain_length: 4
+  allow_duplicates: false
+  include_all_topology_pivots: false
+segmentation:
+  enabled: true
+  density: 0.4
+  items: []
+hitl:
+  use_env: false
+validation:
+  policy: strict

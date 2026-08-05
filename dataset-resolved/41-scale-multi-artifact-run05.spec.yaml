@@ -1,0 +1,68 @@
+name: dataset-scale-multi-artifact_run05
+iterations: 1
+seed: 1798374799
+topology:
+  routers: 2
+  hosts: 8
+services:
+  enabled: true
+  count: 4
+  density: 1.0
+  include:
+  - SSH
+  - HTTP
+  exclude: []
+traffic:
+  enabled: true
+  density: 0.85
+  items:
+  - type: TCP
+    count: 2
+    factor: 1.0
+    pattern: continuous
+    rate_kbps: 512.0
+    period_s: 1.0
+    jitter_pct: 10.0
+    content_type: photo
+  - type: UDP
+    count: 2
+    factor: 1.0
+    pattern: burst
+    rate_kbps: 256.0
+    period_s: 2.0
+    jitter_pct: 20.0
+    content_type: gibberish
+vulns:
+  enabled: false
+  count: 0
+  include: []
+  exclude: []
+flag_node_generators:
+  enabled: true
+  count: 4
+  specific:
+  - id: ssh_key_git_deploy
+    name: 'SSH: Key Git Deploy Account'
+    count: 1
+  - id: ssh_key_ops_bastion
+    name: 'SSH: Key Ops Bastion'
+    count: 1
+  - id: http_public_file_drop
+    name: 'HTTP: Public File Drop'
+    count: 1
+  - id: nfs_readonly_audit_share
+    name: 'NFS: Read-Only Audit Share'
+    count: 1
+flows:
+  enabled: true
+  chain_length: 5
+  allow_duplicates: false
+  include_all_topology_pivots: false
+segmentation:
+  enabled: true
+  density: 0.45
+  items: []
+hitl:
+  use_env: false
+validation:
+  policy: strict

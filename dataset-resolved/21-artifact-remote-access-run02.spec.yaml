@@ -1,0 +1,56 @@
+name: dataset-artifact-remote-access_run02
+iterations: 1
+seed: 138878521
+topology:
+  routers: 1
+  hosts: 5
+services:
+  enabled: true
+  count: 1
+  density: 1.0
+  include:
+  - SSH
+  exclude: []
+traffic:
+  enabled: true
+  density: 0.35
+  items:
+  - type: TCP
+    count: 1
+    factor: 1.0
+    pattern: periodic
+    rate_kbps: 32.0
+    period_s: 5.0
+    jitter_pct: 10.0
+    content_type: photo
+vulns:
+  enabled: false
+  count: 0
+  include: []
+  exclude: []
+flag_node_generators:
+  enabled: true
+  count: 3
+  specific:
+  - id: ssh_sftp_dropbox_key
+    name: 'SSH: Key SFTP Dropbox'
+    count: 1
+  - id: git_deploy_key_repo
+    name: 'Git: Deploy Key Repository'
+    count: 1
+  - id: ssh_key_research_lab
+    name: 'SSH: Key Research Lab'
+    count: 1
+flows:
+  enabled: false
+  chain_length: 0
+  allow_duplicates: false
+  include_all_topology_pivots: false
+segmentation:
+  enabled: false
+  density: 0.5
+  items: []
+hitl:
+  use_env: false
+validation:
+  policy: strict

@@ -8,19 +8,48 @@ services:
   enabled: true
   randomize: true
   count: [2, 6]
+  density: 0.8
   include: ["SSH", "HTTP"]
+traffic:
+  profile: "heavy"
+  payload_types: ["video", "gibberish"]
 vulns:
   enabled: true
   randomize: true
   count: [2, 5]
+flag_node_generators:
+  enabled: true
+  count: [1, 3]
 flows:
   enabled: true
   randomize: true
-  chain_length: [1, 4]
-  allow_duplicates: false
+  # Mandatory challenges range from 3 (2 vulns + 1 generator) to 8 (5 + 3).
+  chain_length: [3, 8]
+  # The randomized chain length is independent of the randomized generator
+  # count, so reuse keeps a long draw solvable when only one generator exists.
+  allow_duplicates: true
+  dependency_level: 5
+  timeout_s: 900
 segmentation:
-  enabled: false
+  enabled: true
+  density: 0.6
+  nat_mode: "SNAT"
+  include_hosts: true
+  dnat_probability: 0.35
+  allow_src_subnet_prob: 0.25
+  allow_dst_subnet_prob: 0.75
+  items:
+    - type: "Firewall"
+      count: [1, 2]
+      pivot_enabled: false
+    - type: "NAT"
+      count: [1, 2]
+      pivot_enabled: false
 hitl:
   use_env: false
 validation:
   policy: "strict"
+  check_artifacts:
+    enabled: true
+    delay_seconds: 60
+    strict: false

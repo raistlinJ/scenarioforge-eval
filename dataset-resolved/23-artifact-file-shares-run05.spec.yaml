@@ -1,0 +1,62 @@
+name: dataset-artifact-file-shares_run05
+iterations: 1
+seed: 1837198052
+topology:
+  routers: 2
+  hosts: 5
+services:
+  enabled: true
+  count: 4
+  density: 1.0
+  include:
+  - SSH
+  - HTTP
+  exclude: []
+traffic:
+  enabled: true
+  density: 0.6
+  items:
+  - type: TCP
+    count: 1
+    factor: 1.0
+    pattern: continuous
+    rate_kbps: 128.0
+    period_s: 2.0
+    jitter_pct: 15.0
+    content_type: photo
+  - type: UDP
+    count: 1
+    factor: 1.0
+    pattern: periodic
+    rate_kbps: 64.0
+    period_s: 5.0
+    jitter_pct: 25.0
+    content_type: audio
+vulns:
+  enabled: false
+  count: 0
+  include: []
+  exclude: []
+flag_node_generators:
+  enabled: true
+  count: 2
+  specific:
+  - id: '149'
+    name: 'SMB: Legal Case Archive'
+    count: 1
+  - id: nfs_legacy_nfs3_share
+    name: 'NFS: Legacy Engineering Share'
+    count: 1
+flows:
+  enabled: false
+  chain_length: 0
+  allow_duplicates: false
+  include_all_topology_pivots: false
+segmentation:
+  enabled: true
+  density: 0.4
+  items: []
+hitl:
+  use_env: false
+validation:
+  policy: strict

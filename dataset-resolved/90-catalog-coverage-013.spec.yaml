@@ -1,0 +1,67 @@
+name: dataset-catalog-coverage-013
+iterations: 1
+seed: 1040183952
+topology:
+  routers: 2
+  hosts: 10
+services:
+  enabled: true
+  count: 3
+  density: 1.0
+  include:
+  - SSH
+  - HTTP
+  exclude: []
+traffic:
+  enabled: true
+  density: 0.6
+  items:
+  - type: TCP
+    count: 1
+    factor: 1.0
+    pattern: continuous
+    rate_kbps: 128.0
+    period_s: 2.0
+    jitter_pct: 15.0
+    content_type: photo
+  - type: UDP
+    count: 1
+    factor: 1.0
+    pattern: periodic
+    rate_kbps: 64.0
+    period_s: 5.0
+    jitter_pct: 25.0
+    content_type: audio
+vulns:
+  enabled: true
+  count: 3
+  specific:
+  - name: discuz/x3.4-arbitrary-file-deletion
+    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/discuz/x3.4-arbitrary-file-deletion/docker-compose.yml
+    count: 1
+  - name: dns/dns-zone-transfer
+    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/dns/dns-zone-transfer/docker-compose.yml
+    count: 1
+  - name: docker/unauthorized-rce
+    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/docker/unauthorized-rce/docker-compose.yml
+    count: 1
+flag_node_generators:
+  enabled: true
+  count: 1
+  specific:
+  - id: '142'
+    name: 'Mail: IMAP Archive Mailbox'
+    count: 1
+flows:
+  enabled: true
+  chain_length: 3
+  allow_duplicates: false
+  include_all_topology_pivots: false
+segmentation:
+  enabled: false
+  density: 0.44999999999999996
+  items: []
+hitl:
+  use_env: false
+validation:
+  policy: strict

@@ -4,12 +4,15 @@ import hashlib
 import ipaddress
 import json
 import os
+import queue
 import random
 import re
+import shutil
 import socket
 import subprocess
 import sys
 import tempfile
+import threading
 import traceback
 import time
 import xml.etree.ElementTree as ET
@@ -58,6 +61,7 @@ class Executor:
         target_phase: str = "execute",
         verbose: bool = False,
         dangerous_cleanup_between_runs: bool = False,
+        stream_execute_output: bool = False,
     ):
         self.spec = spec
         self.out_dir = os.path.abspath(os.path.expanduser(out_dir))
@@ -65,6 +69,7 @@ class Executor:
         self.target_phase = target_phase
         self.verbose = verbose
         self.dangerous_cleanup_between_runs = bool(dangerous_cleanup_between_runs)
+        self.stream_execute_output = bool(stream_execute_output)
         self.seed = self._resolve_seed(self.spec.get('seed'))
         self._rng = random.Random(self.seed)
         self._vulnerability_selection: dict | None = None
@@ -170,6 +175,23 @@ class Executor:
             json.dump(payload, handle, indent=2, sort_keys=True)
         return artifact_path
 
+    def _snapshot_webui_xml(self, result: dict) -> str | None:
+        """Preserve the final, phase-mutated XML as an explicit WebUI import artifact."""
+        artifacts = result.setdefault('artifacts', {})
+        source_path = artifacts.get('scenario_xml')
+        if not isinstance(source_path, str) or not os.path.isfile(source_path):
+            return None
+
+        snapshot_path = os.path.join(self.out_dir, 'scenarioforge-webui.xml')
+        if os.path.abspath(source_path) != os.path.abspath(snapshot_path):
+            shutil.copy2(source_path, snapshot_path)
+        try:
+            os.chmod(snapshot_path, 0o600)
+        except OSError:
+            pass
+        artifacts['scenarioforge_webui_xml'] = snapshot_path
+        return snapshot_path
+
     def _persist_seed_artifact(self) -> str:
         seed_path = os.path.join(self.out_dir, 'seed.txt')
         with open(seed_path, 'w', encoding='utf-8') as handle:
@@ -186,6 +208,8 @@ class Executor:
             'CORE_SESSION_VALIDATION_JSON:',
             'Post-execution validation:',
             'VALIDATION_SUMMARY_JSON:',
+            'CHECK_ARTIFACTS_SUMMARY_JSON:',
+            '[check-artifacts]',
             '[validate]',
             'CORE daemon runtime hint:',
             'Scenario report written to',
@@ -203,6 +227,89 @@ class Executor:
                 continue
             if self.verbose or any(pattern in line for pattern in progress_patterns):
                 print(f"  {line}")
+
+    def _run_streaming_cli_command(self, cmd: list[str]) -> tuple[int | None, str, bool]:
+        """Run a CLI command while forwarding selected output lines as they arrive."""
+        proc = subprocess.Popen(
+            cmd,
+            cwd=self.sf_path,
+            env=self._cli_env(),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            encoding='utf-8',
+            errors='replace',
+            bufsize=1,
+        )
+        output_lines: list[str] = []
+        output_queue: queue.Queue[str | None] = queue.Queue()
+
+        def _read_output() -> None:
+            try:
+                if proc.stdout is not None:
+                    for line in proc.stdout:
+                        output_queue.put(line)
+            except (OSError, ValueError):
+                # The timeout path may close the pipe to release this reader.
+                pass
+            finally:
+                output_queue.put(None)
+
+        def _stop_process() -> None:
+            if proc.poll() is not None:
+                return
+            proc.terminate()
+            try:
+                proc.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                proc.kill()
+                proc.wait()
+
+        reader = threading.Thread(target=_read_output, name='scenarioforge-eval-output', daemon=True)
+        reader.start()
+        deadline = time.monotonic() + self.phase_timeout_s
+        timed_out = False
+        reader_done = False
+
+        while not reader_done:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                timed_out = True
+                break
+            try:
+                line = output_queue.get(timeout=min(0.25, remaining))
+            except queue.Empty:
+                continue
+            if line is None:
+                reader_done = True
+                continue
+            output_lines.append(line)
+            self._stream_cli_output(line)
+
+        if timed_out:
+            _stop_process()
+        else:
+            remaining = max(0.001, deadline - time.monotonic())
+            try:
+                proc.wait(timeout=remaining)
+            except subprocess.TimeoutExpired:
+                timed_out = True
+                _stop_process()
+
+        reader.join(timeout=1)
+        if proc.stdout is not None:
+            proc.stdout.close()
+        reader.join(timeout=1)
+        while True:
+            try:
+                line = output_queue.get_nowait()
+            except queue.Empty:
+                break
+            if line is not None:
+                output_lines.append(line)
+                self._stream_cli_output(line)
+
+        return proc.returncode, ''.join(output_lines), timed_out
 
     @classmethod
     def _clean_output(cls, text: str) -> str:
@@ -259,6 +366,7 @@ class Executor:
             'plan_payload': plan_payload,
             'session_id': None,
             'validation_summary': None,
+            'check_artifacts_summary': None,
             'report_path': None,
             'summary_path': None,
             'timed_out': timed_out,
@@ -267,6 +375,9 @@ class Executor:
         if phase == 'execute':
             result['session_id'] = self._extract_last_marker_value(combined, 'CORE_SESSION_ID:')
             result['validation_summary'] = self._extract_last_json_marker(combined, 'VALIDATION_SUMMARY_JSON:')
+            result['check_artifacts_summary'] = self._extract_last_json_marker(
+                combined, 'CHECK_ARTIFACTS_SUMMARY_JSON:'
+            )
             result['report_path'] = self._extract_last_marker_value(combined, 'Scenario report written to')
             result['summary_path'] = self._extract_last_marker_value(combined, 'Scenario summary written to')
         return result
@@ -278,6 +389,7 @@ class Executor:
             'plan_payload': phase_result.get('plan_payload'),
             'session_id': phase_result.get('session_id'),
             'validation_summary': phase_result.get('validation_summary'),
+            'check_artifacts_summary': phase_result.get('check_artifacts_summary'),
             'report_path': phase_result.get('report_path'),
             'summary_path': phase_result.get('summary_path'),
             'timed_out': bool(phase_result.get('timed_out')),
@@ -311,6 +423,15 @@ class Executor:
             return int(value)
         except Exception:
             return default
+
+    @staticmethod
+    def _nested(data: dict, *keys, default=None):
+        value = data
+        for key in keys:
+            if not isinstance(value, dict):
+                return default
+            value = value.get(key)
+        return default if value is None else value
 
     def _spec_metrics(self) -> dict:
         topology = self.spec.get('topology') or {}
@@ -391,6 +512,86 @@ class Executor:
                 metrics[artifact_key] = file_metrics(artifact_path)
         return metrics
 
+    @staticmethod
+    def _assignment_produces_pivot(assignment: dict) -> bool:
+        if not isinstance(assignment, dict):
+            return False
+        output_values = []
+        for key in ('declared_outputs', 'actual_outputs', 'outputs', 'produces'):
+            values = assignment.get(key)
+            if isinstance(values, list):
+                output_values.extend(values)
+        return any(str(value or '').strip().lower().startswith('pivot(') for value in output_values)
+
+    def _content_metrics(self, result: dict) -> dict:
+        """Summarize concrete generated challenges, chains, pivots, and FNGs."""
+        phase_results = result.get('phase_results') or {}
+        flag_payload = (phase_results.get('flag-sequencing') or {}).get('plan_payload') or {}
+        preview_payload = (phase_results.get('preview-plan') or {}).get('plan_payload') or {}
+
+        assignments = flag_payload.get('flag_assignments') if isinstance(flag_payload, dict) else []
+        assignments = assignments if isinstance(assignments, list) else []
+        chain = flag_payload.get('chain') if isinstance(flag_payload, dict) else []
+        chain = chain if isinstance(chain, list) else []
+
+        challenge_count = len(assignments)
+        chain_length = max(0, self._safe_int(flag_payload.get('length'))) if isinstance(flag_payload, dict) else 0
+        if chain_length == 0:
+            chain_length = len(chain) or challenge_count
+        if challenge_count == 0 and chain_length:
+            challenge_count = chain_length
+        chain_count = 1 if chain_length > 0 else 0
+
+        pivot_count = sum(
+            1 for assignment in assignments if self._assignment_produces_pivot(assignment)
+        )
+        flag_node_generator_count = sum(
+            1
+            for assignment in assignments
+            if isinstance(assignment, dict)
+            and str(assignment.get('generator_catalog') or '').strip().lower()
+            in {'flag_node_generators', 'flag-node-generators'}
+        )
+
+        stats = flag_payload.get('stats') if isinstance(flag_payload, dict) else {}
+        stats = stats if isinstance(stats, dict) else {}
+        spec_fng_metrics = self._spec_metrics().get('flag_node_generators') or {}
+        topology_fng_count = self._safe_int(
+            stats.get('topology_flag_node_generator_total'),
+            self._safe_int(spec_fng_metrics.get('count')),
+        )
+
+        pivot_access = self._nested(
+            preview_payload,
+            'full_preview',
+            'display_artifacts',
+            'segmentation',
+            'json',
+            'metadata',
+            'pivot_access',
+            default={},
+        )
+        if not isinstance(pivot_access, dict):
+            pivot_access = {}
+
+        return {
+            'challenges': {
+                'count': challenge_count,
+                'pivot_count': pivot_count,
+                'flag_node_generator_count': flag_node_generator_count,
+            },
+            'chains': {
+                'count': chain_count,
+                'length': chain_length,
+                'length_gt_1_count': 1 if chain_length > 1 else 0,
+                'average_length': float(chain_length) if chain_count else 0.0,
+            },
+            'topology': {
+                'flag_node_generator_count': max(0, topology_fng_count),
+                'pivot_provider_count': max(0, self._safe_int(pivot_access.get('provider_count'))),
+            },
+        }
+
     def _finalize_result_metrics(self, result: dict, run_metrics: dict) -> None:
         phase_metrics = {}
         for phase, phase_result in (result.get('phase_results') or {}).items():
@@ -406,7 +607,93 @@ class Executor:
             'spec': self._spec_metrics(),
             'phases': phase_metrics,
             'artifacts': artifact_metrics,
+            'content': self._content_metrics(result),
         }
+
+    def _check_artifacts_config(self) -> dict:
+        """Spec-driven settings for the ScenarioForge check-artifacts phase.
+
+        validation:
+          check_artifacts:
+            enabled: true
+            delay_seconds: 45   # let routing converge before probing
+            strict: false       # warnings stay warnings unless true
+        """
+        validation = self.spec.get('validation') or {}
+        raw = validation.get('check_artifacts')
+        if isinstance(raw, bool):
+            raw = {'enabled': raw}
+        if not isinstance(raw, dict):
+            raw = {}
+        try:
+            delay = float(raw.get('delay_seconds') or 0.0)
+        except Exception:
+            delay = 0.0
+        return {
+            'enabled': bool(raw.get('enabled')),
+            'delay_seconds': max(0.0, delay),
+            'strict': bool(raw.get('strict')),
+        }
+
+    def _check_artifacts_extra_args(self) -> list:
+        config = self._check_artifacts_config()
+        if not config['enabled']:
+            return []
+        args = ['--check-artifacts']
+        if config['delay_seconds'] > 0:
+            args += ['--check-artifacts-delay', str(config['delay_seconds'])]
+        if config['strict']:
+            args.append('--strict')
+        return args
+
+    @staticmethod
+    def _check_artifacts_messages(summary: dict, statuses: tuple) -> list:
+        """Human-readable '<label>: <summary>' lines for checks in the given states."""
+        messages = []
+        for check in (summary.get('checks') or []):
+            if not isinstance(check, dict):
+                continue
+            if str(check.get('status') or '').strip().lower() not in statuses:
+                continue
+            label = str(check.get('label') or check.get('key') or 'check').strip()
+            detail = str(check.get('summary') or '').strip()
+            messages.append(f"{label}: {detail}" if detail else label)
+        return messages
+
+    def _check_artifacts_outcome(self, phase_result: dict) -> tuple:
+        """Return (ok, warnings, failure_message) for the artifact checks.
+
+        When the checks are not enabled this is a no-op. The CLI only emits the
+        marker when --check-artifacts ran, so a missing marker while enabled is
+        itself a failure.
+        """
+        config = self._check_artifacts_config()
+        if not config['enabled']:
+            return True, [], None
+        summary = phase_result.get('check_artifacts_summary')
+        if not isinstance(summary, dict):
+            return (
+                False,
+                [],
+                'artifact checks were requested but scenarioforge.cli execute did not emit '
+                'CHECK_ARTIFACTS_SUMMARY_JSON. See execute.log',
+            )
+
+        failures = self._check_artifacts_messages(summary, ('fail', 'error'))
+        warn_details = self._check_artifacts_messages(summary, ('warn',))
+        warnings = [f'artifact check warning — {m}' for m in warn_details]
+        error_text = str(summary.get('error') or '').strip()
+
+        if failures or error_text:
+            detail = '; '.join(failures) or error_text
+            return False, warnings, f'artifact checks failed: {detail}. See execute-check-artifacts.json'
+        if config['strict'] and warn_details:
+            return (
+                False,
+                warnings,
+                f"artifact checks reported warnings under strict mode: {'; '.join(warn_details)}",
+            )
+        return True, warnings, None
 
     def _validation_policy(self) -> str:
         validation = self.spec.get('validation') or {}
@@ -633,20 +920,25 @@ class Executor:
         stdout_text = ''
         stderr_text = ''
         timed_out = False
+        output_was_streamed = False
         with MetricSpan('children') as phase_span:
             try:
-                proc = subprocess.run(
-                    cmd,
-                    cwd=self.sf_path,
-                    env=self._cli_env(),
-                    capture_output=True,
-                    text=True,
-                    check=False,
-                    timeout=self.phase_timeout_s,
-                )
-                returncode = proc.returncode
-                stdout_text = proc.stdout or ''
-                stderr_text = proc.stderr or ''
+                if phase == 'execute' and self.stream_execute_output:
+                    returncode, stdout_text, timed_out = self._run_streaming_cli_command(cmd)
+                    output_was_streamed = True
+                else:
+                    proc = subprocess.run(
+                        cmd,
+                        cwd=self.sf_path,
+                        env=self._cli_env(),
+                        capture_output=True,
+                        text=True,
+                        check=False,
+                        timeout=self.phase_timeout_s,
+                    )
+                    returncode = proc.returncode
+                    stdout_text = proc.stdout or ''
+                    stderr_text = proc.stderr or ''
             except subprocess.TimeoutExpired as exc:
                 timed_out = True
                 stdout_text = self._coerce_subprocess_text(exc.stdout)
@@ -657,7 +949,8 @@ class Executor:
         with open(log_path, 'w', encoding='utf-8') as handle:
             handle.write(combined)
 
-        self._stream_cli_output(combined)
+        if not output_was_streamed:
+            self._stream_cli_output(combined)
 
         plan_payload = None
         if output_path and os.path.exists(output_path):
@@ -713,6 +1006,22 @@ class Executor:
                 message = f"{message} Last output: {last_line}"
             raise PhaseExecutionError(
                 f"{message} See {log_path}",
+                phase_result,
+            )
+        if (
+            returncode == 0
+            and isinstance(plan_payload, dict)
+            and plan_payload.get('ok') is False
+            and not allow_nonzero
+        ):
+            payload_error = str(
+                plan_payload.get('error')
+                or plan_payload.get('message')
+                or 'the phase payload reported ok=false'
+            ).strip()
+            raise PhaseExecutionError(
+                f"scenarioforge.cli {phase} reported failure despite exit code 0: "
+                f"{payload_error}. See {output_path or log_path}",
                 phase_result,
             )
         return phase_result
@@ -957,6 +1266,25 @@ class Executor:
                 'v_count': service_count,
             })
         return items
+
+    @staticmethod
+    def _build_segmentation_section(seg_spec: dict) -> dict:
+        """Build the XML-writer model without losing plan-shaping settings."""
+        section = {
+            'density': seg_spec.get('density', 0.5),
+            'items': list(seg_spec.get('items') or []),
+        }
+        for key in (
+            'nat_mode',
+            'include_hosts',
+            'dnat_probability',
+            'allow_src_subnet_prob',
+            'allow_dst_subnet_prob',
+            'accessible_by_pivot',
+        ):
+            if key in seg_spec:
+                section[key] = seg_spec[key]
+        return section
 
     def _load_eligible_vulnerability_catalog(self) -> list[dict] | None:
         if not os.path.isdir(os.path.join(self.sf_path, 'webapp')):
@@ -1401,10 +1729,7 @@ class Executor:
         # Inject Segmentation
         seg_spec = self.spec.get('segmentation', {})
         if seg_spec.get('enabled', seg_spec.get('randomize')):
-            scen_payload['sections']['Segmentation'] = {
-                'density': seg_spec.get('density', 0.5),
-                'items': list(seg_spec.get('items') or []),
-            }
+            scen_payload['sections']['Segmentation'] = self._build_segmentation_section(seg_spec)
             
         core_defaults = deepcopy(backend._core_backend_defaults(include_password=True))
         if core_defaults:
@@ -1631,7 +1956,7 @@ class Executor:
                     xml_path,
                     scenario_name,
                     seed=self.seed,
-                    extra_args=['--post-execution-validation'],
+                    extra_args=['--post-execution-validation'] + self._check_artifacts_extra_args(),
                     log_name='execute.log',
                     allow_nonzero=True,
                 )
@@ -1647,7 +1972,18 @@ class Executor:
                         'execute-validation.json',
                         execute_phase['validation_summary'],
                     )
+                if execute_phase.get('check_artifacts_summary') is not None:
+                    result['artifacts']['execute_check_artifacts_json'] = self._write_json_artifact(
+                        'execute-check-artifacts.json',
+                        execute_phase['check_artifacts_summary'],
+                    )
                 passed, warnings, failure_message = self._execute_success(execute_phase)
+                # Artifact checks run after execute validation, so they can only
+                # add findings to an otherwise successful run.
+                checks_ok, check_warnings, check_failure = self._check_artifacts_outcome(execute_phase)
+                warnings = list(warnings) + list(check_warnings)
+                if passed and not checks_ok:
+                    passed, failure_message = False, check_failure
                 if warnings:
                     result['warnings'] = warnings
                 if not passed:
@@ -1661,6 +1997,12 @@ class Executor:
             result['error'] = traceback.format_exc()
             result['stages']['failed_at'] = str(e)
         finally:
+            try:
+                self._snapshot_webui_xml(result)
+            except OSError as exc:
+                result.setdefault('warnings', []).append(
+                    f'Unable to preserve the ScenarioForge WebUI XML artifact: {exc}'
+                )
             self._finalize_result_metrics(result, run_span.finish())
             
         return result

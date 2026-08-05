@@ -1,0 +1,31 @@
+name: "dataset-artifact-messaging"
+iterations: 5
+topology:
+  routers: 1
+  hosts: [4, 6]
+  randomize: true
+services:
+  enabled: true
+  randomize: true
+  count: [2, 4]
+  include: ["SSH", "HTTP"]
+vulns:
+  enabled: false
+  count: 0
+flag_node_generators:
+  enabled: true
+  randomize: true
+  count: [1, 3]
+  include: ["Mail:*", "MQTT:*", "FTP:*"]
+flows:
+  enabled: false
+  chain_length: 0
+traffic:
+  profile: medium
+  payload_types: [photo, gibberish]
+segmentation:
+  enabled: false
+hitl:
+  use_env: false
+validation:
+  policy: "strict"

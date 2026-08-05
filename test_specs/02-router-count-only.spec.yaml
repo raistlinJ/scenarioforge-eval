@@ -10,6 +10,9 @@ services:
 vulns:
   enabled: false
   count: 0
+flag_node_generators:
+  enabled: false
+  count: 0
 flows:
   enabled: false
   chain_length: 0
@@ -19,3 +22,7 @@ hitl:
   use_env: false
 validation:
   policy: "strict"
+  check_artifacts:
+    enabled: true
+    delay_seconds: 60
+    strict: false

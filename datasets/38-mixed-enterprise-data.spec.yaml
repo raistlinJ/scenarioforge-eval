@@ -1,0 +1,36 @@
+name: "dataset-mixed-enterprise-data"
+iterations: 5
+topology:
+  routers: [3, 4]
+  hosts: [10, 14]
+  randomize: true
+services:
+  enabled: true
+  randomize: true
+  count: [4, 7]
+  include: ["SSH", "HTTP"]
+vulns:
+  enabled: true
+  randomize: true
+  count: [2, 4]
+  include: ["struts2", "confluence", "elasticsearch", "redis"]
+flag_node_generators:
+  enabled: true
+  randomize: true
+  count: [2, 4]
+  include: ["NFS:*", "SMB:*", "Database:*", "Cache:*", "Mail:*"]
+flows:
+  enabled: true
+  randomize: true
+  chain_length: [3, 5]
+  allow_duplicates: false
+traffic:
+  profile: heavy
+  payload_types: [photo, audio]
+segmentation:
+  enabled: true
+  density: 0.5
+hitl:
+  use_env: false
+validation:
+  policy: "strict"

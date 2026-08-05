@@ -11,14 +11,25 @@ vulns:
   enabled: true
   randomize: false
   count: 1
+flag_node_generators:
+  # The vulnerability is mandatory and the remaining two positions exercise
+  # reuse of this single non-vulnerability challenge node.
+  enabled: true
+  count: 1
 flows:
   enabled: true
   randomize: false
   chain_length: 3
   allow_duplicates: true
+  dependency_level: 2
+  timeout_s: 600
 segmentation:
   enabled: false
 hitl:
   use_env: false
 validation:
   policy: "strict"
+  check_artifacts:
+    enabled: true
+    delay_seconds: 60
+    strict: false

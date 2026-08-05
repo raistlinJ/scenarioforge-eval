@@ -73,6 +73,12 @@ class SpecParser:
             'routers': self._resolve_value(topo.get('routers', [2, 5]), rng=rng),
             'hosts': self._resolve_value(topo.get('hosts', [3, 10]), rng=rng),
         }
+        # These are additive Node Information rows rather than part of the base
+        # host count.  They used to be declared in schema.json and handled by
+        # Executor, but were dropped here while main built the resolved spec.
+        for key in ('docker', 'vulnerability_slots', 'flag_gen_slots'):
+            if key in topo:
+                res[key] = self._resolve_value(topo.get(key), rng=rng)
         return res
 
     def get_services_spec(self, rng: random.Random | None = None) -> dict:
@@ -175,7 +181,7 @@ class SpecParser:
 
     def get_flows_spec(self, rng: random.Random | None = None) -> dict:
         flows = self.spec.get('flows', {})
-        return {
+        result = {
             'enabled': self._feature_enabled(flows, activation_keys=('chain_length', 'count')),
             'chain_length': self._resolve_value(flows.get('chain_length', flows.get('count', [3, 5])), rng=rng),
             'allow_duplicates': flows.get('allow_duplicates', False),
@@ -183,6 +189,19 @@ class SpecParser:
             # is ready for its corresponding CLI option when that is exposed.
             'include_all_topology_pivots': bool(flows.get('include_all_topology_pivots', False)),
         }
+        # Keep optional solver/operational controls absent unless the author set
+        # them.  Absence deliberately leaves ScenarioForge's own defaults in
+        # charge; main must nevertheless carry authored values to Executor.
+        for key in (
+            'dependency_level',
+            'chain_ids',
+            'timeout_s',
+            'cleanup_generated_artifacts',
+            'execution',
+        ):
+            if key in flows:
+                result[key] = flows[key]
+        return result
 
     def get_segmentation_spec(self, rng: random.Random | None = None) -> dict:
         seg = self.spec.get('segmentation', {})
@@ -214,11 +233,25 @@ class SpecParser:
                 if item.get(key) not in (None, ''):
                     normalized[key] = str(item[key]).strip()
             items.append(normalized)
-        return {
+        result = {
             'enabled': self._feature_enabled(seg, activation_keys=('density', 'items')),
             'density': seg.get('density', 0.5),
             'items': items,
         }
+        # ScenarioForge persists these plan-shaping settings on the Segmentation
+        # section.  Passing only density/items silently restored every setting
+        # to its default before XML generation.
+        for key in (
+            'nat_mode',
+            'include_hosts',
+            'dnat_probability',
+            'allow_src_subnet_prob',
+            'allow_dst_subnet_prob',
+            'accessible_by_pivot',
+        ):
+            if key in seg:
+                result[key] = seg[key]
+        return result
 
     def get_hitl_spec(self) -> dict:
         return self.spec.get('hitl', {'use_env': True})
@@ -226,7 +259,11 @@ class SpecParser:
     def get_validation_spec(self) -> dict:
         validation = self.spec.get('validation', {})
         policy = str(validation.get('policy', 'strict')).strip() or 'strict'
-        return {'policy': policy}
+        result = {'policy': policy}
+        if 'check_artifacts' in validation:
+            raw = validation.get('check_artifacts')
+            result['check_artifacts'] = dict(raw) if isinstance(raw, dict) else raw
+        return result
 
     def _resolve_value(self, val, *, rng: random.Random | None = None):
         """Resolves a value that could be a static int/string or a range [min, max]."""

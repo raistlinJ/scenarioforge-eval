@@ -1,0 +1,67 @@
+name: dataset-catalog-coverage-029
+iterations: 1
+seed: 2054058190
+topology:
+  routers: 3
+  hosts: 5
+services:
+  enabled: true
+  count: 3
+  density: 1.0
+  include:
+  - SSH
+  - HTTP
+  exclude: []
+traffic:
+  enabled: true
+  density: 0.85
+  items:
+  - type: TCP
+    count: 2
+    factor: 1.0
+    pattern: continuous
+    rate_kbps: 512.0
+    period_s: 1.0
+    jitter_pct: 10.0
+    content_type: video
+  - type: UDP
+    count: 2
+    factor: 1.0
+    pattern: burst
+    rate_kbps: 256.0
+    period_s: 2.0
+    jitter_pct: 20.0
+    content_type: gibberish
+vulns:
+  enabled: true
+  count: 3
+  specific:
+  - name: hugegraph/CVE-2024-27348
+    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/hugegraph/CVE-2024-27348/docker-compose.yml
+    count: 1
+  - name: hugegraph/CVE-2024-43441
+    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/hugegraph/CVE-2024-43441/docker-compose.yml
+    count: 1
+  - name: imagemagick/CVE-2016-3714
+    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/imagemagick/CVE-2016-3714/docker-compose.yml
+    count: 1
+flag_node_generators:
+  enabled: true
+  count: 1
+  specific:
+  - id: http_cookie_role_escalation
+    name: 'HTTP: Cookie Role Escalation'
+    count: 1
+flows:
+  enabled: true
+  chain_length: 3
+  allow_duplicates: false
+  include_all_topology_pivots: false
+segmentation:
+  enabled: false
+  density: 0.55
+  items: []
+hitl:
+  use_env: false
+validation:
+  policy: strict

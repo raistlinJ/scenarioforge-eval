@@ -1,0 +1,75 @@
+name: dataset-catalog-coverage-068
+iterations: 1
+seed: 1643597514
+topology:
+  routers: 3
+  hosts: 9
+services:
+  enabled: true
+  count: 2
+  density: 1.0
+  include:
+  - SSH
+  - HTTP
+  exclude: []
+traffic:
+  enabled: true
+  density: 0.85
+  items:
+  - type: TCP
+    count: 2
+    factor: 1.0
+    pattern: continuous
+    rate_kbps: 512.0
+    period_s: 1.0
+    jitter_pct: 10.0
+    content_type: video
+  - type: UDP
+    count: 2
+    factor: 1.0
+    pattern: burst
+    rate_kbps: 256.0
+    period_s: 2.0
+    jitter_pct: 20.0
+    content_type: gibberish
+vulns:
+  enabled: true
+  count: 3
+  specific:
+  - name: tomcat/CVE-2017-12615
+    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/tomcat/CVE-2017-12615/docker-compose.yml
+    count: 1
+  - name: tomcat/CVE-2020-1938
+    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/tomcat/CVE-2020-1938/docker-compose.yml
+    count: 1
+  - name: tomcat/CVE-2025-24813
+    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/tomcat/CVE-2025-24813/docker-compose.yml
+    count: 1
+flag_node_generators:
+  enabled: true
+  count: 1
+  specific:
+  - id: dep_file_parser_console
+    name: 'Dependency Consumer: File Parser Console'
+    count: 1
+flows:
+  enabled: true
+  chain_length: 2
+  allow_duplicates: false
+  include_all_topology_pivots: false
+segmentation:
+  enabled: true
+  density: 0.55
+  items:
+  - type: Firewall
+    count: 1
+    factor: 1.0
+    pivot_enabled: false
+  - type: NAT
+    count: 1
+    factor: 1.0
+    pivot_enabled: false
+hitl:
+  use_env: false
+validation:
+  policy: strict

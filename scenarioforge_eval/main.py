@@ -154,7 +154,9 @@ def _warning_error_lines(text: str) -> list[str]:
     lines = []
     for raw_line in _clean_output(text).splitlines():
         line = raw_line.strip()
-        if not line or 'VALIDATION_SUMMARY_JSON:' in line:
+        # Marker lines carry their own structured payload; keep the raw JSON out
+        # of the human-facing warning/error digest.
+        if not line or 'VALIDATION_SUMMARY_JSON:' in line or 'CHECK_ARTIFACTS_SUMMARY_JSON:' in line:
             continue
         lowered = line.lower()
         if re.search(r'\bwarning\b', lowered) or re.search(r'\berror\b', lowered):
@@ -516,6 +518,7 @@ def main():
                 target_phase,
                 args.verbose,
                 dangerous_cleanup_between_runs=args.dangerous_cleanup_between_runs,
+                stream_execute_output=True,
             )
             result = executor.run()
             result.setdefault('metadata', {}).update({

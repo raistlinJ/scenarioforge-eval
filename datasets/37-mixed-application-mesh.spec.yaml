@@ -1,0 +1,36 @@
+name: "dataset-mixed-application-mesh"
+iterations: 5
+topology:
+  routers: [2, 3]
+  hosts: [7, 10]
+  randomize: true
+services:
+  enabled: true
+  randomize: true
+  count: [3, 6]
+  include: ["SSH", "HTTP"]
+vulns:
+  enabled: true
+  randomize: true
+  count: [2, 4]
+  include: ["django", "spring", "php"]
+flag_node_generators:
+  enabled: true
+  randomize: true
+  count: [2, 4]
+  include: ["HTTP:*", "HTTPS:*", "SSH:*"]
+flows:
+  enabled: true
+  randomize: true
+  chain_length: [2, 4]
+  allow_duplicates: false
+traffic:
+  profile: heavy
+  payload_types: [text, gibberish]
+segmentation:
+  enabled: true
+  density: 0.45
+hitl:
+  use_env: false
+validation:
+  policy: "strict"

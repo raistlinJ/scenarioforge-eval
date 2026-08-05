@@ -1,0 +1,36 @@
+name: "dataset-mixed-ci-supply-chain"
+iterations: 5
+topology:
+  routers: [1, 2]
+  hosts: [5, 7]
+  randomize: true
+services:
+  enabled: true
+  randomize: true
+  count: [2, 5]
+  include: ["SSH", "HTTP"]
+vulns:
+  enabled: true
+  randomize: true
+  count: [1, 2]
+  include: ["jenkins"]
+flag_node_generators:
+  enabled: true
+  randomize: true
+  count: [1, 3]
+  include: ["Git:*", "HTTP:*"]
+flows:
+  enabled: true
+  randomize: true
+  chain_length: [2, 4]
+  allow_duplicates: false
+traffic:
+  profile: light
+  payload_types: [video]
+segmentation:
+  enabled: true
+  density: 0.4
+hitl:
+  use_env: false
+validation:
+  policy: "strict"

@@ -1,0 +1,59 @@
+name: dataset-artifact-messaging_run03
+iterations: 1
+seed: 1469365089
+topology:
+  routers: 1
+  hosts: 5
+services:
+  enabled: true
+  count: 3
+  density: 1.0
+  include:
+  - SSH
+  - HTTP
+  exclude: []
+traffic:
+  enabled: true
+  density: 0.6
+  items:
+  - type: TCP
+    count: 1
+    factor: 1.0
+    pattern: continuous
+    rate_kbps: 128.0
+    period_s: 2.0
+    jitter_pct: 15.0
+    content_type: photo
+  - type: UDP
+    count: 1
+    factor: 1.0
+    pattern: periodic
+    rate_kbps: 64.0
+    period_s: 5.0
+    jitter_pct: 25.0
+    content_type: gibberish
+vulns:
+  enabled: false
+  count: 0
+  include: []
+  exclude: []
+flag_node_generators:
+  enabled: true
+  count: 1
+  specific:
+  - id: smtp_open_relay_queue
+    name: 'Mail: SMTP Open Relay Queue'
+    count: 1
+flows:
+  enabled: false
+  chain_length: 0
+  allow_duplicates: false
+  include_all_topology_pivots: false
+segmentation:
+  enabled: false
+  density: 0.5
+  items: []
+hitl:
+  use_env: false
+validation:
+  policy: strict

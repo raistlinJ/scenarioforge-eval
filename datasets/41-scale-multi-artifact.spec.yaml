@@ -1,0 +1,34 @@
+name: "dataset-scale-multi-artifact"
+iterations: 5
+topology:
+  routers: [2, 4]
+  hosts: [8, 12]
+  randomize: true
+services:
+  enabled: true
+  randomize: true
+  count: [4, 7]
+  include: ["SSH", "HTTP"]
+vulns:
+  enabled: false
+  count: 0
+flag_node_generators:
+  enabled: true
+  randomize: true
+  count: [3, 6]
+  include: ["HTTP:*", "SSH:*", "DNS:*", "NFS:*", "Database:*"]
+flows:
+  enabled: true
+  randomize: true
+  chain_length: [2, 5]
+  allow_duplicates: false
+traffic:
+  profile: heavy
+  payload_types: [photo, gibberish]
+segmentation:
+  enabled: true
+  density: 0.45
+hitl:
+  use_env: false
+validation:
+  policy: "strict"

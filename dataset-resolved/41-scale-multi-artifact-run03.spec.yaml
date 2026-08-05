@@ -1,0 +1,71 @@
+name: dataset-scale-multi-artifact_run03
+iterations: 1
+seed: 179931555
+topology:
+  routers: 4
+  hosts: 9
+services:
+  enabled: true
+  count: 4
+  density: 1.0
+  include:
+  - SSH
+  - HTTP
+  exclude: []
+traffic:
+  enabled: true
+  density: 0.85
+  items:
+  - type: TCP
+    count: 2
+    factor: 1.0
+    pattern: continuous
+    rate_kbps: 512.0
+    period_s: 1.0
+    jitter_pct: 10.0
+    content_type: photo
+  - type: UDP
+    count: 2
+    factor: 1.0
+    pattern: burst
+    rate_kbps: 256.0
+    period_s: 2.0
+    jitter_pct: 20.0
+    content_type: gibberish
+vulns:
+  enabled: false
+  count: 0
+  include: []
+  exclude: []
+flag_node_generators:
+  enabled: true
+  count: 5
+  specific:
+  - id: ssh_key_research_lab
+    name: 'SSH: Key Research Lab'
+    count: 1
+  - id: nfs_incident_response_evidence
+    name: 'NFS: Incident Response Evidence'
+    count: 1
+  - id: '138'
+    name: 'DNS: SRV Admin Endpoint'
+    count: 1
+  - id: ssh_key_backup_operator
+    name: 'SSH: Key Backup Operator'
+    count: 1
+  - id: '132'
+    name: 'Database: Postgres Audit Schema'
+    count: 1
+flows:
+  enabled: true
+  chain_length: 2
+  allow_duplicates: false
+  include_all_topology_pivots: false
+segmentation:
+  enabled: true
+  density: 0.45
+  items: []
+hitl:
+  use_env: false
+validation:
+  policy: strict

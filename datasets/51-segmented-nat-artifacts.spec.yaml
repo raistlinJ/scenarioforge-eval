@@ -1,0 +1,41 @@
+name: "dataset-segmented-nat-artifacts"
+iterations: 5
+topology:
+  routers: [2, 3]
+  hosts: [5, 7]
+  randomize: true
+services:
+  enabled: true
+  randomize: true
+  count: [2, 5]
+  include: ["SSH", "HTTP"]
+vulns:
+  enabled: false
+  count: 0
+flag_node_generators:
+  enabled: true
+  randomize: true
+  count: [1, 3]
+  include: ["NFS:*", "SMB:*", "Network Share:*"]
+flows:
+  enabled: true
+  randomize: true
+  chain_length: [2, 4]
+  allow_duplicates: false
+traffic:
+  profile: light
+  payload_types: [gibberish]
+segmentation:
+  enabled: true
+  density: 0.4
+  items:
+    - type: NAT
+      count: 1
+      pivot_enabled: false
+    - type: Firewall
+      count: 1
+      pivot_enabled: false
+hitl:
+  use_env: false
+validation:
+  policy: "strict"

@@ -1,0 +1,45 @@
+name: "dataset-segmented-firewall-pivot"
+iterations: 5
+topology:
+  routers: [2, 4]
+  hosts: [6, 9]
+  randomize: true
+services:
+  enabled: true
+  randomize: true
+  count: [3, 6]
+  include: ["SSH", "HTTP"]
+vulns:
+  enabled: true
+  randomize: true
+  count: [1, 2]
+  include: ["drupal"]
+flag_node_generators:
+  enabled: true
+  randomize: true
+  count: [1, 2]
+  include: ["SSH:*", "Git:*"]
+flows:
+  enabled: true
+  randomize: true
+  chain_length: [2, 4]
+  allow_duplicates: false
+  include_all_topology_pivots: true
+traffic:
+  profile: heavy
+  payload_types: [audio, gibberish]
+segmentation:
+  enabled: true
+  density: 0.45
+  items:
+    - type: Firewall
+      count: 1
+      pivot_enabled: true
+      pivot_provider: ssh-fallback
+    - type: NAT
+      count: 1
+      pivot_enabled: false
+hitl:
+  use_env: false
+validation:
+  policy: "strict"

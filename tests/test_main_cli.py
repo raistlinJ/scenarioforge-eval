@@ -113,6 +113,7 @@ class MainCliPhaseSelectionTests(unittest.TestCase):
                 target_phase='execute',
                 verbose=False,
                 dangerous_cleanup_between_runs=False,
+                stream_execute_output=False,
             ):
                 executor_specs.append(spec['name'])
 
@@ -191,9 +192,11 @@ class MainCliPhaseSelectionTests(unittest.TestCase):
                 target_phase='execute',
                 verbose=False,
                 dangerous_cleanup_between_runs=False,
+                stream_execute_output=False,
             ):
                 captured['dangerous_cleanup_between_runs'] = dangerous_cleanup_between_runs
                 captured['target_phase'] = target_phase
+                captured['stream_execute_output'] = stream_execute_output
 
             def run(self):
                 return {'success': True, 'stages': {}, 'artifacts': {}}
@@ -219,6 +222,7 @@ class MainCliPhaseSelectionTests(unittest.TestCase):
 
         self.assertTrue(captured['dangerous_cleanup_between_runs'])
         self.assertEqual(captured['target_phase'], 'execute')
+        self.assertTrue(captured['stream_execute_output'])
 
     def test_error_report_includes_validation_diagnostics_and_generators(self):
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -319,6 +323,7 @@ class MainCliPhaseSelectionTests(unittest.TestCase):
                 target_phase='execute',
                 verbose=False,
                 dangerous_cleanup_between_runs=False,
+                stream_execute_output=False,
             ):
                 self.out_dir = out_dir
 

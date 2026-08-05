@@ -1,0 +1,32 @@
+name: "dataset-vuln-collaboration"
+iterations: 5
+topology:
+  routers: 2
+  hosts: [6, 8]
+  randomize: true
+services:
+  enabled: true
+  randomize: true
+  count: [3, 5]
+  include: ["SSH", "HTTP"]
+vulns:
+  enabled: true
+  randomize: true
+  count: [1, 3]
+  include: ["confluence"]
+flag_node_generators:
+  enabled: false
+  count: 0
+flows:
+  enabled: false
+  chain_length: 0
+traffic:
+  profile: heavy
+  payload_types: [text, photo]
+segmentation:
+  enabled: true
+  density: 0.35
+hitl:
+  use_env: false
+validation:
+  policy: "strict"

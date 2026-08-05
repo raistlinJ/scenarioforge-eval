@@ -1,0 +1,73 @@
+name: dataset-mixed-collaboration-messaging_run01
+iterations: 1
+seed: 1391104831
+topology:
+  routers: 2
+  hosts: 8
+services:
+  enabled: true
+  count: 5
+  density: 1.0
+  include:
+  - SSH
+  - HTTP
+  exclude: []
+traffic:
+  enabled: true
+  density: 0.85
+  items:
+  - type: TCP
+    count: 2
+    factor: 1.0
+    pattern: continuous
+    rate_kbps: 512.0
+    period_s: 1.0
+    jitter_pct: 10.0
+    content_type: text
+  - type: UDP
+    count: 2
+    factor: 1.0
+    pattern: burst
+    rate_kbps: 256.0
+    period_s: 2.0
+    jitter_pct: 20.0
+    content_type: video
+vulns:
+  enabled: true
+  count: 3
+  specific:
+  - name: confluence/CVE-2023-22515
+    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/confluence/CVE-2023-22515/docker-compose.yml
+    count: 1
+  - name: confluence/CVE-2021-26084
+    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/confluence/CVE-2021-26084/docker-compose.yml
+    count: 1
+  - name: confluence/CVE-2019-3396
+    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/confluence/CVE-2019-3396/docker-compose.yml
+    count: 1
+flag_node_generators:
+  enabled: true
+  count: 3
+  specific:
+  - id: '145'
+    name: 'Mail: Webmail Export Attachment'
+    count: 1
+  - id: '142'
+    name: 'Mail: IMAP Archive Mailbox'
+    count: 1
+  - id: mqtt_public_broker_topic
+    name: 'MQTT: Public Broker Topic'
+    count: 1
+flows:
+  enabled: true
+  chain_length: 2
+  allow_duplicates: false
+  include_all_topology_pivots: false
+segmentation:
+  enabled: true
+  density: 0.4
+  items: []
+hitl:
+  use_env: false
+validation:
+  policy: strict

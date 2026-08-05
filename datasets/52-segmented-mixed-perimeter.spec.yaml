@@ -1,0 +1,43 @@
+name: "dataset-segmented-mixed-perimeter"
+iterations: 5
+topology:
+  routers: [2, 3]
+  hosts: [5, 8]
+  randomize: true
+services:
+  enabled: true
+  randomize: true
+  count: [3, 5]
+  include: ["HTTP", "SSH"]
+vulns:
+  enabled: true
+  randomize: true
+  count: [1, 2]
+  include: ["nginx"]
+flag_node_generators:
+  enabled: true
+  randomize: true
+  count: [1, 3]
+  include: ["HTTP:*", "HTTPS:*", "DNS:*"]
+flows:
+  enabled: true
+  randomize: true
+  chain_length: [2, 4]
+  allow_duplicates: false
+traffic:
+  profile: medium
+  payload_types: [audio, gibberish]
+segmentation:
+  enabled: true
+  density: 0.45
+  items:
+    - type: Firewall
+      count: 1
+      pivot_enabled: false
+    - type: NAT
+      count: 1
+      pivot_enabled: false
+hitl:
+  use_env: false
+validation:
+  policy: "strict"

@@ -1,0 +1,71 @@
+name: dataset-scale-multi-artifact_run04
+iterations: 1
+seed: 1858590118
+topology:
+  routers: 4
+  hosts: 8
+services:
+  enabled: true
+  count: 5
+  density: 1.0
+  include:
+  - SSH
+  - HTTP
+  exclude: []
+traffic:
+  enabled: true
+  density: 0.85
+  items:
+  - type: TCP
+    count: 2
+    factor: 1.0
+    pattern: continuous
+    rate_kbps: 512.0
+    period_s: 1.0
+    jitter_pct: 10.0
+    content_type: photo
+  - type: UDP
+    count: 2
+    factor: 1.0
+    pattern: burst
+    rate_kbps: 256.0
+    period_s: 2.0
+    jitter_pct: 20.0
+    content_type: gibberish
+vulns:
+  enabled: false
+  count: 0
+  include: []
+  exclude: []
+flag_node_generators:
+  enabled: true
+  count: 5
+  specific:
+  - id: '141'
+    name: 'DNS: Delegation Glue Hint'
+    count: 1
+  - id: ssh_password_timeout_shell
+    name: 'SSH: Password Timeout Shell'
+    count: 1
+  - id: nfs_build_cache_share
+    name: 'NFS: Build Cache Share'
+    count: 1
+  - id: nfs_legacy_nfs3_share
+    name: 'NFS: Legacy Engineering Share'
+    count: 1
+  - id: nfs_lab_instrument_logs
+    name: 'NFS: Lab Instrument Logs'
+    count: 1
+flows:
+  enabled: true
+  chain_length: 3
+  allow_duplicates: false
+  include_all_topology_pivots: false
+segmentation:
+  enabled: true
+  density: 0.45
+  items: []
+hitl:
+  use_env: false
+validation:
+  policy: strict

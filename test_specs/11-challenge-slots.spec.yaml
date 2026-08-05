@@ -3,8 +3,9 @@
 # A slot is capacity, not a placement: both kinds materialise empty and
 # flag-sequencing fills one only when the requested chain length needs it. They
 # add to the counts declared in the Vulnerabilities and Flag Node Generators
-# sections, so the ceiling here is 2 vulnerabilities + 2 generators + 2
-# vulnerability slots + 2 flag-gen slots = 8, and the chain asks for all of it.
+# sections. Flow's requested length counts the two concrete vulnerabilities,
+# two concrete generators, and two flag-gen slots. The two vulnerability slots
+# are appended automatically by topology expansion, producing eight final steps.
 #
 # Requesting less than the ceiling leaves slots unfilled, which is correct but
 # exercises nothing; requesting the ceiling is what proves a slot can be reached
@@ -31,11 +32,25 @@ flag_node_generators:
 flows:
   enabled: true
   randomize: false
-  chain_length: 8
+  chain_length: 6
+  # Select the four optional slots. Topology expansion then appends the two
+  # concrete vulnerabilities and two concrete flag-node-generators.
+  chain_ids: ["14", "15", "16", "17"]
   allow_duplicates: false
+  dependency_level: 3
+  timeout_s: 900
 segmentation:
-  enabled: false
+  enabled: true
+  density: 0.45
+  items:
+    - type: "Firewall"
+      count: 1
+      pivot_enabled: false
 hitl:
   use_env: false
 validation:
   policy: "strict"
+  check_artifacts:
+    enabled: true
+    delay_seconds: 60
+    strict: false

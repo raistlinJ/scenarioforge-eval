@@ -1,6 +1,7 @@
 import csv
 import json
 import os
+import shutil
 import xml.etree.ElementTree as ET
 
 try:
@@ -14,7 +15,12 @@ class Reporter:
         'target_phase', 'seed', 'success', 'failed_stage', 'failed_at',
         'started_at', 'ended_at', 'duration_s', 'router_count', 'host_count',
         'node_count', 'service_count', 'vulnerability_count', 'flow_enabled',
-        'flow_chain_length', 'validation_ok', 'phase_count', 'phase_duration_s',
+        'flow_chain_length', 'challenge_count', 'chain_count',
+        'chains_length_gt_1', 'average_chain_length', 'pivot_count',
+        'pivot_provider_count', 'flag_node_generator_count',
+        'topology_flag_node_generator_count', 'validation_ok',
+        'check_artifacts_ok', 'check_artifacts_overall',
+        'phase_count', 'phase_duration_s',
         'estimated_output_tokens', 'log_size_bytes', 'artifact_file_count',
         'artifact_total_size_bytes', 'cpu_user_s', 'cpu_system_s', 'cpu_total_s',
         'max_rss_bytes', 'input_blocks', 'output_blocks', 'context_switches',
@@ -40,6 +46,7 @@ class Reporter:
         ('topo_log', 'Topo Phase Log', 'text'),
         ('execute_log', 'Execute Log', 'text'),
         ('execute_validation_json', 'Execute Validation JSON', 'json'),
+        ('execute_check_artifacts_json', 'Execute Artifact Checks JSON', 'json'),
         ('execute_report', 'Scenario Report', 'markdown'),
         ('execute_summary', 'Scenario Summary', 'json'),
     )
@@ -47,7 +54,38 @@ class Reporter:
     def __init__(self, out_dir: str):
         self.out_dir = os.path.abspath(os.path.expanduser(out_dir))
 
+    def _collect_webui_xml(self, spec_name: str, result: dict) -> str | None:
+        artifacts = result.setdefault('artifacts', {})
+        source_path = artifacts.get('scenarioforge_webui_xml') or artifacts.get('scenario_xml')
+        if not isinstance(source_path, str) or not os.path.isfile(source_path):
+            return None
+
+        collection_dir = os.path.join(self.out_dir, 'webui-xml')
+        os.makedirs(collection_dir, exist_ok=True)
+        try:
+            os.chmod(collection_dir, 0o700)
+        except OSError:
+            pass
+        collected_path = os.path.join(
+            collection_dir,
+            f'{self._safe_metric_dir_name(spec_name)}.xml',
+        )
+        if os.path.abspath(source_path) != os.path.abspath(collected_path):
+            shutil.copy2(source_path, collected_path)
+        try:
+            os.chmod(collected_path, 0o600)
+        except OSError:
+            pass
+        artifacts['scenarioforge_webui_xml_collection'] = collected_path
+        return collected_path
+
     def log_result(self, spec_name: str, result: dict):
+        try:
+            self._collect_webui_xml(spec_name, result)
+        except OSError as exc:
+            result.setdefault('warnings', []).append(
+                f'Unable to collect the ScenarioForge WebUI XML artifact: {exc}'
+            )
         log_path = os.path.join(self.out_dir, f"{spec_name}_result.json")
         with open(log_path, 'w', encoding='utf-8') as f:
             json.dump(result, f, indent=2)
@@ -127,6 +165,8 @@ class Reporter:
         output_dir = artifacts.get('output_dir') or {}
         execute_result = (result.get('phase_results') or {}).get('execute') or {}
         validation_summary = execute_result.get('validation_summary') or {}
+        check_artifacts_summary = execute_result.get('check_artifacts_summary') or {}
+        content = metrics.get('content') or {}
         failed_stage = self._first_failed_stage(result)
 
         return {
@@ -150,7 +190,22 @@ class Reporter:
             'vulnerability_count': self._nested(spec, 'vulnerabilities', 'count', default=0),
             'flow_enabled': self._nested(spec, 'flows', 'enabled', default=False),
             'flow_chain_length': self._nested(spec, 'flows', 'chain_length', default=0),
+            'challenge_count': self._nested(content, 'challenges', 'count', default=0),
+            'chain_count': self._nested(content, 'chains', 'count', default=0),
+            'chains_length_gt_1': self._nested(content, 'chains', 'length_gt_1_count', default=0),
+            'average_chain_length': self._nested(content, 'chains', 'average_length', default=0.0),
+            'pivot_count': self._nested(content, 'challenges', 'pivot_count', default=0),
+            'pivot_provider_count': self._nested(content, 'topology', 'pivot_provider_count', default=0),
+            'flag_node_generator_count': self._nested(content, 'challenges', 'flag_node_generator_count', default=0),
+            'topology_flag_node_generator_count': self._nested(
+                content,
+                'topology',
+                'flag_node_generator_count',
+                default=self._nested(spec, 'flag_node_generators', 'count', default=0),
+            ),
             'validation_ok': validation_summary.get('ok', ''),
+            'check_artifacts_ok': check_artifacts_summary.get('ok', ''),
+            'check_artifacts_overall': check_artifacts_summary.get('overall', ''),
             'phase_count': len(phases),
             'phase_duration_s': rounded_seconds(sum(float(phase.get('duration_s') or 0.0) for phase in phase_values)),
             'estimated_output_tokens': sum(int(self._nested(phase, 'outputs', 'combined', 'estimated_tokens', default=0) or 0) for phase in phase_values),
@@ -260,6 +315,17 @@ class Reporter:
                 'max_rss_bytes': max((int(row.get('max_rss_bytes') or 0) for row in rows), default=0),
             }
 
+        chain_lengths = []
+        for row in run_rows:
+            chain_count = int(row.get('chain_count') or 0)
+            if chain_count <= 0:
+                continue
+            average_length = float(row.get('average_chain_length') or 0.0)
+            chain_lengths.extend([average_length] * chain_count)
+
+        challenge_total = sum(int(row.get('challenge_count') or 0) for row in run_rows)
+        chain_total = sum(int(row.get('chain_count') or 0) for row in run_rows)
+
         return {
             'schema_version': 1,
             'generated_at': utc_now_iso(),
@@ -278,6 +344,27 @@ class Reporter:
             },
             'failures': {
                 'by_stage': failures_by_stage,
+            },
+            'content': {
+                'challenges': {
+                    'total': challenge_total,
+                    'avg_per_run': rounded_seconds(challenge_total / len(run_rows)) if run_rows else 0.0,
+                },
+                'chains': {
+                    'total': chain_total,
+                    'length_gt_1': sum(int(row.get('chains_length_gt_1') or 0) for row in run_rows),
+                    'average_length': rounded_seconds(sum(chain_lengths) / len(chain_lengths)) if chain_lengths else 0.0,
+                    'min_length': min(chain_lengths, default=0.0),
+                    'max_length': max(chain_lengths, default=0.0),
+                },
+                'pivots': {
+                    'challenge_total': sum(int(row.get('pivot_count') or 0) for row in run_rows),
+                    'provider_total': sum(int(row.get('pivot_provider_count') or 0) for row in run_rows),
+                },
+                'flag_node_generators': {
+                    'challenge_total': sum(int(row.get('flag_node_generator_count') or 0) for row in run_rows),
+                    'topology_total': sum(int(row.get('topology_flag_node_generator_count') or 0) for row in run_rows),
+                },
             },
             'phases': phase_summary,
         }
@@ -335,6 +422,17 @@ class Reporter:
             handle.write(f"| Artifact bytes | {run_row.get('artifact_total_size_bytes', 0)} |\n")
             handle.write(f"| CPU total (s) | {run_row.get('cpu_total_s', 0.0)} |\n")
             handle.write(f"| Max RSS bytes | {run_row.get('max_rss_bytes', 0)} |\n\n")
+
+            handle.write("## Generated Content\n\n")
+            handle.write("| Metric | Value |\n| --- | ---: |\n")
+            handle.write(f"| Challenges | {run_row.get('challenge_count', 0)} |\n")
+            handle.write(f"| Chains | {run_row.get('chain_count', 0)} |\n")
+            handle.write(f"| Chains with length > 1 | {run_row.get('chains_length_gt_1', 0)} |\n")
+            handle.write(f"| Average chain length | {run_row.get('average_chain_length', 0.0)} |\n")
+            handle.write(f"| Pivot challenges | {run_row.get('pivot_count', 0)} |\n")
+            handle.write(f"| Segmentation pivot providers | {run_row.get('pivot_provider_count', 0)} |\n")
+            handle.write(f"| Flag-node-generator challenges | {run_row.get('flag_node_generator_count', 0)} |\n")
+            handle.write(f"| Topology flag-node-generators | {run_row.get('topology_flag_node_generator_count', 0)} |\n\n")
 
             handle.write("## Phases\n\n")
             handle.write("| Phase | Status | Return Code | Timeout | Duration (s) | Estimated Tokens | Log Bytes |\n")
@@ -407,6 +505,22 @@ class Reporter:
             handle.write(f"| Total duration (s) | {(runs.get('duration_s') or {}).get('total', 0.0)} |\n")
             handle.write(f"| Estimated output tokens | {runs.get('estimated_output_tokens', 0)} |\n")
             handle.write(f"| Artifact bytes | {runs.get('artifact_total_size_bytes', 0)} |\n\n")
+
+            content = summary.get('content') or {}
+            challenges = content.get('challenges') or {}
+            chains = content.get('chains') or {}
+            pivots = content.get('pivots') or {}
+            flag_node_generators = content.get('flag_node_generators') or {}
+            handle.write("## Generated Content Summary\n\n")
+            handle.write("| Metric | Value |\n| --- | ---: |\n")
+            handle.write(f"| Challenges | {challenges.get('total', 0)} |\n")
+            handle.write(f"| Chains | {chains.get('total', 0)} |\n")
+            handle.write(f"| Chains with length > 1 | {chains.get('length_gt_1', 0)} |\n")
+            handle.write(f"| Average chain length | {chains.get('average_length', 0.0)} |\n")
+            handle.write(f"| Pivot challenges | {pivots.get('challenge_total', 0)} |\n")
+            handle.write(f"| Segmentation pivot providers | {pivots.get('provider_total', 0)} |\n")
+            handle.write(f"| Flag-node-generator challenges | {flag_node_generators.get('challenge_total', 0)} |\n")
+            handle.write(f"| Topology flag-node-generators | {flag_node_generators.get('topology_total', 0)} |\n\n")
 
             handle.write("## Phase Summary\n\n")
             handle.write("| Phase | Count | Failures | Timeouts | Avg duration (s) | Estimated tokens | Log bytes |\n")

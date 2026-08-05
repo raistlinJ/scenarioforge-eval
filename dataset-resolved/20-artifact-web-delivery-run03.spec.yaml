@@ -1,0 +1,50 @@
+name: dataset-artifact-web-delivery_run03
+iterations: 1
+seed: 1145989167
+topology:
+  routers: 1
+  hosts: 4
+services:
+  enabled: true
+  count: 3
+  density: 1.0
+  include:
+  - HTTP
+  exclude: []
+traffic:
+  enabled: true
+  density: 0.35
+  items:
+  - type: TCP
+    count: 1
+    factor: 1.0
+    pattern: periodic
+    rate_kbps: 32.0
+    period_s: 5.0
+    jitter_pct: 10.0
+    content_type: photo
+vulns:
+  enabled: false
+  count: 0
+  include: []
+  exclude: []
+flag_node_generators:
+  enabled: true
+  count: 1
+  specific:
+  - id: http_source_secret_repo
+    name: 'HTTP: Source Secret Repository'
+    count: 1
+flows:
+  enabled: false
+  chain_length: 0
+  allow_duplicates: false
+  include_all_topology_pivots: false
+segmentation:
+  enabled: false
+  density: 0.5
+  items: []
+hitl:
+  use_env: false
+validation:
+  policy: strict

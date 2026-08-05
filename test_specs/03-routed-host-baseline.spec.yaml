@@ -10,12 +10,27 @@ services:
 vulns:
   enabled: false
   count: 0
+flag_node_generators:
+  enabled: false
+  count: 0
 flows:
   enabled: false
   chain_length: 0
 segmentation:
-  enabled: false
+  enabled: true
+  density: 0.35
+  include_hosts: false
+  allow_src_subnet_prob: 0.0
+  allow_dst_subnet_prob: 1.0
+  items:
+    - type: "Firewall"
+      count: 1
+      pivot_enabled: false
 hitl:
   use_env: false
 validation:
   policy: "strict"
+  check_artifacts:
+    enabled: true
+    delay_seconds: 60
+    strict: false

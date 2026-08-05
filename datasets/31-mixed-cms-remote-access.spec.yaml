@@ -1,0 +1,36 @@
+name: "dataset-mixed-cms-remote-access"
+iterations: 5
+topology:
+  routers: [1, 2]
+  hosts: [4, 6]
+  randomize: true
+services:
+  enabled: true
+  randomize: true
+  count: [2, 4]
+  include: ["SSH", "HTTP"]
+vulns:
+  enabled: true
+  randomize: true
+  count: [1, 2]
+  include: ["drupal"]
+flag_node_generators:
+  enabled: true
+  randomize: true
+  count: [1, 2]
+  include: ["SSH:*", "Git:*"]
+flows:
+  enabled: true
+  randomize: true
+  chain_length: [2, 4]
+  allow_duplicates: false
+traffic:
+  profile: light
+  payload_types: [video]
+segmentation:
+  enabled: true
+  density: 0.3
+hitl:
+  use_env: false
+validation:
+  policy: "strict"

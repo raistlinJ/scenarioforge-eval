@@ -1,0 +1,59 @@
+name: dataset-vuln-search-data_run03
+iterations: 1
+seed: 1788021272
+topology:
+  routers: 2
+  hosts: 5
+services:
+  enabled: true
+  count: 4
+  density: 1.0
+  include:
+  - HTTP
+  - SSH
+  exclude: []
+traffic:
+  enabled: true
+  density: 0.6
+  items:
+  - type: TCP
+    count: 1
+    factor: 1.0
+    pattern: continuous
+    rate_kbps: 128.0
+    period_s: 2.0
+    jitter_pct: 15.0
+    content_type: text
+  - type: UDP
+    count: 1
+    factor: 1.0
+    pattern: periodic
+    rate_kbps: 64.0
+    period_s: 5.0
+    jitter_pct: 25.0
+    content_type: video
+vulns:
+  enabled: true
+  count: 1
+  specific:
+  - name: elasticsearch/CVE-2015-1427
+    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/elasticsearch/CVE-2015-1427/docker-compose.yml
+    count: 1
+flag_node_generators:
+  enabled: false
+  count: 0
+  include: []
+  exclude: []
+flows:
+  enabled: false
+  chain_length: 0
+  allow_duplicates: false
+  include_all_topology_pivots: false
+segmentation:
+  enabled: true
+  density: 0.4
+  items: []
+hitl:
+  use_env: false
+validation:
+  policy: strict

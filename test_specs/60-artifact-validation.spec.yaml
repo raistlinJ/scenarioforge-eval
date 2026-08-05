@@ -1,0 +1,70 @@
+# Exercises the live-session artifact checks after execute.
+#
+# Traffic is enabled deliberately: it gives the traffic-script and
+# source -> destination reachability checks something real to verify, and those
+# are the two checks that used to pass silently when no traffic ever started.
+#
+# Run:
+#   uv run scenarioforge-eval test_specs/60-artifact-validation.spec.yaml \
+#     --sf-path ../scenarioforge --execute
+name: "artifact-validation"
+iterations: 1
+topology:
+  routers: 1
+  hosts: 3
+  randomize: false
+services:
+  enabled: true
+  randomize: false
+  count: 1
+  include: ["SSH"]
+traffic:
+  enabled: true
+  randomize: false
+  density: 1.0
+  items:
+    - type: "UDP"
+      count: 1
+      pattern: "continuous"
+      rate_kbps: 256
+      period_s: 5
+      jitter_pct: 5
+      content_type: "video"
+vulns:
+  enabled: true
+  randomize: false
+  count: 1
+flag_node_generators:
+  enabled: true
+  count: 1
+flows:
+  # One vulnerability plus one flag-node-generator exercises the fixed pivot
+  # ordering path: the SSH pivot provider must precede its walled-off target.
+  enabled: true
+  randomize: false
+  chain_length: 2
+  allow_duplicates: false
+  dependency_level: 3
+  timeout_s: 900
+segmentation:
+  enabled: true
+  density: 0.5
+  accessible_by_pivot: true
+  items:
+    - type: "Firewall"
+      count: 1
+      pivot_enabled: true
+      pivot_provider: "ssh-fallback"
+hitl:
+  use_env: false
+validation:
+  policy: "strict"
+  check_artifacts:
+    enabled: true
+    # The checks probe a live session, so give routing convergence and slow
+    # container services time to settle before probing.
+    delay_seconds: 60
+    # Warnings (for example a service port dropping packets with no segmentation
+    # rule to explain it) are
+    # recorded on the run rather than failing it. Set true to fail on them.
+    strict: false

@@ -1,0 +1,36 @@
+name: "dataset-mixed-perimeter-identity"
+iterations: 5
+topology:
+  routers: 2
+  hosts: [5, 7]
+  randomize: true
+services:
+  enabled: true
+  randomize: true
+  count: [2, 5]
+  include: ["SSH", "HTTP"]
+vulns:
+  enabled: true
+  randomize: true
+  count: [1, 2]
+  include: ["nginx"]
+flag_node_generators:
+  enabled: true
+  randomize: true
+  count: [1, 3]
+  include: ["DNS:*", "LDAP:*"]
+flows:
+  enabled: true
+  randomize: true
+  chain_length: [2, 4]
+  allow_duplicates: false
+traffic:
+  profile: medium
+  payload_types: [video, gibberish]
+segmentation:
+  enabled: true
+  density: 0.35
+hitl:
+  use_env: false
+validation:
+  policy: "strict"

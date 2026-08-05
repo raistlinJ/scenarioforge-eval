@@ -1,0 +1,62 @@
+name: dataset-artifact-messaging_run01
+iterations: 1
+seed: 443505991
+topology:
+  routers: 1
+  hosts: 4
+services:
+  enabled: true
+  count: 4
+  density: 1.0
+  include:
+  - SSH
+  - HTTP
+  exclude: []
+traffic:
+  enabled: true
+  density: 0.6
+  items:
+  - type: TCP
+    count: 1
+    factor: 1.0
+    pattern: continuous
+    rate_kbps: 128.0
+    period_s: 2.0
+    jitter_pct: 15.0
+    content_type: photo
+  - type: UDP
+    count: 1
+    factor: 1.0
+    pattern: periodic
+    rate_kbps: 64.0
+    period_s: 5.0
+    jitter_pct: 25.0
+    content_type: gibberish
+vulns:
+  enabled: false
+  count: 0
+  include: []
+  exclude: []
+flag_node_generators:
+  enabled: true
+  count: 2
+  specific:
+  - id: mqtt_public_broker_topic
+    name: 'MQTT: Public Broker Topic'
+    count: 1
+  - id: ftp_user_backup_home
+    name: 'FTP: Authenticated Backup Home'
+    count: 1
+flows:
+  enabled: false
+  chain_length: 0
+  allow_duplicates: false
+  include_all_topology_pivots: false
+segmentation:
+  enabled: false
+  density: 0.5
+  items: []
+hitl:
+  use_env: false
+validation:
+  policy: strict

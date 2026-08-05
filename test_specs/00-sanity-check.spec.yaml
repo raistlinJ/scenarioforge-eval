@@ -13,10 +13,14 @@ vulns:
   enabled: true
   randomize: false
   count: 1
+flag_node_generators:
+  enabled: true
+  count: 1
 flows:
   enabled: true
   randomize: false
-  chain_length: 1
+  # One vulnerability plus one flag-node-generator are mandatory chain nodes.
+  chain_length: 2
   allow_duplicates: false
 segmentation:
   enabled: false
@@ -24,3 +28,7 @@ hitl:
   use_env: false
 validation:
   policy: "strict"
+  check_artifacts:
+    enabled: true
+    delay_seconds: 60
+    strict: false

@@ -8,6 +8,7 @@ ScenarioForge-Eval is a batch-testing harness and evaluation tool for `scenariof
 - **Specification Files**: Define simple bounds for topology and parameters in YAML format.
 - **Automated Logging**: Output success/failure reports, per-phase logs, and parsed validation artifacts.
 - **Batch Metrics**: Captures per-run and per-phase timing, estimated output tokens, artifact sizes, CPU/resource counters, pass rates, and validation outcomes.
+- **Live Artifact Checks**: Optionally validates the running CORE session after execute — containers, services, ports, injects, segmentation, traffic agents, pivot access, and reachability — and grades the run on the result.
 - **Compatibility Tracking**: Persists one random seed per iteration, reuses the same authoritative XML across phases, and serializes runtime phases that share one CORE VM target.
 - **AI-Friendly Error Reporting**: Automatically writes an AI-ready Markdown prompt with the stack trace plus captured phase artifacts when a scenario fails, while redacting embedded CORE SSH passwords from copied XML.
 
@@ -16,6 +17,7 @@ ScenarioForge-Eval is a batch-testing harness and evaluation tool for `scenariof
 - `scenarioforge_eval/parser.py`: Parses `.spec.yaml` bounds and handles random ranges.
 - `scenarioforge_eval/executor.py`: Generates a ScenarioForge XML, writes it atomically, embeds mode-aware CORE connection data from the environment, and drives the real `scenarioforge` CLI phases for batch execution.
 - `scenarioforge_eval/reporter.py`: Manages the output directory, logs pass/fail statuses, writes batch metrics exports, and creates `_ai_prompt.md` files from the captured phase artifacts upon failure.
+- `scenarioforge_eval/dashboard.py`: Recursively indexes evaluator result folders and serves the read-only metrics dashboard.
 - `scenarioforge_eval/main.py`: The CLI entry point.
 
 ## Usage
@@ -104,7 +106,23 @@ Each iteration now persists one seed and passes it through every CLI phase so `p
 
 The evaluator retains the authoritative `scenario.xml` generated at the start of the run and does not regenerate it between phases. `preview-plan` and `flag-sequencing` are allowed to mutate that XML in place, and `execute` consumes the mutated file.
 
+At run finalization, the evaluator snapshots that final XML as
+`<out>/<spec_name>/scenarioforge-webui.xml`. This is the ScenarioForge editor/import
+format, so it can be imported in the WebUI and run again. A second copy is collected
+at `<out>/webui-xml/<spec_name>.xml` for convenient access across a batch. These files
+can contain CORE connection credentials and are therefore written with owner-only
+permissions.
+
 Full execute runs always add `--post-execution-validation`, parse the last `VALIDATION_SUMMARY_JSON:` marker from combined stdout/stderr, and save the parsed payload as `execute-validation.json`.
+
+Execute output is streamed while the phase is running, so image preparation counters
+such as `[images] pulling=5 cached=0 pending=3` remain visible in the terminal. The
+same output is retained in `execute.log`.
+
+When `validation.check_artifacts.enabled` is set, execute additionally receives
+`--check-artifacts` (plus `--check-artifacts-delay` / `--strict`), and the evaluator parses
+the last `CHECK_ARTIFACTS_SUMMARY_JSON:` marker the same way, saving it as
+`execute-check-artifacts.json`. See [Artifact checks](#artifact-checks).
 
 Current ScenarioForge also emits that marker when CORE startup fails before the
 detailed validator can run. The evaluator streams and reports its
@@ -126,6 +144,35 @@ Supported policies:
 
 - `strict`: require process exit `0` and `validation_summary.ok == true`.
 - `warning_tolerant`: allow warning-only validation summaries while still failing on validation error fields.
+
+### Artifact checks
+
+After execute and post-execution validation, the evaluator can run ScenarioForge's
+`check-artifacts` phase against the live CORE session. It verifies that the expected
+containers are on the right nodes, services are running, service ports are reachable
+across the CORE network, inject files landed, segmentation rules are enforced, traffic
+agents are running, each traffic source can reach its destination, and every pivot
+provider is reachable from the participant network.
+
+```yaml
+validation:
+  policy: strict
+  check_artifacts:
+    enabled: true
+    delay_seconds: 45   # wait for routing convergence before probing
+    strict: false       # true promotes check warnings to run failures
+```
+
+Notes:
+
+- `delay_seconds` is applied by the CLI after execute, so slow services and routing
+  have time to settle before the probes run.
+- With `strict: false` (the default), checks that come back `warn` are recorded in the
+  run's `warnings` list; `fail`/`error` checks always fail the run.
+- The parsed payload is saved as the `execute-check-artifacts.json` artifact, and the
+  metrics gain `check_artifacts_ok` / `check_artifacts_overall` columns.
+- Artifact checks only run when execute itself succeeded, so they add findings rather
+  than masking an earlier failure.
 
 Legacy spec compatibility notes:
 
@@ -150,11 +197,13 @@ Failure prompts redact `CoreConnection/@ssh_password` before copying XML into `_
 Common per-run artifacts include:
 
 - `scenario.xml`
+- `scenarioforge-webui.xml`, the final WebUI-importable rerun snapshot
 - `seed.txt`
 - `preview-plan.json` and `preview-plan.log`
 - `flag-sequencing.json` and `flag-sequencing.log` when Flow is enabled
 - `execute.log`
 - `execute-validation.json` for full execute runs
+- `execute-check-artifacts.json` when `validation.check_artifacts.enabled` is set
 
 When a run has validation issues, warning/error log lines, or a captured
 exception, the output root also gets `latest.errors` for the most recent
@@ -166,6 +215,9 @@ Each per-run `<spec>_result.json` includes a `metrics` object with:
 
 - run start/end timestamps and duration
 - resolved spec counts for routers, hosts, services, vulnerabilities, flag-node-generators, and flow length
+- concrete generated-content counts for challenges, chains, chains longer than one step,
+  average chain length, pivot-producing challenges, segmentation pivot providers,
+  Flow flag-node-generator challenges, and topology flag-node-generator nodes
 - per-phase duration, return code, timeout flag, stdout/stderr/log sizes, and estimated output tokens
 - process resource counters from `resource.getrusage`, including CPU time, max RSS, block I/O, page faults, and context switches
 - artifact file sizes and output-directory totals
@@ -174,7 +226,8 @@ Token counts are deterministic text estimates for logs and CLI output, using a r
 
 At the end of every batch, the evaluator also writes graph/table-friendly files in the output root:
 
-- `batch_metrics_summary.json`: machine-readable aggregate pass rate, duration, token, artifact, and resource summaries.
+- `batch_metrics_summary.json`: machine-readable aggregate pass rate, duration, token,
+  artifact, resource, challenge, chain, pivot, and flag-node-generator summaries.
 - `batch_metrics_summary.md`: quick human-readable summary tables.
 - `batch_metrics_raw.jsonl`: one full result object per run.
 - `batch_metrics_runs.csv`: one flat row per run.
@@ -186,6 +239,23 @@ The same batch files are also mirrored under `metrics/` in the output root, for 
 - `<out>/metrics/runs/<spec_name>/`: collected under the batch-level metrics folder.
 
 Each run metrics bundle includes `run_metrics_summary.json`, `run_metrics_raw.json`, `run_metrics_summary.md`, `run_metrics.csv`, and `phase_metrics.csv`.
+
+## Metrics dashboard
+
+Point the dashboard at any parent folder containing evaluator outputs. It recursively
+discovers canonical `*_result.json` files, including results nested across multiple
+batches, and reads their run, phase, resource, artifact, validation, and generated-
+content metrics.
+
+```bash
+uv run scenarioforge-eval-dashboard /tmp/scenarioforge-eval-out --open
+```
+
+The dashboard listens on `127.0.0.1:8088` by default. Use `--host` and `--port` to
+change the listener. Refreshing the page or selecting **Refresh** rescans the parent
+folder, so completed runs appear without restarting the service. If only copied
+`run_metrics_raw.json` bundles are available, the loader uses those as a deduplicated
+fallback.
 
 ## Sample Commands
 
@@ -207,6 +277,19 @@ Run one spec with a dedicated output directory and verbose CLI logs:
 ```bash
 uv run scenarioforge-eval test_specs/00-sanity-check.spec.yaml --sf-path ../scenarioforge --execute --verbose --out /tmp/scenarioforge-eval-smoke
 ```
+
+Validate the live session after execute by enabling artifact checks in the spec:
+
+```yaml
+validation:
+  policy: strict
+  check_artifacts:
+    enabled: true
+    delay_seconds: 45
+```
+
+Then run the spec normally; the evaluator adds the CLI flags, saves
+`execute-check-artifacts.json`, and records any check warnings on the run.
 
 Run preview-plan plus flag sequencing only:
 

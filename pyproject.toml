@@ -23,6 +23,7 @@ dependencies = [
 
 [project.scripts]
 scenarioforge-eval = "scenarioforge_eval.main:main"
+scenarioforge-eval-dashboard = "scenarioforge_eval.dashboard:main"
 
 [build-system]
 requires = ["hatchling>=1.27.0"]

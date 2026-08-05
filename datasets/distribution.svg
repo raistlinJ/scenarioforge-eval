@@ -1,0 +1,128 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1200" viewBox="0 0 1400 1200" role="img" aria-labelledby="title desc">
+  <title id="title">ScenarioForge-Eval dataset type distribution</title>
+  <desc id="desc">Combined configured service coverage, execution composition, and traffic payload configuration across the dataset YAML suite. Red bars represent Vulhub images and teal bars represent self-generated services.</desc>
+  <style>
+    text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #1f2937; }
+    .title { font-size: 28px; font-weight: 700; }
+    .subtitle { font-size: 14px; fill: #4b5563; }
+    .panel { fill: #ffffff; stroke: #d1d5db; stroke-width: 1; }
+    .panel-title { font-size: 18px; font-weight: 700; }
+    .label { font-size: 13px; }
+    .value { font-size: 13px; font-weight: 700; }
+    .note { font-size: 12px; fill: #6b7280; }
+    .big { font-size: 30px; font-weight: 700; }
+  </style>
+  <rect width="1400" height="1200" fill="#f8fafc"/>
+  <text x="50" y="53" class="title">ScenarioForge-Eval dataset distribution</text>
+  <text x="50" y="78" class="subtitle">30 specifications × their declared iterations = 150 resolved scenarios</text>
+  <rect x="40" y="105" width="640" height="142" rx="12" class="panel"/>
+  <text x="64" y="140" class="panel-title">Resolved scenario composition</text>
+  <text x="64" y="163" class="note">Mutually exclusive execution counts</text>
+  <text x="64" y="210" class="big">40</text><text x="64" y="230" class="note">vulnerability only</text>
+  <text x="274" y="210" class="big">45</text><text x="274" y="230" class="note">flag-node-generator only</text>
+  <text x="536" y="210" class="big">65</text><text x="536" y="230" class="note">mixed</text>
+  <rect x="705" y="105" width="655" height="142" rx="12" class="panel"/>
+  <text x="729" y="140" class="panel-title">How to read the type charts</text>
+  <text x="729" y="166" class="note">A bar is the number of declared iterations whose YAML includes that service type.</text>
+  <text x="729" y="187" class="note">Service bars are non-exclusive and do not sum to 150. Runtime catalog selections can vary per batch.</text>
+  <text x="729" y="220" class="note">Vulhub-image and self-generated counts add topology nodes; they do not create additional scenarios.</text>
+  <rect x="40" y="275" width="1320" height="610" rx="12" class="panel"/>
+  <text x="64" y="312" class="panel-title">Services</text>
+  <text x="64" y="335" class="note">25 configured types · executions with service included</text>
+  <rect x="405" y="321" width="14" height="14" rx="3" fill="#dc2626"/><text x="427" y="333" class="note">Vulhub images (vulnerabilities)</text>
+  <rect x="625" y="321" width="14" height="14" rx="3" fill="#0f766e"/><text x="647" y="333" class="note">Self-generated services</text>
+  <text x="64" y="374" class="label">HTTP</text>
+  <rect x="64" y="382" width="155" height="16" rx="3" fill="#0f766e"/>
+  <text x="227" y="395" class="value">35</text>
+  <text x="64" y="427" class="label">NFS</text>
+  <rect x="64" y="435" width="155" height="16" rx="3" fill="#0f766e"/>
+  <text x="227" y="448" class="value">35</text>
+  <text x="64" y="480" class="label">Database</text>
+  <rect x="64" y="488" width="133" height="16" rx="3" fill="#0f766e"/>
+  <text x="205" y="501" class="value">30</text>
+  <text x="64" y="533" class="label">SSH</text>
+  <rect x="64" y="541" width="133" height="16" rx="3" fill="#0f766e"/>
+  <text x="205" y="554" class="value">30</text>
+  <text x="64" y="586" class="label">Struts2</text>
+  <rect x="64" y="594" width="133" height="16" rx="3" fill="#dc2626"/>
+  <text x="205" y="607" class="value">30</text>
+  <text x="64" y="639" class="label">Drupal</text>
+  <rect x="64" y="647" width="111" height="16" rx="3" fill="#dc2626"/>
+  <text x="183" y="660" class="value">25</text>
+  <text x="64" y="692" class="label">Elasticsearch</text>
+  <rect x="64" y="700" width="111" height="16" rx="3" fill="#dc2626"/>
+  <text x="183" y="713" class="value">25</text>
+  <text x="64" y="745" class="label">Redis</text>
+  <rect x="64" y="753" width="111" height="16" rx="3" fill="#dc2626"/>
+  <text x="183" y="766" class="value">25</text>
+  <text x="64" y="798" class="label">Confluence</text>
+  <rect x="64" y="806" width="89" height="16" rx="3" fill="#dc2626"/>
+  <text x="161" y="819" class="value">20</text>
+  <text x="474" y="374" class="label">DNS</text>
+  <rect x="474" y="382" width="89" height="16" rx="3" fill="#0f766e"/>
+  <text x="571" y="395" class="value">20</text>
+  <text x="474" y="427" class="label">Git</text>
+  <rect x="474" y="435" width="89" height="16" rx="3" fill="#0f766e"/>
+  <text x="571" y="448" class="value">20</text>
+  <text x="474" y="480" class="label">HTTPS</text>
+  <rect x="474" y="488" width="89" height="16" rx="3" fill="#0f766e"/>
+  <text x="571" y="501" class="value">20</text>
+  <text x="474" y="533" class="label">Nginx</text>
+  <rect x="474" y="541" width="89" height="16" rx="3" fill="#dc2626"/>
+  <text x="571" y="554" class="value">20</text>
+  <text x="474" y="586" class="label">SMB</text>
+  <rect x="474" y="594" width="89" height="16" rx="3" fill="#0f766e"/>
+  <text x="571" y="607" class="value">20</text>
+  <text x="474" y="639" class="label">Cache</text>
+  <rect x="474" y="647" width="66" height="16" rx="3" fill="#0f766e"/>
+  <text x="548" y="660" class="value">15</text>
+  <text x="474" y="692" class="label">Dependency Consumer</text>
+  <rect x="474" y="700" width="66" height="16" rx="3" fill="#0f766e"/>
+  <text x="548" y="713" class="value">15</text>
+  <text x="474" y="745" class="label">Jenkins</text>
+  <rect x="474" y="753" width="66" height="16" rx="3" fill="#dc2626"/>
+  <text x="548" y="766" class="value">15</text>
+  <text x="474" y="798" class="label">Mail</text>
+  <rect x="474" y="806" width="66" height="16" rx="3" fill="#0f766e"/>
+  <text x="548" y="819" class="value">15</text>
+  <text x="884" y="374" class="label">Network Share</text>
+  <rect x="884" y="382" width="66" height="16" rx="3" fill="#0f766e"/>
+  <text x="958" y="395" class="value">15</text>
+  <text x="884" y="427" class="label">Django</text>
+  <rect x="884" y="435" width="44" height="16" rx="3" fill="#dc2626"/>
+  <text x="936" y="448" class="value">10</text>
+  <text x="884" y="480" class="label">LDAP</text>
+  <rect x="884" y="488" width="44" height="16" rx="3" fill="#0f766e"/>
+  <text x="936" y="501" class="value">10</text>
+  <text x="884" y="533" class="label">MQTT</text>
+  <rect x="884" y="541" width="44" height="16" rx="3" fill="#0f766e"/>
+  <text x="936" y="554" class="value">10</text>
+  <text x="884" y="586" class="label">FTP</text>
+  <rect x="884" y="594" width="22" height="16" rx="3" fill="#0f766e"/>
+  <text x="914" y="607" class="value">5</text>
+  <text x="884" y="639" class="label">PHP</text>
+  <rect x="884" y="647" width="22" height="16" rx="3" fill="#dc2626"/>
+  <text x="914" y="660" class="value">5</text>
+  <text x="884" y="692" class="label">Spring</text>
+  <rect x="884" y="700" width="22" height="16" rx="3" fill="#dc2626"/>
+  <text x="914" y="713" class="value">5</text>
+  <rect x="40" y="915" width="1320" height="225" rx="12" class="panel"/>
+  <text x="64" y="952" class="panel-title">Traffic payload configuration</text>
+  <text x="64" y="975" class="note">Unchanged from the prior dataset design; every resolved scenario enables traffic.</text>
+  <text x="64" y="1020" class="label">Text</text>
+  <rect x="64" y="1032" width="140" height="20" rx="4" fill="#2563eb"/>
+  <text x="64" y="1076" class="value">10 rows · 14 pairs</text>
+  <text x="314" y="1020" class="label">Photo</text>
+  <rect x="314" y="1032" width="154" height="20" rx="4" fill="#db2777"/>
+  <text x="314" y="1076" class="value">11 rows · 15 pairs</text>
+  <text x="564" y="1020" class="label">Audio</text>
+  <rect x="564" y="1032" width="154" height="20" rx="4" fill="#0891b2"/>
+  <text x="564" y="1076" class="value">11 rows · 15 pairs</text>
+  <text x="814" y="1020" class="label">Video</text>
+  <rect x="814" y="1032" width="140" height="20" rx="4" fill="#7c3aed"/>
+  <text x="814" y="1076" class="value">10 rows · 14 pairs</text>
+  <text x="1064" y="1020" class="label">Gibberish</text>
+  <rect x="1064" y="1032" width="126" height="20" rx="4" fill="#475569"/>
+  <text x="1064" y="1076" class="value">9 rows · 13 pairs</text>
+  <text x="64" y="1116" class="note">Source: static YAML filters and declared iterations. Regenerate with: uv run python datasets/generate_distribution.py</text>
+</svg>

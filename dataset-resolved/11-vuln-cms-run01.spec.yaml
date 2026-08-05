@@ -1,0 +1,50 @@
+name: dataset-vuln-cms_run01
+iterations: 1
+seed: 756407442
+topology:
+  routers: 1
+  hosts: 4
+services:
+  enabled: true
+  count: 3
+  density: 1.0
+  include:
+  - HTTP
+  exclude: []
+traffic:
+  enabled: true
+  density: 0.35
+  items:
+  - type: TCP
+    count: 1
+    factor: 1.0
+    pattern: periodic
+    rate_kbps: 32.0
+    period_s: 5.0
+    jitter_pct: 10.0
+    content_type: text
+vulns:
+  enabled: true
+  count: 1
+  specific:
+  - name: drupal/CVE-2017-6920
+    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/drupal/CVE-2017-6920/docker-compose.yml
+    count: 1
+flag_node_generators:
+  enabled: false
+  count: 0
+  include: []
+  exclude: []
+flows:
+  enabled: false
+  chain_length: 0
+  allow_duplicates: false
+  include_all_topology_pivots: false
+segmentation:
+  enabled: false
+  density: 0.5
+  items: []
+hitl:
+  use_env: false
+validation:
+  policy: strict

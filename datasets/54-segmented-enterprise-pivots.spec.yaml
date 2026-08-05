@@ -1,0 +1,46 @@
+name: "dataset-segmented-enterprise-pivots"
+iterations: 5
+topology:
+  routers: [3, 5]
+  hosts: [10, 14]
+  randomize: true
+services:
+  enabled: true
+  randomize: true
+  count: [5, 8]
+  include: ["SSH", "HTTP"]
+vulns:
+  enabled: true
+  randomize: true
+  count: [2, 4]
+  include: ["struts2", "elasticsearch", "redis"]
+flag_node_generators:
+  enabled: true
+  randomize: true
+  count: [2, 4]
+  include: ["Database:*", "NFS:*", "Dependency Consumer:*"]
+flows:
+  enabled: true
+  randomize: true
+  chain_length: [3, 5]
+  allow_duplicates: false
+  include_all_topology_pivots: true
+traffic:
+  profile: heavy
+  payload_types: [video, gibberish]
+segmentation:
+  enabled: true
+  density: 0.55
+  items:
+    - type: Firewall
+      count: [1, 2]
+      pivot_enabled: true
+      pivot_provider: vulnerability
+    - type: NAT
+      count: 1
+      pivot_enabled: true
+      pivot_provider: flag-node-generator
+hitl:
+  use_env: false
+validation:
+  policy: "strict"

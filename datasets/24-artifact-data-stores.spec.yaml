@@ -1,0 +1,32 @@
+name: "dataset-artifact-data-stores"
+iterations: 5
+topology:
+  routers: 2
+  hosts: [5, 7]
+  randomize: true
+services:
+  enabled: true
+  randomize: true
+  count: [2, 4]
+  include: ["HTTP", "SSH"]
+vulns:
+  enabled: false
+  count: 0
+flag_node_generators:
+  enabled: true
+  randomize: true
+  count: [2, 4]
+  include: ["Database:*", "Cache:*"]
+flows:
+  enabled: false
+  chain_length: 0
+traffic:
+  profile: medium
+  payload_types: [photo, video]
+segmentation:
+  enabled: true
+  density: 0.4
+hitl:
+  use_env: false
+validation:
+  policy: "strict"

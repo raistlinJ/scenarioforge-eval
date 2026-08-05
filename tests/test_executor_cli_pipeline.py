@@ -2,6 +2,7 @@ import os
 import stat
 import subprocess
 import socket
+import sys
 import tempfile
 import textwrap
 import unittest
@@ -12,6 +13,161 @@ from scenarioforge_eval.executor import Executor, PhaseExecutionError
 
 
 class ExecutorCliPipelineTests(unittest.TestCase):
+    def test_content_metrics_count_chains_pivots_and_flag_node_generators(self):
+        spec = {
+            'name': 'content-metrics',
+            'seed': 12345,
+            'flag_node_generators': {'enabled': True, 'count': 2},
+            'flows': {'enabled': True, 'chain_length': 3},
+        }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            executor = Executor(spec=spec, out_dir=temp_dir, sf_path=temp_dir)
+            result = {
+                'phase_results': {
+                    'preview-plan': {
+                        'plan_payload': {
+                            'full_preview': {
+                                'display_artifacts': {
+                                    'segmentation': {
+                                        'json': {
+                                            'metadata': {
+                                                'pivot_access': {'provider_count': 2},
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    'flag-sequencing': {
+                        'plan_payload': {
+                            'length': 3,
+                            'chain': [{}, {}, {}],
+                            'flag_assignments': [
+                                {
+                                    'generator_catalog': 'flag_node_generators',
+                                    'declared_outputs': ['Flag(flag_id)', 'Pivot(docker-1)'],
+                                },
+                                {
+                                    'generator_catalog': 'flag_generators',
+                                    'actual_outputs': ['Flag(flag_id)'],
+                                },
+                                {
+                                    'generator_catalog': 'flag_node_generators',
+                                    'produces': ['Pivot(docker-3)'],
+                                },
+                            ],
+                            'stats': {'topology_flag_node_generator_total': 4},
+                        },
+                    },
+                },
+            }
+
+            content = executor._content_metrics(result)
+
+        self.assertEqual(content['challenges']['count'], 3)
+        self.assertEqual(content['challenges']['pivot_count'], 2)
+        self.assertEqual(content['challenges']['flag_node_generator_count'], 2)
+        self.assertEqual(content['chains']['count'], 1)
+        self.assertEqual(content['chains']['length_gt_1_count'], 1)
+        self.assertEqual(content['chains']['average_length'], 3.0)
+        self.assertEqual(content['topology']['flag_node_generator_count'], 4)
+        self.assertEqual(content['topology']['pivot_provider_count'], 2)
+
+    def test_streaming_cli_command_forwards_image_progress_and_keeps_output(self):
+        spec = {
+            'name': 'eval-scenario',
+            'seed': 12345,
+            'validation': {'policy': 'strict'},
+        }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            executor = Executor(spec=spec, out_dir=temp_dir, sf_path=temp_dir)
+            cmd = [
+                sys.executable,
+                '-c',
+                "print('[images] pulling=5 cached=0 pending=3', flush=True)",
+            ]
+
+            with mock.patch.object(executor, '_stream_cli_output') as stream_output:
+                returncode, output, timed_out = executor._run_streaming_cli_command(cmd)
+
+            self.assertEqual(returncode, 0)
+            self.assertFalse(timed_out)
+            self.assertEqual(output, '[images] pulling=5 cached=0 pending=3\n')
+            stream_output.assert_called_once_with('[images] pulling=5 cached=0 pending=3\n')
+
+    def test_execute_phase_uses_streaming_command_when_enabled(self):
+        spec = {
+            'name': 'eval-scenario',
+            'seed': 12345,
+            'validation': {'policy': 'strict'},
+        }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            executor = Executor(
+                spec=spec,
+                out_dir=temp_dir,
+                sf_path=temp_dir,
+                stream_execute_output=True,
+            )
+            streamed_output = (
+                'PHASE: execute\n'
+                '[images] pulling=5 cached=0 pending=3\n'
+                'VALIDATION_SUMMARY_JSON: {"ok": true}\n'
+            )
+
+            with mock.patch.object(
+                executor,
+                '_run_streaming_cli_command',
+                return_value=(0, streamed_output, False),
+            ) as streaming_command, mock.patch(
+                'scenarioforge_eval.executor.subprocess.run'
+            ) as buffered_command:
+                phase_result = executor._run_cli_phase(
+                    'execute',
+                    os.path.join(temp_dir, 'scenario.xml'),
+                    'eval-scenario',
+                    seed=12345,
+                    log_name='execute.log',
+                )
+
+            streaming_command.assert_called_once()
+            buffered_command.assert_not_called()
+            self.assertEqual(phase_result['returncode'], 0)
+            self.assertEqual(phase_result['validation_summary'], {'ok': True})
+            with open(phase_result['log_path'], 'r', encoding='utf-8') as handle:
+                self.assertEqual(handle.read(), streamed_output)
+
+    def test_streaming_cli_command_timeout_keeps_partial_progress(self):
+        spec = {
+            'name': 'eval-scenario',
+            'seed': 12345,
+            'validation': {'policy': 'strict'},
+        }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            executor = Executor(spec=spec, out_dir=temp_dir, sf_path=temp_dir)
+            executor.phase_timeout_s = 1
+            cmd = [
+                sys.executable,
+                '-c',
+                (
+                    "import time; "
+                    "print('[images] pulling=1 cached=0 pending=7', flush=True); "
+                    "time.sleep(10)"
+                ),
+            ]
+
+            with mock.patch.object(executor, '_stream_cli_output') as stream_output:
+                returncode, output, timed_out = executor._run_streaming_cli_command(cmd)
+
+            self.assertTrue(timed_out)
+            self.assertIsNotNone(returncode)
+            self.assertIn('[images] pulling=1 cached=0 pending=7', output)
+            stream_output.assert_any_call('[images] pulling=1 cached=0 pending=7\n')
+
     def test_relative_output_directory_becomes_absolute_for_cli_artifacts(self):
         spec = {
             'name': 'eval-scenario',
@@ -331,6 +487,15 @@ class ExecutorCliPipelineTests(unittest.TestCase):
 
             self.assertTrue(result['success'])
             self.assertTrue(result['artifacts']['scenario_xml'].endswith('scenario.xml'))
+            self.assertTrue(result['artifacts']['scenarioforge_webui_xml'].endswith('scenarioforge-webui.xml'))
+            self.assertTrue(os.path.isfile(result['artifacts']['scenarioforge_webui_xml']))
+            self.assertEqual(
+                stat.S_IMODE(os.stat(result['artifacts']['scenarioforge_webui_xml']).st_mode),
+                0o600,
+            )
+            with open(result['artifacts']['scenario_xml'], 'r', encoding='utf-8') as source, \
+                 open(result['artifacts']['scenarioforge_webui_xml'], 'r', encoding='utf-8') as snapshot:
+                self.assertEqual(snapshot.read(), source.read())
             self.assertTrue(result['artifacts']['preview_plan_json'].endswith('preview-plan.json'))
             self.assertTrue(result['artifacts']['flag_sequencing_json'].endswith('flag-sequencing.json'))
             self.assertTrue(result['artifacts']['execute_log'].endswith('execute.log'))
@@ -449,6 +614,43 @@ class ExecutorCliPipelineTests(unittest.TestCase):
                         json_output_name='preview-plan.json',
                         log_name='preview-plan.log',
                     )
+
+    def test_run_cli_phase_rejects_ok_false_payload_with_zero_exit(self):
+        spec = {
+            'name': 'eval-scenario',
+            'seed': 778,
+            'validation': {'policy': 'strict'},
+        }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            executor = Executor(spec=spec, out_dir=temp_dir, sf_path=temp_dir)
+
+            def _fake_run(cmd, **_kwargs):
+                output_path = cmd[cmd.index('--plan-output') + 1]
+                with open(output_path, 'w', encoding='utf-8') as handle:
+                    handle.write('{"ok": false, "error": "pivot target precedes provider"}')
+                return subprocess.CompletedProcess(
+                    args=cmd,
+                    returncode=0,
+                    stdout='',
+                    stderr='',
+                )
+
+            with mock.patch('scenarioforge_eval.executor.subprocess.run', side_effect=_fake_run):
+                with self.assertRaisesRegex(
+                    PhaseExecutionError,
+                    r'reported failure despite exit code 0: pivot target precedes provider',
+                ) as raised:
+                    executor._run_cli_phase(
+                        'flag-sequencing',
+                        os.path.join(temp_dir, 'scenario.xml'),
+                        'eval-scenario',
+                        seed=778,
+                        json_output_name='flag-sequencing.json',
+                        log_name='flag-sequencing.log',
+                    )
+
+            self.assertIs(raised.exception.phase_result['plan_payload']['ok'], False)
 
     def test_run_cli_phase_creates_standard_repo_output_dirs(self):
         spec = {
@@ -630,6 +832,7 @@ class ExecutorCliPipelineTests(unittest.TestCase):
             self.assertEqual(phase_calls, ['preview-plan'])
             self.assertEqual(result['stages']['dangerous_cleanup'], 'FAIL')
             self.assertIn('cleanup-scenarioforge-docker failed', result.get('error', ''))
+            self.assertTrue(os.path.isfile(result['artifacts']['scenarioforge_webui_xml']))
 
     def test_warning_tolerant_policy_accepts_warning_only_validation(self):
         warning_summary = {'ok': False, 'extra_nodes': ['node-1']}

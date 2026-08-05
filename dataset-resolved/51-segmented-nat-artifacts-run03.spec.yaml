@@ -1,0 +1,59 @@
+name: dataset-segmented-nat-artifacts_run03
+iterations: 1
+seed: 2013814722
+topology:
+  routers: 3
+  hosts: 6
+services:
+  enabled: true
+  count: 2
+  density: 1.0
+  include:
+  - SSH
+  - HTTP
+  exclude: []
+traffic:
+  enabled: true
+  density: 0.35
+  items:
+  - type: TCP
+    count: 1
+    factor: 1.0
+    pattern: periodic
+    rate_kbps: 32.0
+    period_s: 5.0
+    jitter_pct: 10.0
+    content_type: gibberish
+vulns:
+  enabled: false
+  count: 0
+  include: []
+  exclude: []
+flag_node_generators:
+  enabled: true
+  count: 1
+  specific:
+  - id: nfs_lab_instrument_logs
+    name: 'NFS: Lab Instrument Logs'
+    count: 1
+flows:
+  enabled: true
+  chain_length: 2
+  allow_duplicates: false
+  include_all_topology_pivots: false
+segmentation:
+  enabled: true
+  density: 0.4
+  items:
+  - factor: 1.0
+    pivot_enabled: false
+    type: NAT
+    count: 1
+  - factor: 1.0
+    pivot_enabled: false
+    type: Firewall
+    count: 1
+hitl:
+  use_env: false
+validation:
+  policy: strict

@@ -524,6 +524,40 @@
           "minimum": 0,
           "maximum": 1
         },
+        "nat_mode": {
+          "type": "string",
+          "enum": [
+            "SNAT",
+            "MASQUERADE"
+          ],
+          "description": "NAT mode persisted on the ScenarioForge Segmentation section."
+        },
+        "include_hosts": {
+          "type": "boolean",
+          "description": "Include hosts as segmentation placement candidates in addition to routers."
+        },
+        "dnat_probability": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Probability of adding DNAT port forwarding for generated flows."
+        },
+        "allow_src_subnet_prob": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Probability of widening a firewall allow rule to the source subnet."
+        },
+        "allow_dst_subnet_prob": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Probability of widening a firewall allow rule to the destination subnet."
+        },
+        "accessible_by_pivot": {
+          "type": "boolean",
+          "description": "Guarantee a reachable provider for every subnet walled off by segmentation."
+        },
         "items": {
           "type": "array",
           "description": "Explicit firewall or NAT rows to create in the Segmentation section.",
@@ -606,6 +640,25 @@
             "warning-tolerant"
           ],
           "description": "Validation pass policy for execute. strict requires validation_summary.ok=true; warning_tolerant allows warning-only validation summaries."
+        },
+        "check_artifacts": {
+          "type": "object",
+          "description": "Run the ScenarioForge check-artifacts phase after execute to verify the live session's containers, services, ports, injects, segmentation, traffic scripts, and reachability.",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "description": "Run artifact checks after a successful execute (default false)."
+            },
+            "delay_seconds": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Seconds to wait before checking, allowing routing convergence and slow services to settle."
+            },
+            "strict": {
+              "type": "boolean",
+              "description": "Treat artifact-check warnings as evaluation failures. When false (default) warnings are recorded as warnings."
+            }
+          }
         }
       }
     }

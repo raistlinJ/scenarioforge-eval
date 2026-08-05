@@ -3,6 +3,7 @@ import csv
 import io
 import json
 import os
+import stat
 import tempfile
 import unittest
 
@@ -44,6 +45,16 @@ class ReporterPromptArtifactTests(unittest.TestCase):
             }
 
             reporter.log_result('spec-a', result)
+
+            collected_xml_path = os.path.join(temp_dir, 'webui-xml', 'spec-a.xml')
+            self.assertEqual(
+                result['artifacts']['scenarioforge_webui_xml_collection'],
+                collected_xml_path,
+            )
+            self.assertTrue(os.path.isfile(collected_xml_path))
+            self.assertEqual(stat.S_IMODE(os.stat(collected_xml_path).st_mode), 0o600)
+            with open(collected_xml_path, 'r', encoding='utf-8') as handle:
+                self.assertIn('ssh_password="pw123"', handle.read())
 
             prompt_path = os.path.join(temp_dir, 'spec-a_ai_prompt.md')
             with open(prompt_path, 'r', encoding='utf-8') as handle:
@@ -122,6 +133,23 @@ class ReporterPromptArtifactTests(unittest.TestCase):
                     'artifacts': {
                         'output_dir': {'file_count': 3, 'total_size_bytes': 100},
                     },
+                    'content': {
+                        'challenges': {
+                            'count': 4,
+                            'pivot_count': 2,
+                            'flag_node_generator_count': 3,
+                        },
+                        'chains': {
+                            'count': 1,
+                            'length': 4,
+                            'length_gt_1_count': 1,
+                            'average_length': 4.0,
+                        },
+                        'topology': {
+                            'flag_node_generator_count': 2,
+                            'pivot_provider_count': 1,
+                        },
+                    },
                 },
                 'artifacts': {
                     'output_dir': run_out_dir,
@@ -140,6 +168,13 @@ class ReporterPromptArtifactTests(unittest.TestCase):
             self.assertEqual(summary['runs']['successes'], 1)
             self.assertEqual(summary['runs']['estimated_output_tokens'], 2)
             self.assertEqual(summary['phases']['preview-plan']['count'], 1)
+            self.assertEqual(summary['content']['challenges']['total'], 4)
+            self.assertEqual(summary['content']['chains']['length_gt_1'], 1)
+            self.assertEqual(summary['content']['chains']['average_length'], 4.0)
+            self.assertEqual(summary['content']['pivots']['challenge_total'], 2)
+            self.assertEqual(summary['content']['pivots']['provider_total'], 1)
+            self.assertEqual(summary['content']['flag_node_generators']['challenge_total'], 3)
+            self.assertEqual(summary['content']['flag_node_generators']['topology_total'], 2)
 
             with open(paths['raw_jsonl'], 'r', encoding='utf-8') as handle:
                 raw_lines = [line for line in handle.read().splitlines() if line]
@@ -149,6 +184,13 @@ class ReporterPromptArtifactTests(unittest.TestCase):
                 run_rows = list(csv.DictReader(handle))
             self.assertEqual(run_rows[0]['spec_name'], 'spec-a')
             self.assertEqual(run_rows[0]['estimated_output_tokens'], '2')
+            self.assertEqual(run_rows[0]['challenge_count'], '4')
+            self.assertEqual(run_rows[0]['chains_length_gt_1'], '1')
+            self.assertEqual(run_rows[0]['average_chain_length'], '4.0')
+            self.assertEqual(run_rows[0]['pivot_count'], '2')
+            self.assertEqual(run_rows[0]['pivot_provider_count'], '1')
+            self.assertEqual(run_rows[0]['flag_node_generator_count'], '3')
+            self.assertEqual(run_rows[0]['topology_flag_node_generator_count'], '2')
 
             with open(paths['phases_csv'], 'r', encoding='utf-8') as handle:
                 phase_rows = list(csv.DictReader(handle))

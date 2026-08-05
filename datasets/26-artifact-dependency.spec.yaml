@@ -1,0 +1,32 @@
+name: "dataset-artifact-dependency"
+iterations: 5
+topology:
+  routers: 2
+  hosts: [6, 8]
+  randomize: true
+services:
+  enabled: true
+  randomize: true
+  count: [3, 5]
+  include: ["SSH", "HTTP"]
+vulns:
+  enabled: false
+  count: 0
+flag_node_generators:
+  enabled: true
+  randomize: true
+  count: [2, 4]
+  include: ["Dependency Consumer:*"]
+flows:
+  enabled: false
+  chain_length: 0
+traffic:
+  profile: heavy
+  payload_types: [text, audio]
+segmentation:
+  enabled: true
+  density: 0.35
+hitl:
+  use_env: false
+validation:
+  policy: "strict"

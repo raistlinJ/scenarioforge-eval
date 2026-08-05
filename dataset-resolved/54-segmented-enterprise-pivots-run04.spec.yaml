@@ -1,0 +1,86 @@
+name: dataset-segmented-enterprise-pivots_run04
+iterations: 1
+seed: 317229950
+topology:
+  routers: 3
+  hosts: 12
+services:
+  enabled: true
+  count: 6
+  density: 1.0
+  include:
+  - SSH
+  - HTTP
+  exclude: []
+traffic:
+  enabled: true
+  density: 0.85
+  items:
+  - type: TCP
+    count: 2
+    factor: 1.0
+    pattern: continuous
+    rate_kbps: 512.0
+    period_s: 1.0
+    jitter_pct: 10.0
+    content_type: video
+  - type: UDP
+    count: 2
+    factor: 1.0
+    pattern: burst
+    rate_kbps: 256.0
+    period_s: 2.0
+    jitter_pct: 20.0
+    content_type: gibberish
+vulns:
+  enabled: true
+  count: 3
+  specific:
+  - name: struts2/s2-066
+    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-066/docker-compose.yml
+    count: 1
+  - name: struts2/s2-052
+    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-052/docker-compose.yml
+    count: 1
+  - name: struts2/s2-059
+    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-059/docker-compose.yml
+    count: 1
+flag_node_generators:
+  enabled: true
+  count: 4
+  specific:
+  - id: '134'
+    name: 'Database: SQLite Backup File'
+    count: 1
+  - id: dep_webauth_bypass_console
+    name: 'Dependency Consumer: WebAuth Bypass Console'
+    count: 1
+  - id: dep_file_parser_console
+    name: 'Dependency Consumer: File Parser Console'
+    count: 1
+  - id: nfs_legal_hold_archive
+    name: 'NFS: Legal Hold Archive'
+    count: 1
+flows:
+  enabled: true
+  chain_length: 5
+  allow_duplicates: false
+  include_all_topology_pivots: true
+segmentation:
+  enabled: true
+  density: 0.55
+  items:
+  - factor: 1.0
+    pivot_enabled: true
+    pivot_provider: vulnerability
+    type: Firewall
+    count: 2
+  - factor: 1.0
+    pivot_enabled: true
+    pivot_provider: flag-node-generator
+    type: NAT
+    count: 1
+hitl:
+  use_env: false
+validation:
+  policy: strict

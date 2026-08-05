@@ -8,19 +8,43 @@ services:
   enabled: true
   randomize: true
   count: 6
+  density: 0.7
   include: ["SSH", "HTTP"]
+traffic:
+  profile: "medium"
+  payload_types: ["text", "audio"]
 vulns:
   enabled: true
   randomize: true
   count: 4
+flag_node_generators:
+  enabled: true
+  count: 2
 flows:
   enabled: true
   randomize: true
-  chain_length: 4
+  # Four vulnerabilities plus two flag-node-generators are mandatory.
+  chain_length: 6
   allow_duplicates: false
+  dependency_level: 4
+  timeout_s: 600
 segmentation:
-  enabled: false
+  enabled: true
+  density: 0.5
+  items:
+    - type: "Firewall"
+      count: 2
+      # Keep segmentation and Flow combined, but leave pivot access to the
+      # non-Flow smoke specs until ScenarioForge can order providers first.
+      pivot_enabled: false
+    - type: "NAT"
+      count: 1
+      pivot_enabled: false
 hitl:
   use_env: false
 validation:
   policy: "strict"
+  check_artifacts:
+    enabled: true
+    delay_seconds: 60
+    strict: false

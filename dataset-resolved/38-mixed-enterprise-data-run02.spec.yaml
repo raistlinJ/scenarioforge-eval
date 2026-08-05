@@ -1,0 +1,70 @@
+name: dataset-mixed-enterprise-data_run02
+iterations: 1
+seed: 911692781
+topology:
+  routers: 4
+  hosts: 14
+services:
+  enabled: true
+  count: 6
+  density: 1.0
+  include:
+  - SSH
+  - HTTP
+  exclude: []
+traffic:
+  enabled: true
+  density: 0.85
+  items:
+  - type: TCP
+    count: 2
+    factor: 1.0
+    pattern: continuous
+    rate_kbps: 512.0
+    period_s: 1.0
+    jitter_pct: 10.0
+    content_type: photo
+  - type: UDP
+    count: 2
+    factor: 1.0
+    pattern: burst
+    rate_kbps: 256.0
+    period_s: 2.0
+    jitter_pct: 20.0
+    content_type: audio
+vulns:
+  enabled: true
+  count: 2
+  specific:
+  - name: struts2/s2-015
+    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-015/docker-compose.yml
+    count: 1
+  - name: struts2/s2-067
+    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-067/docker-compose.yml
+    count: 1
+flag_node_generators:
+  enabled: true
+  count: 3
+  specific:
+  - id: nfs_legacy_nfs3_share
+    name: 'NFS: Legacy Engineering Share'
+    count: 1
+  - id: '151'
+    name: 'SMB: IT Scripts Share'
+    count: 1
+  - id: smb_guest_public_share
+    name: 'SMB: Guest Public Share'
+    count: 1
+flows:
+  enabled: true
+  chain_length: 5
+  allow_duplicates: false
+  include_all_topology_pivots: false
+segmentation:
+  enabled: true
+  density: 0.5
+  items: []
+hitl:
+  use_env: false
+validation:
+  policy: strict

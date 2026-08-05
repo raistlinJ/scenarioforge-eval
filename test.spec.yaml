@@ -8,5 +8,8 @@ services:
 vulns:
   randomize: true
   count: 2
+flag_node_generators:
+  randomize: true
+  count: 2
 flows:
   randomize: true

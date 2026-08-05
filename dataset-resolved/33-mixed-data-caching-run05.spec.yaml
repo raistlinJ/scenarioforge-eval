@@ -1,0 +1,70 @@
+name: dataset-mixed-data-caching_run05
+iterations: 1
+seed: 440728127
+topology:
+  routers: 2
+  hosts: 6
+services:
+  enabled: true
+  count: 4
+  density: 1.0
+  include:
+  - SSH
+  - HTTP
+  exclude: []
+traffic:
+  enabled: true
+  density: 0.6
+  items:
+  - type: TCP
+    count: 1
+    factor: 1.0
+    pattern: continuous
+    rate_kbps: 128.0
+    period_s: 2.0
+    jitter_pct: 15.0
+    content_type: photo
+  - type: UDP
+    count: 1
+    factor: 1.0
+    pattern: periodic
+    rate_kbps: 64.0
+    period_s: 5.0
+    jitter_pct: 25.0
+    content_type: audio
+vulns:
+  enabled: true
+  count: 1
+  specific:
+  - name: elasticsearch/WooYun-2015-110216
+    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/elasticsearch/WooYun-2015-110216/docker-compose.yml
+    count: 1
+flag_node_generators:
+  enabled: true
+  count: 4
+  specific:
+  - id: '136'
+    name: 'Database: Oracle Wallet Note'
+    count: 1
+  - id: '134'
+    name: 'Database: SQLite Backup File'
+    count: 1
+  - id: '128'
+    name: 'Cache: Memcached Feature Flags'
+    count: 1
+  - id: memcached_session_cache
+    name: 'Cache: Memcached Session Cache'
+    count: 1
+flows:
+  enabled: true
+  chain_length: 4
+  allow_duplicates: false
+  include_all_topology_pivots: false
+segmentation:
+  enabled: true
+  density: 0.4
+  items: []
+hitl:
+  use_env: false
+validation:
+  policy: strict

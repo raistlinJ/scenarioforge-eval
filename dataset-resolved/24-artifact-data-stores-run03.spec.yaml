@@ -1,0 +1,68 @@
+name: dataset-artifact-data-stores_run03
+iterations: 1
+seed: 1839815312
+topology:
+  routers: 2
+  hosts: 6
+services:
+  enabled: true
+  count: 4
+  density: 1.0
+  include:
+  - HTTP
+  - SSH
+  exclude: []
+traffic:
+  enabled: true
+  density: 0.6
+  items:
+  - type: TCP
+    count: 1
+    factor: 1.0
+    pattern: continuous
+    rate_kbps: 128.0
+    period_s: 2.0
+    jitter_pct: 15.0
+    content_type: photo
+  - type: UDP
+    count: 1
+    factor: 1.0
+    pattern: periodic
+    rate_kbps: 64.0
+    period_s: 5.0
+    jitter_pct: 25.0
+    content_type: video
+vulns:
+  enabled: false
+  count: 0
+  include: []
+  exclude: []
+flag_node_generators:
+  enabled: true
+  count: 4
+  specific:
+  - id: '135'
+    name: 'Database: Mongo Export Documents'
+    count: 1
+  - id: '127'
+    name: 'Cache: Redis ACL Token Store'
+    count: 1
+  - id: '132'
+    name: 'Database: Postgres Audit Schema'
+    count: 1
+  - id: memcached_session_cache
+    name: 'Cache: Memcached Session Cache'
+    count: 1
+flows:
+  enabled: false
+  chain_length: 0
+  allow_duplicates: false
+  include_all_topology_pivots: false
+segmentation:
+  enabled: true
+  density: 0.4
+  items: []
+hitl:
+  use_env: false
+validation:
+  policy: strict

@@ -1,0 +1,141 @@
+# Ten reproducible full-system runs intended to expose integration failures.
+#
+# This deliberately combines the expensive/runtime-sensitive features rather
+# than isolating them: randomized catalog vulnerabilities and generators, Flow
+# sequencing, challenge slots, pivot-aware segmentation, NAT, mixed traffic,
+# services, remote generator execution, and delayed live artifact checks.
+#
+# The base seed makes failures reproducible. Iterations use seeds 202608040
+# through 202608049, and every result also writes its exact seed to seed.txt.
+#
+# Run:
+#   uv run scenarioforge-eval \
+#     test_specs/70-system-mixed-feature-stress.spec.yaml \
+#     --sf-path ../scenarioforge \
+#     --execute \
+#     --out /tmp/scenarioforge-mixed-feature-stress
+#
+# Expect this to take a while: every iteration executes a live CORE scenario
+# and waits 60 seconds before artifact checks.
+name: "system-mixed-feature-stress"
+iterations: 10
+seed: 202608040
+
+topology:
+  routers: [2, 4]
+  hosts: [8, 12]
+  # Add ordinary Docker capacity plus both lazy challenge-slot types.
+  docker: [1, 2]
+  vulnerability_slots: [1, 2]
+  flag_gen_slots: [1, 2]
+  randomize: true
+
+services:
+  enabled: true
+  randomize: true
+  count: [4, 8]
+  density: 0.75
+  include: ["SSH", "HTTP"]
+  # DHCP clients introduce environment-specific lease timing and are covered by
+  # smaller specs; exclude them here so failures point at the mixed features.
+  exclude: ["DHCPClient"]
+
+traffic:
+  enabled: true
+  randomize: true
+  density: 0.85
+  # Cover both protocols, every supported traffic pattern, every payload type,
+  # ranged row counts, rates, periods, and jitter.
+  items:
+    - type: "TCP"
+      count: [1, 3]
+      pattern: "continuous"
+      rate_kbps: 128
+      period_s: 5
+      jitter_pct: 5
+      content_type: "text"
+    - type: "UDP"
+      count: [1, 2]
+      pattern: "periodic"
+      rate_kbps: 256
+      period_s: 8
+      jitter_pct: 10
+      content_type: "audio"
+    - type: "TCP"
+      count: [1, 2]
+      pattern: "burst"
+      rate_kbps: 512
+      period_s: 12
+      jitter_pct: 15
+      content_type: "photo"
+    - type: "UDP"
+      count: [1, 2]
+      pattern: "poisson"
+      rate_kbps: 384
+      period_s: 10
+      jitter_pct: 20
+      content_type: "video"
+    - type: "TCP"
+      count: [1, 2]
+      pattern: "ramp"
+      rate_kbps: 192
+      period_s: 15
+      jitter_pct: 25
+      content_type: "gibberish"
+
+vulns:
+  enabled: true
+  randomize: true
+  # Validated installed catalog entries are redrawn for each seeded iteration.
+  count: [2, 4]
+
+flag_node_generators:
+  enabled: true
+  randomize: true
+  count: [1, 3]
+
+flows:
+  enabled: true
+  randomize: true
+  # Concrete mandatory challenges range from 3 to 7. Starting at 7 keeps every
+  # draw feasible; slots and duplicate reuse supply the remaining positions.
+  chain_length: [7, 10]
+  allow_duplicates: true
+  include_all_topology_pivots: true
+  dependency_level: 5
+  timeout_s: 1200
+  cleanup_generated_artifacts: true
+  execution: "remote"
+
+segmentation:
+  enabled: true
+  randomize: true
+  density: 0.65
+  nat_mode: "MASQUERADE"
+  include_hosts: true
+  dnat_probability: 0.40
+  allow_src_subnet_prob: 0.35
+  allow_dst_subnet_prob: 0.65
+  accessible_by_pivot: true
+  items:
+    - type: "Firewall"
+      count: [1, 2]
+      pivot_enabled: true
+      pivot_provider: "ssh-fallback"
+    - type: "NAT"
+      count: [1, 2]
+      pivot_enabled: false
+
+# HITL requires a machine-specific interface from .scenarioforge.env. Keep it
+# explicitly off so this portable system test cannot attach a developer NIC.
+hitl:
+  use_env: false
+
+validation:
+  policy: "strict"
+  check_artifacts:
+    enabled: true
+    delay_seconds: 5
+    # Warnings remain visible in each result without stopping later iterations;
+    # hard phase/validation failures still fail the run.
+    strict: false

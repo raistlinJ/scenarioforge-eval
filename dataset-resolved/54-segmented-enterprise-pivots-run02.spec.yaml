@@ -1,0 +1,80 @@
+name: dataset-segmented-enterprise-pivots_run02
+iterations: 1
+seed: 779418175
+topology:
+  routers: 5
+  hosts: 11
+services:
+  enabled: true
+  count: 8
+  density: 1.0
+  include:
+  - SSH
+  - HTTP
+  exclude: []
+traffic:
+  enabled: true
+  density: 0.85
+  items:
+  - type: TCP
+    count: 2
+    factor: 1.0
+    pattern: continuous
+    rate_kbps: 512.0
+    period_s: 1.0
+    jitter_pct: 10.0
+    content_type: video
+  - type: UDP
+    count: 2
+    factor: 1.0
+    pattern: burst
+    rate_kbps: 256.0
+    period_s: 2.0
+    jitter_pct: 20.0
+    content_type: gibberish
+vulns:
+  enabled: true
+  count: 2
+  specific:
+  - name: struts2/s2-007
+    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-007/docker-compose.yml
+    count: 1
+  - name: struts2/s2-067
+    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-067/docker-compose.yml
+    count: 1
+flag_node_generators:
+  enabled: true
+  count: 3
+  specific:
+  - id: dep_port_forward_pivot
+    name: 'Dependency Consumer: Port Forward Pivot'
+    count: 1
+  - id: '136'
+    name: 'Database: Oracle Wallet Note'
+    count: 1
+  - id: dep_endpoint_hidden_followup
+    name: 'Dependency Consumer: Hidden Endpoint Follow-Up'
+    count: 1
+flows:
+  enabled: true
+  chain_length: 4
+  allow_duplicates: false
+  include_all_topology_pivots: true
+segmentation:
+  enabled: true
+  density: 0.55
+  items:
+  - factor: 1.0
+    pivot_enabled: true
+    pivot_provider: vulnerability
+    type: Firewall
+    count: 2
+  - factor: 1.0
+    pivot_enabled: true
+    pivot_provider: flag-node-generator
+    type: NAT
+    count: 1
+hitl:
+  use_env: false
+validation:
+  policy: strict

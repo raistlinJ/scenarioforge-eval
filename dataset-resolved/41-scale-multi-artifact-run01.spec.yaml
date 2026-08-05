@@ -1,0 +1,68 @@
+name: dataset-scale-multi-artifact_run01
+iterations: 1
+seed: 1415523453
+topology:
+  routers: 4
+  hosts: 11
+services:
+  enabled: true
+  count: 5
+  density: 1.0
+  include:
+  - SSH
+  - HTTP
+  exclude: []
+traffic:
+  enabled: true
+  density: 0.85
+  items:
+  - type: TCP
+    count: 2
+    factor: 1.0
+    pattern: continuous
+    rate_kbps: 512.0
+    period_s: 1.0
+    jitter_pct: 10.0
+    content_type: photo
+  - type: UDP
+    count: 2
+    factor: 1.0
+    pattern: burst
+    rate_kbps: 256.0
+    period_s: 2.0
+    jitter_pct: 20.0
+    content_type: gibberish
+vulns:
+  enabled: false
+  count: 0
+  include: []
+  exclude: []
+flag_node_generators:
+  enabled: true
+  count: 4
+  specific:
+  - id: dns_zone_transfer_records
+    name: 'DNS: Zone Transfer Records'
+    count: 1
+  - id: ssh_password_finance_terminal
+    name: 'SSH: Password Finance Terminal'
+    count: 1
+  - id: '139'
+    name: 'DNS: Reverse Zone Note'
+    count: 1
+  - id: http_upload_file_drop
+    name: 'HTTP: Upload File Drop'
+    count: 1
+flows:
+  enabled: true
+  chain_length: 4
+  allow_duplicates: false
+  include_all_topology_pivots: false
+segmentation:
+  enabled: true
+  density: 0.45
+  items: []
+hitl:
+  use_env: false
+validation:
+  policy: strict
