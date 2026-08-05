@@ -16,26 +16,26 @@
   <text x="45" y="76" class="subtitle">226 fixed scenarios · catalog snapshot at /Users/jcacosta/Documents/GitHub/scenarioforge</text>
   <rect x="35" y="102" width="360" height="150" rx="12" class="panel"/>
   <text x="58" y="136" class="panel-title">Vulhub images</text>
-  <text x="58" y="181" class="big">443</text><text x="58" y="203" class="note">selected topology nodes</text>
+  <text x="58" y="181" class="big">460</text><text x="58" y="203" class="note">selected topology nodes</text>
   <text x="205" y="181" class="big">294</text><text x="205" y="203" class="note">unique concrete images</text>
   <text x="58" y="231" class="note">1–6 uses per image; all 294 images represented</text>
   <rect x="420" y="102" width="360" height="150" rx="12" class="panel"/>
   <text x="443" y="136" class="panel-title">Self-generated services</text>
-  <text x="443" y="181" class="big">357</text><text x="443" y="203" class="note">selected topology nodes</text>
+  <text x="443" y="181" class="big">411</text><text x="443" y="203" class="note">selected topology nodes</text>
   <text x="590" y="181" class="big">85/85</text><text x="590" y="203" class="note">enabled generators represented</text>
   <text x="443" y="231" class="note">4–5 uses per generator; all 85 represented</text>
   <rect x="805" y="102" width="360" height="150" rx="12" class="panel"/>
   <text x="828" y="136" class="panel-title">Fixed network topology</text>
   <text x="828" y="181" class="big">463</text><text x="828" y="203" class="note">routers</text>
   <text x="975" y="181" class="big">1534</text><text x="975" y="203" class="note">Docker hosts</text>
-  <text x="828" y="231" class="note">2797 total planned nodes including catalog nodes</text>
+  <text x="828" y="231" class="note">2868 total planned nodes including catalog nodes</text>
   <rect x="35" y="280" width="1130" height="225" rx="12" class="panel"/>
   <text x="58" y="316" class="panel-title">Network configuration</text>
   <text x="58" y="346" class="value">Topology scale</text><text x="58" y="368" class="note">55 small (≤6), 144 medium (7–12), 27 large (13+) base-node scenarios</text>
   <text x="58" y="392" class="note">1997 base nodes total; 4–20 base and 5–27 total nodes per scenario.</text>
-  <text x="650" y="346" class="value">Services and flows</text><text x="650" y="368" class="note">829 fixed service assignments · 156 flow scenarios · 2–6 hop chains</text>
-  <text x="650" y="392" class="note">Traffic remains enabled in all 226 scenarios with fixed payload rows in each YAML.</text>
-  <text x="58" y="434" class="value">Segmentation</text><text x="58" y="456" class="note">148 scenarios · 61 Firewall rows · 58 NAT rows · 34 pivot-enabled rows · density 0.30–0.55</text>
+  <text x="650" y="346" class="value">Services and flows</text><text x="650" y="368" class="note">829 fixed service assignments · 186 generator scenarios · 196 chained scenarios</text>
+  <text x="650" y="392" class="note">Chain balance: 2 hops × 49 · 3 hops × 49 · 4 hops × 49 · 5 hops × 49</text>
+  <text x="58" y="434" class="value">Segmentation</text><text x="58" y="456" class="note">148 scenarios · 105 Firewall rows · 103 NAT rows · 42 pivot scenarios / 53 rows · density 0.30–0.55</text>
   <text x="650" y="434" class="value">Subnet CIDRs</text><text x="650" y="456" class="note">Allocated during ScenarioForge topology; these YAMLs fix the inputs.</text>
   <rect x="35" y="540" width="550" height="585" rx="12" class="panel"/>
   <text x="58" y="576" class="panel-title">Most-used exact Vulhub images</text>
@@ -43,88 +43,88 @@
   <text x="58" y="635" class="label">celery/celery3_redis_unauth</text>
   <rect x="308" y="622" width="185" height="16" rx="3" fill="#dc2626"/>
   <text x="501" y="635" class="value">6</text>
-  <text x="58" y="669" class="label">redis/CVE-2022-0543</text>
+  <text x="58" y="669" class="label">elasticsearch/CVE-2015-1427</text>
   <rect x="308" y="656" width="185" height="16" rx="3" fill="#dc2626"/>
   <text x="501" y="669" class="value">6</text>
-  <text x="58" y="703" class="label">confluence/CVE-2022-26134</text>
-  <rect x="308" y="690" width="154" height="16" rx="3" fill="#dc2626"/>
-  <text x="501" y="703" class="value">5</text>
-  <text x="58" y="737" class="label">confluence/CVE-2023-22527</text>
-  <rect x="308" y="724" width="154" height="16" rx="3" fill="#dc2626"/>
-  <text x="501" y="737" class="value">5</text>
-  <text x="58" y="771" class="label">elasticsearch/CVE-2014-3120</text>
-  <rect x="308" y="758" width="154" height="16" rx="3" fill="#dc2626"/>
-  <text x="501" y="771" class="value">5</text>
-  <text x="58" y="805" class="label">elasticsearch/CVE-2015-1427</text>
-  <rect x="308" y="792" width="154" height="16" rx="3" fill="#dc2626"/>
-  <text x="501" y="805" class="value">5</text>
-  <text x="58" y="839" class="label">elasticsearch/WooYun-2015-110216</text>
+  <text x="58" y="703" class="label">elasticsearch/WooYun-2015-110216</text>
+  <rect x="308" y="690" width="185" height="16" rx="3" fill="#dc2626"/>
+  <text x="501" y="703" class="value">6</text>
+  <text x="58" y="737" class="label">nginx/CVE-2017-7529</text>
+  <rect x="308" y="724" width="185" height="16" rx="3" fill="#dc2626"/>
+  <text x="501" y="737" class="value">6</text>
+  <text x="58" y="771" class="label">redis/4-unacc</text>
+  <rect x="308" y="758" width="185" height="16" rx="3" fill="#dc2626"/>
+  <text x="501" y="771" class="value">6</text>
+  <text x="58" y="805" class="label">redis/CVE-2022-0543</text>
+  <rect x="308" y="792" width="185" height="16" rx="3" fill="#dc2626"/>
+  <text x="501" y="805" class="value">6</text>
+  <text x="58" y="839" class="label">confluence/CVE-2021-26084</text>
   <rect x="308" y="826" width="154" height="16" rx="3" fill="#dc2626"/>
   <text x="501" y="839" class="value">5</text>
-  <text x="58" y="873" class="label">jenkins/CVE-2018-1000861</text>
+  <text x="58" y="873" class="label">confluence/CVE-2022-26134</text>
   <rect x="308" y="860" width="154" height="16" rx="3" fill="#dc2626"/>
   <text x="501" y="873" class="value">5</text>
-  <text x="58" y="907" class="label">nginx/CVE-2017-7529</text>
+  <text x="58" y="907" class="label">confluence/CVE-2023-22515</text>
   <rect x="308" y="894" width="154" height="16" rx="3" fill="#dc2626"/>
   <text x="501" y="907" class="value">5</text>
-  <text x="58" y="941" class="label">nginx/nginx_parsing_vulnerability</text>
+  <text x="58" y="941" class="label">confluence/CVE-2023-22527</text>
   <rect x="308" y="928" width="154" height="16" rx="3" fill="#dc2626"/>
   <text x="501" y="941" class="value">5</text>
-  <text x="58" y="975" class="label">redis/4-unacc</text>
+  <text x="58" y="975" class="label">elasticsearch/CVE-2014-3120</text>
   <rect x="308" y="962" width="154" height="16" rx="3" fill="#dc2626"/>
   <text x="501" y="975" class="value">5</text>
-  <text x="58" y="1009" class="label">confluence/CVE-2019-3396</text>
-  <rect x="308" y="996" width="123" height="16" rx="3" fill="#dc2626"/>
-  <text x="501" y="1009" class="value">4</text>
-  <text x="58" y="1043" class="label">confluence/CVE-2021-26084</text>
-  <rect x="308" y="1030" width="123" height="16" rx="3" fill="#dc2626"/>
-  <text x="501" y="1043" class="value">4</text>
-  <text x="58" y="1077" class="label">confluence/CVE-2023-22515</text>
-  <rect x="308" y="1064" width="123" height="16" rx="3" fill="#dc2626"/>
-  <text x="501" y="1077" class="value">4</text>
+  <text x="58" y="1009" class="label">elasticsearch/CVE-2015-3337</text>
+  <rect x="308" y="996" width="154" height="16" rx="3" fill="#dc2626"/>
+  <text x="501" y="1009" class="value">5</text>
+  <text x="58" y="1043" class="label">elasticsearch/CVE-2015-5531</text>
+  <rect x="308" y="1030" width="154" height="16" rx="3" fill="#dc2626"/>
+  <text x="501" y="1043" class="value">5</text>
+  <text x="58" y="1077" class="label">ingress-nginx/CVE-2025-1974</text>
+  <rect x="308" y="1064" width="154" height="16" rx="3" fill="#dc2626"/>
+  <text x="501" y="1077" class="value">5</text>
   <rect x="615" y="540" width="550" height="585" rx="12" class="panel"/>
   <text x="638" y="576" class="panel-title">Most-used exact self-generated services</text>
   <text x="638" y="598" class="note">Teal bars · all 85 enabled non-Sample generators are represented at least once.</text>
-  <text x="638" y="635" class="label">Cache: Redis ACL Token Store</text>
+  <text x="638" y="635" class="label">Cache: CDN Manifest Cache</text>
   <rect x="888" y="622" width="185" height="16" rx="3" fill="#0f766e"/>
   <text x="1081" y="635" class="value">5</text>
-  <text x="638" y="669" class="label">Cache: Session Replay Store</text>
+  <text x="638" y="669" class="label">Cache: Exposed Redis Keys</text>
   <rect x="888" y="656" width="185" height="16" rx="3" fill="#0f766e"/>
   <text x="1081" y="669" class="value">5</text>
-  <text x="638" y="703" class="label">DNS: Reverse Zone Note</text>
+  <text x="638" y="703" class="label">Cache: Memcached Feature Flags</text>
   <rect x="888" y="690" width="185" height="16" rx="3" fill="#0f766e"/>
   <text x="1081" y="703" class="value">5</text>
-  <text x="638" y="737" class="label">Dependency Consumer: Checksum Evi…</text>
+  <text x="638" y="737" class="label">Cache: Memcached Session Cache</text>
   <rect x="888" y="724" width="185" height="16" rx="3" fill="#0f766e"/>
   <text x="1081" y="737" class="value">5</text>
-  <text x="638" y="771" class="label">Dependency Consumer: File Parser …</text>
+  <text x="638" y="771" class="label">Cache: Redis ACL Token Store</text>
   <rect x="888" y="758" width="185" height="16" rx="3" fill="#0f766e"/>
   <text x="1081" y="771" class="value">5</text>
-  <text x="638" y="805" class="label">Dependency Consumer: WebAuth Bypa…</text>
+  <text x="638" y="805" class="label">Cache: Session Replay Store</text>
   <rect x="888" y="792" width="185" height="16" rx="3" fill="#0f766e"/>
   <text x="1081" y="805" class="value">5</text>
-  <text x="638" y="839" class="label">HTTP: Backup Archive Listing</text>
+  <text x="638" y="839" class="label">Cache: Varnish Debug Objects</text>
   <rect x="888" y="826" width="185" height="16" rx="3" fill="#0f766e"/>
   <text x="1081" y="839" class="value">5</text>
-  <text x="638" y="873" class="label">HTTP: Staff Login Portal</text>
+  <text x="638" y="873" class="label">DNS: DKIM Selector Secret</text>
   <rect x="888" y="860" width="185" height="16" rx="3" fill="#0f766e"/>
   <text x="1081" y="873" class="value">5</text>
-  <text x="638" y="907" class="label">HTTPS: Admin Login Console</text>
+  <text x="638" y="907" class="label">DNS: Delegation Glue Hint</text>
   <rect x="888" y="894" width="185" height="16" rx="3" fill="#0f766e"/>
   <text x="1081" y="907" class="value">5</text>
-  <text x="638" y="941" class="label">LDAP: Service Account Bind</text>
+  <text x="638" y="941" class="label">DNS: Reverse Zone Note</text>
   <rect x="888" y="928" width="185" height="16" rx="3" fill="#0f766e"/>
   <text x="1081" y="941" class="value">5</text>
-  <text x="638" y="975" class="label">MQTT: Credentialed Ops Topic</text>
+  <text x="638" y="975" class="label">DNS: SRV Admin Endpoint</text>
   <rect x="888" y="962" width="185" height="16" rx="3" fill="#0f766e"/>
   <text x="1081" y="975" class="value">5</text>
-  <text x="638" y="1009" class="label">NFS: Legal Hold Archive</text>
+  <text x="638" y="1009" class="label">DNS: Split Horizon TXT</text>
   <rect x="888" y="996" width="185" height="16" rx="3" fill="#0f766e"/>
   <text x="1081" y="1009" class="value">5</text>
-  <text x="638" y="1043" class="label">SMB: Guest Public Share</text>
+  <text x="638" y="1043" class="label">DNS: TXT Secret Record</text>
   <rect x="888" y="1030" width="185" height="16" rx="3" fill="#0f766e"/>
   <text x="1081" y="1043" class="value">5</text>
-  <text x="638" y="1077" class="label">SMB: IT Scripts Share</text>
+  <text x="638" y="1077" class="label">DNS: Zone Transfer Records</text>
   <rect x="888" y="1064" width="185" height="16" rx="3" fill="#0f766e"/>
   <text x="1081" y="1077" class="value">5</text>
   <text x="45" y="1170" class="note">Selection is greedily balanced across each eligible filter set; rerun materialization after changing the ScenarioForge catalog.</text>

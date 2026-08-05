@@ -49,8 +49,8 @@ flag_node_generators:
   enabled: true
   count: 1
   specific:
-  - id: git_deploy_key_repo
-    name: 'Git: Deploy Key Repository'
+  - id: '151'
+    name: 'SMB: IT Scripts Share'
     count: 1
 flows:
   enabled: true

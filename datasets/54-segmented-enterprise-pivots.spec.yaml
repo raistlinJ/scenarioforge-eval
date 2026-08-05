@@ -17,12 +17,11 @@ vulns:
 flag_node_generators:
   enabled: true
   randomize: true
-  count: [2, 4]
+  count: [3, 4]
   include: ["Database:*", "NFS:*", "Dependency Consumer:*"]
 flows:
   enabled: true
-  randomize: true
-  chain_length: [3, 5]
+  chain_length: 5
   allow_duplicates: false
   include_all_topology_pivots: true
 traffic:
@@ -31,6 +30,7 @@ traffic:
 segmentation:
   enabled: true
   density: 0.55
+  accessible_by_pivot: true
   items:
     - type: Firewall
       count: [1, 2]

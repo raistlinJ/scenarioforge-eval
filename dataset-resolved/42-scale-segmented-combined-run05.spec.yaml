@@ -36,20 +36,20 @@ vulns:
   enabled: true
   count: 5
   specific:
-  - name: struts2/s2-053
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-053/docker-compose.yml
+  - name: drupal/CVE-2018-7600
+    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/drupal/CVE-2018-7600/docker-compose.yml
     count: 1
-  - name: struts2/s2-046
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-046/docker-compose.yml
-    count: 1
-  - name: drupal/CVE-2014-3704
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/drupal/CVE-2014-3704/docker-compose.yml
+  - name: struts2/s2-007
+    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-007/docker-compose.yml
     count: 1
   - name: struts2/s2-067
     path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-067/docker-compose.yml
     count: 1
-  - name: drupal/CVE-2018-7600
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/drupal/CVE-2018-7600/docker-compose.yml
+  - name: struts2/s2-009
+    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-009/docker-compose.yml
+    count: 1
+  - name: struts2/s2-066
+    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-066/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: true
@@ -64,21 +64,25 @@ flag_node_generators:
   - id: ssh_password_helpdesk_home
     name: 'SSH: Password Helpdesk Home'
     count: 1
-  - id: ssh_password_timeout_shell
-    name: 'SSH: Password Timeout Shell'
+  - id: http_public_file_drop
+    name: 'HTTP: Public File Drop'
     count: 1
-  - id: ssh_key_research_lab
-    name: 'SSH: Key Research Lab'
+  - id: '132'
+    name: 'Database: Postgres Audit Schema'
     count: 1
 flows:
   enabled: true
-  chain_length: 3
+  chain_length: 5
   allow_duplicates: false
   include_all_topology_pivots: false
 segmentation:
   enabled: true
   density: 0.55
-  items: []
+  items:
+  - factor: 1.0
+    pivot_enabled: false
+    type: NAT
+    count: 1
 hitl:
   use_env: false
 validation:

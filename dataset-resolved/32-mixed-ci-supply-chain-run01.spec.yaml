@@ -49,7 +49,11 @@ flows:
 segmentation:
   enabled: true
   density: 0.4
-  items: []
+  items:
+  - factor: 1.0
+    pivot_enabled: false
+    type: Firewall
+    count: 1
 hitl:
   use_env: false
 validation:

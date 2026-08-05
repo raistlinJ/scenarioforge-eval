@@ -39,7 +39,7 @@ vulns:
   exclude: []
 flag_node_generators:
   enabled: true
-  count: 2
+  count: 4
   specific:
   - id: nfs_engineering_drawings_export
     name: 'NFS: Engineering Drawings Export'
@@ -47,15 +47,25 @@ flag_node_generators:
   - id: '147'
     name: 'SMB: Finance Quarterly Share'
     count: 1
+  - id: '149'
+    name: 'SMB: Legal Case Archive'
+    count: 1
+  - id: '148'
+    name: 'SMB: Engineering Build Drop'
+    count: 1
 flows:
-  enabled: false
-  chain_length: 0
+  enabled: true
+  chain_length: 4
   allow_duplicates: false
   include_all_topology_pivots: false
 segmentation:
   enabled: true
   density: 0.4
-  items: []
+  items:
+  - factor: 1.0
+    pivot_enabled: false
+    type: Firewall
+    count: 1
 hitl:
   use_env: false
 validation:

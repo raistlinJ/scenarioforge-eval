@@ -44,24 +44,28 @@ flag_node_generators:
   - id: '135'
     name: 'Database: Mongo Export Documents'
     count: 1
-  - id: '127'
-    name: 'Cache: Redis ACL Token Store'
+  - id: postgres_customer_dump
+    name: 'Database: Postgres Customer Dump'
     count: 1
   - id: '132'
     name: 'Database: Postgres Audit Schema'
     count: 1
-  - id: memcached_session_cache
-    name: 'Cache: Memcached Session Cache'
+  - id: mysql_backup_table
+    name: 'Database: MySQL Backup Table'
     count: 1
 flows:
-  enabled: false
-  chain_length: 0
+  enabled: true
+  chain_length: 4
   allow_duplicates: false
   include_all_topology_pivots: false
 segmentation:
   enabled: true
   density: 0.4
-  items: []
+  items:
+  - factor: 1.0
+    pivot_enabled: false
+    type: NAT
+    count: 1
 hitl:
   use_env: false
 validation:

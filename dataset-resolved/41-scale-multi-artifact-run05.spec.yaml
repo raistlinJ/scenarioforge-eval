@@ -44,24 +44,30 @@ flag_node_generators:
   - id: ssh_key_git_deploy
     name: 'SSH: Key Git Deploy Account'
     count: 1
-  - id: ssh_key_ops_bastion
-    name: 'SSH: Key Ops Bastion'
+  - id: '140'
+    name: 'DNS: DKIM Selector Secret'
     count: 1
-  - id: http_public_file_drop
-    name: 'HTTP: Public File Drop'
+  - id: '135'
+    name: 'Database: Mongo Export Documents'
     count: 1
-  - id: nfs_readonly_audit_share
-    name: 'NFS: Read-Only Audit Share'
+  - id: dns_txt_secret_record
+    name: 'DNS: TXT Secret Record'
     count: 1
 flows:
   enabled: true
-  chain_length: 5
+  chain_length: 3
   allow_duplicates: false
-  include_all_topology_pivots: false
+  include_all_topology_pivots: true
 segmentation:
   enabled: true
   density: 0.45
-  items: []
+  accessible_by_pivot: true
+  items:
+  - factor: 1.0
+    pivot_enabled: true
+    pivot_provider: flag-node-generator
+    type: Firewall
+    count: 1
 hitl:
   use_env: false
 validation:

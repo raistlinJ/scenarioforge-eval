@@ -47,18 +47,24 @@ flag_node_generators:
   - id: ssh_password_helpdesk_home
     name: 'SSH: Password Helpdesk Home'
     count: 1
-  - id: ssh_sftp_dropbox_key
-    name: 'SSH: Key SFTP Dropbox'
+  - id: ssh_key_backup_operator
+    name: 'SSH: Key Backup Operator'
     count: 1
 flows:
   enabled: true
-  chain_length: 2
+  chain_length: 3
   allow_duplicates: false
-  include_all_topology_pivots: false
+  include_all_topology_pivots: true
 segmentation:
   enabled: true
   density: 0.45
-  items: []
+  accessible_by_pivot: true
+  items:
+  - factor: 1.0
+    pivot_enabled: true
+    pivot_provider: flag-node-generator
+    type: Firewall
+    count: 1
 hitl:
   use_env: false
 validation:

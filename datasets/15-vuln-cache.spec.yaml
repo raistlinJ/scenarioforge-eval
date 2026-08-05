@@ -12,14 +12,15 @@ services:
 vulns:
   enabled: true
   randomize: true
-  count: [1, 2]
+  count: 2
   include: ["redis"]
 flag_node_generators:
   enabled: false
   count: 0
 flows:
-  enabled: false
-  chain_length: 0
+  enabled: true
+  chain_length: 2
+  allow_duplicates: false
 traffic:
   profile: medium
   payload_types: [text, gibberish]

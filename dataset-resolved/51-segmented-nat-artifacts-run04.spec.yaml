@@ -33,8 +33,8 @@ flag_node_generators:
   enabled: true
   count: 3
   specific:
-  - id: smb_guest_public_share
-    name: 'SMB: Guest Public Share'
+  - id: nfs_webdav_evidence_share
+    name: 'Network Share: WebDAV Evidence Repository'
     count: 1
   - id: nfs_build_cache_share
     name: 'NFS: Build Cache Share'
@@ -44,7 +44,7 @@ flag_node_generators:
     count: 1
 flows:
   enabled: true
-  chain_length: 2
+  chain_length: 3
   allow_duplicates: false
   include_all_topology_pivots: false
 segmentation:

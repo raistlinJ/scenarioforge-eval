@@ -44,27 +44,33 @@ flag_node_generators:
   - id: ssh_key_research_lab
     name: 'SSH: Key Research Lab'
     count: 1
+  - id: ssh_key_ops_bastion
+    name: 'SSH: Key Ops Bastion'
+    count: 1
+  - id: '140'
+    name: 'DNS: DKIM Selector Secret'
+    count: 1
+  - id: ssh_password_finance_terminal
+    name: 'SSH: Password Finance Terminal'
+    count: 1
   - id: nfs_incident_response_evidence
     name: 'NFS: Incident Response Evidence'
     count: 1
-  - id: '138'
-    name: 'DNS: SRV Admin Endpoint'
-    count: 1
-  - id: ssh_key_backup_operator
-    name: 'SSH: Key Backup Operator'
-    count: 1
-  - id: '132'
-    name: 'Database: Postgres Audit Schema'
-    count: 1
 flows:
   enabled: true
-  chain_length: 2
+  chain_length: 3
   allow_duplicates: false
-  include_all_topology_pivots: false
+  include_all_topology_pivots: true
 segmentation:
   enabled: true
   density: 0.45
-  items: []
+  accessible_by_pivot: true
+  items:
+  - factor: 1.0
+    pivot_enabled: true
+    pivot_provider: flag-node-generator
+    type: Firewall
+    count: 1
 hitl:
   use_env: false
 validation:

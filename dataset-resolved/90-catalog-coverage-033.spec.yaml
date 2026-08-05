@@ -41,8 +41,8 @@ flag_node_generators:
   enabled: true
   count: 1
   specific:
-  - id: '149'
-    name: 'SMB: Legal Case Archive'
+  - id: '131'
+    name: 'Cache: CDN Manifest Cache'
     count: 1
 flows:
   enabled: true

@@ -42,12 +42,18 @@ uv run scenarioforge-eval dataset-resolved --sf-path ../scenarioforge --execute
 | `40` scale and composition | 3 | 15 | Multi-vulnerability, multi-artifact, and large combined enterprise scenarios |
 | `50` segmentation and pivots | 4 | 20 | Explicit Firewall/NAT boundaries, including pivot-enabled mixed paths |
 
-The `50` segmentation-and-pivot family consists of:
+The `50` segmentation-and-pivot family supplies the largest dedicated network
+cases:
 
 - `51-segmented-nat-artifacts.spec.yaml`: NAT and artifact-only cases.
 - `52-segmented-mixed-perimeter.spec.yaml`: Mixed perimeter cases without pivots.
 - `53-segmented-firewall-pivot.spec.yaml`: Firewall pivot paths using an SSH fallback provider.
 - `54-segmented-enterprise-pivots.spec.yaml`: Large mixed enterprise paths with Firewall and NAT pivots.
+
+Those features are not isolated to the `50` family. Smaller pivot paths also
+appear in `13`, `22`, `31`, and `41`, covering vulnerability,
+flag-node-generator, and SSH-fallback providers across vulnerability-only,
+artifact-only, mixed, and scale scenarios.
 
 The suite is balanced by exposure type: 40 vulnerability-only executions, 45
 flag-node-generator-only executions, and 65 mixed executions. The combined
@@ -111,17 +117,23 @@ into plausible attack-path contexts, such as web exploitation with delivery
 artifacts, a CMS with remote-access material, CI with source-control artifacts,
 or data-service vulnerabilities with shares and database evidence.
 
-Flows and segmentation introduce structure beyond independent nodes. The
-single-family profiles isolate baseline behavior, whereas mixed and scale
-profiles use 2–6 step, duplicate-free flow chains. The `51`--`54`
-profiles create explicit Firewall and NAT rows at densities from 0.35 to 0.55;
-`53` and `54` encode pivot-enabled boundaries and request topology-pivot
-inclusion in their flow state. This separation supports analyses of topology
-generation, artifact placement, segmentation, sequencing, and end-to-end
-execution across increasingly complex scenarios.
+Flows and segmentation introduce structure beyond independent nodes. Six
+specifications (`10`--`12`, `20`, `21`, and `25`) remain unchained baselines.
+The other 24 specifications produce 120 chained scenarios, with an exact even
+split of 30 scenarios at each fixed chain length from two through five. Every
+chain is duplicate-free and its minimum vulnerability plus
+flag-node-generator count is at least its requested length.
+
+Segmentation is similarly distributed rather than confined to one family: 22
+specifications (110 scenarios) declare explicit boundary rows. Across the
+source suite, Firewall and NAT each occur in 65 scenarios. Six specifications
+(30 scenarios) enable pivots and request topology-pivot inclusion: `13`, `22`,
+`31`, `41`, `53`, and `54`. This supports controlled comparisons among
+unchained, chained, segmented, and pivot-expanded challenges without coupling
+network complexity to only the largest topologies.
 
 The evaluator writes those explicit segmentation rows into scenario XML, so
-the dataset now distinguishes a simple density request from an actual boundary
+the dataset distinguishes a simple density request from an actual boundary
 topology. ScenarioForge's web flow-sequencing UI already honors the stored
 topology-pivot setting. Evaluator-driven expansion of those pivots will require
 the matching ScenarioForge CLI option to be added in the ScenarioForge

@@ -49,8 +49,8 @@ flag_node_generators:
   enabled: true
   count: 1
   specific:
-  - id: '138'
-    name: 'DNS: SRV Admin Endpoint'
+  - id: ldap_anonymous_directory
+    name: 'LDAP: Anonymous Directory'
     count: 1
 flows:
   enabled: true

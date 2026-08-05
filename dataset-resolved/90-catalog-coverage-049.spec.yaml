@@ -49,8 +49,8 @@ flag_node_generators:
   enabled: true
   count: 1
   specific:
-  - id: imap_shared_mailbox
-    name: 'Mail: Shared IMAP Mailbox'
+  - id: '138'
+    name: 'DNS: SRV Admin Endpoint'
     count: 1
 flows:
   enabled: true

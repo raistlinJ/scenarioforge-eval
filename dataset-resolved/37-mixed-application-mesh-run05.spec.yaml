@@ -47,7 +47,7 @@ vulns:
     count: 1
 flag_node_generators:
   enabled: true
-  count: 3
+  count: 4
   specific:
   - id: http_source_secret_repo
     name: 'HTTP: Source Secret Repository'
@@ -58,15 +58,22 @@ flag_node_generators:
   - id: https_sqli_invoice_portal
     name: 'HTTPS: SQLi Invoice Portal'
     count: 1
+  - id: https_basic_auth_reports
+    name: 'HTTPS: Basic Auth Reports'
+    count: 1
 flows:
   enabled: true
-  chain_length: 4
+  chain_length: 5
   allow_duplicates: false
   include_all_topology_pivots: false
 segmentation:
   enabled: true
   density: 0.45
-  items: []
+  items:
+  - factor: 1.0
+    pivot_enabled: false
+    type: NAT
+    count: 1
 hitl:
   use_env: false
 validation:

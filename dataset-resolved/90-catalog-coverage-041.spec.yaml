@@ -49,8 +49,8 @@ flag_node_generators:
   enabled: true
   count: 1
   specific:
-  - id: dns_txt_secret_record
-    name: 'DNS: TXT Secret Record'
+  - id: dns_zone_transfer_records
+    name: 'DNS: Zone Transfer Records'
     count: 1
 flows:
   enabled: true

@@ -31,17 +31,20 @@ vulns:
   exclude: []
 flag_node_generators:
   enabled: true
-  count: 2
+  count: 3
   specific:
   - id: nfs_finance_cifs_share
     name: 'Network Share: Finance CIFS Mount'
     count: 1
-  - id: '147'
-    name: 'SMB: Finance Quarterly Share'
+  - id: '148'
+    name: 'SMB: Engineering Build Drop'
+    count: 1
+  - id: nfs_legal_hold_archive
+    name: 'NFS: Legal Hold Archive'
     count: 1
 flows:
   enabled: true
-  chain_length: 2
+  chain_length: 3
   allow_duplicates: false
   include_all_topology_pivots: false
 segmentation:

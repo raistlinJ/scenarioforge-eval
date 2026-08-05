@@ -31,20 +31,29 @@ vulns:
   exclude: []
 flag_node_generators:
   enabled: true
-  count: 1
+  count: 2
   specific:
   - id: '137'
     name: 'DNS: Split Horizon TXT'
     count: 1
+  - id: '139'
+    name: 'DNS: Reverse Zone Note'
+    count: 1
 flows:
-  enabled: false
-  chain_length: 0
+  enabled: true
+  chain_length: 2
   allow_duplicates: false
-  include_all_topology_pivots: false
+  include_all_topology_pivots: true
 segmentation:
   enabled: true
   density: 0.3
-  items: []
+  accessible_by_pivot: true
+  items:
+  - factor: 1.0
+    pivot_enabled: true
+    pivot_provider: flag-node-generator
+    type: NAT
+    count: 1
 hitl:
   use_env: false
 validation:

@@ -49,8 +49,8 @@ flag_node_generators:
   enabled: true
   count: 1
   specific:
-  - id: https_login_admin_console
-    name: 'HTTPS: Admin Login Console'
+  - id: ftp_anonymous_finance_drop
+    name: 'FTP: Anonymous Finance Drop'
     count: 1
 flows:
   enabled: true

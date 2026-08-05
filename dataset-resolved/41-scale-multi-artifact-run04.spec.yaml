@@ -47,11 +47,11 @@ flag_node_generators:
   - id: ssh_password_timeout_shell
     name: 'SSH: Password Timeout Shell'
     count: 1
-  - id: nfs_build_cache_share
-    name: 'NFS: Build Cache Share'
+  - id: ssh_sftp_dropbox_key
+    name: 'SSH: Key SFTP Dropbox'
     count: 1
-  - id: nfs_legacy_nfs3_share
-    name: 'NFS: Legacy Engineering Share'
+  - id: ssh_key_research_lab
+    name: 'SSH: Key Research Lab'
     count: 1
   - id: nfs_lab_instrument_logs
     name: 'NFS: Lab Instrument Logs'
@@ -60,11 +60,17 @@ flows:
   enabled: true
   chain_length: 3
   allow_duplicates: false
-  include_all_topology_pivots: false
+  include_all_topology_pivots: true
 segmentation:
   enabled: true
   density: 0.45
-  items: []
+  accessible_by_pivot: true
+  items:
+  - factor: 1.0
+    pivot_enabled: true
+    pivot_provider: flag-node-generator
+    type: Firewall
+    count: 1
 hitl:
   use_env: false
 validation:

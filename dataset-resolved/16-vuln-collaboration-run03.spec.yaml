@@ -51,14 +51,18 @@ flag_node_generators:
   include: []
   exclude: []
 flows:
-  enabled: false
-  chain_length: 0
+  enabled: true
+  chain_length: 3
   allow_duplicates: false
   include_all_topology_pivots: false
 segmentation:
   enabled: true
   density: 0.35
-  items: []
+  items:
+  - factor: 1.0
+    pivot_enabled: false
+    type: Firewall
+    count: 1
 hitl:
   use_env: false
 validation:

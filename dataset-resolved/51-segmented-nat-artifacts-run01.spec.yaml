@@ -31,13 +31,16 @@ vulns:
   exclude: []
 flag_node_generators:
   enabled: true
-  count: 2
+  count: 3
   specific:
   - id: nfs_webdav_evidence_share
     name: 'Network Share: WebDAV Evidence Repository'
     count: 1
-  - id: '148'
-    name: 'SMB: Engineering Build Drop'
+  - id: nfs_readonly_audit_share
+    name: 'NFS: Read-Only Audit Share'
+    count: 1
+  - id: nfs_engineering_drawings_export
+    name: 'NFS: Engineering Drawings Export'
     count: 1
 flows:
   enabled: true

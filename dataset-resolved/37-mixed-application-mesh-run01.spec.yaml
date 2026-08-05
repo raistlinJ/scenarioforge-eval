@@ -47,7 +47,7 @@ vulns:
     count: 1
 flag_node_generators:
   enabled: true
-  count: 3
+  count: 4
   specific:
   - id: ssh_password_audit_workstation
     name: 'SSH: Password Audit Workstation'
@@ -58,15 +58,22 @@ flag_node_generators:
   - id: https_source_secret_ci
     name: 'HTTPS: CI Source Secret'
     count: 1
+  - id: https_directory_traversal_backups
+    name: 'HTTPS: Directory Traversal Backups'
+    count: 1
 flows:
   enabled: true
-  chain_length: 4
+  chain_length: 5
   allow_duplicates: false
   include_all_topology_pivots: false
 segmentation:
   enabled: true
   density: 0.45
-  items: []
+  items:
+  - factor: 1.0
+    pivot_enabled: false
+    type: NAT
+    count: 1
 hitl:
   use_env: false
 validation:

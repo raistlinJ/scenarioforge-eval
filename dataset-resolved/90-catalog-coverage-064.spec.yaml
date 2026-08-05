@@ -49,8 +49,8 @@ flag_node_generators:
   enabled: true
   count: 1
   specific:
-  - id: '151'
-    name: 'SMB: IT Scripts Share'
+  - id: ldap_bind_service_account
+    name: 'LDAP: Service Account Bind'
     count: 1
 flows:
   enabled: true

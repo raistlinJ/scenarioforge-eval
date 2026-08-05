@@ -40,7 +40,7 @@ def _network_summary(summary: dict) -> dict:
     total_nodes = []
     scale = Counter()
     flow_lengths = []
-    segmented = firewalls = nats = pivots = 0
+    generator_scenarios = segmented = pivot_scenarios = firewalls = nats = pivots = 0
     segmentation_densities = []
 
     for selection in summary['selections']:
@@ -55,6 +55,8 @@ def _network_summary(summary: dict) -> dict:
         base_nodes.append(base_count)
         catalog_nodes = sum(item['count'] for item in (spec['vulns'].get('specific') or []))
         catalog_nodes += sum(item['count'] for item in (spec['flag_node_generators'].get('specific') or []))
+        if spec['flag_node_generators'].get('enabled'):
+            generator_scenarios += 1
         total_nodes.append(base_count + catalog_nodes)
         if base_count <= 6:
             scale['small'] += 1
@@ -73,6 +75,10 @@ def _network_summary(summary: dict) -> dict:
         if segmentation.get('enabled'):
             segmented += 1
             segmentation_densities.append(float(segmentation['density']))
+            if segmentation.get('accessible_by_pivot') or any(
+                item.get('pivot_enabled') for item in segmentation.get('items') or []
+            ):
+                pivot_scenarios += 1
             for item in segmentation.get('items') or []:
                 count = int(item['count'])
                 if item['type'] == 'Firewall':
@@ -91,9 +97,12 @@ def _network_summary(summary: dict) -> dict:
         'total_range': (min(total_nodes), max(total_nodes)),
         'scale': scale,
         'service_assignments': service_assignments,
+        'generator_scenarios': generator_scenarios,
         'flow_count': len(flow_lengths),
         'flow_range': (min(flow_lengths), max(flow_lengths)),
+        'flow_lengths': Counter(flow_lengths),
         'segmented': segmented,
+        'pivot_scenarios': pivot_scenarios,
         'firewalls': firewalls,
         'nats': nats,
         'pivots': pivots,
@@ -126,6 +135,10 @@ def render(summary: dict) -> str:
     )[:14]
     total_vulns = sum(vulnerabilities.values())
     total_generators = sum(generators.values())
+    chain_summary = ' · '.join(
+        f'{length} hops × {network["flow_lengths"][length]}'
+        for length in sorted(network['flow_lengths'])
+    )
     svg = [
         '<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1200" viewBox="0 0 1200 1200" role="img" aria-labelledby="title desc">',
         '  <title id="title">Exact resolved service distribution</title>',
@@ -162,9 +175,9 @@ def render(summary: dict) -> str:
         '  <text x="58" y="316" class="panel-title">Network configuration</text>',
         f'  <text x="58" y="346" class="value">Topology scale</text><text x="58" y="368" class="note">{network["scale"]["small"]} small (≤6), {network["scale"]["medium"]} medium (7–12), {network["scale"]["large"]} large (13+) base-node scenarios</text>',
         f'  <text x="58" y="392" class="note">{network["base_nodes"]} base nodes total; {network["base_range"][0]}–{network["base_range"][1]} base and {network["total_range"][0]}–{network["total_range"][1]} total nodes per scenario.</text>',
-        f'  <text x="650" y="346" class="value">Services and flows</text><text x="650" y="368" class="note">{network["service_assignments"]} fixed service assignments · {network["flow_count"]} flow scenarios · {network["flow_range"][0]}–{network["flow_range"][1]} hop chains</text>',
-        f'  <text x="650" y="392" class="note">Traffic remains enabled in all {summary["resolved_spec_count"]} scenarios with fixed payload rows in each YAML.</text>',
-        f'  <text x="58" y="434" class="value">Segmentation</text><text x="58" y="456" class="note">{network["segmented"]} scenarios · {network["firewalls"]} Firewall rows · {network["nats"]} NAT rows · {network["pivots"]} pivot-enabled rows · density {network["density_range"][0]:.2f}–{network["density_range"][1]:.2f}</text>',
+        f'  <text x="650" y="346" class="value">Services and flows</text><text x="650" y="368" class="note">{network["service_assignments"]} fixed service assignments · {network["generator_scenarios"]} generator scenarios · {network["flow_count"]} chained scenarios</text>',
+        f'  <text x="650" y="392" class="note">Chain balance: {chain_summary}</text>',
+        f'  <text x="58" y="434" class="value">Segmentation</text><text x="58" y="456" class="note">{network["segmented"]} scenarios · {network["firewalls"]} Firewall rows · {network["nats"]} NAT rows · {network["pivot_scenarios"]} pivot scenarios / {network["pivots"]} rows · density {network["density_range"][0]:.2f}–{network["density_range"][1]:.2f}</text>',
         '  <text x="650" y="434" class="value">Subnet CIDRs</text><text x="650" y="456" class="note">Allocated during ScenarioForge topology; these YAMLs fix the inputs.</text>',
         '  <rect x="35" y="540" width="550" height="585" rx="12" class="panel"/>',
         '  <text x="58" y="576" class="panel-title">Most-used exact Vulhub images</text>',

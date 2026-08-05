@@ -41,8 +41,8 @@ flag_node_generators:
   enabled: true
   count: 1
   specific:
-  - id: ssh_key_research_lab
-    name: 'SSH: Key Research Lab'
+  - id: smtp_open_relay_queue
+    name: 'Mail: SMTP Open Relay Queue'
     count: 1
 flows:
   enabled: true

@@ -7,6 +7,11 @@ its deterministic seed.
 
 The static topology, service, traffic, vulnerability count,
 flag-node-generator count, flow length, and segmentation values are resolved.
+The 150 base files preserve the source suite's exact chain balance: 30 scenarios
+at each chain length from two through five, plus 30 unchained baselines. Once
+the current catalog-coverage fixtures are materialized, the full 226-file suite
+contains 49 scenarios at each of those four chain lengths (196 chained total),
+148 segmented scenarios, and 42 pivot-enabled scenarios.
 To persist the exact selected Vulhub image and self-generated service names,
 materialize this suite against the intended ScenarioForge catalog. This replaces
 the filter lists with schema-validated `specific` rows and writes the complete

@@ -41,8 +41,8 @@ flag_node_generators:
   enabled: true
   count: 1
   specific:
-  - id: http_upload_file_drop
-    name: 'HTTP: Upload File Drop'
+  - id: dep_file_parser_console
+    name: 'Dependency Consumer: File Parser Console'
     count: 1
 flows:
   enabled: true

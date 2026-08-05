@@ -41,8 +41,8 @@ flag_node_generators:
   enabled: true
   count: 1
   specific:
-  - id: nfs_webdav_evidence_share
-    name: 'Network Share: WebDAV Evidence Repository'
+  - id: mqtt_credentialed_ops_topic
+    name: 'MQTT: Credentialed Ops Topic'
     count: 1
 flows:
   enabled: true

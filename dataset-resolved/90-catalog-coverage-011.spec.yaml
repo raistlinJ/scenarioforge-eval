@@ -49,8 +49,8 @@ flag_node_generators:
   enabled: true
   count: 1
   specific:
-  - id: ftp_user_backup_home
-    name: 'FTP: Authenticated Backup Home'
+  - id: '146'
+    name: 'Mail: DMARC Report Queue'
     count: 1
 flows:
   enabled: true

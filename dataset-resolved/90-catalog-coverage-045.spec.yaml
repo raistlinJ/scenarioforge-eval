@@ -41,8 +41,8 @@ flag_node_generators:
   enabled: true
   count: 1
   specific:
-  - id: smtp_open_relay_queue
-    name: 'Mail: SMTP Open Relay Queue'
+  - id: https_source_secret_ci
+    name: 'HTTPS: CI Source Secret'
     count: 1
 flows:
   enabled: true

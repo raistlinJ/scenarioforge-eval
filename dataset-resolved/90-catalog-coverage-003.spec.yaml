@@ -41,8 +41,8 @@ flag_node_generators:
   enabled: true
   count: 1
   specific:
-  - id: ldap_anonymous_directory
-    name: 'LDAP: Anonymous Directory'
+  - id: ftp_anonymous_finance_drop
+    name: 'FTP: Anonymous Finance Drop'
     count: 1
 flows:
   enabled: true

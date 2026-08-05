@@ -41,27 +41,33 @@ flag_node_generators:
   enabled: true
   count: 4
   specific:
-  - id: dns_zone_transfer_records
-    name: 'DNS: Zone Transfer Records'
+  - id: ssh_password_timeout_shell
+    name: 'SSH: Password Timeout Shell'
     count: 1
-  - id: ssh_password_finance_terminal
-    name: 'SSH: Password Finance Terminal'
+  - id: http_cookie_role_escalation
+    name: 'HTTP: Cookie Role Escalation'
     count: 1
-  - id: '139'
-    name: 'DNS: Reverse Zone Note'
+  - id: http_public_file_drop
+    name: 'HTTP: Public File Drop'
     count: 1
   - id: http_upload_file_drop
     name: 'HTTP: Upload File Drop'
     count: 1
 flows:
   enabled: true
-  chain_length: 4
+  chain_length: 3
   allow_duplicates: false
-  include_all_topology_pivots: false
+  include_all_topology_pivots: true
 segmentation:
   enabled: true
   density: 0.45
-  items: []
+  accessible_by_pivot: true
+  items:
+  - factor: 1.0
+    pivot_enabled: true
+    pivot_provider: flag-node-generator
+    type: Firewall
+    count: 1
 hitl:
   use_env: false
 validation:

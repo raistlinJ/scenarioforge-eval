@@ -36,15 +36,15 @@ vulns:
   enabled: true
   count: 2
   specific:
-  - name: celery/celery3_redis_unauth
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/celery/celery3_redis_unauth/docker-compose.yml
+  - name: redis/4-unacc
+    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/redis/4-unacc/docker-compose.yml
     count: 1
   - name: redis/CVE-2022-0543
     path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/redis/CVE-2022-0543/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: true
-  count: 3
+  count: 4
   specific:
   - id: '148'
     name: 'SMB: Engineering Build Drop'
@@ -55,15 +55,22 @@ flag_node_generators:
   - id: nfs_finance_cifs_share
     name: 'Network Share: Finance CIFS Mount'
     count: 1
+  - id: nfs_incident_response_evidence
+    name: 'NFS: Incident Response Evidence'
+    count: 1
 flows:
   enabled: true
-  chain_length: 3
+  chain_length: 5
   allow_duplicates: false
   include_all_topology_pivots: false
 segmentation:
   enabled: true
   density: 0.45
-  items: []
+  items:
+  - factor: 1.0
+    pivot_enabled: false
+    type: Firewall
+    count: 1
 hitl:
   use_env: false
 validation:

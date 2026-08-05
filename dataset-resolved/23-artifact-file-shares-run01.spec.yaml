@@ -39,7 +39,7 @@ vulns:
   exclude: []
 flag_node_generators:
   enabled: true
-  count: 2
+  count: 4
   specific:
   - id: nfs_backup_archive_passphrase
     name: 'NFS: Passphrase Backup Archive'
@@ -47,15 +47,25 @@ flag_node_generators:
   - id: nfs_build_cache_share
     name: 'NFS: Build Cache Share'
     count: 1
+  - id: '150'
+    name: 'SMB: Public Scanner Share'
+    count: 1
+  - id: nfs_legacy_nfs3_share
+    name: 'NFS: Legacy Engineering Share'
+    count: 1
 flows:
-  enabled: false
-  chain_length: 0
+  enabled: true
+  chain_length: 4
   allow_duplicates: false
   include_all_topology_pivots: false
 segmentation:
   enabled: true
   density: 0.4
-  items: []
+  items:
+  - factor: 1.0
+    pivot_enabled: false
+    type: Firewall
+    count: 1
 hitl:
   use_env: false
 validation:

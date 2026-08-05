@@ -1,5 +1,28 @@
 {
   "catalog_snapshot": "/Users/jcacosta/Documents/GitHub/scenarioforge",
+  "challenge_features": {
+    "chained_scenarios": 196,
+    "flag_node_generator_scenarios": 186,
+    "flow_length_histogram": {
+      "2": 49,
+      "3": 49,
+      "4": 49,
+      "5": 49
+    },
+    "pivot_provider_rows": {
+      "flag-node-generator": 15,
+      "random": 16,
+      "ssh-fallback": 10,
+      "vulnerability": 12
+    },
+    "pivot_scenarios": 42,
+    "segmentation_type_rows": {
+      "Firewall": 105,
+      "NAT": 103
+    },
+    "segmented_scenarios": 148,
+    "unchained_scenarios": 30
+  },
   "methodology": {
     "excluded_generator_family": "Sample",
     "generator_type": "Prefix of the enabled generator display name before the first colon.",
@@ -27,13 +50,13 @@
       "variance": 5.928
     },
     "flow_hops": {
-      "maximum": 6,
-      "mean": 2.305,
+      "maximum": 5,
+      "mean": 3.035,
       "minimum": 0,
       "n": 226,
-      "std_dev": 1.807,
-      "total": 521,
-      "variance": 3.265
+      "std_dev": 1.579,
+      "total": 686,
+      "variance": 2.494
     },
     "routers": {
       "maximum": 5,
@@ -46,12 +69,12 @@
     },
     "segmentation_rows": {
       "maximum": 3,
-      "mean": 0.527,
+      "mean": 0.92,
       "minimum": 0,
       "n": 226,
-      "std_dev": 0.903,
-      "total": 119,
-      "variance": 0.816
+      "std_dev": 0.789,
+      "total": 208,
+      "variance": 0.622
     },
     "service_assignments": {
       "maximum": 8,
@@ -64,116 +87,131 @@
     },
     "total_nodes": {
       "maximum": 27,
-      "mean": 12.376,
+      "mean": 12.69,
       "minimum": 5,
       "n": 226,
-      "std_dev": 4.246,
-      "total": 2797,
-      "variance": 18.031
+      "std_dev": 4.262,
+      "total": 2868,
+      "variance": 18.161
     }
   },
   "scenario_count": 226,
   "selection_histograms": {
     "self_generated_services": {
-      "4": 68,
-      "5": 17
+      "4": 14,
+      "5": 71
     },
     "vulhub_images": {
       "1": 243,
-      "2": 5,
-      "3": 7,
-      "4": 28,
-      "5": 9,
-      "6": 2
+      "2": 4,
+      "3": 3,
+      "4": 26,
+      "5": 12,
+      "6": 6
     }
   },
   "self_generated_semantic_families": [
     {
       "family": "File sharing",
-      "selections": 68,
+      "selections": 77,
       "unique_generators": 16
     },
     {
-      "family": "Web delivery & application access",
-      "selections": 63,
-      "unique_generators": 15
-    },
-    {
       "family": "Data stores",
-      "selections": 58,
+      "selections": 70,
       "unique_generators": 14
     },
     {
+      "family": "Web delivery & application access",
+      "selections": 70,
+      "unique_generators": 15
+    },
+    {
       "family": "Remote administration & source access",
-      "selections": 46,
+      "selections": 54,
       "unique_generators": 11
     },
     {
       "family": "Messaging & transfer",
-      "selections": 45,
+      "selections": 51,
       "unique_generators": 11
     },
     {
       "family": "Software supply chain",
-      "selections": 39,
+      "selections": 45,
       "unique_generators": 9
     },
     {
       "family": "Identity & discovery",
-      "selections": 38,
+      "selections": 44,
       "unique_generators": 9
     }
   ],
   "self_generated_service_types": [
     {
-      "selections": 39,
+      "selections": 45,
       "type": "Dependency Consumer",
       "unique_generators": 9
     },
     {
-      "selections": 38,
+      "selections": 44,
       "type": "SSH",
       "unique_generators": 9
     },
     {
-      "selections": 34,
-      "type": "HTTP",
-      "unique_generators": 8
-    },
-    {
-      "selections": 33,
+      "selections": 39,
       "type": "NFS",
       "unique_generators": 8
     },
     {
-      "selections": 30,
+      "selections": 38,
+      "type": "HTTP",
+      "unique_generators": 8
+    },
+    {
+      "selections": 35,
       "type": "Cache",
       "unique_generators": 7
     },
     {
-      "selections": 29,
+      "selections": 35,
       "type": "DNS",
       "unique_generators": 7
     },
     {
-      "selections": 29,
-      "type": "HTTPS",
-      "unique_generators": 7
-    },
-    {
-      "selections": 28,
+      "selections": 35,
       "type": "Database",
       "unique_generators": 7
     },
     {
-      "selections": 28,
+      "selections": 32,
+      "type": "HTTPS",
+      "unique_generators": 7
+    },
+    {
+      "selections": 32,
       "type": "Mail",
       "unique_generators": 7
     },
     {
-      "selections": 27,
+      "selections": 28,
       "type": "SMB",
       "unique_generators": 6
+    },
+    {
+      "selections": 10,
+      "type": "FTP",
+      "unique_generators": 2
+    },
+    {
+      "selections": 10,
+      "type": "Git",
+      "unique_generators": 2
+    },
+    {
+      "selections": 10,
+      "type": "Network Share",
+      "unique_generators": 2
     },
     {
       "selections": 9,
@@ -184,34 +222,19 @@
       "selections": 9,
       "type": "MQTT",
       "unique_generators": 2
-    },
-    {
-      "selections": 8,
-      "type": "FTP",
-      "unique_generators": 2
-    },
-    {
-      "selections": 8,
-      "type": "Git",
-      "unique_generators": 2
-    },
-    {
-      "selections": 8,
-      "type": "Network Share",
-      "unique_generators": 2
     }
   ],
   "self_generated_services": {
     "catalog_entries": 85,
     "coverage_fraction": 1.0,
     "maximum": 5,
-    "mean": 4.2,
+    "mean": 4.835,
     "minimum": 4,
     "n": 85,
-    "std_dev": 0.4,
-    "total": 357,
+    "std_dev": 0.371,
+    "total": 411,
     "type_count": 15,
-    "variance": 0.16
+    "variance": 0.138
   },
   "self_generated_type_family_map": {
     "Cache": "Data stores",
@@ -428,33 +451,33 @@
     "catalog_entries": 294,
     "coverage_fraction": 1.0,
     "maximum": 6,
-    "mean": 1.507,
+    "mean": 1.565,
     "minimum": 1,
     "n": 294,
-    "std_dev": 1.171,
-    "total": 443,
+    "std_dev": 1.302,
+    "total": 460,
     "type_count": 136,
-    "variance": 1.372
+    "variance": 1.695
   },
   "vulhub_semantic_families": [
     {
       "family": "Web applications, frameworks & CMS",
-      "selections": 222,
+      "selections": 228,
       "unique_images": 144
     },
     {
       "family": "Data, search & storage",
-      "selections": 73,
+      "selections": 78,
       "unique_images": 46
     },
     {
       "family": "Network & web infrastructure",
-      "selections": 41,
+      "selections": 45,
       "unique_images": 24
     },
     {
       "family": "Enterprise & collaboration applications",
-      "selections": 40,
+      "selections": 42,
       "unique_images": 23
     },
     {
@@ -480,9 +503,19 @@
   ],
   "vulnerability_types": [
     {
-      "selections": 69,
+      "selections": 74,
       "type": "struts2",
       "unique_images": 19
+    },
+    {
+      "selections": 27,
+      "type": "elasticsearch",
+      "unique_images": 5
+    },
+    {
+      "selections": 24,
+      "type": "confluence",
+      "unique_images": 5
     },
     {
       "selections": 24,
@@ -490,17 +523,7 @@
       "unique_images": 6
     },
     {
-      "selections": 23,
-      "type": "elasticsearch",
-      "unique_images": 5
-    },
-    {
-      "selections": 22,
-      "type": "confluence",
-      "unique_images": 5
-    },
-    {
-      "selections": 18,
+      "selections": 21,
       "type": "nginx",
       "unique_images": 4
     },
@@ -510,12 +533,12 @@
       "unique_images": 3
     },
     {
-      "selections": 11,
+      "selections": 12,
       "type": "redis",
       "unique_images": 2
     },
     {
-      "selections": 10,
+      "selections": 11,
       "type": "django",
       "unique_images": 5
     },
@@ -551,6 +574,11 @@
     },
     {
       "selections": 5,
+      "type": "ingress-nginx",
+      "unique_images": 1
+    },
+    {
+      "selections": 5,
       "type": "solr",
       "unique_images": 5
     },
@@ -573,11 +601,6 @@
       "selections": 4,
       "type": "geoserver",
       "unique_images": 4
-    },
-    {
-      "selections": 4,
-      "type": "ingress-nginx",
-      "unique_images": 1
     },
     {
       "selections": 4,

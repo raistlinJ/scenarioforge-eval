@@ -47,19 +47,16 @@ vulns:
     count: 1
 flag_node_generators:
   enabled: true
-  count: 4
+  count: 3
   specific:
-  - id: '144'
-    name: 'Mail: POP3 Shared Dropbox'
+  - id: postgres_customer_dump
+    name: 'Database: Postgres Customer Dump'
     count: 1
   - id: '149'
     name: 'SMB: Legal Case Archive'
     count: 1
-  - id: nfs_engineering_drawings_export
-    name: 'NFS: Engineering Drawings Export'
-    count: 1
-  - id: '131'
-    name: 'Cache: CDN Manifest Cache'
+  - id: mysql_backup_table
+    name: 'Database: MySQL Backup Table'
     count: 1
 flows:
   enabled: true
@@ -69,7 +66,11 @@ flows:
 segmentation:
   enabled: true
   density: 0.5
-  items: []
+  items:
+  - factor: 1.0
+    pivot_enabled: false
+    type: Firewall
+    count: 1
 hitl:
   use_env: false
 validation:

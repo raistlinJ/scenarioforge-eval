@@ -21,15 +21,21 @@ flag_node_generators:
   include: ["SSH:*", "Git:*"]
 flows:
   enabled: true
-  randomize: true
-  chain_length: [2, 4]
+  chain_length: 2
   allow_duplicates: false
+  include_all_topology_pivots: true
 traffic:
   profile: light
   payload_types: [video]
 segmentation:
   enabled: true
   density: 0.3
+  accessible_by_pivot: true
+  items:
+    - type: NAT
+      count: 1
+      pivot_enabled: true
+      pivot_provider: ssh-fallback
 hitl:
   use_env: false
 validation:

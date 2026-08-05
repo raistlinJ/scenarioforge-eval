@@ -39,7 +39,7 @@ vulns:
   exclude: []
 flag_node_generators:
   enabled: true
-  count: 3
+  count: 4
   specific:
   - id: '129'
     name: 'Cache: Varnish Debug Objects'
@@ -50,15 +50,22 @@ flag_node_generators:
   - id: '136'
     name: 'Database: Oracle Wallet Note'
     count: 1
+  - id: '127'
+    name: 'Cache: Redis ACL Token Store'
+    count: 1
 flows:
-  enabled: false
-  chain_length: 0
+  enabled: true
+  chain_length: 4
   allow_duplicates: false
   include_all_topology_pivots: false
 segmentation:
   enabled: true
   density: 0.4
-  items: []
+  items:
+  - factor: 1.0
+    pivot_enabled: false
+    type: NAT
+    count: 1
 hitl:
   use_env: false
 validation:

@@ -47,23 +47,30 @@ vulns:
     count: 1
 flag_node_generators:
   enabled: true
-  count: 2
+  count: 3
   specific:
-  - id: http_cookie_role_escalation
-    name: 'HTTP: Cookie Role Escalation'
+  - id: http_directory_traversal_docs
+    name: 'HTTP: Directory Traversal Docs'
     count: 1
   - id: http_backup_archive_listing
     name: 'HTTP: Backup Archive Listing'
     count: 1
+  - id: ssh_sftp_dropbox_key
+    name: 'SSH: Key SFTP Dropbox'
+    count: 1
 flows:
   enabled: true
-  chain_length: 3
+  chain_length: 5
   allow_duplicates: false
   include_all_topology_pivots: false
 segmentation:
   enabled: true
   density: 0.45
-  items: []
+  items:
+  - factor: 1.0
+    pivot_enabled: false
+    type: NAT
+    count: 1
 hitl:
   use_env: false
 validation:

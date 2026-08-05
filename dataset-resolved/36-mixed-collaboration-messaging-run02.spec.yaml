@@ -41,20 +41,30 @@ vulns:
     count: 1
 flag_node_generators:
   enabled: true
-  count: 1
+  count: 3
   specific:
   - id: '144'
     name: 'Mail: POP3 Shared Dropbox'
     count: 1
+  - id: '145'
+    name: 'Mail: Webmail Export Attachment'
+    count: 1
+  - id: smtp_open_relay_queue
+    name: 'Mail: SMTP Open Relay Queue'
+    count: 1
 flows:
   enabled: true
-  chain_length: 2
+  chain_length: 4
   allow_duplicates: false
   include_all_topology_pivots: false
 segmentation:
   enabled: true
   density: 0.4
-  items: []
+  items:
+  - factor: 1.0
+    pivot_enabled: false
+    type: Firewall
+    count: 1
 hitl:
   use_env: false
 validation:

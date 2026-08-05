@@ -19,15 +19,21 @@ flag_node_generators:
   include: ["HTTP:*", "SSH:*", "DNS:*", "NFS:*", "Database:*"]
 flows:
   enabled: true
-  randomize: true
-  chain_length: [2, 5]
+  chain_length: 3
   allow_duplicates: false
+  include_all_topology_pivots: true
 traffic:
   profile: heavy
   payload_types: [photo, gibberish]
 segmentation:
   enabled: true
   density: 0.45
+  accessible_by_pivot: true
+  items:
+    - type: Firewall
+      count: 1
+      pivot_enabled: true
+      pivot_provider: flag-node-generator
 hitl:
   use_env: false
 validation:

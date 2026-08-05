@@ -31,14 +31,20 @@ vulns:
   exclude: []
 flag_node_generators:
   enabled: true
-  count: 1
+  count: 3
   specific:
-  - id: nfs_lab_instrument_logs
-    name: 'NFS: Lab Instrument Logs'
+  - id: nfs_build_cache_share
+    name: 'NFS: Build Cache Share'
+    count: 1
+  - id: '150'
+    name: 'SMB: Public Scanner Share'
+    count: 1
+  - id: '147'
+    name: 'SMB: Finance Quarterly Share'
     count: 1
 flows:
   enabled: true
-  chain_length: 2
+  chain_length: 3
   allow_duplicates: false
   include_all_topology_pivots: false
 segmentation:

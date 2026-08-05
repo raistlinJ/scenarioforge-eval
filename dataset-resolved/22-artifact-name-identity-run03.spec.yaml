@@ -33,24 +33,30 @@ flag_node_generators:
   enabled: true
   count: 3
   specific:
-  - id: '139'
-    name: 'DNS: Reverse Zone Note'
+  - id: ldap_bind_service_account
+    name: 'LDAP: Service Account Bind'
     count: 1
   - id: dns_txt_secret_record
     name: 'DNS: TXT Secret Record'
     count: 1
-  - id: ldap_bind_service_account
-    name: 'LDAP: Service Account Bind'
+  - id: '138'
+    name: 'DNS: SRV Admin Endpoint'
     count: 1
 flows:
-  enabled: false
-  chain_length: 0
+  enabled: true
+  chain_length: 2
   allow_duplicates: false
-  include_all_topology_pivots: false
+  include_all_topology_pivots: true
 segmentation:
   enabled: true
   density: 0.3
-  items: []
+  accessible_by_pivot: true
+  items:
+  - factor: 1.0
+    pivot_enabled: true
+    pivot_provider: flag-node-generator
+    type: NAT
+    count: 1
 hitl:
   use_env: false
 validation:

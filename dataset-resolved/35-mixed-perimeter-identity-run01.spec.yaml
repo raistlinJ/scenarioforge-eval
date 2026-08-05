@@ -36,18 +36,21 @@ vulns:
   enabled: true
   count: 1
   specific:
-  - name: nginx/nginx_parsing_vulnerability
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/nginx/nginx_parsing_vulnerability/docker-compose.yml
+  - name: nginx/CVE-2017-7529
+    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/nginx/CVE-2017-7529/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: true
-  count: 2
+  count: 3
   specific:
-  - id: '139'
-    name: 'DNS: Reverse Zone Note'
+  - id: '140'
+    name: 'DNS: DKIM Selector Secret'
     count: 1
   - id: dns_txt_secret_record
     name: 'DNS: TXT Secret Record'
+    count: 1
+  - id: ldap_bind_service_account
+    name: 'LDAP: Service Account Bind'
     count: 1
 flows:
   enabled: true
@@ -57,7 +60,11 @@ flows:
 segmentation:
   enabled: true
   density: 0.35
-  items: []
+  items:
+  - factor: 1.0
+    pivot_enabled: false
+    type: NAT
+    count: 1
 hitl:
   use_env: false
 validation:

@@ -49,8 +49,8 @@ flag_node_generators:
   enabled: true
   count: 1
   specific:
-  - id: ftp_anonymous_finance_drop
-    name: 'FTP: Anonymous Finance Drop'
+  - id: '137'
+    name: 'DNS: Split Horizon TXT'
     count: 1
 flows:
   enabled: true

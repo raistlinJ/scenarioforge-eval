@@ -49,8 +49,8 @@ flag_node_generators:
   enabled: true
   count: 1
   specific:
-  - id: '148'
-    name: 'SMB: Engineering Build Drop'
+  - id: mqtt_credentialed_ops_topic
+    name: 'MQTT: Credentialed Ops Topic'
     count: 1
 flows:
   enabled: true

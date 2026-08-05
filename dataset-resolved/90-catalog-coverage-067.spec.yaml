@@ -49,8 +49,8 @@ flag_node_generators:
   enabled: true
   count: 1
   specific:
-  - id: smb_guest_public_share
-    name: 'SMB: Guest Public Share'
+  - id: '134'
+    name: 'Database: SQLite Backup File'
     count: 1
 flows:
   enabled: true

@@ -135,7 +135,7 @@ validation:
   policy: "strict"
   check_artifacts:
     enabled: true
-    delay_seconds: 5
+    delay_seconds: 60
     # Warnings remain visible in each result without stopping later iterations;
     # hard phase/validation failures still fail the run.
-    strict: false
+    strict: true

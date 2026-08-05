@@ -41,8 +41,8 @@ flag_node_generators:
   enabled: true
   count: 1
   specific:
-  - id: '137'
-    name: 'DNS: Split Horizon TXT'
+  - id: nfs_webdav_evidence_share
+    name: 'Network Share: WebDAV Evidence Repository'
     count: 1
 flows:
   enabled: true

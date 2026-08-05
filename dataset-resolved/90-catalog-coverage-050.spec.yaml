@@ -49,8 +49,8 @@ flag_node_generators:
   enabled: true
   count: 1
   specific:
-  - id: http_public_file_drop
-    name: 'HTTP: Public File Drop'
+  - id: https_login_admin_console
+    name: 'HTTPS: Admin Login Console'
     count: 1
 flows:
   enabled: true

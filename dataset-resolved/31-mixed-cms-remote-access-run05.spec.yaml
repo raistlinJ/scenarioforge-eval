@@ -42,11 +42,17 @@ flows:
   enabled: true
   chain_length: 2
   allow_duplicates: false
-  include_all_topology_pivots: false
+  include_all_topology_pivots: true
 segmentation:
   enabled: true
   density: 0.3
-  items: []
+  accessible_by_pivot: true
+  items:
+  - factor: 1.0
+    pivot_enabled: true
+    pivot_provider: ssh-fallback
+    type: NAT
+    count: 1
 hitl:
   use_env: false
 validation:

@@ -47,14 +47,20 @@ flag_node_generators:
   include: []
   exclude: []
 flows:
-  enabled: false
-  chain_length: 0
+  enabled: true
+  chain_length: 2
   allow_duplicates: false
-  include_all_topology_pivots: false
+  include_all_topology_pivots: true
 segmentation:
   enabled: true
   density: 0.3
-  items: []
+  accessible_by_pivot: true
+  items:
+  - factor: 1.0
+    pivot_enabled: true
+    pivot_provider: vulnerability
+    type: Firewall
+    count: 1
 hitl:
   use_env: false
 validation:

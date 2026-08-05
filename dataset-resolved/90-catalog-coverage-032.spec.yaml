@@ -49,8 +49,8 @@ flag_node_generators:
   enabled: true
   count: 1
   specific:
-  - id: http_directory_traversal_docs
-    name: 'HTTP: Directory Traversal Docs'
+  - id: '143'
+    name: 'Mail: SMTP Bounce Spool'
     count: 1
 flows:
   enabled: true

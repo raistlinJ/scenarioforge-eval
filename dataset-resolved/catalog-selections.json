@@ -5,90 +5,90 @@
   "eligible_vulnerability_count": 294,
   "flag_node_generators": {
     "127": 5,
-    "128": 4,
-    "129": 4,
+    "128": 5,
+    "129": 5,
     "130": 5,
-    "131": 4,
-    "132": 4,
-    "133": 4,
-    "134": 4,
-    "135": 4,
-    "136": 4,
-    "137": 4,
-    "138": 4,
+    "131": 5,
+    "132": 5,
+    "133": 5,
+    "134": 5,
+    "135": 5,
+    "136": 5,
+    "137": 5,
+    "138": 5,
     "139": 5,
-    "140": 4,
-    "141": 4,
+    "140": 5,
+    "141": 5,
     "142": 4,
     "143": 4,
-    "144": 4,
-    "145": 4,
+    "144": 5,
+    "145": 5,
     "146": 4,
     "147": 4,
     "148": 4,
     "149": 5,
-    "150": 4,
+    "150": 5,
     "151": 5,
-    "dep_api_key_admin_endpoint": 4,
+    "dep_api_key_admin_endpoint": 5,
     "dep_checksum_evidence_gate": 5,
-    "dep_endpoint_hidden_followup": 4,
+    "dep_endpoint_hidden_followup": 5,
     "dep_file_parser_console": 5,
-    "dep_port_forward_pivot": 4,
-    "dep_ssh_key_bastion": 4,
-    "dep_ticket_attachment_portal": 4,
-    "dep_version_exploit_selector": 4,
+    "dep_port_forward_pivot": 5,
+    "dep_ssh_key_bastion": 5,
+    "dep_ticket_attachment_portal": 5,
+    "dep_version_exploit_selector": 5,
     "dep_webauth_bypass_console": 5,
-    "dns_txt_secret_record": 4,
-    "dns_zone_transfer_records": 4,
-    "ftp_anonymous_finance_drop": 4,
-    "ftp_user_backup_home": 4,
-    "git_deploy_key_repo": 4,
-    "git_http_bare_repo": 4,
+    "dns_txt_secret_record": 5,
+    "dns_zone_transfer_records": 5,
+    "ftp_anonymous_finance_drop": 5,
+    "ftp_user_backup_home": 5,
+    "git_deploy_key_repo": 5,
+    "git_http_bare_repo": 5,
     "http_backup_archive_listing": 5,
-    "http_cookie_role_escalation": 4,
+    "http_cookie_role_escalation": 5,
     "http_directory_traversal_docs": 4,
     "http_login_staff_portal": 5,
-    "http_public_file_drop": 4,
-    "http_source_secret_repo": 4,
+    "http_public_file_drop": 5,
+    "http_source_secret_repo": 5,
     "http_sqli_customer_lookup": 4,
-    "http_upload_file_drop": 4,
+    "http_upload_file_drop": 5,
     "https_basic_auth_reports": 4,
-    "https_directory_traversal_backups": 4,
+    "https_directory_traversal_backups": 5,
     "https_login_admin_console": 5,
     "https_public_status_page": 4,
-    "https_source_secret_ci": 4,
-    "https_sqli_invoice_portal": 4,
+    "https_source_secret_ci": 5,
+    "https_sqli_invoice_portal": 5,
     "https_token_debug_api": 4,
-    "imap_shared_mailbox": 4,
+    "imap_shared_mailbox": 5,
     "ldap_anonymous_directory": 4,
     "ldap_bind_service_account": 5,
-    "memcached_session_cache": 4,
+    "memcached_session_cache": 5,
     "mqtt_credentialed_ops_topic": 5,
     "mqtt_public_broker_topic": 4,
-    "mysql_backup_table": 4,
-    "nfs_backup_archive_passphrase": 4,
-    "nfs_build_cache_share": 4,
-    "nfs_engineering_drawings_export": 4,
-    "nfs_finance_cifs_share": 4,
-    "nfs_incident_response_evidence": 4,
-    "nfs_lab_instrument_logs": 4,
+    "mysql_backup_table": 5,
+    "nfs_backup_archive_passphrase": 5,
+    "nfs_build_cache_share": 5,
+    "nfs_engineering_drawings_export": 5,
+    "nfs_finance_cifs_share": 5,
+    "nfs_incident_response_evidence": 5,
+    "nfs_lab_instrument_logs": 5,
     "nfs_legacy_nfs3_share": 4,
     "nfs_legal_hold_archive": 5,
-    "nfs_readonly_audit_share": 4,
-    "nfs_webdav_evidence_share": 4,
-    "postgres_customer_dump": 4,
-    "redis_exposed_keys": 4,
+    "nfs_readonly_audit_share": 5,
+    "nfs_webdav_evidence_share": 5,
+    "postgres_customer_dump": 5,
+    "redis_exposed_keys": 5,
     "smb_guest_public_share": 5,
-    "smtp_open_relay_queue": 4,
-    "ssh_key_backup_operator": 4,
-    "ssh_key_git_deploy": 4,
+    "smtp_open_relay_queue": 5,
+    "ssh_key_backup_operator": 5,
+    "ssh_key_git_deploy": 5,
     "ssh_key_ops_bastion": 5,
     "ssh_key_research_lab": 5,
-    "ssh_password_audit_workstation": 4,
-    "ssh_password_finance_terminal": 4,
-    "ssh_password_helpdesk_home": 4,
+    "ssh_password_audit_workstation": 5,
+    "ssh_password_finance_terminal": 5,
+    "ssh_password_helpdesk_home": 5,
     "ssh_password_timeout_shell": 4,
-    "ssh_sftp_dropbox_key": 4
+    "ssh_sftp_dropbox_key": 5
   },
   "resolved_spec_count": 226,
   "scenarioforge_path": "/Users/jcacosta/Documents/GitHub/scenarioforge",
@@ -229,7 +229,8 @@
       "generators": [],
       "name": "dataset-vuln-perimeter_run01",
       "vulnerabilities": [
-        "nginx/nginx_parsing_vulnerability"
+        "nginx/nginx_parsing_vulnerability",
+        "nginx/CVE-2017-7529"
       ]
     },
     {
@@ -246,7 +247,8 @@
       "generators": [],
       "name": "dataset-vuln-perimeter_run03",
       "vulnerabilities": [
-        "nginx/CVE-2017-7529"
+        "ingress-nginx/CVE-2025-1974",
+        "nginx/nginx_parsing_vulnerability"
       ]
     },
     {
@@ -254,7 +256,8 @@
       "generators": [],
       "name": "dataset-vuln-perimeter_run04",
       "vulnerabilities": [
-        "ingress-nginx/CVE-2025-1974"
+        "nginx/CVE-2017-7529",
+        "nginx/CVE-2013-4547"
       ]
     },
     {
@@ -262,7 +265,8 @@
       "generators": [],
       "name": "dataset-vuln-perimeter_run05",
       "vulnerabilities": [
-        "nginx/CVE-2017-7529"
+        "nginx/insecure-configuration",
+        "ingress-nginx/CVE-2025-1974"
       ]
     },
     {
@@ -270,7 +274,9 @@
       "generators": [],
       "name": "dataset-vuln-search-data_run01",
       "vulnerabilities": [
-        "elasticsearch/WooYun-2015-110216"
+        "elasticsearch/WooYun-2015-110216",
+        "elasticsearch/CVE-2015-1427",
+        "elasticsearch/CVE-2015-3337"
       ]
     },
     {
@@ -279,8 +285,8 @@
       "name": "dataset-vuln-search-data_run02",
       "vulnerabilities": [
         "elasticsearch/CVE-2014-3120",
-        "elasticsearch/CVE-2015-3337",
-        "elasticsearch/CVE-2015-5531"
+        "elasticsearch/CVE-2015-5531",
+        "elasticsearch/WooYun-2015-110216"
       ]
     },
     {
@@ -288,6 +294,8 @@
       "generators": [],
       "name": "dataset-vuln-search-data_run03",
       "vulnerabilities": [
+        "elasticsearch/CVE-2015-3337",
+        "elasticsearch/CVE-2014-3120",
         "elasticsearch/CVE-2015-1427"
       ]
     },
@@ -296,7 +304,7 @@
       "generators": [],
       "name": "dataset-vuln-search-data_run04",
       "vulnerabilities": [
-        "elasticsearch/CVE-2015-3337",
+        "elasticsearch/CVE-2015-5531",
         "elasticsearch/CVE-2014-3120",
         "elasticsearch/WooYun-2015-110216"
       ]
@@ -306,9 +314,9 @@
       "generators": [],
       "name": "dataset-vuln-search-data_run05",
       "vulnerabilities": [
-        "elasticsearch/CVE-2015-5531",
+        "elasticsearch/CVE-2015-3337",
         "elasticsearch/CVE-2015-1427",
-        "elasticsearch/CVE-2015-3337"
+        "elasticsearch/CVE-2015-5531"
       ]
     },
     {
@@ -352,7 +360,8 @@
       "generators": [],
       "name": "dataset-vuln-cache_run05",
       "vulnerabilities": [
-        "celery/celery3_redis_unauth"
+        "celery/celery3_redis_unauth",
+        "redis/4-unacc"
       ]
     },
     {
@@ -361,7 +370,8 @@
       "name": "dataset-vuln-collaboration_run01",
       "vulnerabilities": [
         "confluence/CVE-2023-22527",
-        "confluence/CVE-2023-22515"
+        "confluence/CVE-2023-22515",
+        "confluence/CVE-2021-26084"
       ]
     },
     {
@@ -370,8 +380,8 @@
       "name": "dataset-vuln-collaboration_run02",
       "vulnerabilities": [
         "confluence/CVE-2022-26134",
-        "confluence/CVE-2021-26084",
-        "confluence/CVE-2019-3396"
+        "confluence/CVE-2019-3396",
+        "confluence/CVE-2021-26084"
       ]
     },
     {
@@ -389,9 +399,9 @@
       "generators": [],
       "name": "dataset-vuln-collaboration_run04",
       "vulnerabilities": [
-        "confluence/CVE-2021-26084",
         "confluence/CVE-2023-22515",
-        "confluence/CVE-2022-26134"
+        "confluence/CVE-2023-22527",
+        "confluence/CVE-2021-26084"
       ]
     },
     {
@@ -400,7 +410,8 @@
       "name": "dataset-vuln-collaboration_run05",
       "vulnerabilities": [
         "confluence/CVE-2019-3396",
-        "confluence/CVE-2023-22527"
+        "confluence/CVE-2022-26134",
+        "confluence/CVE-2023-22515"
       ]
     },
     {
@@ -565,6 +576,11 @@
           "count": 1,
           "id": "137",
           "name": "DNS: Split Horizon TXT"
+        },
+        {
+          "count": 1,
+          "id": "139",
+          "name": "DNS: Reverse Zone Note"
         }
       ],
       "name": "dataset-artifact-name-identity_run01",
@@ -582,6 +598,11 @@
           "count": 1,
           "id": "140",
           "name": "DNS: DKIM Selector Secret"
+        },
+        {
+          "count": 1,
+          "id": "141",
+          "name": "DNS: Delegation Glue Hint"
         }
       ],
       "name": "dataset-artifact-name-identity_run02",
@@ -592,8 +613,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "139",
-          "name": "DNS: Reverse Zone Note"
+          "id": "ldap_bind_service_account",
+          "name": "LDAP: Service Account Bind"
         },
         {
           "count": 1,
@@ -602,8 +623,8 @@
         },
         {
           "count": 1,
-          "id": "ldap_bind_service_account",
-          "name": "LDAP: Service Account Bind"
+          "id": "138",
+          "name": "DNS: SRV Admin Endpoint"
         }
       ],
       "name": "dataset-artifact-name-identity_run03",
@@ -619,13 +640,8 @@
         },
         {
           "count": 1,
-          "id": "141",
-          "name": "DNS: Delegation Glue Hint"
-        },
-        {
-          "count": 1,
-          "id": "138",
-          "name": "DNS: SRV Admin Endpoint"
+          "id": "139",
+          "name": "DNS: Reverse Zone Note"
         }
       ],
       "name": "dataset-artifact-name-identity_run04",
@@ -643,6 +659,11 @@
           "count": 1,
           "id": "137",
           "name": "DNS: Split Horizon TXT"
+        },
+        {
+          "count": 1,
+          "id": "141",
+          "name": "DNS: Delegation Glue Hint"
         }
       ],
       "name": "dataset-artifact-name-identity_run05",
@@ -660,6 +681,16 @@
           "count": 1,
           "id": "nfs_build_cache_share",
           "name": "NFS: Build Cache Share"
+        },
+        {
+          "count": 1,
+          "id": "150",
+          "name": "SMB: Public Scanner Share"
+        },
+        {
+          "count": 1,
+          "id": "nfs_legacy_nfs3_share",
+          "name": "NFS: Legacy Engineering Share"
         }
       ],
       "name": "dataset-artifact-file-shares_run01",
@@ -682,6 +713,11 @@
           "count": 1,
           "id": "151",
           "name": "SMB: IT Scripts Share"
+        },
+        {
+          "count": 1,
+          "id": "nfs_lab_instrument_logs",
+          "name": "NFS: Lab Instrument Logs"
         }
       ],
       "name": "dataset-artifact-file-shares_run02",
@@ -704,6 +740,11 @@
           "count": 1,
           "id": "nfs_finance_cifs_share",
           "name": "Network Share: Finance CIFS Mount"
+        },
+        {
+          "count": 1,
+          "id": "smb_guest_public_share",
+          "name": "SMB: Guest Public Share"
         }
       ],
       "name": "dataset-artifact-file-shares_run03",
@@ -721,6 +762,16 @@
           "count": 1,
           "id": "147",
           "name": "SMB: Finance Quarterly Share"
+        },
+        {
+          "count": 1,
+          "id": "149",
+          "name": "SMB: Legal Case Archive"
+        },
+        {
+          "count": 1,
+          "id": "148",
+          "name": "SMB: Engineering Build Drop"
         }
       ],
       "name": "dataset-artifact-file-shares_run04",
@@ -731,13 +782,23 @@
       "generators": [
         {
           "count": 1,
-          "id": "149",
-          "name": "SMB: Legal Case Archive"
+          "id": "nfs_backup_archive_passphrase",
+          "name": "NFS: Passphrase Backup Archive"
         },
         {
           "count": 1,
-          "id": "nfs_legacy_nfs3_share",
-          "name": "NFS: Legacy Engineering Share"
+          "id": "nfs_finance_cifs_share",
+          "name": "Network Share: Finance CIFS Mount"
+        },
+        {
+          "count": 1,
+          "id": "148",
+          "name": "SMB: Engineering Build Drop"
+        },
+        {
+          "count": 1,
+          "id": "nfs_legal_hold_archive",
+          "name": "NFS: Legal Hold Archive"
         }
       ],
       "name": "dataset-artifact-file-shares_run05",
@@ -760,6 +821,11 @@
           "count": 1,
           "id": "134",
           "name": "Database: SQLite Backup File"
+        },
+        {
+          "count": 1,
+          "id": "memcached_session_cache",
+          "name": "Cache: Memcached Session Cache"
         }
       ],
       "name": "dataset-artifact-data-stores_run01",
@@ -782,6 +848,11 @@
           "count": 1,
           "id": "136",
           "name": "Database: Oracle Wallet Note"
+        },
+        {
+          "count": 1,
+          "id": "127",
+          "name": "Cache: Redis ACL Token Store"
         }
       ],
       "name": "dataset-artifact-data-stores_run02",
@@ -797,8 +868,8 @@
         },
         {
           "count": 1,
-          "id": "127",
-          "name": "Cache: Redis ACL Token Store"
+          "id": "postgres_customer_dump",
+          "name": "Database: Postgres Customer Dump"
         },
         {
           "count": 1,
@@ -807,8 +878,8 @@
         },
         {
           "count": 1,
-          "id": "memcached_session_cache",
-          "name": "Cache: Memcached Session Cache"
+          "id": "mysql_backup_table",
+          "name": "Database: MySQL Backup Table"
         }
       ],
       "name": "dataset-artifact-data-stores_run03",
@@ -817,11 +888,6 @@
     {
       "file": "24-artifact-data-stores-run04.spec.yaml",
       "generators": [
-        {
-          "count": 1,
-          "id": "mysql_backup_table",
-          "name": "Database: MySQL Backup Table"
-        },
         {
           "count": 1,
           "id": "redis_exposed_keys",
@@ -834,8 +900,13 @@
         },
         {
           "count": 1,
-          "id": "postgres_customer_dump",
-          "name": "Database: Postgres Customer Dump"
+          "id": "134",
+          "name": "Database: SQLite Backup File"
+        },
+        {
+          "count": 1,
+          "id": "128",
+          "name": "Cache: Memcached Feature Flags"
         }
       ],
       "name": "dataset-artifact-data-stores_run04",
@@ -965,6 +1036,16 @@
           "count": 1,
           "id": "dep_endpoint_hidden_followup",
           "name": "Dependency Consumer: Hidden Endpoint Follow-Up"
+        },
+        {
+          "count": 1,
+          "id": "dep_webauth_bypass_console",
+          "name": "Dependency Consumer: WebAuth Bypass Console"
+        },
+        {
+          "count": 1,
+          "id": "dep_ssh_key_bastion",
+          "name": "Dependency Consumer: SSH Key Bastion"
         }
       ],
       "name": "dataset-artifact-dependency_run01",
@@ -975,8 +1056,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "dep_ssh_key_bastion",
-          "name": "Dependency Consumer: SSH Key Bastion"
+          "id": "dep_file_parser_console",
+          "name": "Dependency Consumer: File Parser Console"
         },
         {
           "count": 1,
@@ -985,13 +1066,13 @@
         },
         {
           "count": 1,
-          "id": "dep_file_parser_console",
-          "name": "Dependency Consumer: File Parser Console"
+          "id": "dep_version_exploit_selector",
+          "name": "Dependency Consumer: Version Exploit Selector"
         },
         {
           "count": 1,
-          "id": "dep_webauth_bypass_console",
-          "name": "Dependency Consumer: WebAuth Bypass Console"
+          "id": "dep_checksum_evidence_gate",
+          "name": "Dependency Consumer: Checksum Evidence Gate"
         }
       ],
       "name": "dataset-artifact-dependency_run02",
@@ -1002,18 +1083,23 @@
       "generators": [
         {
           "count": 1,
-          "id": "dep_checksum_evidence_gate",
-          "name": "Dependency Consumer: Checksum Evidence Gate"
-        },
-        {
-          "count": 1,
-          "id": "dep_version_exploit_selector",
-          "name": "Dependency Consumer: Version Exploit Selector"
-        },
-        {
-          "count": 1,
           "id": "dep_port_forward_pivot",
           "name": "Dependency Consumer: Port Forward Pivot"
+        },
+        {
+          "count": 1,
+          "id": "dep_ticket_attachment_portal",
+          "name": "Dependency Consumer: Ticket Attachment Portal"
+        },
+        {
+          "count": 1,
+          "id": "dep_file_parser_console",
+          "name": "Dependency Consumer: File Parser Console"
+        },
+        {
+          "count": 1,
+          "id": "dep_webauth_bypass_console",
+          "name": "Dependency Consumer: WebAuth Bypass Console"
         }
       ],
       "name": "dataset-artifact-dependency_run03",
@@ -1034,13 +1120,13 @@
         },
         {
           "count": 1,
-          "id": "dep_webauth_bypass_console",
-          "name": "Dependency Consumer: WebAuth Bypass Console"
+          "id": "dep_api_key_admin_endpoint",
+          "name": "Dependency Consumer: API Key Admin Endpoint"
         },
         {
           "count": 1,
-          "id": "dep_file_parser_console",
-          "name": "Dependency Consumer: File Parser Console"
+          "id": "dep_endpoint_hidden_followup",
+          "name": "Dependency Consumer: Hidden Endpoint Follow-Up"
         }
       ],
       "name": "dataset-artifact-dependency_run04",
@@ -1051,18 +1137,23 @@
       "generators": [
         {
           "count": 1,
-          "id": "dep_endpoint_hidden_followup",
-          "name": "Dependency Consumer: Hidden Endpoint Follow-Up"
+          "id": "dep_port_forward_pivot",
+          "name": "Dependency Consumer: Port Forward Pivot"
+        },
+        {
+          "count": 1,
+          "id": "dep_ssh_key_bastion",
+          "name": "Dependency Consumer: SSH Key Bastion"
+        },
+        {
+          "count": 1,
+          "id": "dep_checksum_evidence_gate",
+          "name": "Dependency Consumer: Checksum Evidence Gate"
         },
         {
           "count": 1,
           "id": "dep_ticket_attachment_portal",
           "name": "Dependency Consumer: Ticket Attachment Portal"
-        },
-        {
-          "count": 1,
-          "id": "dep_api_key_admin_endpoint",
-          "name": "Dependency Consumer: API Key Admin Endpoint"
         }
       ],
       "name": "dataset-artifact-dependency_run05",
@@ -1375,7 +1466,7 @@
       "vulnerabilities": [
         "elasticsearch/CVE-2015-5531",
         "elasticsearch/CVE-2015-1427",
-        "elasticsearch/CVE-2014-3120"
+        "elasticsearch/CVE-2015-3337"
       ]
     },
     {
@@ -1388,8 +1479,8 @@
         },
         {
           "count": 1,
-          "id": "128",
-          "name": "Cache: Memcached Feature Flags"
+          "id": "mysql_backup_table",
+          "name": "Database: MySQL Backup Table"
         },
         {
           "count": 1,
@@ -1404,8 +1495,8 @@
       ],
       "name": "dataset-mixed-data-caching_run02",
       "vulnerabilities": [
-        "elasticsearch/WooYun-2015-110216",
         "elasticsearch/CVE-2014-3120",
+        "elasticsearch/WooYun-2015-110216",
         "elasticsearch/CVE-2015-5531"
       ]
     },
@@ -1413,25 +1504,30 @@
       "file": "33-mixed-data-caching-run03.spec.yaml",
       "generators": [
         {
-          "count": 2,
+          "count": 1,
+          "id": "129",
+          "name": "Cache: Varnish Debug Objects"
+        },
+        {
+          "count": 1,
           "id": "mysql_backup_table",
           "name": "Database: MySQL Backup Table"
         },
         {
           "count": 1,
-          "id": "134",
-          "name": "Database: SQLite Backup File"
+          "id": "postgres_customer_dump",
+          "name": "Database: Postgres Customer Dump"
         },
         {
           "count": 1,
-          "id": "postgres_customer_dump",
-          "name": "Database: Postgres Customer Dump"
+          "id": "131",
+          "name": "Cache: CDN Manifest Cache"
         }
       ],
       "name": "dataset-mixed-data-caching_run03",
       "vulnerabilities": [
         "elasticsearch/WooYun-2015-110216",
-        "elasticsearch/CVE-2015-3337",
+        "elasticsearch/CVE-2014-3120",
         "elasticsearch/CVE-2015-1427"
       ]
     },
@@ -1445,18 +1541,23 @@
         },
         {
           "count": 1,
-          "id": "129",
-          "name": "Cache: Varnish Debug Objects"
+          "id": "127",
+          "name": "Cache: Redis ACL Token Store"
         },
         {
           "count": 1,
           "id": "135",
           "name": "Database: Mongo Export Documents"
+        },
+        {
+          "count": 1,
+          "id": "133",
+          "name": "Database: MySQL Reports Dump"
         }
       ],
       "name": "dataset-mixed-data-caching_run04",
       "vulnerabilities": [
-        "elasticsearch/CVE-2014-3120",
+        "elasticsearch/CVE-2015-3337",
         "elasticsearch/CVE-2015-1427"
       ]
     },
@@ -1494,24 +1595,29 @@
       "generators": [
         {
           "count": 1,
-          "id": "smb_guest_public_share",
-          "name": "SMB: Guest Public Share"
+          "id": "nfs_webdav_evidence_share",
+          "name": "Network Share: WebDAV Evidence Repository"
         },
         {
           "count": 1,
-          "id": "148",
-          "name": "SMB: Engineering Build Drop"
+          "id": "nfs_legacy_nfs3_share",
+          "name": "NFS: Legacy Engineering Share"
         },
         {
           "count": 1,
-          "id": "150",
-          "name": "SMB: Public Scanner Share"
+          "id": "nfs_build_cache_share",
+          "name": "NFS: Build Cache Share"
+        },
+        {
+          "count": 1,
+          "id": "149",
+          "name": "SMB: Legal Case Archive"
         }
       ],
       "name": "dataset-mixed-shared-data_run01",
       "vulnerabilities": [
         "redis/CVE-2022-0543",
-        "redis/4-unacc"
+        "celery/celery3_redis_unauth"
       ]
     },
     {
@@ -1519,8 +1625,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "nfs_lab_instrument_logs",
-          "name": "NFS: Lab Instrument Logs"
+          "id": "151",
+          "name": "SMB: IT Scripts Share"
         },
         {
           "count": 1,
@@ -1531,11 +1637,16 @@
           "count": 1,
           "id": "150",
           "name": "SMB: Public Scanner Share"
+        },
+        {
+          "count": 1,
+          "id": "nfs_lab_instrument_logs",
+          "name": "NFS: Lab Instrument Logs"
         }
       ],
       "name": "dataset-mixed-shared-data_run02",
       "vulnerabilities": [
-        "celery/celery3_redis_unauth",
+        "redis/CVE-2022-0543",
         "redis/4-unacc"
       ]
     },
@@ -1544,23 +1655,28 @@
       "generators": [
         {
           "count": 1,
-          "id": "nfs_webdav_evidence_share",
-          "name": "Network Share: WebDAV Evidence Repository"
-        },
-        {
-          "count": 1,
-          "id": "nfs_lab_instrument_logs",
-          "name": "NFS: Lab Instrument Logs"
-        },
-        {
-          "count": 1,
           "id": "147",
           "name": "SMB: Finance Quarterly Share"
+        },
+        {
+          "count": 1,
+          "id": "nfs_engineering_drawings_export",
+          "name": "NFS: Engineering Drawings Export"
+        },
+        {
+          "count": 1,
+          "id": "nfs_readonly_audit_share",
+          "name": "NFS: Read-Only Audit Share"
+        },
+        {
+          "count": 1,
+          "id": "smb_guest_public_share",
+          "name": "SMB: Guest Public Share"
         }
       ],
       "name": "dataset-mixed-shared-data_run03",
       "vulnerabilities": [
-        "redis/CVE-2022-0543"
+        "celery/celery3_redis_unauth"
       ]
     },
     {
@@ -1580,11 +1696,16 @@
           "count": 1,
           "id": "nfs_finance_cifs_share",
           "name": "Network Share: Finance CIFS Mount"
+        },
+        {
+          "count": 1,
+          "id": "nfs_incident_response_evidence",
+          "name": "NFS: Incident Response Evidence"
         }
       ],
       "name": "dataset-mixed-shared-data_run04",
       "vulnerabilities": [
-        "celery/celery3_redis_unauth",
+        "redis/4-unacc",
         "redis/CVE-2022-0543"
       ]
     },
@@ -1600,6 +1721,16 @@
           "count": 1,
           "id": "nfs_build_cache_share",
           "name": "NFS: Build Cache Share"
+        },
+        {
+          "count": 1,
+          "id": "nfs_legacy_nfs3_share",
+          "name": "NFS: Legacy Engineering Share"
+        },
+        {
+          "count": 1,
+          "id": "147",
+          "name": "SMB: Finance Quarterly Share"
         }
       ],
       "name": "dataset-mixed-shared-data_run05",
@@ -1612,32 +1743,37 @@
       "generators": [
         {
           "count": 1,
-          "id": "139",
-          "name": "DNS: Reverse Zone Note"
+          "id": "140",
+          "name": "DNS: DKIM Selector Secret"
         },
         {
           "count": 1,
           "id": "dns_txt_secret_record",
           "name": "DNS: TXT Secret Record"
+        },
+        {
+          "count": 1,
+          "id": "ldap_bind_service_account",
+          "name": "LDAP: Service Account Bind"
         }
       ],
       "name": "dataset-mixed-perimeter-identity_run01",
       "vulnerabilities": [
-        "nginx/nginx_parsing_vulnerability"
+        "nginx/CVE-2017-7529"
       ]
     },
     {
       "file": "35-mixed-perimeter-identity-run02.spec.yaml",
       "generators": [
         {
-          "count": 1,
-          "id": "ldap_bind_service_account",
-          "name": "LDAP: Service Account Bind"
+          "count": 2,
+          "id": "dns_zone_transfer_records",
+          "name": "DNS: Zone Transfer Records"
         },
         {
           "count": 1,
-          "id": "dns_zone_transfer_records",
-          "name": "DNS: Zone Transfer Records"
+          "id": "138",
+          "name": "DNS: SRV Admin Endpoint"
         }
       ],
       "name": "dataset-mixed-perimeter-identity_run02",
@@ -1651,8 +1787,13 @@
       "generators": [
         {
           "count": 1,
-          "id": "138",
-          "name": "DNS: SRV Admin Endpoint"
+          "id": "139",
+          "name": "DNS: Reverse Zone Note"
+        },
+        {
+          "count": 1,
+          "id": "137",
+          "name": "DNS: Split Horizon TXT"
         }
       ],
       "name": "dataset-mixed-perimeter-identity_run03",
@@ -1665,18 +1806,23 @@
       "generators": [
         {
           "count": 1,
-          "id": "140",
-          "name": "DNS: DKIM Selector Secret"
+          "id": "dns_txt_secret_record",
+          "name": "DNS: TXT Secret Record"
         },
         {
           "count": 1,
           "id": "141",
           "name": "DNS: Delegation Glue Hint"
+        },
+        {
+          "count": 1,
+          "id": "138",
+          "name": "DNS: SRV Admin Endpoint"
         }
       ],
       "name": "dataset-mixed-perimeter-identity_run04",
       "vulnerabilities": [
-        "nginx/CVE-2017-7529"
+        "nginx/nginx_parsing_vulnerability"
       ]
     },
     {
@@ -1684,18 +1830,13 @@
       "generators": [
         {
           "count": 1,
-          "id": "137",
-          "name": "DNS: Split Horizon TXT"
+          "id": "ldap_anonymous_directory",
+          "name": "LDAP: Anonymous Directory"
         },
         {
           "count": 1,
-          "id": "dns_txt_secret_record",
-          "name": "DNS: TXT Secret Record"
-        },
-        {
-          "count": 1,
-          "id": "140",
-          "name": "DNS: DKIM Selector Secret"
+          "id": "ldap_bind_service_account",
+          "name": "LDAP: Service Account Bind"
         }
       ],
       "name": "dataset-mixed-perimeter-identity_run05",
@@ -1725,7 +1866,7 @@
       ],
       "name": "dataset-mixed-collaboration-messaging_run01",
       "vulnerabilities": [
-        "confluence/CVE-2023-22515",
+        "confluence/CVE-2022-26134",
         "confluence/CVE-2021-26084",
         "confluence/CVE-2019-3396"
       ]
@@ -1737,6 +1878,16 @@
           "count": 1,
           "id": "144",
           "name": "Mail: POP3 Shared Dropbox"
+        },
+        {
+          "count": 1,
+          "id": "145",
+          "name": "Mail: Webmail Export Attachment"
+        },
+        {
+          "count": 1,
+          "id": "smtp_open_relay_queue",
+          "name": "Mail: SMTP Open Relay Queue"
         }
       ],
       "name": "dataset-mixed-collaboration-messaging_run02",
@@ -1754,8 +1905,13 @@
         },
         {
           "count": 1,
-          "id": "145",
-          "name": "Mail: Webmail Export Attachment"
+          "id": "imap_shared_mailbox",
+          "name": "Mail: Shared IMAP Mailbox"
+        },
+        {
+          "count": 1,
+          "id": "146",
+          "name": "Mail: DMARC Report Queue"
         }
       ],
       "name": "dataset-mixed-collaboration-messaging_run03",
@@ -1770,12 +1926,22 @@
           "count": 1,
           "id": "mqtt_credentialed_ops_topic",
           "name": "MQTT: Credentialed Ops Topic"
+        },
+        {
+          "count": 1,
+          "id": "145",
+          "name": "Mail: Webmail Export Attachment"
+        },
+        {
+          "count": 1,
+          "id": "142",
+          "name": "Mail: IMAP Archive Mailbox"
         }
       ],
       "name": "dataset-mixed-collaboration-messaging_run04",
       "vulnerabilities": [
-        "confluence/CVE-2021-26084",
-        "confluence/CVE-2022-26134"
+        "confluence/CVE-2023-22527",
+        "confluence/CVE-2021-26084"
       ]
     },
     {
@@ -1788,8 +1954,8 @@
         },
         {
           "count": 1,
-          "id": "smtp_open_relay_queue",
-          "name": "Mail: SMTP Open Relay Queue"
+          "id": "144",
+          "name": "Mail: POP3 Shared Dropbox"
         },
         {
           "count": 1,
@@ -1799,8 +1965,8 @@
       ],
       "name": "dataset-mixed-collaboration-messaging_run05",
       "vulnerabilities": [
-        "confluence/CVE-2023-22527",
-        "confluence/CVE-2022-26134"
+        "confluence/CVE-2022-26134",
+        "confluence/CVE-2023-22515"
       ]
     },
     {
@@ -1820,6 +1986,11 @@
           "count": 1,
           "id": "https_source_secret_ci",
           "name": "HTTPS: CI Source Secret"
+        },
+        {
+          "count": 1,
+          "id": "https_directory_traversal_backups",
+          "name": "HTTPS: Directory Traversal Backups"
         }
       ],
       "name": "dataset-mixed-application-mesh_run01",
@@ -1834,8 +2005,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "https_directory_traversal_backups",
-          "name": "HTTPS: Directory Traversal Backups"
+          "id": "ssh_key_research_lab",
+          "name": "SSH: Key Research Lab"
         },
         {
           "count": 1,
@@ -1871,18 +2042,13 @@
         },
         {
           "count": 1,
-          "id": "ssh_key_research_lab",
-          "name": "SSH: Key Research Lab"
-        },
-        {
-          "count": 1,
           "id": "https_basic_auth_reports",
           "name": "HTTPS: Basic Auth Reports"
         },
         {
           "count": 1,
-          "id": "http_directory_traversal_docs",
-          "name": "HTTP: Directory Traversal Docs"
+          "id": "ssh_key_git_deploy",
+          "name": "SSH: Key Git Deploy Account"
         }
       ],
       "name": "dataset-mixed-application-mesh_run03",
@@ -1897,13 +2063,18 @@
       "generators": [
         {
           "count": 1,
-          "id": "http_cookie_role_escalation",
-          "name": "HTTP: Cookie Role Escalation"
+          "id": "http_directory_traversal_docs",
+          "name": "HTTP: Directory Traversal Docs"
         },
         {
           "count": 1,
           "id": "http_backup_archive_listing",
           "name": "HTTP: Backup Archive Listing"
+        },
+        {
+          "count": 1,
+          "id": "ssh_sftp_dropbox_key",
+          "name": "SSH: Key SFTP Dropbox"
         }
       ],
       "name": "dataset-mixed-application-mesh_run04",
@@ -1930,6 +2101,11 @@
           "count": 1,
           "id": "https_sqli_invoice_portal",
           "name": "HTTPS: SQLi Invoice Portal"
+        },
+        {
+          "count": 1,
+          "id": "https_basic_auth_reports",
+          "name": "HTTPS: Basic Auth Reports"
         }
       ],
       "name": "dataset-mixed-application-mesh_run05",
@@ -1954,6 +2130,11 @@
         },
         {
           "count": 1,
+          "id": "132",
+          "name": "Database: Postgres Audit Schema"
+        },
+        {
+          "count": 1,
           "id": "nfs_legal_hold_archive",
           "name": "NFS: Legal Hold Archive"
         }
@@ -1971,18 +2152,23 @@
       "generators": [
         {
           "count": 1,
-          "id": "nfs_legacy_nfs3_share",
-          "name": "NFS: Legacy Engineering Share"
+          "id": "redis_exposed_keys",
+          "name": "Cache: Exposed Redis Keys"
+        },
+        {
+          "count": 1,
+          "id": "smtp_open_relay_queue",
+          "name": "Mail: SMTP Open Relay Queue"
+        },
+        {
+          "count": 1,
+          "id": "nfs_lab_instrument_logs",
+          "name": "NFS: Lab Instrument Logs"
         },
         {
           "count": 1,
           "id": "151",
           "name": "SMB: IT Scripts Share"
-        },
-        {
-          "count": 1,
-          "id": "smb_guest_public_share",
-          "name": "SMB: Guest Public Share"
         }
       ],
       "name": "dataset-mixed-enterprise-data_run02",
@@ -1996,8 +2182,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "redis_exposed_keys",
-          "name": "Cache: Exposed Redis Keys"
+          "id": "143",
+          "name": "Mail: SMTP Bounce Spool"
         },
         {
           "count": 1,
@@ -2006,8 +2192,8 @@
         },
         {
           "count": 1,
-          "id": "143",
-          "name": "Mail: SMTP Bounce Spool"
+          "id": "smb_guest_public_share",
+          "name": "SMB: Guest Public Share"
         },
         {
           "count": 1,
@@ -2026,8 +2212,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "144",
-          "name": "Mail: POP3 Shared Dropbox"
+          "id": "postgres_customer_dump",
+          "name": "Database: Postgres Customer Dump"
         },
         {
           "count": 1,
@@ -2036,13 +2222,8 @@
         },
         {
           "count": 1,
-          "id": "nfs_engineering_drawings_export",
-          "name": "NFS: Engineering Drawings Export"
-        },
-        {
-          "count": 1,
-          "id": "131",
-          "name": "Cache: CDN Manifest Cache"
+          "id": "mysql_backup_table",
+          "name": "Database: MySQL Backup Table"
         }
       ],
       "name": "dataset-mixed-enterprise-data_run04",
@@ -2101,7 +2282,9 @@
       "name": "dataset-scale-multi-vulnerability_run02",
       "vulnerabilities": [
         "struts2/s2-009",
-        "django/CVE-2019-14234"
+        "django/CVE-2019-14234",
+        "django/CVE-2021-35042",
+        "struts2/s2-007"
       ]
     },
     {
@@ -2109,8 +2292,10 @@
       "generators": [],
       "name": "dataset-scale-multi-vulnerability_run03",
       "vulnerabilities": [
-        "struts2/s2-007",
-        "struts2/s2-057"
+        "struts2/s2-012",
+        "struts2/s2-057",
+        "django/CVE-2022-34265",
+        "django/CVE-2020-9402"
       ]
     },
     {
@@ -2119,8 +2304,9 @@
       "name": "dataset-scale-multi-vulnerability_run04",
       "vulnerabilities": [
         "struts2/s2-053",
-        "django/CVE-2020-9402",
-        "django/CVE-2017-12794"
+        "struts2/s2-013",
+        "django/CVE-2017-12794",
+        "struts2/s2-005"
       ]
     },
     {
@@ -2128,9 +2314,10 @@
       "generators": [],
       "name": "dataset-scale-multi-vulnerability_run05",
       "vulnerabilities": [
-        "django/CVE-2022-34265",
-        "struts2/s2-013",
-        "django/CVE-2021-35042"
+        "struts2/s2-046",
+        "struts2/s2-048",
+        "django/CVE-2019-14234",
+        "struts2/s2-052"
       ]
     },
     {
@@ -2138,18 +2325,18 @@
       "generators": [
         {
           "count": 1,
-          "id": "dns_zone_transfer_records",
-          "name": "DNS: Zone Transfer Records"
+          "id": "ssh_password_timeout_shell",
+          "name": "SSH: Password Timeout Shell"
         },
         {
           "count": 1,
-          "id": "ssh_password_finance_terminal",
-          "name": "SSH: Password Finance Terminal"
+          "id": "http_cookie_role_escalation",
+          "name": "HTTP: Cookie Role Escalation"
         },
         {
           "count": 1,
-          "id": "139",
-          "name": "DNS: Reverse Zone Note"
+          "id": "http_public_file_drop",
+          "name": "HTTP: Public File Drop"
         },
         {
           "count": 1,
@@ -2175,8 +2362,8 @@
         },
         {
           "count": 1,
-          "id": "ssh_sftp_dropbox_key",
-          "name": "SSH: Key SFTP Dropbox"
+          "id": "ssh_key_backup_operator",
+          "name": "SSH: Key Backup Operator"
         }
       ],
       "name": "dataset-scale-multi-artifact_run02",
@@ -2192,23 +2379,23 @@
         },
         {
           "count": 1,
+          "id": "ssh_key_ops_bastion",
+          "name": "SSH: Key Ops Bastion"
+        },
+        {
+          "count": 1,
+          "id": "140",
+          "name": "DNS: DKIM Selector Secret"
+        },
+        {
+          "count": 1,
+          "id": "ssh_password_finance_terminal",
+          "name": "SSH: Password Finance Terminal"
+        },
+        {
+          "count": 1,
           "id": "nfs_incident_response_evidence",
           "name": "NFS: Incident Response Evidence"
-        },
-        {
-          "count": 1,
-          "id": "138",
-          "name": "DNS: SRV Admin Endpoint"
-        },
-        {
-          "count": 1,
-          "id": "ssh_key_backup_operator",
-          "name": "SSH: Key Backup Operator"
-        },
-        {
-          "count": 1,
-          "id": "132",
-          "name": "Database: Postgres Audit Schema"
         }
       ],
       "name": "dataset-scale-multi-artifact_run03",
@@ -2229,13 +2416,13 @@
         },
         {
           "count": 1,
-          "id": "nfs_build_cache_share",
-          "name": "NFS: Build Cache Share"
+          "id": "ssh_sftp_dropbox_key",
+          "name": "SSH: Key SFTP Dropbox"
         },
         {
           "count": 1,
-          "id": "nfs_legacy_nfs3_share",
-          "name": "NFS: Legacy Engineering Share"
+          "id": "ssh_key_research_lab",
+          "name": "SSH: Key Research Lab"
         },
         {
           "count": 1,
@@ -2256,18 +2443,18 @@
         },
         {
           "count": 1,
-          "id": "ssh_key_ops_bastion",
-          "name": "SSH: Key Ops Bastion"
+          "id": "140",
+          "name": "DNS: DKIM Selector Secret"
         },
         {
           "count": 1,
-          "id": "http_public_file_drop",
-          "name": "HTTP: Public File Drop"
+          "id": "135",
+          "name": "Database: Mongo Export Documents"
         },
         {
           "count": 1,
-          "id": "nfs_readonly_audit_share",
-          "name": "NFS: Read-Only Audit Share"
+          "id": "dns_txt_secret_record",
+          "name": "DNS: TXT Secret Record"
         }
       ],
       "name": "dataset-scale-multi-artifact_run05",
@@ -2278,13 +2465,13 @@
       "generators": [
         {
           "count": 1,
-          "id": "dep_ssh_key_bastion",
-          "name": "Dependency Consumer: SSH Key Bastion"
+          "id": "dep_file_parser_console",
+          "name": "Dependency Consumer: File Parser Console"
         },
         {
           "count": 1,
-          "id": "dep_port_forward_pivot",
-          "name": "Dependency Consumer: Port Forward Pivot"
+          "id": "dep_endpoint_hidden_followup",
+          "name": "Dependency Consumer: Hidden Endpoint Follow-Up"
         },
         {
           "count": 1,
@@ -2293,19 +2480,19 @@
         },
         {
           "count": 1,
-          "id": "dep_checksum_evidence_gate",
-          "name": "Dependency Consumer: Checksum Evidence Gate"
+          "id": "dep_webauth_bypass_console",
+          "name": "Dependency Consumer: WebAuth Bypass Console"
         },
         {
           "count": 1,
-          "id": "nfs_legal_hold_archive",
-          "name": "NFS: Legal Hold Archive"
+          "id": "dep_api_key_admin_endpoint",
+          "name": "Dependency Consumer: API Key Admin Endpoint"
         }
       ],
       "name": "dataset-scale-segmented-combined_run01",
       "vulnerabilities": [
-        "struts2/s2-012",
-        "struts2/s2-048"
+        "struts2/s2-053",
+        "struts2/s2-057"
       ]
     },
     {
@@ -2313,13 +2500,13 @@
       "generators": [
         {
           "count": 1,
-          "id": "dep_file_parser_console",
-          "name": "Dependency Consumer: File Parser Console"
+          "id": "dep_port_forward_pivot",
+          "name": "Dependency Consumer: Port Forward Pivot"
         },
         {
           "count": 1,
-          "id": "dep_api_key_admin_endpoint",
-          "name": "Dependency Consumer: API Key Admin Endpoint"
+          "id": "dep_ssh_key_bastion",
+          "name": "Dependency Consumer: SSH Key Bastion"
         },
         {
           "count": 1,
@@ -2328,8 +2515,8 @@
         },
         {
           "count": 1,
-          "id": "dep_webauth_bypass_console",
-          "name": "Dependency Consumer: WebAuth Bypass Console"
+          "id": "http_source_secret_repo",
+          "name": "HTTP: Source Secret Repository"
         }
       ],
       "name": "dataset-scale-segmented-combined_run02",
@@ -2344,27 +2531,27 @@
       "generators": [
         {
           "count": 1,
-          "id": "dep_ssh_key_bastion",
-          "name": "Dependency Consumer: SSH Key Bastion"
+          "id": "ssh_key_ops_bastion",
+          "name": "SSH: Key Ops Bastion"
         },
         {
           "count": 1,
-          "id": "dep_endpoint_hidden_followup",
-          "name": "Dependency Consumer: Hidden Endpoint Follow-Up"
+          "id": "dep_version_exploit_selector",
+          "name": "Dependency Consumer: Version Exploit Selector"
         },
         {
           "count": 1,
-          "id": "dep_port_forward_pivot",
-          "name": "Dependency Consumer: Port Forward Pivot"
+          "id": "dep_webauth_bypass_console",
+          "name": "Dependency Consumer: WebAuth Bypass Console"
         }
       ],
       "name": "dataset-scale-segmented-combined_run03",
       "vulnerabilities": [
-        "struts2/s2-005",
+        "struts2/s2-032",
         "struts2/s2-008",
         "struts2/s2-013",
         "struts2/s2-061",
-        "struts2/s2-032"
+        "drupal/CVE-2014-3704"
       ]
     },
     {
@@ -2377,8 +2564,8 @@
         },
         {
           "count": 1,
-          "id": "ssh_key_git_deploy",
-          "name": "SSH: Key Git Deploy Account"
+          "id": "dep_api_key_admin_endpoint",
+          "name": "Dependency Consumer: API Key Admin Endpoint"
         },
         {
           "count": 1,
@@ -2387,8 +2574,8 @@
         },
         {
           "count": 1,
-          "id": "mysql_backup_table",
-          "name": "Database: MySQL Backup Table"
+          "id": "dep_port_forward_pivot",
+          "name": "Dependency Consumer: Port Forward Pivot"
         }
       ],
       "name": "dataset-scale-segmented-combined_run04",
@@ -2419,22 +2606,22 @@
         },
         {
           "count": 1,
-          "id": "ssh_password_timeout_shell",
-          "name": "SSH: Password Timeout Shell"
+          "id": "http_public_file_drop",
+          "name": "HTTP: Public File Drop"
         },
         {
           "count": 1,
-          "id": "ssh_key_research_lab",
-          "name": "SSH: Key Research Lab"
+          "id": "132",
+          "name": "Database: Postgres Audit Schema"
         }
       ],
       "name": "dataset-scale-segmented-combined_run05",
       "vulnerabilities": [
-        "struts2/s2-053",
-        "struts2/s2-046",
-        "drupal/CVE-2014-3704",
+        "drupal/CVE-2018-7600",
+        "struts2/s2-007",
         "struts2/s2-067",
-        "drupal/CVE-2018-7600"
+        "struts2/s2-009",
+        "struts2/s2-066"
       ]
     },
     {
@@ -2447,8 +2634,13 @@
         },
         {
           "count": 1,
-          "id": "148",
-          "name": "SMB: Engineering Build Drop"
+          "id": "nfs_readonly_audit_share",
+          "name": "NFS: Read-Only Audit Share"
+        },
+        {
+          "count": 1,
+          "id": "nfs_engineering_drawings_export",
+          "name": "NFS: Engineering Drawings Export"
         }
       ],
       "name": "dataset-segmented-nat-artifacts_run01",
@@ -2464,8 +2656,13 @@
         },
         {
           "count": 1,
-          "id": "147",
-          "name": "SMB: Finance Quarterly Share"
+          "id": "148",
+          "name": "SMB: Engineering Build Drop"
+        },
+        {
+          "count": 1,
+          "id": "nfs_legal_hold_archive",
+          "name": "NFS: Legal Hold Archive"
         }
       ],
       "name": "dataset-segmented-nat-artifacts_run02",
@@ -2476,8 +2673,18 @@
       "generators": [
         {
           "count": 1,
-          "id": "nfs_lab_instrument_logs",
-          "name": "NFS: Lab Instrument Logs"
+          "id": "nfs_build_cache_share",
+          "name": "NFS: Build Cache Share"
+        },
+        {
+          "count": 1,
+          "id": "150",
+          "name": "SMB: Public Scanner Share"
+        },
+        {
+          "count": 1,
+          "id": "147",
+          "name": "SMB: Finance Quarterly Share"
         }
       ],
       "name": "dataset-segmented-nat-artifacts_run03",
@@ -2488,8 +2695,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "smb_guest_public_share",
-          "name": "SMB: Guest Public Share"
+          "id": "nfs_webdav_evidence_share",
+          "name": "Network Share: WebDAV Evidence Repository"
         },
         {
           "count": 1,
@@ -2510,8 +2717,18 @@
       "generators": [
         {
           "count": 1,
-          "id": "151",
-          "name": "SMB: IT Scripts Share"
+          "id": "nfs_lab_instrument_logs",
+          "name": "NFS: Lab Instrument Logs"
+        },
+        {
+          "count": 1,
+          "id": "nfs_readonly_audit_share",
+          "name": "NFS: Read-Only Audit Share"
+        },
+        {
+          "count": 1,
+          "id": "smb_guest_public_share",
+          "name": "SMB: Guest Public Share"
         }
       ],
       "name": "dataset-segmented-nat-artifacts_run05",
@@ -2524,6 +2741,11 @@
           "count": 1,
           "id": "https_directory_traversal_backups",
           "name": "HTTPS: Directory Traversal Backups"
+        },
+        {
+          "count": 1,
+          "id": "https_source_secret_ci",
+          "name": "HTTPS: CI Source Secret"
         }
       ],
       "name": "dataset-segmented-mixed-perimeter_run01",
@@ -2537,14 +2759,19 @@
       "generators": [
         {
           "count": 1,
-          "id": "https_source_secret_ci",
-          "name": "HTTPS: CI Source Secret"
+          "id": "https_token_debug_api",
+          "name": "HTTPS: Token Debug API"
+        },
+        {
+          "count": 1,
+          "id": "https_login_admin_console",
+          "name": "HTTPS: Admin Login Console"
         }
       ],
       "name": "dataset-segmented-mixed-perimeter_run02",
       "vulnerabilities": [
-        "nginx/CVE-2013-4547",
-        "nginx/CVE-2017-7529"
+        "nginx/CVE-2017-7529",
+        "ingress-nginx/CVE-2025-1974"
       ]
     },
     {
@@ -2552,13 +2779,18 @@
       "generators": [
         {
           "count": 1,
-          "id": "https_basic_auth_reports",
-          "name": "HTTPS: Basic Auth Reports"
+          "id": "https_sqli_invoice_portal",
+          "name": "HTTPS: SQLi Invoice Portal"
+        },
+        {
+          "count": 1,
+          "id": "138",
+          "name": "DNS: SRV Admin Endpoint"
         }
       ],
       "name": "dataset-segmented-mixed-perimeter_run03",
       "vulnerabilities": [
-        "nginx/nginx_parsing_vulnerability",
+        "nginx/CVE-2017-7529",
         "nginx/insecure-configuration"
       ]
     },
@@ -2567,13 +2799,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "https_token_debug_api",
-          "name": "HTTPS: Token Debug API"
-        },
-        {
-          "count": 1,
-          "id": "https_login_admin_console",
-          "name": "HTTPS: Admin Login Console"
+          "id": "http_directory_traversal_docs",
+          "name": "HTTP: Directory Traversal Docs"
         },
         {
           "count": 1,
@@ -2583,7 +2810,7 @@
       ],
       "name": "dataset-segmented-mixed-perimeter_run04",
       "vulnerabilities": [
-        "ingress-nginx/CVE-2025-1974"
+        "nginx/nginx_parsing_vulnerability"
       ]
     },
     {
@@ -2598,11 +2825,16 @@
           "count": 1,
           "id": "https_login_admin_console",
           "name": "HTTPS: Admin Login Console"
+        },
+        {
+          "count": 1,
+          "id": "https_public_status_page",
+          "name": "HTTPS: Public Status Page"
         }
       ],
       "name": "dataset-segmented-mixed-perimeter_run05",
       "vulnerabilities": [
-        "nginx/nginx_parsing_vulnerability",
+        "nginx/CVE-2013-4547",
         "nginx/CVE-2017-7529"
       ]
     },
@@ -2613,6 +2845,16 @@
           "count": 1,
           "id": "git_http_bare_repo",
           "name": "Git: HTTP Bare Repository"
+        },
+        {
+          "count": 1,
+          "id": "ssh_password_audit_workstation",
+          "name": "SSH: Password Audit Workstation"
+        },
+        {
+          "count": 1,
+          "id": "ssh_key_backup_operator",
+          "name": "SSH: Key Backup Operator"
         }
       ],
       "name": "dataset-segmented-firewall-pivot_run01",
@@ -2628,6 +2870,16 @@
           "count": 1,
           "id": "ssh_password_finance_terminal",
           "name": "SSH: Password Finance Terminal"
+        },
+        {
+          "count": 1,
+          "id": "git_http_bare_repo",
+          "name": "Git: HTTP Bare Repository"
+        },
+        {
+          "count": 1,
+          "id": "git_deploy_key_repo",
+          "name": "Git: Deploy Key Repository"
         }
       ],
       "name": "dataset-segmented-firewall-pivot_run02",
@@ -2640,13 +2892,18 @@
       "generators": [
         {
           "count": 1,
-          "id": "ssh_sftp_dropbox_key",
-          "name": "SSH: Key SFTP Dropbox"
+          "id": "ssh_password_helpdesk_home",
+          "name": "SSH: Password Helpdesk Home"
         },
         {
           "count": 1,
           "id": "ssh_password_audit_workstation",
           "name": "SSH: Password Audit Workstation"
+        },
+        {
+          "count": 1,
+          "id": "git_http_bare_repo",
+          "name": "Git: HTTP Bare Repository"
         }
       ],
       "name": "dataset-segmented-firewall-pivot_run03",
@@ -2661,6 +2918,16 @@
           "count": 1,
           "id": "ssh_key_backup_operator",
           "name": "SSH: Key Backup Operator"
+        },
+        {
+          "count": 1,
+          "id": "ssh_sftp_dropbox_key",
+          "name": "SSH: Key SFTP Dropbox"
+        },
+        {
+          "count": 1,
+          "id": "ssh_key_research_lab",
+          "name": "SSH: Key Research Lab"
         }
       ],
       "name": "dataset-segmented-firewall-pivot_run04",
@@ -2678,8 +2945,13 @@
         },
         {
           "count": 1,
-          "id": "git_http_bare_repo",
-          "name": "Git: HTTP Bare Repository"
+          "id": "ssh_password_finance_terminal",
+          "name": "SSH: Password Finance Terminal"
+        },
+        {
+          "count": 1,
+          "id": "git_deploy_key_repo",
+          "name": "Git: Deploy Key Repository"
         }
       ],
       "name": "dataset-segmented-firewall-pivot_run05",
@@ -2692,18 +2964,45 @@
       "generators": [
         {
           "count": 1,
+          "id": "dep_ssh_key_bastion",
+          "name": "Dependency Consumer: SSH Key Bastion"
+        },
+        {
+          "count": 1,
+          "id": "dep_file_parser_console",
+          "name": "Dependency Consumer: File Parser Console"
+        },
+        {
+          "count": 1,
+          "id": "134",
+          "name": "Database: SQLite Backup File"
+        },
+        {
+          "count": 1,
+          "id": "136",
+          "name": "Database: Oracle Wallet Note"
+        }
+      ],
+      "name": "dataset-segmented-enterprise-pivots_run01",
+      "vulnerabilities": [
+        "struts2/s2-067",
+        "struts2/s2-052",
+        "struts2/s2-001",
+        "struts2/s2-032"
+      ]
+    },
+    {
+      "file": "54-segmented-enterprise-pivots-run02.spec.yaml",
+      "generators": [
+        {
+          "count": 2,
+          "id": "dep_endpoint_hidden_followup",
+          "name": "Dependency Consumer: Hidden Endpoint Follow-Up"
+        },
+        {
+          "count": 1,
           "id": "132",
           "name": "Database: Postgres Audit Schema"
-        },
-        {
-          "count": 1,
-          "id": "135",
-          "name": "Database: Mongo Export Documents"
-        },
-        {
-          "count": 1,
-          "id": "dep_api_key_admin_endpoint",
-          "name": "Dependency Consumer: API Key Admin Endpoint"
         },
         {
           "count": 1,
@@ -2711,37 +3010,10 @@
           "name": "Dependency Consumer: Ticket Attachment Portal"
         }
       ],
-      "name": "dataset-segmented-enterprise-pivots_run01",
-      "vulnerabilities": [
-        "struts2/s2-009",
-        "struts2/s2-052",
-        "struts2/s2-057",
-        "struts2/s2-007"
-      ]
-    },
-    {
-      "file": "54-segmented-enterprise-pivots-run02.spec.yaml",
-      "generators": [
-        {
-          "count": 1,
-          "id": "dep_port_forward_pivot",
-          "name": "Dependency Consumer: Port Forward Pivot"
-        },
-        {
-          "count": 1,
-          "id": "136",
-          "name": "Database: Oracle Wallet Note"
-        },
-        {
-          "count": 1,
-          "id": "dep_endpoint_hidden_followup",
-          "name": "Dependency Consumer: Hidden Endpoint Follow-Up"
-        }
-      ],
       "name": "dataset-segmented-enterprise-pivots_run02",
       "vulnerabilities": [
         "struts2/s2-007",
-        "struts2/s2-067"
+        "struts2/s2-046"
       ]
     },
     {
@@ -2749,18 +3021,23 @@
       "generators": [
         {
           "count": 1,
-          "id": "133",
-          "name": "Database: MySQL Reports Dump"
+          "id": "mysql_backup_table",
+          "name": "Database: MySQL Backup Table"
         },
         {
           "count": 1,
-          "id": "nfs_readonly_audit_share",
-          "name": "NFS: Read-Only Audit Share"
+          "id": "nfs_legal_hold_archive",
+          "name": "NFS: Legal Hold Archive"
         },
         {
           "count": 1,
           "id": "dep_version_exploit_selector",
           "name": "Dependency Consumer: Version Exploit Selector"
+        },
+        {
+          "count": 1,
+          "id": "nfs_incident_response_evidence",
+          "name": "NFS: Incident Response Evidence"
         }
       ],
       "name": "dataset-segmented-enterprise-pivots_run03",
@@ -2775,29 +3052,29 @@
       "generators": [
         {
           "count": 1,
-          "id": "134",
-          "name": "Database: SQLite Backup File"
+          "id": "dep_checksum_evidence_gate",
+          "name": "Dependency Consumer: Checksum Evidence Gate"
         },
         {
           "count": 1,
-          "id": "dep_webauth_bypass_console",
-          "name": "Dependency Consumer: WebAuth Bypass Console"
+          "id": "dep_port_forward_pivot",
+          "name": "Dependency Consumer: Port Forward Pivot"
         },
         {
           "count": 1,
-          "id": "dep_file_parser_console",
-          "name": "Dependency Consumer: File Parser Console"
+          "id": "133",
+          "name": "Database: MySQL Reports Dump"
         },
         {
           "count": 1,
-          "id": "nfs_legal_hold_archive",
-          "name": "NFS: Legal Hold Archive"
+          "id": "135",
+          "name": "Database: Mongo Export Documents"
         }
       ],
       "name": "dataset-segmented-enterprise-pivots_run04",
       "vulnerabilities": [
-        "struts2/s2-066",
-        "struts2/s2-052",
+        "struts2/s2-008",
+        "struts2/s2-013",
         "struts2/s2-059"
       ]
     },
@@ -2806,20 +3083,25 @@
       "generators": [
         {
           "count": 1,
-          "id": "nfs_incident_response_evidence",
-          "name": "NFS: Incident Response Evidence"
+          "id": "136",
+          "name": "Database: Oracle Wallet Note"
         },
         {
           "count": 1,
           "id": "dep_ssh_key_bastion",
           "name": "Dependency Consumer: SSH Key Bastion"
+        },
+        {
+          "count": 1,
+          "id": "nfs_backup_archive_passphrase",
+          "name": "NFS: Passphrase Backup Archive"
         }
       ],
       "name": "dataset-segmented-enterprise-pivots_run05",
       "vulnerabilities": [
         "struts2/s2-057",
-        "struts2/s2-008",
-        "struts2/s2-032",
+        "struts2/s2-005",
+        "struts2/s2-061",
         "struts2/s2-048"
       ]
     },
@@ -2863,8 +3145,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "ldap_anonymous_directory",
-          "name": "LDAP: Anonymous Directory"
+          "id": "ftp_anonymous_finance_drop",
+          "name": "FTP: Anonymous Finance Drop"
         }
       ],
       "name": "dataset-catalog-coverage-003",
@@ -2897,8 +3179,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "146",
-          "name": "Mail: DMARC Report Queue"
+          "id": "mqtt_public_broker_topic",
+          "name": "MQTT: Public Broker Topic"
         }
       ],
       "name": "dataset-catalog-coverage-005",
@@ -2914,8 +3196,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "145",
-          "name": "Mail: Webmail Export Attachment"
+          "id": "ftp_user_backup_home",
+          "name": "FTP: Authenticated Backup Home"
         }
       ],
       "name": "dataset-catalog-coverage-006",
@@ -2931,8 +3213,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "ftp_anonymous_finance_drop",
-          "name": "FTP: Anonymous Finance Drop"
+          "id": "137",
+          "name": "DNS: Split Horizon TXT"
         }
       ],
       "name": "dataset-catalog-coverage-007",
@@ -2982,8 +3264,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "ldap_bind_service_account",
-          "name": "LDAP: Service Account Bind"
+          "id": "139",
+          "name": "DNS: Reverse Zone Note"
         }
       ],
       "name": "dataset-catalog-coverage-010",
@@ -2999,8 +3281,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "ftp_user_backup_home",
-          "name": "FTP: Authenticated Backup Home"
+          "id": "146",
+          "name": "Mail: DMARC Report Queue"
         }
       ],
       "name": "dataset-catalog-coverage-011",
@@ -3016,8 +3298,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "smtp_open_relay_queue",
-          "name": "Mail: SMTP Open Relay Queue"
+          "id": "https_token_debug_api",
+          "name": "HTTPS: Token Debug API"
         }
       ],
       "name": "dataset-catalog-coverage-012",
@@ -3033,8 +3315,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "142",
-          "name": "Mail: IMAP Archive Mailbox"
+          "id": "http_cookie_role_escalation",
+          "name": "HTTP: Cookie Role Escalation"
         }
       ],
       "name": "dataset-catalog-coverage-013",
@@ -3050,8 +3332,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "127",
-          "name": "Cache: Redis ACL Token Store"
+          "id": "smtp_open_relay_queue",
+          "name": "Mail: SMTP Open Relay Queue"
         }
       ],
       "name": "dataset-catalog-coverage-014",
@@ -3101,8 +3383,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "141",
-          "name": "DNS: Delegation Glue Hint"
+          "id": "144",
+          "name": "Mail: POP3 Shared Dropbox"
         }
       ],
       "name": "dataset-catalog-coverage-017",
@@ -3152,8 +3434,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "138",
-          "name": "DNS: SRV Admin Endpoint"
+          "id": "ldap_anonymous_directory",
+          "name": "LDAP: Anonymous Directory"
         }
       ],
       "name": "dataset-catalog-coverage-020",
@@ -3169,8 +3451,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "nfs_webdav_evidence_share",
-          "name": "Network Share: WebDAV Evidence Repository"
+          "id": "mqtt_credentialed_ops_topic",
+          "name": "MQTT: Credentialed Ops Topic"
         }
       ],
       "name": "dataset-catalog-coverage-021",
@@ -3186,8 +3468,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "ldap_anonymous_directory",
-          "name": "LDAP: Anonymous Directory"
+          "id": "https_basic_auth_reports",
+          "name": "HTTPS: Basic Auth Reports"
         }
       ],
       "name": "dataset-catalog-coverage-022",
@@ -3203,8 +3485,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "139",
-          "name": "DNS: Reverse Zone Note"
+          "id": "145",
+          "name": "Mail: Webmail Export Attachment"
         }
       ],
       "name": "dataset-catalog-coverage-023",
@@ -3220,8 +3502,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "nfs_finance_cifs_share",
-          "name": "Network Share: Finance CIFS Mount"
+          "id": "memcached_session_cache",
+          "name": "Cache: Memcached Session Cache"
         }
       ],
       "name": "dataset-catalog-coverage-024",
@@ -3254,8 +3536,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "150",
-          "name": "SMB: Public Scanner Share"
+          "id": "ftp_anonymous_finance_drop",
+          "name": "FTP: Anonymous Finance Drop"
         }
       ],
       "name": "dataset-catalog-coverage-026",
@@ -3271,8 +3553,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "145",
-          "name": "Mail: Webmail Export Attachment"
+          "id": "142",
+          "name": "Mail: IMAP Archive Mailbox"
         }
       ],
       "name": "dataset-catalog-coverage-027",
@@ -3305,8 +3587,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "http_cookie_role_escalation",
-          "name": "HTTP: Cookie Role Escalation"
+          "id": "130",
+          "name": "Cache: Session Replay Store"
         }
       ],
       "name": "dataset-catalog-coverage-029",
@@ -3322,8 +3604,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "142",
-          "name": "Mail: IMAP Archive Mailbox"
+          "id": "129",
+          "name": "Cache: Varnish Debug Objects"
         }
       ],
       "name": "dataset-catalog-coverage-030",
@@ -3339,8 +3621,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "146",
-          "name": "Mail: DMARC Report Queue"
+          "id": "http_upload_file_drop",
+          "name": "HTTP: Upload File Drop"
         }
       ],
       "name": "dataset-catalog-coverage-031",
@@ -3356,8 +3638,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "http_directory_traversal_docs",
-          "name": "HTTP: Directory Traversal Docs"
+          "id": "143",
+          "name": "Mail: SMTP Bounce Spool"
         }
       ],
       "name": "dataset-catalog-coverage-032",
@@ -3373,8 +3655,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "149",
-          "name": "SMB: Legal Case Archive"
+          "id": "131",
+          "name": "Cache: CDN Manifest Cache"
         }
       ],
       "name": "dataset-catalog-coverage-033",
@@ -3390,8 +3672,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "144",
-          "name": "Mail: POP3 Shared Dropbox"
+          "id": "dep_api_key_admin_endpoint",
+          "name": "Dependency Consumer: API Key Admin Endpoint"
         }
       ],
       "name": "dataset-catalog-coverage-034",
@@ -3407,8 +3689,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "git_deploy_key_repo",
-          "name": "Git: Deploy Key Repository"
+          "id": "151",
+          "name": "SMB: IT Scripts Share"
         }
       ],
       "name": "dataset-catalog-coverage-035",
@@ -3424,8 +3706,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "130",
-          "name": "Cache: Session Replay Store"
+          "id": "150",
+          "name": "SMB: Public Scanner Share"
         }
       ],
       "name": "dataset-catalog-coverage-036",
@@ -3441,8 +3723,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "ftp_anonymous_finance_drop",
-          "name": "FTP: Anonymous Finance Drop"
+          "id": "https_directory_traversal_backups",
+          "name": "HTTPS: Directory Traversal Backups"
         }
       ],
       "name": "dataset-catalog-coverage-037",
@@ -3458,8 +3740,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "140",
-          "name": "DNS: DKIM Selector Secret"
+          "id": "ssh_key_git_deploy",
+          "name": "SSH: Key Git Deploy Account"
         }
       ],
       "name": "dataset-catalog-coverage-038",
@@ -3475,8 +3757,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "137",
-          "name": "DNS: Split Horizon TXT"
+          "id": "nfs_webdav_evidence_share",
+          "name": "Network Share: WebDAV Evidence Repository"
         }
       ],
       "name": "dataset-catalog-coverage-039",
@@ -3509,8 +3791,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "dns_txt_secret_record",
-          "name": "DNS: TXT Secret Record"
+          "id": "dns_zone_transfer_records",
+          "name": "DNS: Zone Transfer Records"
         }
       ],
       "name": "dataset-catalog-coverage-041",
@@ -3526,8 +3808,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "mqtt_credentialed_ops_topic",
-          "name": "MQTT: Credentialed Ops Topic"
+          "id": "140",
+          "name": "DNS: DKIM Selector Secret"
         }
       ],
       "name": "dataset-catalog-coverage-042",
@@ -3543,8 +3825,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "nfs_backup_archive_passphrase",
-          "name": "NFS: Passphrase Backup Archive"
+          "id": "dns_txt_secret_record",
+          "name": "DNS: TXT Secret Record"
         }
       ],
       "name": "dataset-catalog-coverage-043",
@@ -3577,8 +3859,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "smtp_open_relay_queue",
-          "name": "Mail: SMTP Open Relay Queue"
+          "id": "https_source_secret_ci",
+          "name": "HTTPS: CI Source Secret"
         }
       ],
       "name": "dataset-catalog-coverage-045",
@@ -3594,8 +3876,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "148",
-          "name": "SMB: Engineering Build Drop"
+          "id": "mqtt_credentialed_ops_topic",
+          "name": "MQTT: Credentialed Ops Topic"
         }
       ],
       "name": "dataset-catalog-coverage-046",
@@ -3628,8 +3910,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "http_upload_file_drop",
-          "name": "HTTP: Upload File Drop"
+          "id": "dep_file_parser_console",
+          "name": "Dependency Consumer: File Parser Console"
         }
       ],
       "name": "dataset-catalog-coverage-048",
@@ -3645,8 +3927,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "imap_shared_mailbox",
-          "name": "Mail: Shared IMAP Mailbox"
+          "id": "138",
+          "name": "DNS: SRV Admin Endpoint"
         }
       ],
       "name": "dataset-catalog-coverage-049",
@@ -3662,8 +3944,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "http_public_file_drop",
-          "name": "HTTP: Public File Drop"
+          "id": "https_login_admin_console",
+          "name": "HTTPS: Admin Login Console"
         }
       ],
       "name": "dataset-catalog-coverage-050",
@@ -3679,8 +3961,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "143",
-          "name": "Mail: SMTP Bounce Spool"
+          "id": "145",
+          "name": "Mail: Webmail Export Attachment"
         }
       ],
       "name": "dataset-catalog-coverage-051",
@@ -3696,8 +3978,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "https_public_status_page",
-          "name": "HTTPS: Public Status Page"
+          "id": "http_cookie_role_escalation",
+          "name": "HTTP: Cookie Role Escalation"
         }
       ],
       "name": "dataset-catalog-coverage-052",
@@ -3713,8 +3995,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "131",
-          "name": "Cache: CDN Manifest Cache"
+          "id": "141",
+          "name": "DNS: Delegation Glue Hint"
         }
       ],
       "name": "dataset-catalog-coverage-053",
@@ -3730,8 +4012,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "mqtt_public_broker_topic",
-          "name": "MQTT: Public Broker Topic"
+          "id": "149",
+          "name": "SMB: Legal Case Archive"
         }
       ],
       "name": "dataset-catalog-coverage-054",
@@ -3747,8 +4029,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "129",
-          "name": "Cache: Varnish Debug Objects"
+          "id": "nfs_finance_cifs_share",
+          "name": "Network Share: Finance CIFS Mount"
         }
       ],
       "name": "dataset-catalog-coverage-055",
@@ -3764,8 +4046,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "https_basic_auth_reports",
-          "name": "HTTPS: Basic Auth Reports"
+          "id": "imap_shared_mailbox",
+          "name": "Mail: Shared IMAP Mailbox"
         }
       ],
       "name": "dataset-catalog-coverage-056",
@@ -3781,8 +4063,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "https_token_debug_api",
-          "name": "HTTPS: Token Debug API"
+          "id": "128",
+          "name": "Cache: Memcached Feature Flags"
         }
       ],
       "name": "dataset-catalog-coverage-057",
@@ -3798,8 +4080,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "https_sqli_invoice_portal",
-          "name": "HTTPS: SQLi Invoice Portal"
+          "id": "http_upload_file_drop",
+          "name": "HTTP: Upload File Drop"
         }
       ],
       "name": "dataset-catalog-coverage-058",
@@ -3815,8 +4097,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "147",
-          "name": "SMB: Finance Quarterly Share"
+          "id": "dep_webauth_bypass_console",
+          "name": "Dependency Consumer: WebAuth Bypass Console"
         }
       ],
       "name": "dataset-catalog-coverage-059",
@@ -3832,8 +4114,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "nfs_legal_hold_archive",
-          "name": "NFS: Legal Hold Archive"
+          "id": "129",
+          "name": "Cache: Varnish Debug Objects"
         }
       ],
       "name": "dataset-catalog-coverage-060",
@@ -3849,8 +4131,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "ssh_key_ops_bastion",
-          "name": "SSH: Key Ops Bastion"
+          "id": "redis_exposed_keys",
+          "name": "Cache: Exposed Redis Keys"
         }
       ],
       "name": "dataset-catalog-coverage-061",
@@ -3866,8 +4148,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "dep_checksum_evidence_gate",
-          "name": "Dependency Consumer: Checksum Evidence Gate"
+          "id": "https_sqli_invoice_portal",
+          "name": "HTTPS: SQLi Invoice Portal"
         }
       ],
       "name": "dataset-catalog-coverage-062",
@@ -3900,8 +4182,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "151",
-          "name": "SMB: IT Scripts Share"
+          "id": "ldap_bind_service_account",
+          "name": "LDAP: Service Account Bind"
         }
       ],
       "name": "dataset-catalog-coverage-064",
@@ -3951,8 +4233,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "smb_guest_public_share",
-          "name": "SMB: Guest Public Share"
+          "id": "134",
+          "name": "Database: SQLite Backup File"
         }
       ],
       "name": "dataset-catalog-coverage-067",
@@ -3968,8 +4250,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "dep_file_parser_console",
-          "name": "Dependency Consumer: File Parser Console"
+          "id": "144",
+          "name": "Mail: POP3 Shared Dropbox"
         }
       ],
       "name": "dataset-catalog-coverage-068",
@@ -3985,8 +4267,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "149",
-          "name": "SMB: Legal Case Archive"
+          "id": "ftp_user_backup_home",
+          "name": "FTP: Authenticated Backup Home"
         }
       ],
       "name": "dataset-catalog-coverage-069",
@@ -4002,8 +4284,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "dep_webauth_bypass_console",
-          "name": "Dependency Consumer: WebAuth Bypass Console"
+          "id": "137",
+          "name": "DNS: Split Horizon TXT"
         }
       ],
       "name": "dataset-catalog-coverage-070",
@@ -4036,8 +4318,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "ssh_key_research_lab",
-          "name": "SSH: Key Research Lab"
+          "id": "smtp_open_relay_queue",
+          "name": "Mail: SMTP Open Relay Queue"
         }
       ],
       "name": "dataset-catalog-coverage-072",
@@ -4070,8 +4352,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "https_login_admin_console",
-          "name": "HTTPS: Admin Login Console"
+          "id": "ftp_anonymous_finance_drop",
+          "name": "FTP: Anonymous Finance Drop"
         }
       ],
       "name": "dataset-catalog-coverage-074",
@@ -4087,8 +4369,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "mqtt_credentialed_ops_topic",
-          "name": "MQTT: Credentialed Ops Topic"
+          "id": "131",
+          "name": "Cache: CDN Manifest Cache"
         }
       ],
       "name": "dataset-catalog-coverage-075",
@@ -4104,8 +4386,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "ldap_bind_service_account",
-          "name": "LDAP: Service Account Bind"
+          "id": "http_public_file_drop",
+          "name": "HTTP: Public File Drop"
         }
       ],
       "name": "dataset-catalog-coverage-076",
@@ -4147,9 +4429,9 @@
     "coldfusion/CVE-2023-26360|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/coldfusion/CVE-2023-26360/docker-compose.yml": 1,
     "coldfusion/CVE-2023-29300|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/coldfusion/CVE-2023-29300/docker-compose.yml": 1,
     "confluence/CVE-2019-3396|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/confluence/CVE-2019-3396/docker-compose.yml": 4,
-    "confluence/CVE-2021-26084|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/confluence/CVE-2021-26084/docker-compose.yml": 4,
+    "confluence/CVE-2021-26084|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/confluence/CVE-2021-26084/docker-compose.yml": 5,
     "confluence/CVE-2022-26134|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/confluence/CVE-2022-26134/docker-compose.yml": 5,
-    "confluence/CVE-2023-22515|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/confluence/CVE-2023-22515/docker-compose.yml": 4,
+    "confluence/CVE-2023-22515|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/confluence/CVE-2023-22515/docker-compose.yml": 5,
     "confluence/CVE-2023-22527|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/confluence/CVE-2023-22527/docker-compose.yml": 5,
     "couchdb/CVE-2017-12635|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/couchdb/CVE-2017-12635/docker-compose.yml": 1,
     "couchdb/CVE-2017-12636|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/couchdb/CVE-2017-12636/docker-compose.yml": 1,
@@ -4161,7 +4443,7 @@
     "discuz/wooyun-2010-080723|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/discuz/wooyun-2010-080723/docker-compose.yml": 1,
     "discuz/x3.4-arbitrary-file-deletion|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/discuz/x3.4-arbitrary-file-deletion/docker-compose.yml": 1,
     "django/CVE-2017-12794|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/django/CVE-2017-12794/docker-compose.yml": 2,
-    "django/CVE-2019-14234|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/django/CVE-2019-14234/docker-compose.yml": 2,
+    "django/CVE-2019-14234|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/django/CVE-2019-14234/docker-compose.yml": 3,
     "django/CVE-2020-9402|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/django/CVE-2020-9402/docker-compose.yml": 2,
     "django/CVE-2021-35042|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/django/CVE-2021-35042/docker-compose.yml": 2,
     "django/CVE-2022-34265|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/django/CVE-2022-34265/docker-compose.yml": 2,
@@ -4177,10 +4459,10 @@
     "ecshop/collection_list-sqli|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/ecshop/collection_list-sqli/docker-compose.yml": 1,
     "ecshop/xianzhi-2017-02-82239600|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/ecshop/xianzhi-2017-02-82239600/docker-compose.yml": 1,
     "elasticsearch/CVE-2014-3120|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/elasticsearch/CVE-2014-3120/docker-compose.yml": 5,
-    "elasticsearch/CVE-2015-1427|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/elasticsearch/CVE-2015-1427/docker-compose.yml": 5,
-    "elasticsearch/CVE-2015-3337|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/elasticsearch/CVE-2015-3337/docker-compose.yml": 4,
-    "elasticsearch/CVE-2015-5531|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/elasticsearch/CVE-2015-5531/docker-compose.yml": 4,
-    "elasticsearch/WooYun-2015-110216|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/elasticsearch/WooYun-2015-110216/docker-compose.yml": 5,
+    "elasticsearch/CVE-2015-1427|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/elasticsearch/CVE-2015-1427/docker-compose.yml": 6,
+    "elasticsearch/CVE-2015-3337|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/elasticsearch/CVE-2015-3337/docker-compose.yml": 5,
+    "elasticsearch/CVE-2015-5531|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/elasticsearch/CVE-2015-5531/docker-compose.yml": 5,
+    "elasticsearch/WooYun-2015-110216|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/elasticsearch/WooYun-2015-110216/docker-compose.yml": 6,
     "electron/CVE-2018-1000006|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/electron/CVE-2018-1000006/docker-compose.yml": 1,
     "electron/CVE-2018-15685|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/electron/CVE-2018-15685/docker-compose.yml": 1,
     "elfinder/CVE-2021-32682|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/elfinder/CVE-2021-32682/docker-compose.yml": 1,
@@ -4229,7 +4511,7 @@
     "imagemagick/CVE-2020-29599|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/imagemagick/CVE-2020-29599/docker-compose.yml": 1,
     "imagemagick/CVE-2022-44268|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/imagemagick/CVE-2022-44268/docker-compose.yml": 1,
     "influxdb/CVE-2019-20933|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/influxdb/CVE-2019-20933/docker-compose.yml": 1,
-    "ingress-nginx/CVE-2025-1974|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/ingress-nginx/CVE-2025-1974/docker-compose.yml": 4,
+    "ingress-nginx/CVE-2025-1974|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/ingress-nginx/CVE-2025-1974/docker-compose.yml": 5,
     "jackson/CVE-2017-7525|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/jackson/CVE-2017-7525/docker-compose.yml": 1,
     "java/rmi-codebase|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/java/rmi-codebase/docker-compose.yml": 1,
     "jboss/CVE-2017-12149|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/jboss/CVE-2017-12149/docker-compose.yml": 1,
@@ -4279,9 +4561,9 @@
     "nexus/CVE-2020-10199|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/nexus/CVE-2020-10199/docker-compose.yml": 1,
     "nexus/CVE-2020-10204|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/nexus/CVE-2020-10204/docker-compose.yml": 1,
     "nexus/CVE-2024-4956|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/nexus/CVE-2024-4956/docker-compose.yml": 1,
-    "nginx/CVE-2013-4547|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/nginx/CVE-2013-4547/docker-compose.yml": 4,
-    "nginx/CVE-2017-7529|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/nginx/CVE-2017-7529/docker-compose.yml": 5,
-    "nginx/insecure-configuration|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/nginx/insecure-configuration/docker-compose.yml": 4,
+    "nginx/CVE-2013-4547|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/nginx/CVE-2013-4547/docker-compose.yml": 5,
+    "nginx/CVE-2017-7529|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/nginx/CVE-2017-7529/docker-compose.yml": 6,
+    "nginx/insecure-configuration|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/nginx/insecure-configuration/docker-compose.yml": 5,
     "nginx/nginx_parsing_vulnerability|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/nginx/nginx_parsing_vulnerability/docker-compose.yml": 5,
     "ntopng/CVE-2021-28073|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/ntopng/CVE-2021-28073/docker-compose.yml": 1,
     "ofbiz/CVE-2020-9496|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/ofbiz/CVE-2020-9496/docker-compose.yml": 1,
@@ -4324,7 +4606,7 @@
     "rails/CVE-2018-3760|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/rails/CVE-2018-3760/docker-compose.yml": 1,
     "rails/CVE-2019-5418|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/rails/CVE-2019-5418/docker-compose.yml": 1,
     "react/CVE-2025-55182|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/react/CVE-2025-55182/docker-compose.yml": 1,
-    "redis/4-unacc|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/redis/4-unacc/docker-compose.yml": 5,
+    "redis/4-unacc|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/redis/4-unacc/docker-compose.yml": 6,
     "redis/CVE-2022-0543|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/redis/CVE-2022-0543/docker-compose.yml": 6,
     "rocketchat/CVE-2021-22911|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/rocketchat/CVE-2021-22911/docker-compose.yml": 1,
     "rocketmq/CVE-2023-33246|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/rocketmq/CVE-2023-33246/docker-compose.yml": 1,
@@ -4356,23 +4638,23 @@
     "spring/CVE-2022-22963|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/spring/CVE-2022-22963/docker-compose.yml": 1,
     "spring/CVE-2022-22965|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/spring/CVE-2022-22965/docker-compose.yml": 1,
     "spring/CVE-2022-22978|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/spring/CVE-2022-22978/docker-compose.yml": 1,
-    "struts2/s2-001|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-001/docker-compose.yml": 3,
-    "struts2/s2-005|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-005/docker-compose.yml": 3,
+    "struts2/s2-001|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-001/docker-compose.yml": 4,
+    "struts2/s2-005|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-005/docker-compose.yml": 4,
     "struts2/s2-007|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-007/docker-compose.yml": 4,
     "struts2/s2-008|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-008/docker-compose.yml": 4,
     "struts2/s2-009|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-009/docker-compose.yml": 3,
     "struts2/s2-012|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-012/docker-compose.yml": 3,
-    "struts2/s2-013|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-013/docker-compose.yml": 3,
+    "struts2/s2-013|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-013/docker-compose.yml": 4,
     "struts2/s2-015|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-015/docker-compose.yml": 4,
     "struts2/s2-032|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-032/docker-compose.yml": 4,
     "struts2/s2-045|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-045/docker-compose.yml": 4,
-    "struts2/s2-046|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-046/docker-compose.yml": 3,
+    "struts2/s2-046|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-046/docker-compose.yml": 4,
     "struts2/s2-048|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-048/docker-compose.yml": 4,
     "struts2/s2-052|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-052/docker-compose.yml": 4,
     "struts2/s2-053|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-053/docker-compose.yml": 4,
     "struts2/s2-057|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-057/docker-compose.yml": 4,
     "struts2/s2-059|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-059/docker-compose.yml": 4,
-    "struts2/s2-061|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-061/docker-compose.yml": 3,
+    "struts2/s2-061|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-061/docker-compose.yml": 4,
     "struts2/s2-066|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-066/docker-compose.yml": 4,
     "struts2/s2-067|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-067/docker-compose.yml": 4,
     "superset/CVE-2023-27524|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/superset/CVE-2023-27524/docker-compose.yml": 1,

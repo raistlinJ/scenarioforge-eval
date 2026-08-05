@@ -39,7 +39,7 @@ vulns:
   exclude: []
 flag_node_generators:
   enabled: true
-  count: 3
+  count: 4
   specific:
   - id: nfs_readonly_audit_share
     name: 'NFS: Read-Only Audit Share'
@@ -50,15 +50,22 @@ flag_node_generators:
   - id: nfs_finance_cifs_share
     name: 'Network Share: Finance CIFS Mount'
     count: 1
+  - id: smb_guest_public_share
+    name: 'SMB: Guest Public Share'
+    count: 1
 flows:
-  enabled: false
-  chain_length: 0
+  enabled: true
+  chain_length: 4
   allow_duplicates: false
   include_all_topology_pivots: false
 segmentation:
   enabled: true
   density: 0.4
-  items: []
+  items:
+  - factor: 1.0
+    pivot_enabled: false
+    type: Firewall
+    count: 1
 hitl:
   use_env: false
 validation:

@@ -41,8 +41,8 @@ flag_node_generators:
   enabled: true
   count: 1
   specific:
-  - id: '145'
-    name: 'Mail: Webmail Export Attachment'
+  - id: '142'
+    name: 'Mail: IMAP Archive Mailbox'
     count: 1
 flows:
   enabled: true

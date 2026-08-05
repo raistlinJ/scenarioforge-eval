@@ -12,20 +12,25 @@ services:
 vulns:
   enabled: true
   randomize: true
-  count: [1, 3]
+  count: 3
   include: ["confluence"]
 flag_node_generators:
   enabled: false
   count: 0
 flows:
-  enabled: false
-  chain_length: 0
+  enabled: true
+  chain_length: 3
+  allow_duplicates: false
 traffic:
   profile: heavy
   payload_types: [text, photo]
 segmentation:
   enabled: true
   density: 0.35
+  items:
+    - type: Firewall
+      count: 1
+      pivot_enabled: false
 hitl:
   use_env: false
 validation:

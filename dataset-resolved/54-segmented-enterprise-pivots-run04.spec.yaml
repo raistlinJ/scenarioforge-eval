@@ -36,11 +36,11 @@ vulns:
   enabled: true
   count: 3
   specific:
-  - name: struts2/s2-066
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-066/docker-compose.yml
+  - name: struts2/s2-008
+    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-008/docker-compose.yml
     count: 1
-  - name: struts2/s2-052
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-052/docker-compose.yml
+  - name: struts2/s2-013
+    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-013/docker-compose.yml
     count: 1
   - name: struts2/s2-059
     path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-059/docker-compose.yml
@@ -49,17 +49,17 @@ flag_node_generators:
   enabled: true
   count: 4
   specific:
-  - id: '134'
-    name: 'Database: SQLite Backup File'
+  - id: dep_checksum_evidence_gate
+    name: 'Dependency Consumer: Checksum Evidence Gate'
     count: 1
-  - id: dep_webauth_bypass_console
-    name: 'Dependency Consumer: WebAuth Bypass Console'
+  - id: dep_port_forward_pivot
+    name: 'Dependency Consumer: Port Forward Pivot'
     count: 1
-  - id: dep_file_parser_console
-    name: 'Dependency Consumer: File Parser Console'
+  - id: '133'
+    name: 'Database: MySQL Reports Dump'
     count: 1
-  - id: nfs_legal_hold_archive
-    name: 'NFS: Legal Hold Archive'
+  - id: '135'
+    name: 'Database: Mongo Export Documents'
     count: 1
 flows:
   enabled: true
@@ -69,12 +69,13 @@ flows:
 segmentation:
   enabled: true
   density: 0.55
+  accessible_by_pivot: true
   items:
   - factor: 1.0
     pivot_enabled: true
     pivot_provider: vulnerability
     type: Firewall
-    count: 2
+    count: 1
   - factor: 1.0
     pivot_enabled: true
     pivot_provider: flag-node-generator

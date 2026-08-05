@@ -49,8 +49,8 @@ flag_node_generators:
   enabled: true
   count: 1
   specific:
-  - id: ftp_anonymous_finance_drop
-    name: 'FTP: Anonymous Finance Drop'
+  - id: https_directory_traversal_backups
+    name: 'HTTPS: Directory Traversal Backups'
     count: 1
 flows:
   enabled: true

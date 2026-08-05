@@ -49,8 +49,8 @@ flag_node_generators:
   enabled: true
   count: 1
   specific:
-  - id: '141'
-    name: 'DNS: Delegation Glue Hint'
+  - id: '144'
+    name: 'Mail: POP3 Shared Dropbox'
     count: 1
 flows:
   enabled: true

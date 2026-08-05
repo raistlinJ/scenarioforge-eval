@@ -49,8 +49,8 @@ flag_node_generators:
   enabled: true
   count: 1
   specific:
-  - id: ldap_bind_service_account
-    name: 'LDAP: Service Account Bind'
+  - id: '139'
+    name: 'DNS: Reverse Zone Note'
     count: 1
 flows:
   enabled: true

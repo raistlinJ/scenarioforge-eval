@@ -108,11 +108,15 @@ def _semantic_family(value: str, taxonomy: dict[str, set[str]], fallback: str) -
     return fallback
 
 
-def _network_data(summary: dict) -> tuple[dict[str, dict], dict[str, dict], list[dict]]:
+def _network_data(summary: dict) -> tuple[dict[str, dict], dict[str, dict], list[dict], dict]:
     values = {key: [] for key in ('routers', 'docker_hosts', 'base_nodes', 'total_nodes', 'service_assignments', 'flow_hops', 'segmentation_rows')}
     traffic_values = {key: [] for key in ('density', 'rows', 'requested_pairs')}
     traffic_types: Counter[str] = Counter()
     traffic_pairs: Counter[str] = Counter()
+    feature_counts: Counter[str] = Counter()
+    flow_length_histogram: Counter[int] = Counter()
+    segmentation_type_rows: Counter[str] = Counter()
+    pivot_provider_rows: Counter[str] = Counter()
     for selection in summary['selections']:
         spec = yaml.safe_load((RESOLVED / selection['file']).read_text(encoding='utf-8')) or {}
         routers = int(spec['topology']['routers'])
@@ -124,8 +128,30 @@ def _network_data(summary: dict) -> tuple[dict[str, dict], dict[str, dict], list
         values['base_nodes'].append(routers + hosts)
         values['total_nodes'].append(routers + hosts + catalog_nodes)
         values['service_assignments'].append(int(spec['services']['count']) if spec['services'].get('enabled') else 0)
-        values['flow_hops'].append(int(spec['flows']['chain_length']) if spec['flows'].get('enabled') else 0)
-        values['segmentation_rows'].append(sum(int(item['count']) for item in (spec['segmentation'].get('items') or [])))
+        generators = spec['flag_node_generators']
+        flows = spec['flows']
+        segmentation = spec['segmentation']
+        if generators.get('enabled'):
+            feature_counts['flag_node_generator_scenarios'] += 1
+        if flows.get('enabled'):
+            length = int(flows['chain_length'])
+            feature_counts['chained_scenarios'] += 1
+            flow_length_histogram[length] += 1
+        else:
+            length = 0
+            feature_counts['unchained_scenarios'] += 1
+        segmentation_items = segmentation.get('items') or []
+        if segmentation.get('enabled'):
+            feature_counts['segmented_scenarios'] += 1
+        if segmentation.get('accessible_by_pivot') or any(item.get('pivot_enabled') for item in segmentation_items):
+            feature_counts['pivot_scenarios'] += 1
+        for item in segmentation_items:
+            count = int(item['count'])
+            segmentation_type_rows[str(item['type'])] += count
+            if item.get('pivot_enabled'):
+                pivot_provider_rows[str(item.get('pivot_provider') or 'random')] += count
+        values['flow_hops'].append(length)
+        values['segmentation_rows'].append(sum(int(item['count']) for item in segmentation_items))
         traffic = spec.get('traffic') or {}
         items = traffic.get('items') or []
         traffic_values['density'].append(float(traffic.get('density', 0.0)))
@@ -143,13 +169,18 @@ def _network_data(summary: dict) -> tuple[dict[str, dict], dict[str, dict], list
         {name: rounded(population(items)) for name, items in values.items()},
         {name: rounded(population(items)) for name, items in traffic_values.items()},
         type_rows,
+        dict(feature_counts) | {
+            'flow_length_histogram': dict(sorted(flow_length_histogram.items())),
+            'segmentation_type_rows': dict(sorted(segmentation_type_rows.items())),
+            'pivot_provider_rows': dict(sorted(pivot_provider_rows.items())),
+        },
     )
 
 
 def collect() -> dict:
     summary = json.loads(MANIFEST.read_text(encoding='utf-8'))
     vulnerabilities, generators, labels, vulnerability_types, generator_types = _entity_data(summary)
-    network_metrics, traffic_metrics, traffic_types = _network_data(summary)
+    network_metrics, traffic_metrics, traffic_types, challenge_features = _network_data(summary)
     vulnerability_semantic = Counter()
     vulnerability_semantic_images = Counter()
     for key, count in vulnerabilities.items():
@@ -187,6 +218,7 @@ def collect() -> dict:
         'network_per_scenario': network_metrics,
         'traffic_per_scenario': traffic_metrics,
         'traffic_payload_types': traffic_types,
+        'challenge_features': challenge_features,
         'vulnerability_types': [
             {'type': name, 'selections': count, 'unique_images': sum(1 for key in vulnerabilities if key.split('|', 1)[0].split('/', 1)[0] == name)}
             for name, count in sorted(vulnerability_types.items(), key=lambda item: (-item[1], item[0]))
@@ -260,6 +292,11 @@ def ground_truth_svg(data: dict) -> str:
     vtypes = data['vulnerability_types']
     gtypes = data['self_generated_service_types']
     network = data['network_per_scenario']
+    features = data['challenge_features']
+    chain_summary = ' · '.join(
+        f'{length} hops × {count}'
+        for length, count in features['flow_length_histogram'].items()
+    )
     lines = [
         '<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1380" viewBox="0 0 1400 1380" role="img" aria-labelledby="title desc">',
         '  <title id="title">Ground-truth resolved dataset distribution</title>',
@@ -302,7 +339,8 @@ def ground_truth_svg(data: dict) -> str:
         '  <text x="738" y="1051" class="panel-title">Selection-frequency ground truth</text>',
         f'  <text x="738" y="1080" class="value">Vulhub images</text><text x="738" y="1102" class="note">{escape(_histogram(data["selection_histograms"]["vulhub_images"]))}</text>',
         f'  <text x="738" y="1133" class="value">Self-generated services</text><text x="738" y="1155" class="note">{escape(_histogram(data["selection_histograms"]["self_generated_services"]))}</text>',
-        '  <text x="738" y="1190" class="note">Full-catalog population statistics; deterministic catalog-name groupings; Sample generators excluded.</text>',
+        f'  <text x="738" y="1187" class="value">Chained challenges</text><text x="738" y="1209" class="note">{features["chained_scenarios"]} chained / {features["unchained_scenarios"]} baseline · {chain_summary}</text>',
+        f'  <text x="738" y="1235" class="note">{features["flag_node_generator_scenarios"]} generator · {features["segmented_scenarios"]} segmented · {features["pivot_scenarios"]} pivot scenarios</text>',
         '  <text x="45" y="1330" class="note">Generated from catalog-selections.json and the fixed resolved YAMLs. No runtime execution outcome is implied.</text>',
         '</svg>',
         '',
@@ -332,6 +370,10 @@ def research_svg(data: dict) -> str:
     generator_families = data['self_generated_semantic_families']
     vuln_histogram = [(int(uses), entries) for uses, entries in data['selection_histograms']['vulhub_images'].items()]
     generator_histogram = [(int(uses), entries) for uses, entries in data['selection_histograms']['self_generated_services'].items()]
+    features = data['challenge_features']
+    chain_summary = ' · '.join(
+        f'{length}×{count}' for length, count in features['flow_length_histogram'].items()
+    )
     lines = [
         '<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1360" viewBox="0 0 1400 1360" role="img" aria-labelledby="title desc">',
         '  <title id="title">Resolved ScenarioForge dataset: coverage and balance</title>',
@@ -347,8 +389,8 @@ def research_svg(data: dict) -> str:
         f'  <text x="519" y="145" class="big">{generators["catalog_entries"]}/{generators["catalog_entries"]}</text><text x="519" y="166" class="note">Non-Sample generators covered (100%)</text>',
         f'  <text x="519" y="195" class="note">{len(generator_families)} semantic families · {generators["total"]} selections · mean {generators["mean"]:.2f} ± {generators["std_dev"]:.2f}</text>',
         '  <rect x="950" y="108" width="410" height="108" rx="12" class="panel"/>',
-        f'  <text x="974" y="145" class="big">{data["scenario_count"]}</text><text x="974" y="166" class="note">fixed, reproducible scenarios</text>',
-        f'  <text x="974" y="195" class="note">{data["scenario_count"]} YAMLs · exact catalog rows persisted</text>',
+        f'  <text x="974" y="145" class="big">{features["chained_scenarios"]}</text><text x="974" y="166" class="note">chained, reproducible scenarios</text>',
+        f'  <text x="974" y="195" class="note">Chain lengths: {chain_summary} · {features["pivot_scenarios"]} pivot scenarios</text>',
         '  <rect x="40" y="245" width="620" height="220" rx="12" class="panel"/>',
         '  <text x="64" y="281" class="panel-title">Concrete Vulhub entry balance</text>',
         f'  <text x="64" y="303" class="note">Bar height = number of images at each exact use count. Population variance {vulns["variance"]:.3f}; SD {vulns["std_dev"]:.3f}.</text>',

@@ -49,8 +49,8 @@ flag_node_generators:
   enabled: true
   count: 1
   specific:
-  - id: https_public_status_page
-    name: 'HTTPS: Public Status Page'
+  - id: http_cookie_role_escalation
+    name: 'HTTP: Cookie Role Escalation'
     count: 1
 flows:
   enabled: true

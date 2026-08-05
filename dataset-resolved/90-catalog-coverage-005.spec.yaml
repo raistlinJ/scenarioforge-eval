@@ -49,8 +49,8 @@ flag_node_generators:
   enabled: true
   count: 1
   specific:
-  - id: '146'
-    name: 'Mail: DMARC Report Queue'
+  - id: mqtt_public_broker_topic
+    name: 'MQTT: Public Broker Topic'
     count: 1
 flows:
   enabled: true

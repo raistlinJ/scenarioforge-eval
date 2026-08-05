@@ -34,7 +34,7 @@ traffic:
     content_type: photo
 vulns:
   enabled: true
-  count: 2
+  count: 3
   specific:
   - name: confluence/CVE-2023-22527
     path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/confluence/CVE-2023-22527/docker-compose.yml
@@ -42,20 +42,27 @@ vulns:
   - name: confluence/CVE-2023-22515
     path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/confluence/CVE-2023-22515/docker-compose.yml
     count: 1
+  - name: confluence/CVE-2021-26084
+    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/confluence/CVE-2021-26084/docker-compose.yml
+    count: 1
 flag_node_generators:
   enabled: false
   count: 0
   include: []
   exclude: []
 flows:
-  enabled: false
-  chain_length: 0
+  enabled: true
+  chain_length: 3
   allow_duplicates: false
   include_all_topology_pivots: false
 segmentation:
   enabled: true
   density: 0.35
-  items: []
+  items:
+  - factor: 1.0
+    pivot_enabled: false
+    type: Firewall
+    count: 1
 hitl:
   use_env: false
 validation:

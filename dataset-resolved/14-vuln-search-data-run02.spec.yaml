@@ -39,11 +39,11 @@ vulns:
   - name: elasticsearch/CVE-2014-3120
     path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/elasticsearch/CVE-2014-3120/docker-compose.yml
     count: 1
-  - name: elasticsearch/CVE-2015-3337
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/elasticsearch/CVE-2015-3337/docker-compose.yml
-    count: 1
   - name: elasticsearch/CVE-2015-5531
     path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/elasticsearch/CVE-2015-5531/docker-compose.yml
+    count: 1
+  - name: elasticsearch/WooYun-2015-110216
+    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/elasticsearch/WooYun-2015-110216/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: false
@@ -51,14 +51,18 @@ flag_node_generators:
   include: []
   exclude: []
 flows:
-  enabled: false
-  chain_length: 0
+  enabled: true
+  chain_length: 3
   allow_duplicates: false
   include_all_topology_pivots: false
 segmentation:
   enabled: true
   density: 0.4
-  items: []
+  items:
+  - factor: 1.0
+    pivot_enabled: false
+    type: NAT
+    count: 1
 hitl:
   use_env: false
 validation:

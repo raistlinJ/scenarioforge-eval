@@ -46,27 +46,31 @@ flag_node_generators:
   enabled: true
   count: 4
   specific:
-  - id: redis_exposed_keys
-    name: 'Cache: Exposed Redis Keys'
+  - id: '143'
+    name: 'Mail: SMTP Bounce Spool'
     count: 1
   - id: '150'
     name: 'SMB: Public Scanner Share'
     count: 1
-  - id: '143'
-    name: 'Mail: SMTP Bounce Spool'
+  - id: smb_guest_public_share
+    name: 'SMB: Guest Public Share'
     count: 1
   - id: '133'
     name: 'Database: MySQL Reports Dump'
     count: 1
 flows:
   enabled: true
-  chain_length: 4
+  chain_length: 5
   allow_duplicates: false
   include_all_topology_pivots: false
 segmentation:
   enabled: true
   density: 0.5
-  items: []
+  items:
+  - factor: 1.0
+    pivot_enabled: false
+    type: Firewall
+    count: 1
 hitl:
   use_env: false
 validation:

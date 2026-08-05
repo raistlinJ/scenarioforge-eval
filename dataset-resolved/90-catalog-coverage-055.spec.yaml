@@ -49,8 +49,8 @@ flag_node_generators:
   enabled: true
   count: 1
   specific:
-  - id: '129'
-    name: 'Cache: Varnish Debug Objects'
+  - id: nfs_finance_cifs_share
+    name: 'Network Share: Finance CIFS Mount'
     count: 1
 flows:
   enabled: true

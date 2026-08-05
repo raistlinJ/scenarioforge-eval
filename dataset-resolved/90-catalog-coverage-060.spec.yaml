@@ -41,8 +41,8 @@ flag_node_generators:
   enabled: true
   count: 1
   specific:
-  - id: nfs_legal_hold_archive
-    name: 'NFS: Legal Hold Archive'
+  - id: '129'
+    name: 'Cache: Varnish Debug Objects'
     count: 1
 flows:
   enabled: true

@@ -41,8 +41,8 @@ flag_node_generators:
   enabled: true
   count: 1
   specific:
-  - id: '149'
-    name: 'SMB: Legal Case Archive'
+  - id: ftp_user_backup_home
+    name: 'FTP: Authenticated Backup Home'
     count: 1
 flows:
   enabled: true

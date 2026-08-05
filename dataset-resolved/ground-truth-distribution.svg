@@ -18,126 +18,126 @@
   <rect x="35" y="102" width="650" height="155" rx="12" class="panel"/>
   <text x="58" y="138" class="panel-title">Vulhub images</text>
   <text x="58" y="184" class="big">294/294</text><text x="58" y="205" class="note">catalog images represented</text>
-  <text x="270" y="184" class="big">443</text><text x="270" y="205" class="note">total selections</text>
+  <text x="270" y="184" class="big">460</text><text x="270" y="205" class="note">total selections</text>
   <text x="440" y="184" class="big">136</text><text x="440" y="205" class="note">component types</text>
-  <text x="58" y="235" class="note">Mean 1.507 · population variance 1.372 · population SD 1.171 · range 1–6</text>
+  <text x="58" y="235" class="note">Mean 1.565 · population variance 1.695 · population SD 1.302 · range 1–6</text>
   <rect x="715" y="102" width="650" height="155" rx="12" class="panel"/>
   <text x="738" y="138" class="panel-title">Self-generated services</text>
   <text x="738" y="184" class="big">85/85</text><text x="738" y="205" class="note">enabled non-Sample generators represented</text>
-  <text x="1015" y="184" class="big">357</text><text x="1015" y="205" class="note">total selections</text>
+  <text x="1015" y="184" class="big">411</text><text x="1015" y="205" class="note">total selections</text>
   <text x="1170" y="184" class="big">15</text><text x="1170" y="205" class="note">service types</text>
-  <text x="738" y="235" class="note">Mean 4.200 · population variance 0.160 · population SD 0.400 · range 4–5</text>
+  <text x="738" y="235" class="note">Mean 4.835 · population variance 0.138 · population SD 0.371 · range 4–5</text>
   <rect x="35" y="285" width="650" height="700" rx="12" class="panel"/>
   <text x="58" y="321" class="panel-title">Vulhub component types</text>
   <text x="58" y="343" class="note">Top 20 of 136 types · label / selections / unique images. Full table: ground-truth-statistics.json.</text>
   <text x="58" y="378" class="label">struts2</text>
   <rect x="233" y="366" width="152" height="15" rx="3" fill="#dc2626"/>
-  <text x="393" y="378" class="value">69 / 19</text>
-  <text x="58" y="407" class="label">drupal</text>
-  <rect x="233" y="395" width="53" height="15" rx="3" fill="#dc2626"/>
-  <text x="393" y="407" class="value">24 / 6</text>
-  <text x="58" y="436" class="label">elasticsearch</text>
-  <rect x="233" y="424" width="51" height="15" rx="3" fill="#dc2626"/>
-  <text x="393" y="436" class="value">23 / 5</text>
-  <text x="58" y="465" class="label">confluence</text>
-  <rect x="233" y="453" width="48" height="15" rx="3" fill="#dc2626"/>
-  <text x="393" y="465" class="value">22 / 5</text>
+  <text x="393" y="378" class="value">74 / 19</text>
+  <text x="58" y="407" class="label">elasticsearch</text>
+  <rect x="233" y="395" width="55" height="15" rx="3" fill="#dc2626"/>
+  <text x="393" y="407" class="value">27 / 5</text>
+  <text x="58" y="436" class="label">confluence</text>
+  <rect x="233" y="424" width="49" height="15" rx="3" fill="#dc2626"/>
+  <text x="393" y="436" class="value">24 / 5</text>
+  <text x="58" y="465" class="label">drupal</text>
+  <rect x="233" y="453" width="49" height="15" rx="3" fill="#dc2626"/>
+  <text x="393" y="465" class="value">24 / 6</text>
   <text x="58" y="494" class="label">nginx</text>
-  <rect x="233" y="482" width="40" height="15" rx="3" fill="#dc2626"/>
-  <text x="393" y="494" class="value">18 / 4</text>
+  <rect x="233" y="482" width="43" height="15" rx="3" fill="#dc2626"/>
+  <text x="393" y="494" class="value">21 / 4</text>
   <text x="58" y="523" class="label">jenkins</text>
-  <rect x="233" y="511" width="29" height="15" rx="3" fill="#dc2626"/>
+  <rect x="233" y="511" width="27" height="15" rx="3" fill="#dc2626"/>
   <text x="393" y="523" class="value">13 / 3</text>
   <text x="58" y="552" class="label">redis</text>
-  <rect x="233" y="540" width="24" height="15" rx="3" fill="#dc2626"/>
-  <text x="393" y="552" class="value">11 / 2</text>
+  <rect x="233" y="540" width="25" height="15" rx="3" fill="#dc2626"/>
+  <text x="393" y="552" class="value">12 / 2</text>
   <text x="58" y="581" class="label">django</text>
-  <rect x="233" y="569" width="22" height="15" rx="3" fill="#dc2626"/>
-  <text x="393" y="581" class="value">10 / 5</text>
+  <rect x="233" y="569" width="23" height="15" rx="3" fill="#dc2626"/>
+  <text x="393" y="581" class="value">11 / 5</text>
   <text x="58" y="610" class="label">php</text>
-  <rect x="233" y="598" width="20" height="15" rx="3" fill="#dc2626"/>
+  <rect x="233" y="598" width="18" height="15" rx="3" fill="#dc2626"/>
   <text x="393" y="610" class="value">9 / 9</text>
   <text x="58" y="639" class="label">spring</text>
-  <rect x="233" y="627" width="20" height="15" rx="3" fill="#dc2626"/>
+  <rect x="233" y="627" width="18" height="15" rx="3" fill="#dc2626"/>
   <text x="393" y="639" class="value">9 / 9</text>
   <text x="58" y="668" class="label">weblogic</text>
-  <rect x="233" y="656" width="15" height="15" rx="3" fill="#dc2626"/>
+  <rect x="233" y="656" width="14" height="15" rx="3" fill="#dc2626"/>
   <text x="393" y="668" class="value">7 / 7</text>
   <text x="58" y="697" class="label">celery</text>
-  <rect x="233" y="685" width="13" height="15" rx="3" fill="#dc2626"/>
+  <rect x="233" y="685" width="12" height="15" rx="3" fill="#dc2626"/>
   <text x="393" y="697" class="value">6 / 1</text>
   <text x="58" y="726" class="label">httpd</text>
-  <rect x="233" y="714" width="13" height="15" rx="3" fill="#dc2626"/>
+  <rect x="233" y="714" width="12" height="15" rx="3" fill="#dc2626"/>
   <text x="393" y="726" class="value">6 / 6</text>
   <text x="58" y="755" class="label">ofbiz</text>
-  <rect x="233" y="743" width="13" height="15" rx="3" fill="#dc2626"/>
+  <rect x="233" y="743" width="12" height="15" rx="3" fill="#dc2626"/>
   <text x="393" y="755" class="value">6 / 6</text>
-  <text x="58" y="784" class="label">solr</text>
-  <rect x="233" y="772" width="11" height="15" rx="3" fill="#dc2626"/>
-  <text x="393" y="784" class="value">5 / 5</text>
-  <text x="58" y="813" class="label">thinkphp</text>
-  <rect x="233" y="801" width="11" height="15" rx="3" fill="#dc2626"/>
+  <text x="58" y="784" class="label">ingress-nginx</text>
+  <rect x="233" y="772" width="10" height="15" rx="3" fill="#dc2626"/>
+  <text x="393" y="784" class="value">5 / 1</text>
+  <text x="58" y="813" class="label">solr</text>
+  <rect x="233" y="801" width="10" height="15" rx="3" fill="#dc2626"/>
   <text x="393" y="813" class="value">5 / 5</text>
-  <text x="58" y="842" class="label">activemq</text>
-  <rect x="233" y="830" width="9" height="15" rx="3" fill="#dc2626"/>
-  <text x="393" y="842" class="value">4 / 4</text>
-  <text x="58" y="871" class="label">coldfusion</text>
-  <rect x="233" y="859" width="9" height="15" rx="3" fill="#dc2626"/>
+  <text x="58" y="842" class="label">thinkphp</text>
+  <rect x="233" y="830" width="10" height="15" rx="3" fill="#dc2626"/>
+  <text x="393" y="842" class="value">5 / 5</text>
+  <text x="58" y="871" class="label">activemq</text>
+  <rect x="233" y="859" width="8" height="15" rx="3" fill="#dc2626"/>
   <text x="393" y="871" class="value">4 / 4</text>
-  <text x="58" y="900" class="label">geoserver</text>
-  <rect x="233" y="888" width="9" height="15" rx="3" fill="#dc2626"/>
+  <text x="58" y="900" class="label">coldfusion</text>
+  <rect x="233" y="888" width="8" height="15" rx="3" fill="#dc2626"/>
   <text x="393" y="900" class="value">4 / 4</text>
-  <text x="58" y="929" class="label">ingress-nginx</text>
-  <rect x="233" y="917" width="9" height="15" rx="3" fill="#dc2626"/>
-  <text x="393" y="929" class="value">4 / 1</text>
+  <text x="58" y="929" class="label">geoserver</text>
+  <rect x="233" y="917" width="8" height="15" rx="3" fill="#dc2626"/>
+  <text x="393" y="929" class="value">4 / 4</text>
   <rect x="715" y="285" width="650" height="700" rx="12" class="panel"/>
   <text x="738" y="321" class="panel-title">Self-generated service types</text>
   <text x="738" y="343" class="note">All 15 types · label / selections / unique generators.</text>
   <text x="738" y="378" class="label">Dependency Consumer</text>
   <rect x="913" y="366" width="152" height="15" rx="3" fill="#0f766e"/>
-  <text x="1073" y="378" class="value">39 / 9</text>
+  <text x="1073" y="378" class="value">45 / 9</text>
   <text x="738" y="407" class="label">SSH</text>
-  <rect x="913" y="395" width="148" height="15" rx="3" fill="#0f766e"/>
-  <text x="1073" y="407" class="value">38 / 9</text>
-  <text x="738" y="436" class="label">HTTP</text>
-  <rect x="913" y="424" width="133" height="15" rx="3" fill="#0f766e"/>
-  <text x="1073" y="436" class="value">34 / 8</text>
-  <text x="738" y="465" class="label">NFS</text>
-  <rect x="913" y="453" width="129" height="15" rx="3" fill="#0f766e"/>
-  <text x="1073" y="465" class="value">33 / 8</text>
+  <rect x="913" y="395" width="149" height="15" rx="3" fill="#0f766e"/>
+  <text x="1073" y="407" class="value">44 / 9</text>
+  <text x="738" y="436" class="label">NFS</text>
+  <rect x="913" y="424" width="132" height="15" rx="3" fill="#0f766e"/>
+  <text x="1073" y="436" class="value">39 / 8</text>
+  <text x="738" y="465" class="label">HTTP</text>
+  <rect x="913" y="453" width="128" height="15" rx="3" fill="#0f766e"/>
+  <text x="1073" y="465" class="value">38 / 8</text>
   <text x="738" y="494" class="label">Cache</text>
-  <rect x="913" y="482" width="117" height="15" rx="3" fill="#0f766e"/>
-  <text x="1073" y="494" class="value">30 / 7</text>
+  <rect x="913" y="482" width="118" height="15" rx="3" fill="#0f766e"/>
+  <text x="1073" y="494" class="value">35 / 7</text>
   <text x="738" y="523" class="label">DNS</text>
-  <rect x="913" y="511" width="113" height="15" rx="3" fill="#0f766e"/>
-  <text x="1073" y="523" class="value">29 / 7</text>
-  <text x="738" y="552" class="label">HTTPS</text>
-  <rect x="913" y="540" width="113" height="15" rx="3" fill="#0f766e"/>
-  <text x="1073" y="552" class="value">29 / 7</text>
-  <text x="738" y="581" class="label">Database</text>
-  <rect x="913" y="569" width="109" height="15" rx="3" fill="#0f766e"/>
-  <text x="1073" y="581" class="value">28 / 7</text>
+  <rect x="913" y="511" width="118" height="15" rx="3" fill="#0f766e"/>
+  <text x="1073" y="523" class="value">35 / 7</text>
+  <text x="738" y="552" class="label">Database</text>
+  <rect x="913" y="540" width="118" height="15" rx="3" fill="#0f766e"/>
+  <text x="1073" y="552" class="value">35 / 7</text>
+  <text x="738" y="581" class="label">HTTPS</text>
+  <rect x="913" y="569" width="108" height="15" rx="3" fill="#0f766e"/>
+  <text x="1073" y="581" class="value">32 / 7</text>
   <text x="738" y="610" class="label">Mail</text>
-  <rect x="913" y="598" width="109" height="15" rx="3" fill="#0f766e"/>
-  <text x="1073" y="610" class="value">28 / 7</text>
+  <rect x="913" y="598" width="108" height="15" rx="3" fill="#0f766e"/>
+  <text x="1073" y="610" class="value">32 / 7</text>
   <text x="738" y="639" class="label">SMB</text>
-  <rect x="913" y="627" width="105" height="15" rx="3" fill="#0f766e"/>
-  <text x="1073" y="639" class="value">27 / 6</text>
-  <text x="738" y="668" class="label">LDAP</text>
-  <rect x="913" y="656" width="35" height="15" rx="3" fill="#0f766e"/>
-  <text x="1073" y="668" class="value">9 / 2</text>
-  <text x="738" y="697" class="label">MQTT</text>
-  <rect x="913" y="685" width="35" height="15" rx="3" fill="#0f766e"/>
-  <text x="1073" y="697" class="value">9 / 2</text>
-  <text x="738" y="726" class="label">FTP</text>
-  <rect x="913" y="714" width="31" height="15" rx="3" fill="#0f766e"/>
-  <text x="1073" y="726" class="value">8 / 2</text>
-  <text x="738" y="755" class="label">Git</text>
-  <rect x="913" y="743" width="31" height="15" rx="3" fill="#0f766e"/>
-  <text x="1073" y="755" class="value">8 / 2</text>
-  <text x="738" y="784" class="label">Network Share</text>
-  <rect x="913" y="772" width="31" height="15" rx="3" fill="#0f766e"/>
-  <text x="1073" y="784" class="value">8 / 2</text>
+  <rect x="913" y="627" width="95" height="15" rx="3" fill="#0f766e"/>
+  <text x="1073" y="639" class="value">28 / 6</text>
+  <text x="738" y="668" class="label">FTP</text>
+  <rect x="913" y="656" width="34" height="15" rx="3" fill="#0f766e"/>
+  <text x="1073" y="668" class="value">10 / 2</text>
+  <text x="738" y="697" class="label">Git</text>
+  <rect x="913" y="685" width="34" height="15" rx="3" fill="#0f766e"/>
+  <text x="1073" y="697" class="value">10 / 2</text>
+  <text x="738" y="726" class="label">Network Share</text>
+  <rect x="913" y="714" width="34" height="15" rx="3" fill="#0f766e"/>
+  <text x="1073" y="726" class="value">10 / 2</text>
+  <text x="738" y="755" class="label">LDAP</text>
+  <rect x="913" y="743" width="30" height="15" rx="3" fill="#0f766e"/>
+  <text x="1073" y="755" class="value">9 / 2</text>
+  <text x="738" y="784" class="label">MQTT</text>
+  <rect x="913" y="772" width="30" height="15" rx="3" fill="#0f766e"/>
+  <text x="1073" y="784" class="value">9 / 2</text>
   <rect x="35" y="1015" width="650" height="245" rx="12" class="panel"/>
   <text x="58" y="1051" class="panel-title">Network ground truth per scenario</text>
   <text x="58" y="1074" class="note">Population statistics over fixed YAML values: mean · variance · SD · observed range.</text>
@@ -145,13 +145,14 @@
   <text x="58" y="1128" class="label">Routers</text><text x="280" y="1128" class="value">2.049</text><text x="360" y="1128" class="value">0.914</text><text x="460" y="1128" class="value">0.956</text><text x="555" y="1128" class="value">1–5</text>
   <text x="58" y="1150" class="label">Docker hosts</text><text x="280" y="1150" class="value">6.788</text><text x="360" y="1150" class="value">5.928</text><text x="460" y="1150" class="value">2.435</text><text x="555" y="1150" class="value">3–15</text>
   <text x="58" y="1172" class="label">Base nodes</text><text x="280" y="1172" class="value">8.836</text><text x="360" y="1172" class="value">9.553</text><text x="460" y="1172" class="value">3.091</text><text x="555" y="1172" class="value">4–20</text>
-  <text x="58" y="1194" class="label">Total planned nodes</text><text x="280" y="1194" class="value">12.376</text><text x="360" y="1194" class="value">18.031</text><text x="460" y="1194" class="value">4.246</text><text x="555" y="1194" class="value">5–27</text>
+  <text x="58" y="1194" class="label">Total planned nodes</text><text x="280" y="1194" class="value">12.690</text><text x="360" y="1194" class="value">18.161</text><text x="460" y="1194" class="value">4.262</text><text x="555" y="1194" class="value">5–27</text>
   <text x="58" y="1216" class="label">Service assignments</text><text x="280" y="1216" class="value">3.668</text><text x="360" y="1216" class="value">1.930</text><text x="460" y="1216" class="value">1.389</text><text x="555" y="1216" class="value">1–8</text>
-  <text x="58" y="1238" class="label">Flow hops / segmentation rows</text><text x="280" y="1238" class="value">2.305 / 0.527</text><text x="460" y="1238" class="value">SD 1.807 / 0.903</text><text x="555" y="1238" class="value">0–6 / 0–3</text>
+  <text x="58" y="1238" class="label">Flow hops / segmentation rows</text><text x="280" y="1238" class="value">3.035 / 0.920</text><text x="460" y="1238" class="value">SD 1.579 / 0.789</text><text x="555" y="1238" class="value">0–5 / 0–3</text>
   <rect x="715" y="1015" width="650" height="245" rx="12" class="panel"/>
   <text x="738" y="1051" class="panel-title">Selection-frequency ground truth</text>
-  <text x="738" y="1080" class="value">Vulhub images</text><text x="738" y="1102" class="note">243 entries × 1 use · 5 entries × 2 uses · 7 entries × 3 uses · 28 entries × 4 uses · 9 entries × 5 uses · 2 entries × 6 uses</text>
-  <text x="738" y="1133" class="value">Self-generated services</text><text x="738" y="1155" class="note">68 entries × 4 uses · 17 entries × 5 uses</text>
-  <text x="738" y="1190" class="note">Full-catalog population statistics; deterministic catalog-name groupings; Sample generators excluded.</text>
+  <text x="738" y="1080" class="value">Vulhub images</text><text x="738" y="1102" class="note">243 entries × 1 use · 4 entries × 2 uses · 3 entries × 3 uses · 26 entries × 4 uses · 12 entries × 5 uses · 6 entries × 6 uses</text>
+  <text x="738" y="1133" class="value">Self-generated services</text><text x="738" y="1155" class="note">14 entries × 4 uses · 71 entries × 5 uses</text>
+  <text x="738" y="1187" class="value">Chained challenges</text><text x="738" y="1209" class="note">196 chained / 30 baseline · 2 hops × 49 · 3 hops × 49 · 4 hops × 49 · 5 hops × 49</text>
+  <text x="738" y="1235" class="note">186 generator · 148 segmented · 42 pivot scenarios</text>
   <text x="45" y="1330" class="note">Generated from catalog-selections.json and the fixed resolved YAMLs. No runtime execution outcome is implied.</text>
 </svg>

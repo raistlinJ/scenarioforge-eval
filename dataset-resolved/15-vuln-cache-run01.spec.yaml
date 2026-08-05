@@ -48,8 +48,8 @@ flag_node_generators:
   include: []
   exclude: []
 flows:
-  enabled: false
-  chain_length: 0
+  enabled: true
+  chain_length: 2
   allow_duplicates: false
   include_all_topology_pivots: false
 segmentation:

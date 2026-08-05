@@ -49,8 +49,8 @@ flag_node_generators:
   enabled: true
   count: 1
   specific:
-  - id: ldap_anonymous_directory
-    name: 'LDAP: Anonymous Directory'
+  - id: https_basic_auth_reports
+    name: 'HTTPS: Basic Auth Reports'
     count: 1
 flows:
   enabled: true

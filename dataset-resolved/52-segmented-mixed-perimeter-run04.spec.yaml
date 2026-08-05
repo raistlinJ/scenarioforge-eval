@@ -36,25 +36,22 @@ vulns:
   enabled: true
   count: 1
   specific:
-  - name: ingress-nginx/CVE-2025-1974
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/ingress-nginx/CVE-2025-1974/docker-compose.yml
+  - name: nginx/nginx_parsing_vulnerability
+    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/nginx/nginx_parsing_vulnerability/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: true
-  count: 3
+  count: 2
   specific:
-  - id: https_token_debug_api
-    name: 'HTTPS: Token Debug API'
-    count: 1
-  - id: https_login_admin_console
-    name: 'HTTPS: Admin Login Console'
+  - id: http_directory_traversal_docs
+    name: 'HTTP: Directory Traversal Docs'
     count: 1
   - id: http_sqli_customer_lookup
     name: 'HTTP: SQLi Customer Lookup'
     count: 1
 flows:
   enabled: true
-  chain_length: 2
+  chain_length: 3
   allow_duplicates: false
   include_all_topology_pivots: false
 segmentation:

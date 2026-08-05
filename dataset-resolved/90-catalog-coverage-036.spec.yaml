@@ -41,8 +41,8 @@ flag_node_generators:
   enabled: true
   count: 1
   specific:
-  - id: '130'
-    name: 'Cache: Session Replay Store'
+  - id: '150'
+    name: 'SMB: Public Scanner Share'
     count: 1
 flows:
   enabled: true

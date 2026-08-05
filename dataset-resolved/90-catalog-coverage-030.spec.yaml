@@ -41,8 +41,8 @@ flag_node_generators:
   enabled: true
   count: 1
   specific:
-  - id: '142'
-    name: 'Mail: IMAP Archive Mailbox'
+  - id: '129'
+    name: 'Cache: Varnish Debug Objects'
     count: 1
 flows:
   enabled: true

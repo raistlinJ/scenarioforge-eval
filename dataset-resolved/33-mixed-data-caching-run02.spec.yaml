@@ -36,11 +36,11 @@ vulns:
   enabled: true
   count: 3
   specific:
-  - name: elasticsearch/WooYun-2015-110216
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/elasticsearch/WooYun-2015-110216/docker-compose.yml
-    count: 1
   - name: elasticsearch/CVE-2014-3120
     path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/elasticsearch/CVE-2014-3120/docker-compose.yml
+    count: 1
+  - name: elasticsearch/WooYun-2015-110216
+    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/elasticsearch/WooYun-2015-110216/docker-compose.yml
     count: 1
   - name: elasticsearch/CVE-2015-5531
     path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/elasticsearch/CVE-2015-5531/docker-compose.yml
@@ -52,8 +52,8 @@ flag_node_generators:
   - id: '132'
     name: 'Database: Postgres Audit Schema'
     count: 1
-  - id: '128'
-    name: 'Cache: Memcached Feature Flags'
+  - id: mysql_backup_table
+    name: 'Database: MySQL Backup Table'
     count: 1
   - id: memcached_session_cache
     name: 'Cache: Memcached Session Cache'
@@ -63,13 +63,17 @@ flag_node_generators:
     count: 1
 flows:
   enabled: true
-  chain_length: 3
+  chain_length: 5
   allow_duplicates: false
   include_all_topology_pivots: false
 segmentation:
   enabled: true
   density: 0.4
-  items: []
+  items:
+  - factor: 1.0
+    pivot_enabled: false
+    type: NAT
+    count: 1
 hitl:
   use_env: false
 validation:

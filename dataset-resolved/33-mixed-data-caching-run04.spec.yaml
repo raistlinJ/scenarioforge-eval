@@ -36,34 +36,41 @@ vulns:
   enabled: true
   count: 2
   specific:
-  - name: elasticsearch/CVE-2014-3120
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/elasticsearch/CVE-2014-3120/docker-compose.yml
+  - name: elasticsearch/CVE-2015-3337
+    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/elasticsearch/CVE-2015-3337/docker-compose.yml
     count: 1
   - name: elasticsearch/CVE-2015-1427
     path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/elasticsearch/CVE-2015-1427/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: true
-  count: 3
+  count: 4
   specific:
   - id: '130'
     name: 'Cache: Session Replay Store'
     count: 1
-  - id: '129'
-    name: 'Cache: Varnish Debug Objects'
+  - id: '127'
+    name: 'Cache: Redis ACL Token Store'
     count: 1
   - id: '135'
     name: 'Database: Mongo Export Documents'
     count: 1
+  - id: '133'
+    name: 'Database: MySQL Reports Dump'
+    count: 1
 flows:
   enabled: true
-  chain_length: 2
+  chain_length: 5
   allow_duplicates: false
   include_all_topology_pivots: false
 segmentation:
   enabled: true
   density: 0.4
-  items: []
+  items:
+  - factor: 1.0
+    pivot_enabled: false
+    type: NAT
+    count: 1
 hitl:
   use_env: false
 validation:

@@ -51,6 +51,9 @@ def collect() -> dict:
     payload_rows: Counter[str] = Counter()
     payload_pairs: Counter[str] = Counter()
     composition: Counter[str] = Counter()
+    feature_coverage: Counter[str] = Counter()
+    chain_lengths: Counter[int] = Counter()
+    segmentation_types: Counter[str] = Counter()
     spec_count = 0
     executions = 0
 
@@ -65,6 +68,25 @@ def collect() -> dict:
         generators = spec.get("flag_node_generators") or {}
         has_vulns = _enabled(vulns)
         has_generators = _enabled(generators)
+        flows = spec.get("flows") or {}
+        segmentation = spec.get("segmentation") or {}
+        has_flows = _enabled(flows)
+        has_segmentation = _enabled(segmentation)
+        has_pivot = bool(
+            segmentation.get("accessible_by_pivot")
+            or any(item.get("pivot_enabled") for item in segmentation.get("items") or [])
+        )
+        if has_generators:
+            feature_coverage["Flag-node generators"] += iterations
+        if has_flows:
+            feature_coverage["Chained challenges"] += iterations
+            chain_lengths[int(flows["chain_length"])] += iterations
+        if has_segmentation:
+            feature_coverage["Segmentation"] += iterations
+            for item in segmentation.get("items") or []:
+                segmentation_types[str(item["type"]).title()] += iterations
+        if has_pivot:
+            feature_coverage["Pivot paths"] += iterations
         if has_vulns and has_generators:
             composition["Mixed"] += iterations
         elif has_vulns:
@@ -97,6 +119,9 @@ def collect() -> dict:
         "spec_count": spec_count,
         "executions": executions,
         "composition": composition,
+        "feature_coverage": feature_coverage,
+        "chain_lengths": chain_lengths,
+        "segmentation_types": segmentation_types,
         "vulnerability_types": vulnerability_types,
         "generator_types": generator_types,
         "payload_rows": payload_rows,
@@ -139,6 +164,9 @@ def render(summary: dict) -> str:
     )
     payloads = [(name, summary["payload_rows"][name], summary["payload_pairs"][name]) for name in ("Text", "Photo", "Audio", "Video", "Gibberish")]
     composition = summary["composition"]
+    features = summary["feature_coverage"]
+    chain_lengths = summary["chain_lengths"]
+    segmentation_types = summary["segmentation_types"]
     service_types = [
         *[(name, count, "#dc2626") for name, count in vulnerability_types],
         *[(name, count, "#0f766e") for name, count in generator_types],
@@ -146,7 +174,7 @@ def render(summary: dict) -> str:
     service_types.sort(key=lambda item: (-item[1], item[0]))
 
     svg = [
-        '<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1200" viewBox="0 0 1400 1200" role="img" aria-labelledby="title desc">',
+        '<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1370" viewBox="0 0 1400 1370" role="img" aria-labelledby="title desc">',
         '  <title id="title">ScenarioForge-Eval dataset type distribution</title>',
         '  <desc id="desc">Combined configured service coverage, execution composition, and traffic payload configuration across the dataset YAML suite. Red bars represent Vulhub images and teal bars represent self-generated services.</desc>',
         '  <style>',
@@ -160,7 +188,7 @@ def render(summary: dict) -> str:
         '    .note { font-size: 12px; fill: #6b7280; }',
         '    .big { font-size: 30px; font-weight: 700; }',
         '  </style>',
-        '  <rect width="1400" height="1200" fill="#f8fafc"/>',
+        '  <rect width="1400" height="1370" fill="#f8fafc"/>',
         '  <text x="50" y="53" class="title">ScenarioForge-Eval dataset distribution</text>',
         f'  <text x="50" y="78" class="subtitle">{specs} specifications × their declared iterations = {executions} resolved scenarios</text>',
         '  <rect x="40" y="105" width="640" height="142" rx="12" class="panel"/>',
@@ -174,29 +202,37 @@ def render(summary: dict) -> str:
         '  <text x="729" y="166" class="note">A bar is the number of declared iterations whose YAML includes that service type.</text>',
         '  <text x="729" y="187" class="note">Service bars are non-exclusive and do not sum to 150. Runtime catalog selections can vary per batch.</text>',
         '  <text x="729" y="220" class="note">Vulhub-image and self-generated counts add topology nodes; they do not create additional scenarios.</text>',
-        '  <rect x="40" y="275" width="1320" height="610" rx="12" class="panel"/>',
-        '  <text x="64" y="312" class="panel-title">Services</text>',
-        f'  <text x="64" y="335" class="note">{len(service_types)} configured types · executions with service included</text>',
-        '  <rect x="405" y="321" width="14" height="14" rx="3" fill="#dc2626"/><text x="427" y="333" class="note">Vulhub images (vulnerabilities)</text>',
-        '  <rect x="625" y="321" width="14" height="14" rx="3" fill="#0f766e"/><text x="647" y="333" class="note">Self-generated services</text>',
-        *[f'  {line}' for line in _bar_rows(service_types, x=64, y=374, columns=3)],
-        '  <rect x="40" y="915" width="1320" height="225" rx="12" class="panel"/>',
-        '  <text x="64" y="952" class="panel-title">Traffic payload configuration</text>',
-        '  <text x="64" y="975" class="note">Unchanged from the prior dataset design; every resolved scenario enables traffic.</text>',
+        '  <rect x="40" y="275" width="1320" height="180" rx="12" class="panel"/>',
+        '  <text x="64" y="312" class="panel-title">Chained challenge and network-feature balance</text>',
+        f'  <text x="64" y="355" class="big">{features["Chained challenges"]}</text><text x="64" y="377" class="note">chained scenarios</text>',
+        f'  <text x="242" y="355" class="big">{features["Flag-node generators"]}</text><text x="242" y="377" class="note">flag-node-generator scenarios</text>',
+        f'  <text x="500" y="355" class="big">{features["Segmentation"]}</text><text x="500" y="377" class="note">segmented scenarios</text>',
+        f'  <text x="700" y="355" class="big">{features["Pivot paths"]}</text><text x="700" y="377" class="note">pivot-path scenarios</text>',
+        f'  <text x="64" y="425" class="note">Fixed chain lengths: {" · ".join(f"{length} hops × {chain_lengths[length]}" for length in sorted(chain_lengths))}</text>',
+        f'  <text x="700" y="425" class="note">Explicit boundary coverage: Firewall × {segmentation_types["Firewall"]} · NAT × {segmentation_types["Nat"]}</text>',
+        '  <rect x="40" y="485" width="1320" height="610" rx="12" class="panel"/>',
+        '  <text x="64" y="522" class="panel-title">Services</text>',
+        f'  <text x="64" y="545" class="note">{len(service_types)} configured types · executions with service included</text>',
+        '  <rect x="405" y="531" width="14" height="14" rx="3" fill="#dc2626"/><text x="427" y="543" class="note">Vulhub images (vulnerabilities)</text>',
+        '  <rect x="625" y="531" width="14" height="14" rx="3" fill="#0f766e"/><text x="647" y="543" class="note">Self-generated services</text>',
+        *[f'  {line}' for line in _bar_rows(service_types, x=64, y=584, columns=3)],
+        '  <rect x="40" y="1125" width="1320" height="200" rx="12" class="panel"/>',
+        '  <text x="64" y="1162" class="panel-title">Traffic payload configuration</text>',
+        '  <text x="64" y="1185" class="note">Every resolved scenario enables traffic.</text>',
     ]
     colors = {"Text": "#2563eb", "Photo": "#db2777", "Audio": "#0891b2", "Video": "#7c3aed", "Gibberish": "#475569"}
     for index, (name, rows, pairs) in enumerate(payloads):
         x = 64 + index * 250
         svg.extend(
             [
-                f'  <text x="{x}" y="1020" class="label">{name}</text>',
-                f'  <rect x="{x}" y="1032" width="{rows * 14}" height="20" rx="4" fill="{colors[name]}"/>',
-                f'  <text x="{x}" y="1076" class="value">{rows} rows · {pairs} pairs</text>',
+                f'  <text x="{x}" y="1230" class="label">{name}</text>',
+                f'  <rect x="{x}" y="1242" width="{rows * 14}" height="20" rx="4" fill="{colors[name]}"/>',
+                f'  <text x="{x}" y="1286" class="value">{rows} rows · {pairs} pairs</text>',
             ]
         )
     svg.extend(
         [
-            '  <text x="64" y="1116" class="note">Source: static YAML filters and declared iterations. Regenerate with: uv run python datasets/generate_distribution.py</text>',
+            '  <text x="64" y="1310" class="note">Source: static YAML filters and declared iterations. Regenerate with: uv run python datasets/generate_distribution.py</text>',
             '</svg>',
             '',
         ]

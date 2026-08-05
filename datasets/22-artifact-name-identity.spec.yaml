@@ -15,17 +15,25 @@ vulns:
 flag_node_generators:
   enabled: true
   randomize: true
-  count: [1, 3]
+  count: [2, 3]
   include: ["DNS:*", "LDAP:*"]
 flows:
-  enabled: false
-  chain_length: 0
+  enabled: true
+  chain_length: 2
+  allow_duplicates: false
+  include_all_topology_pivots: true
 traffic:
   profile: light
   payload_types: [audio]
 segmentation:
   enabled: true
   density: 0.3
+  accessible_by_pivot: true
+  items:
+    - type: NAT
+      count: 1
+      pivot_enabled: true
+      pivot_provider: flag-node-generator
 hitl:
   use_env: false
 validation:

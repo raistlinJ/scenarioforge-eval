@@ -15,17 +15,22 @@ vulns:
 flag_node_generators:
   enabled: true
   randomize: true
-  count: [2, 4]
+  count: 4
   include: ["Dependency Consumer:*"]
 flows:
-  enabled: false
-  chain_length: 0
+  enabled: true
+  chain_length: 4
+  allow_duplicates: false
 traffic:
   profile: heavy
   payload_types: [text, audio]
 segmentation:
   enabled: true
   density: 0.35
+  items:
+    - type: Firewall
+      count: 1
+      pivot_enabled: false
 hitl:
   use_env: false
 validation:

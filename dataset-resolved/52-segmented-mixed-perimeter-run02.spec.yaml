@@ -36,22 +36,25 @@ vulns:
   enabled: true
   count: 2
   specific:
-  - name: nginx/CVE-2013-4547
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/nginx/CVE-2013-4547/docker-compose.yml
-    count: 1
   - name: nginx/CVE-2017-7529
     path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/nginx/CVE-2017-7529/docker-compose.yml
     count: 1
+  - name: ingress-nginx/CVE-2025-1974
+    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/ingress-nginx/CVE-2025-1974/docker-compose.yml
+    count: 1
 flag_node_generators:
   enabled: true
-  count: 1
+  count: 2
   specific:
-  - id: https_source_secret_ci
-    name: 'HTTPS: CI Source Secret'
+  - id: https_token_debug_api
+    name: 'HTTPS: Token Debug API'
+    count: 1
+  - id: https_login_admin_console
+    name: 'HTTPS: Admin Login Console'
     count: 1
 flows:
   enabled: true
-  chain_length: 2
+  chain_length: 3
   allow_duplicates: false
   include_all_topology_pivots: false
 segmentation:

@@ -21,8 +21,7 @@ flag_node_generators:
   include: ["Git:*", "HTTP:*"]
 flows:
   enabled: true
-  randomize: true
-  chain_length: [2, 4]
+  chain_length: 2
   allow_duplicates: false
 traffic:
   profile: light
@@ -30,6 +29,10 @@ traffic:
 segmentation:
   enabled: true
   density: 0.4
+  items:
+    - type: Firewall
+      count: 1
+      pivot_enabled: false
 hitl:
   use_env: false
 validation:

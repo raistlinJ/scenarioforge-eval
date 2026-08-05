@@ -12,20 +12,28 @@ services:
 vulns:
   enabled: true
   randomize: true
-  count: [1, 2]
+  count: 2
   include: ["nginx"]
 flag_node_generators:
   enabled: false
   count: 0
 flows:
-  enabled: false
-  chain_length: 0
+  enabled: true
+  chain_length: 2
+  allow_duplicates: false
+  include_all_topology_pivots: true
 traffic:
   profile: medium
   payload_types: [text, audio]
 segmentation:
   enabled: true
   density: 0.3
+  accessible_by_pivot: true
+  items:
+    - type: Firewall
+      count: 1
+      pivot_enabled: true
+      pivot_provider: vulnerability
 hitl:
   use_env: false
 validation:

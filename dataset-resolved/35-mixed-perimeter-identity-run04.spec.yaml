@@ -36,28 +36,35 @@ vulns:
   enabled: true
   count: 1
   specific:
-  - name: nginx/CVE-2017-7529
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/nginx/CVE-2017-7529/docker-compose.yml
+  - name: nginx/nginx_parsing_vulnerability
+    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/nginx/nginx_parsing_vulnerability/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: true
-  count: 2
+  count: 3
   specific:
-  - id: '140'
-    name: 'DNS: DKIM Selector Secret'
+  - id: dns_txt_secret_record
+    name: 'DNS: TXT Secret Record'
     count: 1
   - id: '141'
     name: 'DNS: Delegation Glue Hint'
     count: 1
+  - id: '138'
+    name: 'DNS: SRV Admin Endpoint'
+    count: 1
 flows:
   enabled: true
-  chain_length: 2
+  chain_length: 3
   allow_duplicates: false
   include_all_topology_pivots: false
 segmentation:
   enabled: true
   density: 0.35
-  items: []
+  items:
+  - factor: 1.0
+    pivot_enabled: false
+    type: NAT
+    count: 1
 hitl:
   use_env: false
 validation:

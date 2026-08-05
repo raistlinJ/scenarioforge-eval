@@ -21,8 +21,7 @@ flag_node_generators:
   include: ["HTTP:*", "SSH:*", "NFS:*", "Database:*", "Dependency Consumer:*"]
 flows:
   enabled: true
-  randomize: true
-  chain_length: [3, 6]
+  chain_length: 5
   allow_duplicates: false
 traffic:
   profile: heavy
@@ -30,6 +29,10 @@ traffic:
 segmentation:
   enabled: true
   density: 0.55
+  items:
+    - type: NAT
+      count: 1
+      pivot_enabled: false
 hitl:
   use_env: false
 validation:

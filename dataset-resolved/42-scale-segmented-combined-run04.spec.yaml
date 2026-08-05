@@ -55,24 +55,28 @@ flag_node_generators:
   - id: nfs_legacy_nfs3_share
     name: 'NFS: Legacy Engineering Share'
     count: 1
-  - id: ssh_key_git_deploy
-    name: 'SSH: Key Git Deploy Account'
+  - id: dep_api_key_admin_endpoint
+    name: 'Dependency Consumer: API Key Admin Endpoint'
     count: 1
   - id: http_backup_archive_listing
     name: 'HTTP: Backup Archive Listing'
     count: 1
-  - id: mysql_backup_table
-    name: 'Database: MySQL Backup Table'
+  - id: dep_port_forward_pivot
+    name: 'Dependency Consumer: Port Forward Pivot'
     count: 1
 flows:
   enabled: true
-  chain_length: 6
+  chain_length: 5
   allow_duplicates: false
   include_all_topology_pivots: false
 segmentation:
   enabled: true
   density: 0.55
-  items: []
+  items:
+  - factor: 1.0
+    pivot_enabled: false
+    type: NAT
+    count: 1
 hitl:
   use_env: false
 validation:

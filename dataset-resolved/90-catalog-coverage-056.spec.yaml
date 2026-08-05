@@ -49,8 +49,8 @@ flag_node_generators:
   enabled: true
   count: 1
   specific:
-  - id: https_basic_auth_reports
-    name: 'HTTPS: Basic Auth Reports'
+  - id: imap_shared_mailbox
+    name: 'Mail: Shared IMAP Mailbox'
     count: 1
 flows:
   enabled: true

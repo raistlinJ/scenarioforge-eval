@@ -47,21 +47,25 @@ flag_node_generators:
   - id: dep_checksum_evidence_gate
     name: 'Dependency Consumer: Checksum Evidence Gate'
     count: 1
-  - id: dep_webauth_bypass_console
-    name: 'Dependency Consumer: WebAuth Bypass Console'
+  - id: dep_api_key_admin_endpoint
+    name: 'Dependency Consumer: API Key Admin Endpoint'
     count: 1
-  - id: dep_file_parser_console
-    name: 'Dependency Consumer: File Parser Console'
+  - id: dep_endpoint_hidden_followup
+    name: 'Dependency Consumer: Hidden Endpoint Follow-Up'
     count: 1
 flows:
-  enabled: false
-  chain_length: 0
+  enabled: true
+  chain_length: 4
   allow_duplicates: false
   include_all_topology_pivots: false
 segmentation:
   enabled: true
   density: 0.35
-  items: []
+  items:
+  - factor: 1.0
+    pivot_enabled: false
+    type: Firewall
+    count: 1
 hitl:
   use_env: false
 validation:

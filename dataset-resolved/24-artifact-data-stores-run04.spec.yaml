@@ -41,27 +41,31 @@ flag_node_generators:
   enabled: true
   count: 4
   specific:
-  - id: mysql_backup_table
-    name: 'Database: MySQL Backup Table'
-    count: 1
   - id: redis_exposed_keys
     name: 'Cache: Exposed Redis Keys'
     count: 1
   - id: '131'
     name: 'Cache: CDN Manifest Cache'
     count: 1
-  - id: postgres_customer_dump
-    name: 'Database: Postgres Customer Dump'
+  - id: '134'
+    name: 'Database: SQLite Backup File'
+    count: 1
+  - id: '128'
+    name: 'Cache: Memcached Feature Flags'
     count: 1
 flows:
-  enabled: false
-  chain_length: 0
+  enabled: true
+  chain_length: 4
   allow_duplicates: false
   include_all_topology_pivots: false
 segmentation:
   enabled: true
   density: 0.4
-  items: []
+  items:
+  - factor: 1.0
+    pivot_enabled: false
+    type: NAT
+    count: 1
 hitl:
   use_env: false
 validation:

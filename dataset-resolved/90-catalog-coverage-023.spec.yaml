@@ -49,8 +49,8 @@ flag_node_generators:
   enabled: true
   count: 1
   specific:
-  - id: '139'
-    name: 'DNS: Reverse Zone Note'
+  - id: '145'
+    name: 'Mail: Webmail Export Attachment'
     count: 1
 flows:
   enabled: true

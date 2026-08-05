@@ -39,31 +39,38 @@ vulns:
   - name: redis/CVE-2022-0543
     path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/redis/CVE-2022-0543/docker-compose.yml
     count: 1
-  - name: redis/4-unacc
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/redis/4-unacc/docker-compose.yml
+  - name: celery/celery3_redis_unauth
+    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/celery/celery3_redis_unauth/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: true
-  count: 3
+  count: 4
   specific:
-  - id: smb_guest_public_share
-    name: 'SMB: Guest Public Share'
+  - id: nfs_webdav_evidence_share
+    name: 'Network Share: WebDAV Evidence Repository'
     count: 1
-  - id: '148'
-    name: 'SMB: Engineering Build Drop'
+  - id: nfs_legacy_nfs3_share
+    name: 'NFS: Legacy Engineering Share'
     count: 1
-  - id: '150'
-    name: 'SMB: Public Scanner Share'
+  - id: nfs_build_cache_share
+    name: 'NFS: Build Cache Share'
+    count: 1
+  - id: '149'
+    name: 'SMB: Legal Case Archive'
     count: 1
 flows:
   enabled: true
-  chain_length: 3
+  chain_length: 5
   allow_duplicates: false
   include_all_topology_pivots: false
 segmentation:
   enabled: true
   density: 0.45
-  items: []
+  items:
+  - factor: 1.0
+    pivot_enabled: false
+    type: Firewall
+    count: 1
 hitl:
   use_env: false
 validation:

@@ -50,13 +50,16 @@ vulns:
     count: 1
 flag_node_generators:
   enabled: true
-  count: 3
+  count: 4
   specific:
   - id: '149'
     name: 'SMB: Legal Case Archive'
     count: 1
   - id: nfs_engineering_drawings_export
     name: 'NFS: Engineering Drawings Export'
+    count: 1
+  - id: '132'
+    name: 'Database: Postgres Audit Schema'
     count: 1
   - id: nfs_legal_hold_archive
     name: 'NFS: Legal Hold Archive'
@@ -69,7 +72,11 @@ flows:
 segmentation:
   enabled: true
   density: 0.5
-  items: []
+  items:
+  - factor: 1.0
+    pivot_enabled: false
+    type: Firewall
+    count: 1
 hitl:
   use_env: false
 validation:
