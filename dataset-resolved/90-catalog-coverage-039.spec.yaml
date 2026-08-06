@@ -46,7 +46,7 @@ flag_node_generators:
     count: 1
 flows:
   enabled: true
-  chain_length: 5
+  chain_length: 4
   allow_duplicates: false
   include_all_topology_pivots: false
 segmentation:

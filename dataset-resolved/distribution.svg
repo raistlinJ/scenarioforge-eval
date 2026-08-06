@@ -34,7 +34,7 @@
   <text x="58" y="346" class="value">Topology scale</text><text x="58" y="368" class="note">55 small (≤6), 144 medium (7–12), 27 large (13+) base-node scenarios</text>
   <text x="58" y="392" class="note">1997 base nodes total; 4–20 base and 5–27 total nodes per scenario.</text>
   <text x="650" y="346" class="value">Services and flows</text><text x="650" y="368" class="note">829 fixed service assignments · 186 generator scenarios · 196 chained scenarios</text>
-  <text x="650" y="392" class="note">Chain balance: 2 hops × 49 · 3 hops × 49 · 4 hops × 49 · 5 hops × 49</text>
+  <text x="650" y="392" class="note">Chain balance: 2 hops × 49 · 3 hops × 49 · 4 hops × 68 · 5 hops × 30</text>
   <text x="58" y="434" class="value">Segmentation</text><text x="58" y="456" class="note">148 scenarios · 105 Firewall rows · 103 NAT rows · 42 pivot scenarios / 53 rows · density 0.30–0.55</text>
   <text x="650" y="434" class="value">Subnet CIDRs</text><text x="650" y="456" class="note">Allocated during ScenarioForge topology; these YAMLs fix the inputs.</text>
   <rect x="35" y="540" width="550" height="585" rx="12" class="panel"/>

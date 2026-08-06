@@ -69,6 +69,21 @@
             <span class="badge" id="execution-status-badge">Idle</span>
           </div>
           <div class="execution-summary" id="execution-summary">Configure a run to begin.</div>
+          <div class="execution-progress hidden" id="execution-progress" aria-live="polite">
+            <div class="execution-progress-heading">
+              <span>Run progress</span>
+              <strong id="execution-progress-count">0 / — runs</strong>
+            </div>
+            <div class="execution-progress-track" id="execution-progress-track" role="progressbar" aria-label="Evaluation runs completed" aria-valuemin="0" aria-valuenow="0" aria-valuemax="1">
+              <span class="execution-progress-pass" id="execution-progress-pass-bar"></span>
+              <span class="execution-progress-fail" id="execution-progress-fail-bar"></span>
+            </div>
+            <div class="execution-progress-stats">
+              <span class="progress-pass"><strong id="execution-progress-passed">0</strong> pass</span>
+              <span class="progress-fail"><strong id="execution-progress-failed">0</strong> fail</span>
+              <span><strong id="execution-progress-pending">—</strong> pending</span>
+            </div>
+          </div>
           <div class="execution-continuity hidden" id="execution-continuity" role="status"><span class="pulse"></span><span>This execution runs on the dashboard server. Refreshing or closing this page will not stop it.</span></div>
           <pre class="execution-console" id="execution-console" aria-live="polite">Waiting for an evaluator job…</pre>
           <div class="execution-console-actions">
@@ -366,6 +381,19 @@
   .command-preview code { display: block; min-height: 68px; padding: 11px 12px; overflow-wrap: anywhere; border: 1px solid var(--border); border-radius: 9px; color: #ccebe4; background: var(--bg); font: 11px/1.55 ui-monospace, SFMono-Regular, Menlo, monospace; }
   .execution-actions { display: flex; justify-content: flex-end; margin-top: 18px; }
   .execution-summary { min-height: 47px; padding: 13px 16px; border-bottom: 1px solid var(--border); color: var(--muted); font-size: 11px; overflow-wrap: anywhere; }
+  .execution-progress { padding: 12px 16px 13px; border-bottom: 1px solid var(--border); background: rgba(7, 12, 11, .38); }
+  .execution-progress-heading, .execution-progress-stats { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .execution-progress-heading { margin-bottom: 8px; color: var(--muted); font-size: 10px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+  .execution-progress-heading strong { color: var(--text); font: 600 12px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 0; text-transform: none; }
+  .execution-progress-track { height: 8px; display: flex; overflow: hidden; border: 1px solid var(--border); border-radius: 999px; background: var(--surface-3); }
+  .execution-progress-track span { width: 0; height: 100%; transition: width .2s ease; }
+  .execution-progress-pass { background: #58db8b; }
+  .execution-progress-fail { background: var(--danger); }
+  .execution-progress-stats { justify-content: flex-start; margin-top: 8px; color: var(--muted); font-size: 10px; }
+  .execution-progress-stats span { min-width: 70px; }
+  .execution-progress-stats strong { color: var(--text); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .execution-progress-stats .progress-pass, .execution-progress-stats .progress-pass strong { color: #8ee6a7; }
+  .execution-progress-stats .progress-fail, .execution-progress-stats .progress-fail strong { color: var(--danger); }
   .execution-continuity { padding: 8px 16px; display: flex; align-items: center; gap: 9px; border-bottom: 1px solid rgba(88, 219, 193, .18); color: #acd8cf; background: rgba(88, 219, 193, .07); font-size: 10px; }
   .execution-continuity .pulse { flex: 0 0 auto; width: 6px; height: 6px; }
   .execution-console { height: 430px; margin: 0; padding: 15px 16px; overflow: auto; color: #c9d8d4; background: #070c0b; font: 11px/1.55 ui-monospace, SFMono-Regular, Menlo, monospace; white-space: pre-wrap; word-break: break-word; }
@@ -573,6 +601,9 @@
     executionJobId: null,
     executionLogSequence: 0,
     executionLines: [],
+    executionProgress: null,
+    executionProgressByCommand: {},
+    executionProgressCommandIndex: 1,
     executionDefaultsLoaded: false,
     executionPoll: null,
     selectedRunIds: new Set(),
@@ -738,6 +769,47 @@
     return `<span class="console-line${lineClass}">${html || ' '}</span>`;
   }
 
+  function resetExecutionProgressFallback() {
+    state.executionProgress = null;
+    state.executionProgressByCommand = {};
+    state.executionProgressCommandIndex = 1;
+  }
+
+  function parseExecutionProgressLine(line) {
+    const text = String(line ?? '').replace(/\x1b\[[0-?]*[ -/]*[@-~]/g, '');
+    const match = text.match(/\bruns\s+(\d+)\s*\/\s*(\d+)\s*\|\s*ok\s+(\d+)\s*\|\s*fail\s+(\d+)\b/i);
+    if (!match) return null;
+    const progress = {
+      completed: Number(match[1]),
+      total: Number(match[2]),
+      passed: Number(match[3]),
+      failed: Number(match[4]),
+    };
+    if (progress.completed > progress.total || progress.passed + progress.failed !== progress.completed) return null;
+    return progress;
+  }
+
+  function observeExecutionProgressLine(line, config) {
+    const text = String(line ?? '');
+    const commandMatch = text.match(/\[rerun\]\s+Command\s+(\d+)\s*\/\s*(\d+)/i);
+    if (commandMatch) state.executionProgressCommandIndex = Math.max(1, Number(commandMatch[1]) || 1);
+    const parsed = parseExecutionProgressLine(text);
+    if (!parsed) return;
+
+    if (config?.kind === 'rerun' && Number(config.run_count) > 0) {
+      state.executionProgressByCommand[state.executionProgressCommandIndex] = parsed;
+      const commandProgress = Object.values(state.executionProgressByCommand);
+      state.executionProgress = {
+        completed: commandProgress.reduce((sum, item) => sum + item.completed, 0),
+        total: Number(config.run_count),
+        passed: commandProgress.reduce((sum, item) => sum + item.passed, 0),
+        failed: commandProgress.reduce((sum, item) => sum + item.failed, 0),
+      };
+      return;
+    }
+    state.executionProgress = parsed;
+  }
+
   function renderExecution(payload) {
     applyInitialExecutionConfig(payload);
     const status = payload.status || 'idle';
@@ -747,11 +819,13 @@
       state.executionJobId = payload.id;
       state.executionLogSequence = 0;
       state.executionLines = [];
+      resetExecutionProgressFallback();
     }
     for (const line of payload.logs || []) {
       if (line.sequence <= state.executionLogSequence) continue;
       state.executionLogSequence = line.sequence;
       state.executionLines.push(line.text);
+      observeExecutionProgressLine(line.text, payload.config);
     }
     if (state.executionLines.length > 5000) state.executionLines = state.executionLines.slice(-5000);
 
@@ -760,6 +834,28 @@
     badge.textContent = status.replaceAll('_', ' ');
     const active = executionActive(status);
     $('execution-start').disabled = active;
+    const hasStructuredProgress = payload.progress
+      && ['completed', 'total', 'passed', 'failed'].every(key => Number.isFinite(Number(payload.progress[key])));
+    const progress = hasStructuredProgress ? payload.progress : (state.executionProgress || {});
+    const progressCompleted = Math.max(0, Number(progress.completed) || 0);
+    const progressTotal = Math.max(0, Number(progress.total) || 0);
+    const progressPassed = Math.max(0, Number(progress.passed) || 0);
+    const progressFailed = Math.max(0, Number(progress.failed) || 0);
+    const progressPending = progressTotal ? Math.max(0, progressTotal - progressCompleted) : null;
+    const passWidth = progressTotal ? Math.min(100, (progressPassed / progressTotal) * 100) : 0;
+    const failWidth = progressTotal ? Math.min(100 - passWidth, (progressFailed / progressTotal) * 100) : 0;
+    const progressElement = $('execution-progress');
+    progressElement.classList.toggle('hidden', status === 'idle');
+    $('execution-progress-count').textContent = `${progressCompleted} / ${progressTotal || '—'} runs`;
+    $('execution-progress-passed').textContent = progressPassed;
+    $('execution-progress-failed').textContent = progressFailed;
+    $('execution-progress-pending').textContent = progressPending === null ? '—' : progressPending;
+    $('execution-progress-pass-bar').style.width = `${passWidth}%`;
+    $('execution-progress-fail-bar').style.width = `${failWidth}%`;
+    const progressTrack = $('execution-progress-track');
+    progressTrack.setAttribute('aria-valuenow', String(Math.min(progressCompleted, progressTotal || progressCompleted)));
+    progressTrack.setAttribute('aria-valuemax', String(progressTotal || 1));
+    progressTrack.setAttribute('aria-valuetext', `${progressCompleted} of ${progressTotal || 'unknown'} runs completed; ${progressPassed} passed; ${progressFailed} failed`);
     $('execution-continuity').classList.toggle('hidden', !active);
     $('execution-stop').classList.toggle('hidden', !active);
     $('execution-analyze').classList.toggle('hidden', active || !payload.config?.out_path);
@@ -805,6 +901,7 @@
     state.executionJobId = null;
     state.executionLogSequence = 0;
     state.executionLines = [];
+    resetExecutionProgressFallback();
     try {
       const response = await fetch('/api/execution', {
         method: 'POST',

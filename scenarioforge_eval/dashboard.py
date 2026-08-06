@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import shlex
 import shutil
 import signal
@@ -30,9 +31,29 @@ HTML_PATH = Path(__file__).with_name("templates") / "dashboard.html"
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 MAX_EXECUTION_LOG_LINES = 5000
 
+EXECUTION_PROGRESS_PATTERN = re.compile(
+    r"\bruns\s+(?P<completed>\d+)\s*/\s*(?P<total>\d+)"
+    r"\s*\|\s*ok\s+(?P<passed>\d+)"
+    r"\s*\|\s*fail\s+(?P<failed>\d+)\b",
+    re.IGNORECASE,
+)
+
 
 def _utc_now() -> str:
     return datetime.now(UTC).isoformat(timespec="seconds").replace("+00:00", "Z")
+
+
+def _parse_execution_progress_line(text: str) -> dict[str, int] | None:
+    """Extract the evaluator's authoritative batch counters from a status line."""
+    match = EXECUTION_PROGRESS_PATTERN.search(str(text or ""))
+    if match is None:
+        return None
+    progress = {name: int(value) for name, value in match.groupdict().items()}
+    if progress["completed"] > progress["total"]:
+        return None
+    if progress["passed"] + progress["failed"] != progress["completed"]:
+        return None
+    return progress
 
 
 def _resolve_execution_path(
@@ -129,12 +150,35 @@ class EvaluationJobManager:
         self._job: dict[str, Any] | None = None
         self._process: subprocess.Popen[str] | None = None
 
-    def _append_log(self, text: str) -> None:
+    def _append_log(self, text: str, *, command_index: int | None = None) -> None:
+        parsed_progress = _parse_execution_progress_line(text)
         with self._lock:
             if self._job is None:
                 return
             self._job["log_sequence"] += 1
             self._job["logs"].append((self._job["log_sequence"], text.rstrip("\r\n")))
+            if parsed_progress is not None:
+                command_progress = self._job["_command_progress"]
+                command_progress[command_index or 1] = parsed_progress
+                if self._job["_command_count"] == 1:
+                    self._job["progress"] = dict(parsed_progress)
+                else:
+                    completed = sum(item["completed"] for item in command_progress.values())
+                    passed = sum(item["passed"] for item in command_progress.values())
+                    failed = sum(item["failed"] for item in command_progress.values())
+                    configured_total = _integer(
+                        self._job.get("config", {}).get("run_count")
+                    )
+                    discovered_total = sum(
+                        item["total"] for item in command_progress.values()
+                    )
+                    total = configured_total or discovered_total
+                    self._job["progress"] = {
+                        "completed": min(completed, total),
+                        "total": total,
+                        "passed": passed,
+                        "failed": failed,
+                    }
 
     def snapshot(self, *, after: int = 0) -> dict[str, Any]:
         with self._lock:
@@ -143,7 +187,12 @@ class EvaluationJobManager:
             public = {
                 key: value
                 for key, value in self._job.items()
-                if key not in {"logs", "stop_requested"}
+                if key not in {
+                    "logs",
+                    "stop_requested",
+                    "_command_count",
+                    "_command_progress",
+                }
             }
             public["logs"] = [
                 {"sequence": sequence, "text": text}
@@ -184,9 +233,17 @@ class EvaluationJobManager:
                 "returncode": None,
                 "pid": None,
                 "error": "",
+                "progress": {
+                    "completed": 0,
+                    "total": _integer(config.get("run_count")),
+                    "passed": 0,
+                    "failed": 0,
+                },
                 "stop_requested": False,
                 "log_sequence": 0,
                 "logs": deque(maxlen=MAX_EXECUTION_LOG_LINES),
+                "_command_count": len(commands),
+                "_command_progress": {},
             }
         Thread(
             target=self._run,
@@ -222,7 +279,10 @@ class EvaluationJobManager:
                 if self._job["stop_requested"]:
                     break
             if len(commands) > 1:
-                self._append_log(f"[rerun] Command {index}/{len(commands)}: {shlex.join(command)}")
+                self._append_log(
+                    f"[rerun] Command {index}/{len(commands)}: {shlex.join(command)}",
+                    command_index=index,
+                )
             try:
                 process = subprocess.Popen(
                     command,
@@ -252,7 +312,7 @@ class EvaluationJobManager:
 
             if process.stdout is not None:
                 for line in process.stdout:
-                    self._append_log(line)
+                    self._append_log(line, command_index=index)
             command_returncode = process.wait()
             if command_returncode and returncode == 0:
                 returncode = command_returncode

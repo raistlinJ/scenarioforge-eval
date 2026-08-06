@@ -1,6 +1,7 @@
 import io
 import json
 import os
+import sys
 import tempfile
 import time
 import unittest
@@ -11,6 +12,7 @@ from scenarioforge_eval.dashboard import (
     _build_execution_command,
     _build_rerun_plan,
     _delete_rerun_paths,
+    _parse_execution_progress_line,
     EvaluationJobManager,
     create_app,
     load_dashboard_data,
@@ -84,6 +86,20 @@ def _result(name, *, success, duration, started_at, phase="execute", failed_stag
 
 
 class DashboardDataTests(unittest.TestCase):
+    def test_parses_authoritative_execution_progress_lines(self):
+        self.assertEqual(
+            _parse_execution_progress_line(
+                "[FAILED] | runs 3/10 | ok 2 | fail 1 | pending 7 | pass 67%"
+            ),
+            {"completed": 3, "total": 10, "passed": 2, "failed": 1},
+        )
+        self.assertIsNone(_parse_execution_progress_line("Evaluating sample.spec.yaml..."))
+        self.assertIsNone(
+            _parse_execution_progress_line(
+                "[BROKEN] | runs 11/10 | ok 10 | fail 1"
+            )
+        )
+
     def test_execution_manager_streams_logs_and_completes(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
@@ -93,7 +109,13 @@ class DashboardDataTests(unittest.TestCase):
             sf_path.mkdir()
             fake_process = mock.Mock(
                 pid=4321,
-                stdout=io.StringIO("first line\nsecond line\n"),
+                stdout=io.StringIO(
+                    "[READY] | runs 0/2 | ok 0 | fail 0 | pending 2\n"
+                    "first line\n"
+                    "[RUNNING] | runs 1/2 | ok 1 | fail 0 | pending 1\n"
+                    "second line\n"
+                    "[DONE] | runs 2/2 | ok 2 | fail 0 | pending 0\n"
+                ),
             )
             fake_process.wait.return_value = 0
             manager = EvaluationJobManager(root)
@@ -118,7 +140,58 @@ class DashboardDataTests(unittest.TestCase):
             self.assertEqual(snapshot["returncode"], 0)
             self.assertEqual(
                 [line["text"] for line in snapshot["logs"]],
-                ["first line", "second line"],
+                [
+                    "[READY] | runs 0/2 | ok 0 | fail 0 | pending 2",
+                    "first line",
+                    "[RUNNING] | runs 1/2 | ok 1 | fail 0 | pending 1",
+                    "second line",
+                    "[DONE] | runs 2/2 | ok 2 | fail 0 | pending 0",
+                ],
+            )
+            self.assertEqual(
+                snapshot["progress"],
+                {"completed": 2, "total": 2, "passed": 2, "failed": 0},
+            )
+
+    def test_execution_manager_aggregates_progress_across_rerun_commands(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            first_process = mock.Mock(
+                pid=5001,
+                stdout=io.StringIO(
+                    "[DONE] | runs 1/1 | ok 1 | fail 0 | pending 0\n"
+                ),
+            )
+            first_process.wait.return_value = 0
+            second_process = mock.Mock(
+                pid=5002,
+                stdout=io.StringIO(
+                    "[STOPPED] | runs 1/1 | ok 0 | fail 1 | pending 0\n"
+                ),
+            )
+            second_process.wait.return_value = 1
+            manager = EvaluationJobManager(Path(temp_dir))
+
+            with mock.patch(
+                "scenarioforge_eval.dashboard.subprocess.Popen",
+                side_effect=[first_process, second_process],
+            ):
+                manager.start_commands(
+                    [
+                        [sys.executable, "-m", "scenarioforge_eval.main", "first"],
+                        [sys.executable, "-m", "scenarioforge_eval.main", "second"],
+                    ],
+                    config={"kind": "rerun", "run_count": 2},
+                )
+                for _ in range(100):
+                    snapshot = manager.snapshot()
+                    if snapshot["status"] == "failed":
+                        break
+                    time.sleep(0.01)
+
+            self.assertEqual(snapshot["status"], "failed")
+            self.assertEqual(
+                snapshot["progress"],
+                {"completed": 2, "total": 2, "passed": 1, "failed": 1},
             )
 
     def test_active_execution_survives_page_reload(self):
@@ -143,13 +216,19 @@ class DashboardDataTests(unittest.TestCase):
                 })
 
             self.assertEqual(started["status"], "starting")
-            self.assertEqual(client.get("/").status_code, 200)
+            dashboard_response = client.get("/")
+            self.assertEqual(dashboard_response.status_code, 200)
+            self.assertIn(b'id="execution-progress"', dashboard_response.data)
             reconnected = client.get("/api/execution").json
             self.assertEqual(reconnected["id"], started["id"])
             self.assertEqual(reconnected["status"], "starting")
             self.assertEqual(reconnected["config"]["spec_path"], str(spec_path.resolve()))
             self.assertTrue(reconnected["config"]["verbose"])
             self.assertTrue(reconnected["config"]["stop_on_error"])
+            self.assertEqual(
+                reconnected["progress"],
+                {"completed": 0, "total": 0, "passed": 0, "failed": 0},
+            )
 
     def test_builds_execution_command_from_supported_cli_flags(self):
         with tempfile.TemporaryDirectory() as temp_dir:

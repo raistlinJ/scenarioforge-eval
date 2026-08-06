@@ -23,7 +23,7 @@
   <text x="519" y="195" class="note">7 semantic families · 411 selections · mean 4.83 ± 0.37</text>
   <rect x="950" y="108" width="410" height="108" rx="12" class="panel"/>
   <text x="974" y="145" class="big">196</text><text x="974" y="166" class="note">chained, reproducible scenarios</text>
-  <text x="974" y="195" class="note">Chain lengths: 2×49 · 3×49 · 4×49 · 5×49 · 42 pivot scenarios</text>
+  <text x="974" y="195" class="note">Chain lengths: 2×49 · 3×49 · 4×68 · 5×30 · 42 pivot scenarios</text>
   <rect x="40" y="245" width="620" height="220" rx="12" class="panel"/>
   <text x="64" y="281" class="panel-title">Concrete Vulhub entry balance</text>
   <text x="64" y="303" class="note">Bar height = number of images at each exact use count. Population variance 1.695; SD 1.302.</text>
@@ -46,7 +46,7 @@
   <text x="64" y="667" class="label">Base nodes</text><rect x="225" y="654" width="210" height="15" rx="3" fill="#e5e7eb"/><rect x="225" y="654" width="93" height="15" rx="3" fill="#2563eb"/><text x="450" y="667" class="value">8.84 ± 3.09; 4–20</text>
   <text x="64" y="703" class="label">Total planned nodes</text><rect x="225" y="690" width="210" height="15" rx="3" fill="#e5e7eb"/><rect x="225" y="690" width="99" height="15" rx="3" fill="#2563eb"/><text x="450" y="703" class="value">12.69 ± 4.26; 5–27</text>
   <text x="64" y="739" class="label">Service assignments</text><rect x="225" y="726" width="210" height="15" rx="3" fill="#e5e7eb"/><rect x="225" y="726" width="96" height="15" rx="3" fill="#2563eb"/><text x="450" y="739" class="value">3.67 ± 1.39; 1–8</text>
-  <text x="64" y="775" class="label">Flow hops</text><rect x="225" y="762" width="210" height="15" rx="3" fill="#e5e7eb"/><rect x="225" y="762" width="127" height="15" rx="3" fill="#2563eb"/><text x="450" y="775" class="value">3.04 ± 1.58; 0–5</text>
+  <text x="64" y="775" class="label">Flow hops</text><rect x="225" y="762" width="210" height="15" rx="3" fill="#e5e7eb"/><rect x="225" y="762" width="124" height="15" rx="3" fill="#2563eb"/><text x="450" y="775" class="value">2.95 ± 1.50; 0–5</text>
   <text x="64" y="811" class="label">Segmentation rows</text><rect x="225" y="798" width="210" height="15" rx="3" fill="#e5e7eb"/><rect x="225" y="798" width="64" height="15" rx="3" fill="#2563eb"/><text x="450" y="811" class="value">0.92 ± 0.79; 0–3</text>
   <rect x="710" y="500" width="650" height="365" rx="12" class="panel"/>
   <text x="734" y="536" class="panel-title">Traffic workload and payload types</text>

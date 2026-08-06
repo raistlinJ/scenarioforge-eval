@@ -6,8 +6,8 @@
     "flow_length_histogram": {
       "2": 49,
       "3": 49,
-      "4": 49,
-      "5": 49
+      "4": 68,
+      "5": 30
     },
     "pivot_provider_rows": {
       "flag-node-generator": 15,
@@ -51,12 +51,12 @@
     },
     "flow_hops": {
       "maximum": 5,
-      "mean": 3.035,
+      "mean": 2.951,
       "minimum": 0,
       "n": 226,
-      "std_dev": 1.579,
-      "total": 686,
-      "variance": 2.494
+      "std_dev": 1.497,
+      "total": 667,
+      "variance": 2.241
     },
     "routers": {
       "maximum": 5,
