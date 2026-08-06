@@ -219,6 +219,8 @@ class DashboardDataTests(unittest.TestCase):
             dashboard_response = client.get("/")
             self.assertEqual(dashboard_response.status_code, 200)
             self.assertIn(b'id="execution-progress"', dashboard_response.data)
+            self.assertIn(b"parseExecutionProgressLine", dashboard_response.data)
+            self.assertIn(b"state.executionProgress || {}", dashboard_response.data)
             reconnected = client.get("/api/execution").json
             self.assertEqual(reconnected["id"], started["id"])
             self.assertEqual(reconnected["status"], "starting")
@@ -248,6 +250,7 @@ class DashboardDataTests(unittest.TestCase):
                     "verbose": True,
                     "stop_on_error": True,
                     "dangerous_cleanup_between_runs": True,
+                    "reproduction_mode": "bundle",
                 },
                 cwd=root,
             )
@@ -257,7 +260,10 @@ class DashboardDataTests(unittest.TestCase):
             self.assertIn("--verbose", command)
             self.assertIn("--stop-on-error", command)
             self.assertIn("--dangerous-cleanup-between-runs", command)
+            self.assertIn("--reproduction-mode", command)
+            self.assertIn("bundle", command)
             self.assertEqual(config["out_path"], str(out_path.resolve()))
+            self.assertEqual(config["reproduction_mode"], "bundle")
 
             with self.assertRaisesRegex(ValueError, "unsupported phase"):
                 _build_execution_command(

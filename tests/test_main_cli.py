@@ -114,6 +114,7 @@ class MainCliPhaseSelectionTests(unittest.TestCase):
                 verbose=False,
                 dangerous_cleanup_between_runs=False,
                 stream_execute_output=False,
+                reproduction_mode='xml',
             ):
                 executor_specs.append(spec['name'])
 
@@ -193,10 +194,12 @@ class MainCliPhaseSelectionTests(unittest.TestCase):
                 verbose=False,
                 dangerous_cleanup_between_runs=False,
                 stream_execute_output=False,
+                reproduction_mode='xml',
             ):
                 captured['dangerous_cleanup_between_runs'] = dangerous_cleanup_between_runs
                 captured['target_phase'] = target_phase
                 captured['stream_execute_output'] = stream_execute_output
+                captured['reproduction_mode'] = reproduction_mode
 
             def run(self):
                 return {'success': True, 'stages': {}, 'artifacts': {}}
@@ -216,6 +219,8 @@ class MainCliPhaseSelectionTests(unittest.TestCase):
                      '--out',
                      out_dir,
                      '--dangerous-cleanup-between-runs',
+                     '--reproduction-mode',
+                     'bundle',
                  ],
              ):
             main_module.main()
@@ -223,6 +228,7 @@ class MainCliPhaseSelectionTests(unittest.TestCase):
         self.assertTrue(captured['dangerous_cleanup_between_runs'])
         self.assertEqual(captured['target_phase'], 'execute')
         self.assertTrue(captured['stream_execute_output'])
+        self.assertEqual(captured['reproduction_mode'], 'bundle')
 
     def test_main_runs_only_requested_iteration_indexes(self):
         captured = []
@@ -371,6 +377,7 @@ class MainCliPhaseSelectionTests(unittest.TestCase):
                 verbose=False,
                 dangerous_cleanup_between_runs=False,
                 stream_execute_output=False,
+                reproduction_mode='xml',
             ):
                 self.out_dir = out_dir
 

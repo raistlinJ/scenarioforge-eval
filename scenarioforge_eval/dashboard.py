@@ -124,6 +124,11 @@ def _build_execution_command(payload: Any, *, cwd: Path) -> tuple[list[str], dic
         command.append("--stop-on-error")
     if bool(payload.get("dangerous_cleanup_between_runs")):
         command.append("--dangerous-cleanup-between-runs")
+    reproduction_mode = str(payload.get("reproduction_mode") or "xml").strip().lower()
+    if reproduction_mode not in {"xml", "replay", "bundle"}:
+        raise ValueError(f"unsupported reproduction mode: {reproduction_mode}")
+    if reproduction_mode != "xml":
+        command.extend(["--reproduction-mode", reproduction_mode])
 
     public_config = {
         "spec_path": str(spec_path),
@@ -135,6 +140,7 @@ def _build_execution_command(payload: Any, *, cwd: Path) -> tuple[list[str], dic
         "dangerous_cleanup_between_runs": bool(
             payload.get("dangerous_cleanup_between_runs")
         ),
+        "reproduction_mode": reproduction_mode,
     }
     return command, public_config
 
@@ -762,6 +768,9 @@ def _build_rerun_plan(
                 "dangerous_cleanup_between_runs": bool(
                     payload.get("dangerous_cleanup_between_runs")
                 ),
+                "reproduction_mode": str(
+                    payload.get("reproduction_mode") or "xml"
+                ),
             },
             cwd=cwd,
         )
@@ -799,6 +808,7 @@ def _build_rerun_plan(
         "dangerous_cleanup_between_runs": bool(
             payload.get("dangerous_cleanup_between_runs")
         ),
+        "reproduction_mode": str(payload.get("reproduction_mode") or "xml"),
     }
     return commands, config, cleanup_paths
 
@@ -1265,6 +1275,7 @@ def create_app(root_path: str | os.PathLike[str]) -> Flask:
             "sf_path": str((PROJECT_ROOT.parent / "scenarioforge").resolve()),
             "out_path": app.config["DASHBOARD_ROOT"],
             "phase": "execute",
+            "reproduction_mode": "xml",
         }
         response = jsonify(snapshot)
         response.headers["Cache-Control"] = "no-store"

@@ -429,6 +429,16 @@ def main():
                              help="Run the full evaluator pipeline: preview-plan, optional flag-sequencing, and execute")
     
     parser.add_argument('--out', default="/tmp/scenarioforge-eval-out", help="Output directory for logs and results")
+    parser.add_argument(
+        '--reproduction-mode',
+        choices=('xml', 'replay', 'bundle'),
+        default='xml',
+        help=(
+            "Reproduction output per run: 'xml' keeps the final XML only, "
+            "'replay' adds a deterministic replay package, and 'bundle' also "
+            "includes locally available generated flow artifacts."
+        ),
+    )
     parser.add_argument('--verbose', '-v', action='store_true', help="Enable verbose debug logging")
     parser.add_argument(
         '--stop-on-error',
@@ -544,6 +554,7 @@ def main():
                 args.verbose,
                 dangerous_cleanup_between_runs=args.dangerous_cleanup_between_runs,
                 stream_execute_output=True,
+                reproduction_mode=args.reproduction_mode,
             )
             result = executor.run()
             result.setdefault('metadata', {}).update({
@@ -552,6 +563,7 @@ def main():
                 'iteration_index': i + 1,
                 'iteration_count': iterations,
                 'target_phase': target_phase,
+                'reproduction_mode': args.reproduction_mode,
             })
             batch_results.append(result)
             

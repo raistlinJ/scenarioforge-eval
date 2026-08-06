@@ -9,6 +9,7 @@ import random
 import re
 import shutil
 import socket
+import stat
 import subprocess
 import sys
 import tempfile
@@ -21,8 +22,20 @@ from copy import deepcopy
 
 try:
     from .metrics import MetricSpan, directory_metrics, file_metrics, rounded_seconds, text_metrics
+    from .reproduction import (
+        REPRODUCTION_MODES,
+        artifact_source_paths,
+        create_reproduction_bundle,
+        local_artifact_source,
+    )
 except ImportError:
     from metrics import MetricSpan, directory_metrics, file_metrics, rounded_seconds, text_metrics
+    from reproduction import (
+        REPRODUCTION_MODES,
+        artifact_source_paths,
+        create_reproduction_bundle,
+        local_artifact_source,
+    )
 
 
 class PhaseExecutionError(RuntimeError):
@@ -77,6 +90,7 @@ class Executor:
         verbose: bool = False,
         dangerous_cleanup_between_runs: bool = False,
         stream_execute_output: bool = False,
+        reproduction_mode: str = "xml",
     ):
         self.spec = spec
         self.out_dir = os.path.abspath(os.path.expanduser(out_dir))
@@ -85,6 +99,11 @@ class Executor:
         self.verbose = verbose
         self.dangerous_cleanup_between_runs = bool(dangerous_cleanup_between_runs)
         self.stream_execute_output = bool(stream_execute_output)
+        self.reproduction_mode = str(reproduction_mode or "xml").strip().lower()
+        if self.reproduction_mode not in REPRODUCTION_MODES:
+            raise ValueError(
+                f"reproduction_mode must be one of {', '.join(REPRODUCTION_MODES)}"
+            )
         self.seed = self._resolve_seed(self.spec.get('seed'))
         self._rng = random.Random(self.seed)
         self._vulnerability_selection: dict | None = None
@@ -209,6 +228,132 @@ class Executor:
             pass
         artifacts['scenarioforge_webui_xml'] = snapshot_path
         return snapshot_path
+
+    def _snapshot_reproduction_bundle(self, result: dict, xml_path: str | None) -> str | None:
+        """Package the final XML and replay/artifact data requested by the caller."""
+        result.setdefault('metadata', {})['reproduction_mode'] = self.reproduction_mode
+        if self.reproduction_mode == 'xml' or not xml_path:
+            return None
+        artifact_overrides: dict[str, str] = {}
+        staging_dir = None
+        if self.reproduction_mode == 'bundle':
+            artifact_overrides, staging_dir = self._download_remote_reproduction_artifacts(
+                xml_path,
+                result,
+            )
+        try:
+            bundle_path, manifest = create_reproduction_bundle(
+                xml_path=xml_path,
+                output_dir=self.out_dir,
+                mode=self.reproduction_mode,
+                seed=self.seed,
+                sf_path=self.sf_path,
+                eval_repo=os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                artifact_overrides=artifact_overrides,
+            )
+        finally:
+            if staging_dir:
+                shutil.rmtree(staging_dir, ignore_errors=True)
+        result.setdefault('artifacts', {})['scenarioforge_reproduction_bundle'] = bundle_path
+        result['metadata']['reproduction_fidelity'] = manifest.get('fidelity')
+        result['metadata']['reproduction_artifact_sources'] = len(
+            manifest.get('artifact_sources') or []
+        )
+        result['metadata']['reproduction_artifact_sources_bundled'] = sum(
+            1 for item in (manifest.get('artifact_sources') or []) if item.get('bundled')
+        )
+        return bundle_path
+
+    def _download_remote_reproduction_artifacts(
+        self,
+        xml_path: str,
+        result: dict,
+    ) -> tuple[dict[str, str], str | None]:
+        """Fetch remote-only generated Flow payloads for a portable bundle."""
+        remote_sources = [
+            source
+            for source in artifact_source_paths(xml_path)
+            if source.startswith('/tmp/vulns/')
+            and not local_artifact_source(source, self.sf_path)
+        ]
+        if not remote_sources:
+            return {}, None
+
+        staging_dir = tempfile.mkdtemp(prefix='.reproduction-remote-', dir=self.out_dir)
+        client = None
+        sftp = None
+        overrides: dict[str, str] = {}
+        try:
+            from webapp import app_backend as backend
+
+            scenario_name = self._resolve_xml_scenario_name(xml_path)
+            scenario_norm = backend._normalize_scenario_label(scenario_name)
+            core_cfg = backend._core_config_from_xml_path(
+                xml_path,
+                scenario_norm,
+                include_password=True,
+            )
+            try:
+                runtime_cfg = backend._select_core_config_for_page(
+                    scenario_norm,
+                    include_password=True,
+                )
+            except Exception:
+                runtime_cfg = None
+            if isinstance(runtime_cfg, dict) and runtime_cfg:
+                if isinstance(core_cfg, dict) and core_cfg:
+                    core_cfg = backend._merge_core_configs(
+                        runtime_cfg,
+                        core_cfg,
+                        include_password=True,
+                    )
+                else:
+                    core_cfg = runtime_cfg
+            if isinstance(core_cfg, dict):
+                core_cfg = backend._apply_core_secret_to_config(core_cfg, scenario_norm)
+            core_cfg = backend._require_core_ssh_credentials(core_cfg)
+            client = backend._open_ssh_client(core_cfg)
+            sftp = client.open_sftp()
+
+            def download_dir(remote_root: str, local_root: str) -> None:
+                os.makedirs(local_root, exist_ok=True)
+                for item in sftp.listdir_attr(remote_root):
+                    remote_child = backend._remote_path_join(remote_root, item.filename)
+                    local_child = os.path.join(local_root, item.filename)
+                    if stat.S_ISDIR(item.st_mode):
+                        download_dir(remote_child, local_child)
+                    elif stat.S_ISREG(item.st_mode):
+                        sftp.get(remote_child, local_child)
+                        try:
+                            os.chmod(local_child, stat.S_IMODE(item.st_mode))
+                        except OSError:
+                            pass
+
+            for index, source in enumerate(remote_sources, start=1):
+                local_root = os.path.join(staging_dir, f'{index:03d}')
+                try:
+                    download_dir(source, local_root)
+                except Exception:
+                    shutil.rmtree(local_root, ignore_errors=True)
+                    continue
+                overrides[source] = local_root
+        except Exception as exc:
+            result.setdefault('metadata', {})['reproduction_remote_fetch_error'] = str(exc)
+        finally:
+            try:
+                if sftp:
+                    sftp.close()
+            except Exception:
+                pass
+            try:
+                if client:
+                    client.close()
+            except Exception:
+                pass
+        if not overrides:
+            shutil.rmtree(staging_dir, ignore_errors=True)
+            return {}, None
+        return overrides, staging_dir
 
     def _persist_seed_artifact(self) -> str:
         seed_path = os.path.join(self.out_dir, 'seed.txt')
@@ -2076,11 +2221,18 @@ class Executor:
             result['error'] = traceback.format_exc()
             result['stages']['failed_at'] = str(e)
         finally:
+            webui_xml = None
             try:
-                self._snapshot_webui_xml(result)
+                webui_xml = self._snapshot_webui_xml(result)
             except OSError as exc:
                 result.setdefault('warnings', []).append(
                     f'Unable to preserve the ScenarioForge WebUI XML artifact: {exc}'
+                )
+            try:
+                self._snapshot_reproduction_bundle(result, webui_xml)
+            except (OSError, ValueError, ET.ParseError) as exc:
+                result.setdefault('warnings', []).append(
+                    f'Unable to create the requested ScenarioForge reproduction bundle: {exc}'
                 )
             self._finalize_result_metrics(result, run_span.finish())
             

@@ -65,6 +65,27 @@ uv sync
 uv run scenarioforge-eval test_specs/00-sanity-check.spec.yaml --sf-path ../scenarioforge --execute
 ```
 
+Each run always preserves its final `scenarioforge-webui.xml`. Use
+`--reproduction-mode replay` to also create a deterministic replay package, or
+`--reproduction-mode bundle` to include every referenced generated Flow artifact
+source that is available on the evaluator host:
+
+```bash
+uv run scenarioforge-eval test_specs --sf-path ../scenarioforge --execute \
+  --reproduction-mode bundle
+```
+
+Both package modes produce `scenarioforge-reproduction.zip`. Its manifest records
+the seed, positional chain and generator IDs, source revisions, artifact paths, and
+SHA-256 hashes. In VM mode, `bundle` also attempts to download referenced generator
+payloads from the CORE VM. If any source cannot be collected, it automatically
+records a lower `partial-artifacts` or `deterministic-replay` fidelity instead of
+claiming a complete portable copy.
+
+Artifact bundles can contain flags, credentials, and other generated secrets. The
+evaluator writes them with owner-only permissions, but they should still be handled
+as sensitive data and not committed to source control.
+
 ## Remote Helper VM Workflow
 
 One supported deployment model is:
@@ -198,6 +219,7 @@ Common per-run artifacts include:
 
 - `scenario.xml`
 - `scenarioforge-webui.xml`, the final WebUI-importable rerun snapshot
+- `scenarioforge-reproduction.zip` when `--reproduction-mode replay` or `bundle` is selected
 - `seed.txt`
 - `preview-plan.json` and `preview-plan.log`
 - `flag-sequencing.json` and `flag-sequencing.log` when Flow is enabled
@@ -253,9 +275,10 @@ uv run scenarioforge-eval-dashboard /tmp/scenarioforge-eval-out --open
 
 The dashboard listens on `127.0.0.1:8088` by default. Use `--host` and `--port` to
 change the listener. The **Execute** tab configures a spec file or folder,
-ScenarioForge path, output folder, target phase, and the supported evaluator CLI
-flags. It runs one evaluator job at a time, streams bounded console output, supports
-stopping the active job, and can send its output folder directly to **Analysis**.
+ScenarioForge path, output folder, target phase, reproduction output, and the
+supported evaluator CLI flags. It runs one evaluator job at a time, streams bounded
+console output, supports stopping the active job, and can send its output folder
+directly to **Analysis**.
 Path fields support typing or native file/folder selection on the dashboard host.
 Executions are owned by the dashboard server, so refreshing or closing the browser
 does not stop an active job; reopening the dashboard restores its configuration,

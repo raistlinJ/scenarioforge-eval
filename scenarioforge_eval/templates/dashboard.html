@@ -45,6 +45,11 @@
                 <option value="flag-sequencing">Flag sequencing · --flag-sequencing</option>
                 <option value="execute" selected>Full execution · --execute</option>
               </select></label>
+              <label for="execution-reproduction-mode"><span>Reproduction output</span><select id="execution-reproduction-mode">
+                <option value="xml" selected>XML definition</option>
+                <option value="replay">Deterministic replay package</option>
+                <option value="bundle">Portable artifact bundle</option>
+              </select></label>
             </div>
             <fieldset class="flag-options">
               <legend>CLI flags</legend>
@@ -669,6 +674,7 @@
       sf_path: $('execution-sf-path').value.trim(),
       out_path: $('execution-out').value.trim(),
       phase: $('execution-phase').value,
+      reproduction_mode: $('execution-reproduction-mode').value,
       verbose: $('execution-verbose').checked,
       stop_on_error: $('execution-stop-on-error').checked,
       dangerous_cleanup_between_runs: $('execution-dangerous-cleanup').checked
@@ -680,6 +686,7 @@
     const args = ['scenarioforge-eval', config.spec_path, '--sf-path', config.sf_path, '--out', config.out_path];
     const phaseFlag = {topology: '--topology', 'flag-sequencing': '--flag-sequencing', execute: '--execute'}[config.phase];
     if (phaseFlag) args.push(phaseFlag);
+    if (config.reproduction_mode !== 'xml') args.push('--reproduction-mode', config.reproduction_mode);
     if (config.verbose) args.push('--verbose');
     if (config.stop_on_error) args.push('--stop-on-error');
     if (config.dangerous_cleanup_between_runs) args.push('--dangerous-cleanup-between-runs');
@@ -715,6 +722,7 @@
     $('execution-sf-path').value = config.sf_path || '';
     $('execution-out').value = config.out_path || '';
     $('execution-phase').value = config.phase || 'execute';
+    $('execution-reproduction-mode').value = config.reproduction_mode || 'xml';
     $('execution-verbose').checked = Boolean(config.verbose);
     $('execution-stop-on-error').checked = Boolean(config.stop_on_error);
     $('execution-dangerous-cleanup').checked = Boolean(config.dangerous_cleanup_between_runs);
@@ -1270,7 +1278,8 @@
           replace_original: $('rerun-replace').checked,
           sf_path: $('execution-sf-path').value.trim(),
           verbose: $('execution-verbose').checked,
-          dangerous_cleanup_between_runs: $('execution-dangerous-cleanup').checked
+          dangerous_cleanup_between_runs: $('execution-dangerous-cleanup').checked,
+          reproduction_mode: $('execution-reproduction-mode').value
         })
       });
       const payload = await jsonResponse(response, 'Re-run API');
