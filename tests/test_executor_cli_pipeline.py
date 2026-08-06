@@ -1,3 +1,4 @@
+import json
 import os
 import stat
 import subprocess
@@ -97,6 +98,104 @@ class ExecutorCliPipelineTests(unittest.TestCase):
             self.assertFalse(timed_out)
             self.assertEqual(output, '[images] pulling=5 cached=0 pending=3\n')
             stream_output.assert_called_once_with('[images] pulling=5 cached=0 pending=3\n')
+
+    def test_artifact_check_step_progress_is_visible_without_verbose_mode(self):
+        spec = {
+            'name': 'eval-scenario',
+            'seed': 12345,
+            'validation': {'policy': 'strict'},
+        }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            executor = Executor(spec=spec, out_dir=temp_dir, sf_path=temp_dir, verbose=False)
+            with mock.patch('builtins.print') as print_mock:
+                executor._stream_cli_output('[check-artifacts] Step 3/9: Ports open\n')
+
+        print_mock.assert_called_once_with('  [check-artifacts] Step 3/9: Ports open')
+
+    def test_artifact_check_progress_fills_polling_gaps(self):
+        spec = {
+            'name': 'eval-scenario',
+            'seed': 12345,
+            'validation': {'policy': 'strict'},
+        }
+        observed_lines = (
+            '[check-artifacts] Running checks against session 1...',
+            '[check-artifacts] Step 1/9: Collecting session state & validating nodes…',
+            '[check-artifacts] Step 3/9: Ports open',
+            '[check-artifacts] Step 6/9: Required traffic agents running',
+            '[check-artifacts] Step 8/9: Flow pivot paths traversable (source → target)',
+        )
+        summary = {
+            'checks': [
+                {'label': label, 'status': 'pass'}
+                for label in Executor.ARTIFACT_CHECK_STEP_LABELS
+            ],
+        }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            executor = Executor(spec=spec, out_dir=temp_dir, sf_path=temp_dir, verbose=False)
+            with mock.patch('builtins.print') as print_mock:
+                for line in observed_lines:
+                    executor._stream_cli_output(line)
+                executor._stream_cli_output(
+                    f'CHECK_ARTIFACTS_SUMMARY_JSON: {json.dumps(summary)}'
+                )
+
+        step_lines = [
+            call.args[0]
+            for call in print_mock.call_args_list
+            if '[check-artifacts] Step ' in call.args[0]
+        ]
+        self.assertEqual(
+            step_lines,
+            [
+                '  [check-artifacts] Step 1/9: Collecting session state & validating nodes…',
+                '  [check-artifacts] Step 2/9: Services running',
+                '  [check-artifacts] Step 3/9: Ports open',
+                '  [check-artifacts] Step 4/9: Inject files placed',
+                '  [check-artifacts] Step 5/9: Firewall/segmentation rules in place',
+                '  [check-artifacts] Step 6/9: Required traffic agents running',
+                '  [check-artifacts] Step 7/9: Required traffic reaches its destination',
+                '  [check-artifacts] Step 8/9: Flow pivot paths traversable (source → target)',
+                '  [check-artifacts] Step 9/9: Pivot providers reachable from the participant',
+            ],
+        )
+
+    def test_artifact_check_progress_does_not_fill_pending_steps_after_error(self):
+        spec = {
+            'name': 'eval-scenario',
+            'seed': 12345,
+            'validation': {'policy': 'strict'},
+        }
+        summary = {
+            'checks': [
+                {'label': Executor.ARTIFACT_CHECK_STEP_LABELS[0], 'status': 'error'},
+                *[
+                    {'label': label, 'status': 'pending'}
+                    for label in Executor.ARTIFACT_CHECK_STEP_LABELS[1:]
+                ],
+            ],
+        }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            executor = Executor(spec=spec, out_dir=temp_dir, sf_path=temp_dir, verbose=False)
+            with mock.patch('builtins.print') as print_mock:
+                executor._stream_cli_output(
+                    '[check-artifacts] Running checks against session 1...\n'
+                    '[check-artifacts] Step 1/9: Collecting session state & validating nodes…\n'
+                    f'CHECK_ARTIFACTS_SUMMARY_JSON: {json.dumps(summary)}\n'
+                )
+
+        step_lines = [
+            call.args[0]
+            for call in print_mock.call_args_list
+            if '[check-artifacts] Step ' in call.args[0]
+        ]
+        self.assertEqual(
+            step_lines,
+            ['  [check-artifacts] Step 1/9: Collecting session state & validating nodes…'],
+        )
 
     def test_execute_phase_uses_streaming_command_when_enabled(self):
         spec = {

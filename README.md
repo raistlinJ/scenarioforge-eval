@@ -17,7 +17,7 @@ ScenarioForge-Eval is a batch-testing harness and evaluation tool for `scenariof
 - `scenarioforge_eval/parser.py`: Parses `.spec.yaml` bounds and handles random ranges.
 - `scenarioforge_eval/executor.py`: Generates a ScenarioForge XML, writes it atomically, embeds mode-aware CORE connection data from the environment, and drives the real `scenarioforge` CLI phases for batch execution.
 - `scenarioforge_eval/reporter.py`: Manages the output directory, logs pass/fail statuses, writes batch metrics exports, and creates `_ai_prompt.md` files from the captured phase artifacts upon failure.
-- `scenarioforge_eval/dashboard.py`: Recursively indexes evaluator result folders and serves the read-only metrics dashboard.
+- `scenarioforge_eval/dashboard.py`: Runs evaluator jobs and recursively indexes result folders for the metrics dashboard.
 - `scenarioforge_eval/main.py`: The CLI entry point.
 
 ## Usage
@@ -252,10 +252,29 @@ uv run scenarioforge-eval-dashboard /tmp/scenarioforge-eval-out --open
 ```
 
 The dashboard listens on `127.0.0.1:8088` by default. Use `--host` and `--port` to
-change the listener. Refreshing the page or selecting **Refresh** rescans the parent
+change the listener. The **Execute** tab configures a spec file or folder,
+ScenarioForge path, output folder, target phase, and the supported evaluator CLI
+flags. It runs one evaluator job at a time, streams bounded console output, supports
+stopping the active job, and can send its output folder directly to **Analysis**.
+Path fields support typing or native file/folder selection on the dashboard host.
+Executions are owned by the dashboard server, so refreshing or closing the browser
+does not stop an active job; reopening the dashboard restores its configuration,
+retained console output, and live status polling.
+
+The **Analysis** tab contains the result dashboard. Refreshing it rescans the parent
 folder, so completed runs appear without restarting the service. If only copied
 `run_metrics_raw.json` bundles are available, the loader uses those as a deduplicated
-fallback.
+fallback. Use **New datasource** to switch the dashboard to another folder on the
+machine running the server. Use **Explore Folder** beside the source path to reveal
+the dashboard root, or select a run and use **Explore Folder** in its detail drawer
+to reveal that run's artifacts.
+
+The timing trend separates each run into **Create** (`scenario-xml`), **Test**
+(`preview-plan` plus `flag-sequencing`), **Run** (`execute` or `topo`), and end-to-end
+**Total** wall time. Each series can be toggled from the chart legend. Challenge
+composition is reported as unique generator catalog/ID pairs over total generated
+challenge assignments; older metrics without assignment identities show the unique
+count as unavailable or as a lower bound.
 
 ## Sample Commands
 

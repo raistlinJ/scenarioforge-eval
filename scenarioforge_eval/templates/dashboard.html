@@ -7,22 +7,96 @@
         <h1>Run intelligence</h1>
       </div>
     </div>
-    <div class="topbar-actions">
+    <div class="topbar-actions hidden" id="analysis-top-actions">
       <div class="scan-status" id="scan-status"><span class="pulse"></span><span>Loading results…</span></div>
       <button class="button button-primary" id="refresh-button" type="button">
         <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M16.4 6.2A7 7 0 1 0 17 11h-2a5 5 0 1 1-.7-2.5L12 10h6V4l-1.6 2.2Z"/></svg>
         Refresh
       </button>
     </div>
+    <div class="topbar-actions" id="execute-top-actions">
+      <div class="scan-status" id="execution-top-status"><span class="pulse"></span><span>Evaluator idle</span></div>
+    </div>
   </header>
 
   <main>
+    <nav class="dashboard-tabs" role="tablist" aria-label="Dashboard sections">
+      <button class="dashboard-tab" id="execute-tab" type="button" role="tab" aria-selected="true" aria-controls="execute-panel" data-tab="execute">Execute</button>
+      <button class="dashboard-tab" id="analysis-tab" type="button" role="tab" aria-selected="false" aria-controls="analysis-panel" data-tab="analysis">Analysis</button>
+    </nav>
+
+    <section class="tab-panel" id="execute-panel" role="tabpanel" aria-labelledby="execute-tab">
+      <div class="execute-grid">
+        <article class="panel execution-config-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-kicker">Evaluator command</p>
+              <h2>Configure execution</h2>
+            </div>
+          </div>
+          <form class="execution-form" id="execution-form">
+            <div class="execution-fields">
+              <label class="field-wide" for="execution-spec"><span>Spec file or folder</span><span class="path-picker"><input id="execution-spec" type="text" required autocomplete="off"><button class="path-button" type="button" data-path-target="execution-spec" data-path-kind="file">Select file</button><button class="path-button" type="button" data-path-target="execution-spec" data-path-kind="folder">Select folder</button></span></label>
+              <label for="execution-sf-path"><span>ScenarioForge path</span><span class="path-picker"><input id="execution-sf-path" type="text" required autocomplete="off"><button class="path-button" type="button" data-path-target="execution-sf-path" data-path-kind="folder">Select folder</button></span></label>
+              <label for="execution-out"><span>Output folder</span><span class="path-picker"><input id="execution-out" type="text" required autocomplete="off"><button class="path-button" type="button" data-path-target="execution-out" data-path-kind="folder">Select folder</button></span></label>
+              <label for="execution-phase"><span>Target phase</span><select id="execution-phase">
+                <option value="scenario-xml">Scenario XML only</option>
+                <option value="topology">Topology · --topology</option>
+                <option value="flag-sequencing">Flag sequencing · --flag-sequencing</option>
+                <option value="execute" selected>Full execution · --execute</option>
+              </select></label>
+            </div>
+            <fieldset class="flag-options">
+              <legend>CLI flags</legend>
+              <label class="check-row"><input id="execution-verbose" type="checkbox"><span><strong>--verbose</strong><small>Enable debug logging</small></span></label>
+              <label class="check-row"><input id="execution-stop-on-error" type="checkbox"><span><strong>--stop-on-error</strong><small>Stop the batch after the first failure</small></span></label>
+              <label class="check-row dangerous"><input id="execution-dangerous-cleanup" type="checkbox"><span><strong>--dangerous-cleanup-between-runs</strong><small>Remove remote Docker resources before each runtime run</small></span></label>
+            </fieldset>
+            <div class="command-preview"><span>Command preview</span><code id="execution-command-preview">scenarioforge-eval</code></div>
+            <div class="form-error hidden" id="execution-error" role="alert"></div>
+            <div class="execution-actions">
+              <button class="button button-primary" id="execution-start" type="submit">Run evaluator</button>
+            </div>
+          </form>
+        </article>
+
+        <article class="panel execution-console-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-kicker">Live process</p>
+              <h2>Execution console</h2>
+            </div>
+            <span class="badge" id="execution-status-badge">Idle</span>
+          </div>
+          <div class="execution-summary" id="execution-summary">Configure a run to begin.</div>
+          <div class="execution-continuity hidden" id="execution-continuity" role="status"><span class="pulse"></span><span>This execution runs on the dashboard server. Refreshing or closing this page will not stop it.</span></div>
+          <pre class="execution-console" id="execution-console" aria-live="polite">Waiting for an evaluator job…</pre>
+          <div class="execution-console-actions">
+            <label class="console-follow" for="execution-follow"><input id="execution-follow" type="checkbox" checked><span>Follow</span></label>
+            <button class="button hidden" id="execution-stop" type="button">Stop execution</button>
+            <button class="button button-primary hidden" id="execution-analyze" type="button">Analyze output</button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="tab-panel hidden" id="analysis-panel" role="tabpanel" aria-labelledby="analysis-tab">
     <section class="source-strip" aria-label="Data source">
       <div>
         <span class="source-label">Source folder</span>
         <code id="source-path">—</code>
       </div>
-      <div class="source-meta" id="source-meta">Searching recursively for run results</div>
+      <div class="source-actions">
+        <div class="source-meta" id="source-meta">Searching recursively for run results</div>
+        <button class="button button-compact" id="open-source-folder" type="button">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M2.5 5.5A2.5 2.5 0 0 1 5 3h3l1.5 2H15A2.5 2.5 0 0 1 17.5 7.5v6A2.5 2.5 0 0 1 15 16H5a2.5 2.5 0 0 1-2.5-2.5v-8Z"/></svg>
+          Explore Folder
+        </button>
+        <button class="button button-compact" id="new-data-source" type="button">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M9 3h2v6h6v2h-6v6H9v-6H3V9h6V3Z"/></svg>
+          New datasource
+        </button>
+      </div>
     </section>
 
     <section class="filter-bar" aria-label="Run filters">
@@ -50,12 +124,17 @@
 
     <section class="chart-grid">
       <article class="panel panel-wide">
-        <div class="panel-heading">
+        <div class="panel-heading timing-heading">
           <div>
             <p class="panel-kicker">Performance over time</p>
-            <h2>Run duration</h2>
+            <h2>Time to create, test, run</h2>
           </div>
-          <div class="legend" aria-label="Chart legend"><span><i class="dot pass"></i>Passed</span><span><i class="dot fail"></i>Failed</span></div>
+          <div class="series-controls" aria-label="Toggle chart series">
+            <button class="series-toggle" type="button" data-series="total" aria-pressed="true"><i class="dot total"></i>Total</button>
+            <button class="series-toggle" type="button" data-series="create" aria-pressed="true" title="Scenario XML generation; shown in a lower mini-chart when longer phases are enabled"><i class="dot create"></i>Create</button>
+            <button class="series-toggle" type="button" data-series="test" aria-pressed="true"><i class="dot test"></i>Test</button>
+            <button class="series-toggle" type="button" data-series="run" aria-pressed="true"><i class="dot run"></i>Run</button>
+          </div>
         </div>
         <div class="chart" id="trend-chart"></div>
       </article>
@@ -94,26 +173,44 @@
         <div class="panel-heading table-heading">
           <div>
             <p class="panel-kicker">Result inventory</p>
-            <h2>Runs</h2>
+            <h2 id="content-view-title">Runs</h2>
           </div>
-          <span class="table-note">Select a row for full metrics</span>
+          <div class="table-heading-actions">
+            <span class="table-note" id="content-view-note">Select a row for full metrics</span>
+            <div class="run-selection-actions" id="run-selection-actions">
+              <span id="run-selection-count">0 selected</span>
+              <button class="button button-compact" id="rerun-selected" type="button" disabled>Re-run</button>
+            </div>
+          </div>
         </div>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th scope="col"><button type="button" data-sort="spec_name">Run <span>↕</span></button></th>
-                <th scope="col"><button type="button" data-sort="success">Status <span>↕</span></button></th>
-                <th scope="col"><button type="button" data-sort="duration_s">Duration <span>↕</span></button></th>
-                <th scope="col"><button type="button" data-sort="challenge_count">Content <span>↕</span></button></th>
-                <th scope="col"><button type="button" data-sort="estimated_output_tokens">Output <span>↕</span></button></th>
-                <th scope="col"><button type="button" data-sort="started_at">Started <span>↓</span></button></th>
-              </tr>
-            </thead>
-            <tbody id="runs-body"></tbody>
-          </table>
+        <div id="runs-view">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th class="select-column" scope="col"><input class="run-select" id="select-visible-runs" type="checkbox" aria-label="Select all rerunnable runs on this page"></th>
+                  <th scope="col"><button type="button" data-sort="spec_name">Run <span>↕</span></button></th>
+                  <th scope="col"><button type="button" data-sort="success">Status <span>↕</span></button></th>
+                  <th scope="col"><button type="button" data-sort="total_duration_s">Time <span>↕</span></button></th>
+                  <th scope="col"><button type="button" data-sort="challenge_count">Content <span>↕</span></button></th>
+                  <th scope="col"><button type="button" data-sort="estimated_output_tokens">Output <span>↕</span></button></th>
+                  <th scope="col"><button type="button" data-sort="started_at">Started <span>↓</span></button></th>
+                </tr>
+              </thead>
+              <tbody id="runs-body"></tbody>
+            </table>
+          </div>
+          <div class="pagination" id="pagination"></div>
         </div>
-        <div class="pagination" id="pagination"></div>
+        <div class="hidden" id="inventory-view">
+          <div class="table-wrap">
+            <table class="inventory-table">
+              <thead><tr><th scope="col">Item</th><th scope="col">Type</th><th scope="col">Uses</th><th scope="col">Runs</th></tr></thead>
+              <tbody id="inventory-body"></tbody>
+            </table>
+          </div>
+          <div class="pagination" id="inventory-pagination"></div>
+        </div>
       </article>
     </section>
 
@@ -122,6 +219,7 @@
       <div class="empty-icon" aria-hidden="true">{ }</div>
       <h2>No run results found</h2>
       <p>Point the dashboard at a parent folder containing <code>*_result.json</code> files, then refresh.</p>
+    </section>
     </section>
   </main>
 
@@ -132,10 +230,65 @@
         <p class="panel-kicker">Run detail</p>
         <h2 id="drawer-title">—</h2>
       </div>
-      <button class="icon-button" id="drawer-close" type="button" aria-label="Close run details">×</button>
+      <div class="drawer-actions">
+        <button class="button button-compact" id="open-run-folder" type="button">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M2.5 5.5A2.5 2.5 0 0 1 5 3h3l1.5 2H15A2.5 2.5 0 0 1 17.5 7.5v6A2.5 2.5 0 0 1 15 16H5a2.5 2.5 0 0 1-2.5-2.5v-8Z"/></svg>
+          Explore Folder
+        </button>
+        <button class="icon-button" id="drawer-close" type="button" aria-label="Close run details">×</button>
+      </div>
     </div>
     <div class="drawer-content" id="drawer-content"></div>
   </aside>
+
+  <div class="modal-backdrop hidden" id="datasource-backdrop"></div>
+  <section class="modal hidden" id="datasource-modal" role="dialog" aria-modal="true" aria-labelledby="datasource-title">
+    <form id="datasource-form">
+      <div class="modal-header">
+        <div>
+          <p class="panel-kicker">Dashboard source</p>
+          <h2 id="datasource-title">New datasource</h2>
+        </div>
+        <button class="icon-button" id="datasource-close" type="button" aria-label="Close datasource dialog">×</button>
+      </div>
+      <div class="modal-content">
+        <label for="datasource-path">Folder path</label>
+        <input id="datasource-path" type="text" placeholder="/path/to/scenarioforge-eval-output" autocomplete="off" required>
+        <p>The folder is read on the machine running this dashboard.</p>
+        <div class="form-error hidden" id="datasource-error" role="alert"></div>
+      </div>
+      <div class="modal-actions">
+        <button class="button" id="datasource-cancel" type="button">Cancel</button>
+        <button class="button button-primary" id="datasource-submit" type="submit">Use datasource</button>
+      </div>
+    </form>
+  </section>
+
+  <div class="modal-backdrop hidden" id="rerun-backdrop"></div>
+  <section class="modal hidden" id="rerun-modal" role="dialog" aria-modal="true" aria-labelledby="rerun-title">
+    <form id="rerun-form">
+      <div class="modal-header">
+        <div>
+          <p class="panel-kicker">Selected evaluator runs</p>
+          <h2 id="rerun-title">Re-run selected data</h2>
+        </div>
+        <button class="icon-button" id="rerun-close" type="button" aria-label="Close re-run dialog">×</button>
+      </div>
+      <div class="modal-content">
+        <p class="rerun-summary" id="rerun-summary"></p>
+        <div class="rerun-list" id="rerun-list"></div>
+        <label class="replace-choice" for="rerun-replace">
+          <input id="rerun-replace" type="checkbox">
+          <span><strong>Replace selected run data</strong><small>Delete each selected result and its run artifacts before starting. Leave this off to keep the originals and write new results under a separate <code>reruns</code> folder.</small></span>
+        </label>
+        <div class="form-error hidden" id="rerun-error" role="alert"></div>
+      </div>
+      <div class="modal-actions">
+        <button class="button" id="rerun-cancel" type="button">Cancel</button>
+        <button class="button button-primary" id="rerun-submit" type="submit">Start re-run</button>
+      </div>
+    </form>
+  </section>
 </div>
 
 <style>
@@ -186,11 +339,60 @@
   .button svg { width: 15px; fill: currentColor; }
   .button-primary { color: #11160d; background: var(--accent); border-color: var(--accent); font-weight: 600; }
   .button-primary:hover { background: #efff9b; border-color: #efff9b; }
+  .button-compact { padding: 7px 10px; white-space: nowrap; font-size: 12px; }
   main { width: min(1500px, 100%); margin: 0 auto; padding: 24px clamp(18px, 3.5vw, 54px) 60px; }
+  .dashboard-tabs { display: flex; gap: 5px; width: fit-content; margin-bottom: 18px; padding: 4px; border: 1px solid var(--border); border-radius: 11px; background: var(--surface); }
+  .dashboard-tab { min-width: 112px; padding: 8px 16px; border: 0; border-radius: 7px; color: var(--muted); background: transparent; font-weight: 600; }
+  .dashboard-tab[aria-selected="true"] { color: var(--bg); background: var(--accent); }
+  .execute-grid { display: grid; grid-template-columns: minmax(360px, .9fr) minmax(0, 1.1fr); gap: 11px; }
+  .execution-form { padding: 19px; }
+  .execution-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px; }
+  .execution-fields label > span:first-child, .flag-options legend, .command-preview > span { display: block; margin-bottom: 6px; color: var(--muted); font-size: 10px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+  .execution-fields .field-wide { grid-column: 1 / -1; }
+  .execution-fields input, .execution-fields select { width: 100%; padding: 0 12px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
+  .path-picker { display: flex; gap: 6px; }
+  .path-picker input { min-width: 0; }
+  .path-button { flex: 0 0 auto; min-height: 38px; padding: 0 10px; border: 1px solid var(--border-strong); border-radius: 8px; color: var(--text); background: var(--surface-2); white-space: nowrap; font-size: 10px; }
+  .path-button:hover { border-color: var(--cyan); }
+  .flag-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 20px 0 0; padding: 0; border: 0; }
+  .flag-options legend { grid-column: 1 / -1; }
+  .check-row { min-height: 58px; padding: 10px 11px; display: flex; align-items: flex-start; gap: 9px; border: 1px solid var(--border); border-radius: 9px; background: var(--surface-2); }
+  .check-row.dangerous { grid-column: 1 / -1; border-color: rgba(255, 123, 114, .35); background: var(--danger-soft); }
+  .check-row input { flex: 0 0 auto; width: 16px; height: 16px; margin: 2px 0 0; accent-color: var(--accent); }
+  .check-row strong, .check-row small { display: block; }
+  .check-row strong { color: var(--text); font: 11px/1.3 ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .check-row small { margin-top: 4px; color: var(--muted); font-size: 10px; }
+  .command-preview { margin-top: 18px; }
+  .command-preview code { display: block; min-height: 68px; padding: 11px 12px; overflow-wrap: anywhere; border: 1px solid var(--border); border-radius: 9px; color: #ccebe4; background: var(--bg); font: 11px/1.55 ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .execution-actions { display: flex; justify-content: flex-end; margin-top: 18px; }
+  .execution-summary { min-height: 47px; padding: 13px 16px; border-bottom: 1px solid var(--border); color: var(--muted); font-size: 11px; overflow-wrap: anywhere; }
+  .execution-continuity { padding: 8px 16px; display: flex; align-items: center; gap: 9px; border-bottom: 1px solid rgba(88, 219, 193, .18); color: #acd8cf; background: rgba(88, 219, 193, .07); font-size: 10px; }
+  .execution-continuity .pulse { flex: 0 0 auto; width: 6px; height: 6px; }
+  .execution-console { height: 430px; margin: 0; padding: 15px 16px; overflow: auto; color: #c9d8d4; background: #070c0b; font: 11px/1.55 ui-monospace, SFMono-Regular, Menlo, monospace; white-space: pre-wrap; word-break: break-word; }
+  .console-line { min-height: 1.55em; margin: 0 -8px; padding: 0 8px; display: block; border-left: 2px solid transparent; }
+  .console-line.log-line-warning { border-left-color: var(--warning); background: linear-gradient(90deg, rgba(255, 201, 102, .1), transparent 72%); }
+  .console-line.log-line-error { border-left-color: var(--danger); background: linear-gradient(90deg, rgba(255, 123, 114, .11), transparent 72%); }
+  .log-token { font-weight: 650; }
+  .log-token-warning { color: var(--warning); }
+  .log-token-error, .log-token-fail { color: var(--danger); }
+  .log-token-success { color: #8ee6a7; }
+  .log-token-phase { color: var(--cyan); }
+  .log-token-step { color: #c2a7ff; }
+  .log-token-info { color: #82baff; }
+  .log-token-debug, .log-token-skip { color: var(--muted-2); }
+  .log-token-skip { font-style: italic; }
+  .execution-console-actions { min-height: 57px; padding: 10px 14px; display: flex; justify-content: flex-end; gap: 8px; border-top: 1px solid var(--border); }
+  .console-follow { margin-right: auto; padding: 0 5px; display: inline-flex; align-items: center; gap: 8px; color: var(--muted); font-size: 11px; cursor: pointer; user-select: none; }
+  .console-follow input { width: 16px; height: 16px; margin: 0; accent-color: var(--accent); }
+  .console-follow:has(input:checked) { color: var(--text); }
+  .execution-console-panel .badge.running, .execution-console-panel .badge.starting { color: var(--warning); background: rgba(255, 201, 102, .12); }
+  .execution-console-panel .badge.stopping, .execution-console-panel .badge.stopped { color: var(--muted); background: var(--surface-3); }
   .source-strip { justify-content: space-between; gap: 20px; margin-bottom: 18px; }
   .source-strip > div:first-child { min-width: 0; }
   .source-strip code { display: block; margin-top: 5px; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 72vw; font-size: 12px; }
   .source-meta { color: var(--muted); font-size: 12px; text-align: right; white-space: nowrap; }
+  .source-actions, .drawer-actions { display: flex; align-items: center; gap: 10px; }
+  .source-actions { flex-wrap: wrap; justify-content: flex-end; }
   .filter-bar { gap: 9px; padding: 12px; margin-bottom: 18px; border: 1px solid var(--border); border-radius: 13px; background: rgba(16, 25, 24, .76); }
   .search-field { position: relative; flex: 1; min-width: 210px; }
   .search-field svg { width: 16px; height: 16px; position: absolute; left: 11px; top: 50%; transform: translateY(-50%); fill: none; stroke: var(--muted); stroke-width: 1.8; }
@@ -213,16 +415,19 @@
   .panel-wide { grid-row: span 2; }
   .panel-heading { min-height: 69px; padding: 15px 18px; justify-content: space-between; border-bottom: 1px solid var(--border); }
   .panel-kicker { margin-bottom: 4px; }
-  .legend { display: flex; gap: 14px; color: var(--muted); font-size: 11px; }
-  .legend span { display: flex; align-items: center; gap: 6px; }
+  .series-controls { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 5px; }
+  .series-toggle { display: inline-flex; align-items: center; gap: 6px; padding: 5px 7px; border: 1px solid var(--border); border-radius: 7px; color: var(--text); background: var(--surface-2); font-size: 10px; }
+  .series-toggle[aria-pressed="false"] { color: var(--muted-2); background: transparent; opacity: .62; }
   .dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
-  .dot.pass { background: var(--cyan); }
-  .dot.fail { background: var(--danger); }
+  .dot.total { background: var(--accent); }
+  .dot.create { background: var(--cyan); }
+  .dot.test { background: var(--warning); }
+  .dot.run { background: var(--danger); }
   .chart { height: 326px; padding: 20px 12px 12px; }
   .chart svg { width: 100%; height: 100%; overflow: visible; }
   .chart .grid-line { stroke: var(--border); stroke-width: 1; }
   .chart .area { fill: url(#trendFill); opacity: .8; }
-  .chart .trend-line { stroke: var(--cyan); stroke-width: 2; fill: none; }
+  .chart .trend-line { stroke-width: 2; fill: none; }
   .chart .point { stroke: var(--surface); stroke-width: 2; }
   .chart text { fill: var(--muted); font-size: 10px; }
   .bar-chart { min-height: 128px; padding: 15px 18px 17px; display: flex; flex-direction: column; justify-content: center; gap: 11px; }
@@ -237,11 +442,18 @@
   .composition { padding: 17px 18px 19px; }
   .composition-row { padding: 13px 0; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 12px; }
   .composition-row:last-child { border-bottom: 0; }
+  .composition-button { width: 100%; border: 0; border-bottom: 1px solid var(--border); color: inherit; background: transparent; text-align: left; }
+  .composition-button:hover { color: var(--accent); }
+  .composition-button[aria-pressed="true"] { color: var(--accent); }
+  .composition-button[aria-pressed="true"] .composition-icon { color: var(--bg); background: var(--accent); }
   .composition-name { display: flex; align-items: center; gap: 9px; color: #c7d3cf; }
   .composition-icon { width: 27px; height: 27px; display: grid; place-items: center; border-radius: 7px; background: var(--cyan-soft); color: var(--cyan); font-size: 12px; }
   .composition-value { font-size: 18px; font-weight: 600; font-variant-numeric: tabular-nums; }
   .table-heading { padding-right: 14px; }
   .table-note { color: var(--muted); font-size: 11px; }
+  .table-heading-actions, .run-selection-actions { display: flex; align-items: center; gap: 10px; }
+  .table-heading-actions { justify-content: flex-end; }
+  .run-selection-actions { color: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
   .table-wrap { overflow-x: auto; }
   table { width: 100%; border-collapse: collapse; min-width: 770px; }
   th, td { padding: 12px 14px; border-bottom: 1px solid var(--border); text-align: left; white-space: nowrap; }
@@ -250,10 +462,16 @@
   th button span { color: var(--muted-2); margin-left: 3px; }
   tbody tr { transition: background .14s ease; }
   tbody tr:hover { background: var(--surface-2); }
+  tbody tr.selected { background: var(--accent-soft); }
   tbody tr:last-child td { border-bottom: 0; }
+  .select-column { width: 42px; padding-inline: 12px 5px; }
+  input.run-select { width: 16px; height: 16px; margin: 0; padding: 0; accent-color: var(--accent); vertical-align: middle; }
+  input.run-select:disabled { opacity: .28; cursor: not-allowed; }
   .row-button { width: 100%; padding: 0; border: 0; color: inherit; background: none; text-align: left; }
   .run-name { display: block; max-width: 255px; overflow: hidden; text-overflow: ellipsis; color: var(--text); font-weight: 600; }
   .run-sub { display: block; max-width: 255px; margin-top: 3px; overflow: hidden; text-overflow: ellipsis; color: var(--muted); font-size: 10px; }
+  .inventory-table { min-width: 620px; }
+  .inventory-table td:nth-child(3), .inventory-table td:nth-child(4) { font-variant-numeric: tabular-nums; }
   .badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px; border-radius: 99px; font-size: 10px; font-weight: 600; letter-spacing: .03em; text-transform: uppercase; }
   .badge::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
   .badge.pass { color: var(--cyan); background: var(--cyan-soft); }
@@ -296,13 +514,33 @@
   .stage-list { display: flex; flex-wrap: wrap; gap: 7px; }
   .stage-chip { border: 1px solid var(--border); border-radius: 7px; padding: 6px 8px; color: var(--muted); font-size: 10px; }
   .stage-chip strong { margin-left: 5px; color: var(--text); }
+  .modal-backdrop { position: fixed; inset: 0; z-index: 39; background: rgba(0, 0, 0, .64); backdrop-filter: blur(3px); }
+  .modal { position: fixed; z-index: 40; left: 50%; top: 50%; width: min(540px, calc(100vw - 32px)); transform: translate(-50%, -50%); border: 1px solid var(--border-strong); border-radius: 16px; background: var(--surface); box-shadow: var(--shadow); overflow: hidden; }
+  .modal-header, .modal-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 15px 18px; }
+  .modal-header { border-bottom: 1px solid var(--border); }
+  .modal-content { padding: 20px 18px; }
+  .modal-content label { display: block; margin-bottom: 7px; color: var(--text); font-size: 12px; font-weight: 600; }
+  .modal-content input { padding: 0 12px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .modal-content p { margin-top: 8px; color: var(--muted); font-size: 11px; }
+  .modal-content .rerun-summary { margin: 0 0 10px; color: var(--text); font-size: 12px; }
+  .rerun-list { max-height: 142px; margin-bottom: 15px; padding: 8px 11px; overflow: auto; border: 1px solid var(--border); border-radius: 9px; color: var(--muted); background: var(--bg); font: 11px/1.7 ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .rerun-list span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .replace-choice { margin: 0; padding: 12px; display: flex !important; align-items: flex-start; gap: 10px; border: 1px solid rgba(255, 123, 114, .35); border-radius: 9px; background: var(--danger-soft); cursor: pointer; }
+  .modal-content .replace-choice input { flex: 0 0 auto; width: 16px; height: 16px; margin: 2px 0 0; padding: 0; accent-color: var(--danger); }
+  .replace-choice strong, .replace-choice small { display: block; }
+  .replace-choice strong { color: var(--text); }
+  .replace-choice small { margin-top: 4px; color: #d7aaa6; font-weight: 400; line-height: 1.45; }
+  .replace-choice code { color: var(--text); }
+  .modal-actions { justify-content: flex-end; border-top: 1px solid var(--border); background: rgba(9, 16, 15, .28); }
+  .form-error { margin-top: 12px; padding: 10px 11px; border: 1px solid rgba(255, 123, 114, .3); border-radius: 8px; color: #f2b2ad; background: var(--danger-soft); font-size: 11px; }
   .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
-  @media (max-width: 1120px) { .kpi-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 1120px) { .kpi-grid { grid-template-columns: repeat(3, 1fr); } .execute-grid { grid-template-columns: 1fr; } }
   @media (max-width: 850px) { .chart-grid, .content-grid { grid-template-columns: 1fr; } .panel-wide { grid-row: auto; } .chart { height: 275px; } }
   @media (max-width: 680px) {
     .topbar { position: static; }
     .scan-status { display: none; }
     .source-strip { align-items: flex-start; flex-direction: column; gap: 8px; }
+    .source-actions { width: 100%; justify-content: space-between; }
     .source-meta { text-align: left; }
     .source-strip code { max-width: 90vw; }
     .filter-bar { flex-wrap: wrap; }
@@ -311,7 +549,13 @@
     .filter-bar label:not(.search-field) { flex: 1; }
     .filter-count { width: 100%; margin-left: 0; padding-top: 4px; }
     .kpi-grid { grid-template-columns: repeat(2, 1fr); }
-    .legend { display: none; }
+    .series-controls { justify-content: flex-start; margin-top: 10px; }
+    .execution-fields, .flag-options { grid-template-columns: 1fr; }
+    .path-picker { flex-wrap: wrap; }
+    .path-picker input { flex-basis: 100%; }
+    .check-row.dangerous { grid-column: auto; }
+    .execution-console { height: 340px; }
+    .timing-heading { align-items: flex-start; flex-direction: column; }
     .table-note { display: none; }
   }
   @media (max-width: 420px) { .kpi-grid { grid-template-columns: 1fr; } .topbar { padding-inline: 14px; } main { padding-inline: 14px; } .brand-mark { display: none; } }
@@ -319,11 +563,34 @@
 
 <script>
 (() => {
-  const state = { data: null, filtered: [], page: 1, pageSize: 20, sortKey: 'started_at', sortDir: -1 };
+  const REQUIRED_SCHEMA_VERSION = 3;
+  const state = {
+    data: null,
+    filtered: [],
+    inventoryRows: [],
+    view: 'runs',
+    tab: 'execute',
+    executionJobId: null,
+    executionLogSequence: 0,
+    executionLines: [],
+    executionDefaultsLoaded: false,
+    executionPoll: null,
+    selectedRunIds: new Set(),
+    page: 1,
+    pageSize: 20,
+    sortKey: 'started_at',
+    sortDir: -1,
+    visibleSeries: {total: true, create: true, test: true, run: true}
+  };
   const $ = id => document.getElementById(id);
   const esc = value => String(value ?? '').replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
   const number = value => new Intl.NumberFormat().format(Number(value || 0));
   const compact = value => new Intl.NumberFormat(undefined, {notation: 'compact', maximumFractionDigits: 1}).format(Number(value || 0));
+  const challengeRatio = (unique, total, complete) => {
+    const uniqueCount = Number(unique || 0); const totalCount = Number(total || 0);
+    if (!complete && !uniqueCount && totalCount) return `— / ${number(totalCount)}`;
+    return `${number(uniqueCount)}${complete ? '' : '+'} / ${number(totalCount)}`;
+  };
   const duration = value => {
     const seconds = Number(value || 0);
     if (seconds < 1) return `${Math.round(seconds * 1000)}ms`;
@@ -338,14 +605,258 @@
   };
   const date = value => value ? new Intl.DateTimeFormat(undefined, {month:'short', day:'numeric', hour:'numeric', minute:'2-digit'}).format(new Date(value)) : '—';
 
+  async function jsonResponse(response, endpoint) {
+    const body = await response.text();
+    let payload = null;
+    try { payload = body ? JSON.parse(body) : null; }
+    catch (_) {
+      throw new Error(`${endpoint} returned ${response.status} without JSON. Restart the dashboard server and try again.`);
+    }
+    if (!response.ok) throw new Error(payload?.error || `${endpoint} returned ${response.status}`);
+    return payload;
+  }
+
+  const executionActive = status => ['starting', 'running', 'stopping'].includes(status);
+  const shellQuote = value => {
+    const text = String(value || '');
+    return /^[A-Za-z0-9_./:@%+=,-]+$/.test(text) ? text : `'${text.replaceAll("'", `'"'"'`)}'`;
+  };
+
+  function switchTab(tab) {
+    state.tab = tab;
+    document.querySelectorAll('[data-tab]').forEach(button => button.setAttribute('aria-selected', String(button.dataset.tab === tab)));
+    $('execute-panel').classList.toggle('hidden', tab !== 'execute');
+    $('analysis-panel').classList.toggle('hidden', tab !== 'analysis');
+    $('execute-top-actions').classList.toggle('hidden', tab !== 'execute');
+    $('analysis-top-actions').classList.toggle('hidden', tab !== 'analysis');
+    if (tab === 'analysis') load();
+  }
+
+  function executionPayload() {
+    return {
+      spec_path: $('execution-spec').value.trim(),
+      sf_path: $('execution-sf-path').value.trim(),
+      out_path: $('execution-out').value.trim(),
+      phase: $('execution-phase').value,
+      verbose: $('execution-verbose').checked,
+      stop_on_error: $('execution-stop-on-error').checked,
+      dangerous_cleanup_between_runs: $('execution-dangerous-cleanup').checked
+    };
+  }
+
+  function renderCommandPreview() {
+    const config = executionPayload();
+    const args = ['scenarioforge-eval', config.spec_path, '--sf-path', config.sf_path, '--out', config.out_path];
+    const phaseFlag = {topology: '--topology', 'flag-sequencing': '--flag-sequencing', execute: '--execute'}[config.phase];
+    if (phaseFlag) args.push(phaseFlag);
+    if (config.verbose) args.push('--verbose');
+    if (config.stop_on_error) args.push('--stop-on-error');
+    if (config.dangerous_cleanup_between_runs) args.push('--dangerous-cleanup-between-runs');
+    $('execution-command-preview').textContent = args.map(shellQuote).join(' ');
+  }
+
+  async function selectExecutionPath(button) {
+    const field = $(button.dataset.pathTarget);
+    button.disabled = true;
+    $('execution-error').classList.add('hidden');
+    try {
+      const response = await fetch('/api/select-path', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({kind: button.dataset.pathKind, initial_path: field.value.trim()})
+      });
+      const payload = await jsonResponse(response, 'Path picker API');
+      if (!payload.cancelled && payload.path) {
+        field.value = payload.path;
+        renderCommandPreview();
+      }
+    } catch (error) {
+      $('execution-error').textContent = error.message;
+      $('execution-error').classList.remove('hidden');
+    } finally { button.disabled = false; }
+  }
+
+  function applyInitialExecutionConfig(payload) {
+    if (state.executionDefaultsLoaded) return;
+    const config = payload.id && payload.config ? payload.config : payload.defaults;
+    if (!config) return;
+    $('execution-spec').value = config.spec_path || '';
+    $('execution-sf-path').value = config.sf_path || '';
+    $('execution-out').value = config.out_path || '';
+    $('execution-phase').value = config.phase || 'execute';
+    $('execution-verbose').checked = Boolean(config.verbose);
+    $('execution-stop-on-error').checked = Boolean(config.stop_on_error);
+    $('execution-dangerous-cleanup').checked = Boolean(config.dangerous_cleanup_between_runs);
+    state.executionDefaultsLoaded = true;
+    renderCommandPreview();
+  }
+
+  function executionLogLevel(text) {
+    const match = String(text || '').match(/(?:^|\s)(DEBUG|INFO|WARNING|ERROR|CRITICAL)(?=\s)/i);
+    return match ? match[1].toLowerCase() : '';
+  }
+
+  function executionLogTokenClass(token, lineLevel = '') {
+    const normalized = token.toLowerCase();
+    if (lineLevel === 'debug' && /^(error|exception|traceback|fatal|critical|fail|false|warn)/.test(normalized)) return 'debug';
+    if (/^(error|exception|traceback|fatal|critical)/.test(normalized)) return 'error';
+    if (/^(fail|false)/.test(normalized)) return 'fail';
+    if (/^warn/.test(normalized)) return 'warning';
+    if (/^(success|succeeded|pass|true|ok)/.test(normalized)) return 'success';
+    if (/^step\s/.test(normalized)) return 'step';
+    if (/^(phase|scenario[ _-]xml|preview[ _-]plan|flag[ _-]sequencing|post[ -]execution validation|execute|topology)/.test(normalized)) return 'phase';
+    if (/^(skip|cancel|stopped)/.test(normalized)) return 'skip';
+    return normalized === 'debug' ? 'debug' : 'info';
+  }
+
+  function normalizeExecutionLogLine(line) {
+    const text = String(line ?? '');
+    const benignComposeFallback = /Pivoting:\s+pivot\[\d+\]\s+ssh fallback skipped for .+?: pivot source already has a compose assignment/i;
+    return benignComposeFallback.test(text) ? text.replace(/\bWARNING\b/i, 'INFO') : text;
+  }
+
+  function formatExecutionLogLine(line) {
+    const text = normalizeExecutionLogLine(line);
+    const lineLevel = executionLogLevel(text);
+    const tokenPattern = /\b(?:ERROR|EXCEPTION|TRACEBACK|FATAL|CRITICAL)\b|\b(?:FAIL(?:ED|URE)?|FALSE)\b|\b(?:WARN(?:ING)?S?)\b|\b(?:SUCCESS(?:FUL(?:LY)?)?|SUCCEEDED|PASS(?:ED)?|TRUE|OK)\b|\b(?:SKIP(?:PED)?|CANCEL(?:LED)?|STOPPED)\b|\b(?:INFO|DEBUG)\b|\bStep\s+\d+(?:\s*\/\s*\d+)?\b|\bPhase(?:\s+|:\s*)[A-Za-z][\w-]*\b|\b(?:scenario[_ -]xml|preview[_ -]plan|flag[_ -]sequencing|post[- ]execution validation|execute|topology)\b/gi;
+    let html = ''; let cursor = 0; let match;
+    while ((match = tokenPattern.exec(text)) !== null) {
+      html += esc(text.slice(cursor, match.index));
+      const tokenClass = executionLogTokenClass(match[0], lineLevel);
+      html += `<span class="log-token log-token-${tokenClass}">${esc(match[0])}</span>`;
+      cursor = match.index + match[0].length;
+    }
+    html += esc(text.slice(cursor));
+    const lineClass = ['error', 'critical'].includes(lineLevel)
+      ? ' log-line-error'
+      : lineLevel === 'warning'
+        ? ' log-line-warning'
+        : lineLevel ? ''
+          : /\b(?:ERROR|EXCEPTION|TRACEBACK|FATAL|CRITICAL|FAIL(?:ED|URE)?|FALSE)\b/i.test(text)
+            ? ' log-line-error'
+            : /\bWARN(?:ING)?S?\b/i.test(text) ? ' log-line-warning' : '';
+    return `<span class="console-line${lineClass}">${html || ' '}</span>`;
+  }
+
+  function renderExecution(payload) {
+    applyInitialExecutionConfig(payload);
+    const status = payload.status || 'idle';
+    const consoleElement = $('execution-console');
+    const previousScrollTop = consoleElement.scrollTop;
+    if (payload.id && payload.id !== state.executionJobId) {
+      state.executionJobId = payload.id;
+      state.executionLogSequence = 0;
+      state.executionLines = [];
+    }
+    for (const line of payload.logs || []) {
+      if (line.sequence <= state.executionLogSequence) continue;
+      state.executionLogSequence = line.sequence;
+      state.executionLines.push(line.text);
+    }
+    if (state.executionLines.length > 5000) state.executionLines = state.executionLines.slice(-5000);
+
+    const badge = $('execution-status-badge');
+    badge.className = `badge ${status === 'succeeded' ? 'pass' : status === 'failed' ? 'fail' : status}`;
+    badge.textContent = status.replaceAll('_', ' ');
+    const active = executionActive(status);
+    $('execution-start').disabled = active;
+    $('execution-continuity').classList.toggle('hidden', !active);
+    $('execution-stop').classList.toggle('hidden', !active);
+    $('execution-analyze').classList.toggle('hidden', active || !payload.config?.out_path);
+    document.querySelectorAll('#execution-form input, #execution-form select').forEach(field => field.disabled = active);
+    document.querySelectorAll('#execution-form [data-path-target]').forEach(button => button.disabled = active);
+
+    if (status === 'idle') {
+      $('execution-summary').textContent = 'Configure a run to begin.';
+      consoleElement.textContent = 'Waiting for an evaluator job…';
+    } else {
+      const timing = `${payload.started_at ? `Started ${date(payload.started_at)}` : ''}${payload.ended_at ? ` · ended ${date(payload.ended_at)}` : ''}`;
+      const exit = payload.returncode === null || payload.returncode === undefined ? '' : ` · exit ${payload.returncode}`;
+      $('execution-summary').textContent = `${payload.command || ''}${timing ? ` · ${timing}` : ''}${exit}${payload.error ? ` · ${payload.error}` : ''}`;
+      consoleElement.innerHTML = state.executionLines.length
+        ? state.executionLines.map(formatExecutionLogLine).join('')
+        : '<span class="console-line">Process is starting…</span>';
+      consoleElement.scrollTop = $('execution-follow').checked ? consoleElement.scrollHeight : previousScrollTop;
+    }
+    const topText = status === 'idle' ? 'Evaluator idle' : `Evaluator ${status.replaceAll('_', ' ')}`;
+    $('execution-top-status').innerHTML = `<span class="pulse" style="background:${status === 'failed' ? 'var(--danger)' : status === 'succeeded' ? 'var(--cyan)' : 'var(--warning)'}"></span><span>${esc(topText)}</span>`;
+    renderCommandPreview();
+
+    if (state.executionPoll) window.clearTimeout(state.executionPoll);
+    state.executionPoll = active ? window.setTimeout(loadExecutionStatus, 1000) : null;
+  }
+
+  async function loadExecutionStatus() {
+    try {
+      const response = await fetch(`/api/execution?after=${state.executionLogSequence}`, {cache: 'no-store'});
+      renderExecution(await jsonResponse(response, 'Execution API'));
+    } catch (error) {
+      $('execution-top-status').innerHTML = `<span class="pulse" style="background:var(--danger)"></span><span>${esc(error.message)}</span>`;
+      state.executionPoll = window.setTimeout(loadExecutionStatus, 3000);
+    }
+  }
+
+  async function startExecution(event) {
+    event.preventDefault();
+    const config = executionPayload();
+    if (config.dangerous_cleanup_between_runs && !window.confirm('This flag removes remote Docker containers, images, build cache, unused volumes, and networks before each runtime run. Continue?')) return;
+    $('execution-error').classList.add('hidden');
+    $('execution-start').disabled = true;
+    state.executionJobId = null;
+    state.executionLogSequence = 0;
+    state.executionLines = [];
+    try {
+      const response = await fetch('/api/execution', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(config)
+      });
+      renderExecution(await jsonResponse(response, 'Execution API'));
+    } catch (error) {
+      $('execution-error').textContent = error.message;
+      $('execution-error').classList.remove('hidden');
+      $('execution-start').disabled = false;
+    }
+  }
+
+  async function stopExecution() {
+    $('execution-stop').disabled = true;
+    try {
+      const response = await fetch('/api/execution/stop', {method: 'POST'});
+      renderExecution(await jsonResponse(response, 'Stop API'));
+    } catch (error) {
+      $('execution-error').textContent = error.message;
+      $('execution-error').classList.remove('hidden');
+    } finally { $('execution-stop').disabled = false; }
+  }
+
+  async function analyzeExecutionOutput() {
+    const path = $('execution-out').value.trim();
+    try {
+      const response = await fetch('/api/data-source', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({path})
+      });
+      await jsonResponse(response, 'Datasource API');
+      switchTab('analysis');
+    } catch (error) {
+      $('execution-error').textContent = error.message;
+      $('execution-error').classList.remove('hidden');
+    }
+  }
+
   async function load() {
     const button = $('refresh-button');
     button.disabled = true;
     $('scan-status').innerHTML = '<span class="pulse"></span><span>Scanning results…</span>';
     try {
       const response = await fetch('/api/dashboard', {cache: 'no-store'});
-      if (!response.ok) throw new Error(`Dashboard API returned ${response.status}`);
-      state.data = await response.json();
+      const payload = await jsonResponse(response, 'Dashboard API');
+      if (Number(payload?.schema_version || 0) < REQUIRED_SCHEMA_VERSION) {
+        throw new Error('Dashboard server is out of date. Restart scenarioforge-eval-dashboard and reload this page.');
+      }
+      state.data = payload;
       state.page = 1;
       populatePhases();
       applyFilters();
@@ -357,6 +868,63 @@
       $('empty-state').querySelector('h2').textContent = 'Unable to load results';
       $('empty-state').querySelector('p').textContent = error.message;
     } finally { button.disabled = false; }
+  }
+
+  async function openFolder(runId, button) {
+    const original = button.innerHTML;
+    button.disabled = true;
+    try {
+      const response = await fetch('/api/open-folder', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(runId ? {run_id: runId} : {})
+      });
+      await jsonResponse(response, 'Open-folder API');
+      button.textContent = 'Opened';
+      window.setTimeout(() => { button.innerHTML = original; }, 1200);
+    } catch (error) {
+      button.textContent = 'Could not open';
+      button.title = error.message;
+      window.setTimeout(() => { button.innerHTML = original; button.title = ''; }, 2200);
+    } finally {
+      window.setTimeout(() => { button.disabled = false; }, 400);
+    }
+  }
+
+  function openDatasourceModal() {
+    $('datasource-path').value = state.data?.meta?.root || '';
+    $('datasource-error').classList.add('hidden');
+    $('datasource-error').textContent = '';
+    $('datasource-backdrop').classList.remove('hidden');
+    $('datasource-modal').classList.remove('hidden');
+    window.setTimeout(() => $('datasource-path').focus(), 0);
+  }
+
+  function closeDatasourceModal() {
+    $('datasource-backdrop').classList.add('hidden');
+    $('datasource-modal').classList.add('hidden');
+    $('new-data-source').focus();
+  }
+
+  async function setDatasource(event) {
+    event.preventDefault();
+    const path = $('datasource-path').value.trim();
+    const submit = $('datasource-submit');
+    submit.disabled = true;
+    $('datasource-error').classList.add('hidden');
+    try {
+      const response = await fetch('/api/data-source', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({path})
+      });
+      await jsonResponse(response, 'Datasource API');
+      closeDatasourceModal();
+      await load();
+    } catch (error) {
+      $('datasource-error').textContent = error.message;
+      $('datasource-error').classList.remove('hidden');
+    } finally { submit.disabled = false; }
   }
 
   function populatePhases() {
@@ -376,16 +944,14 @@
       const haystack = [run.spec_name, run.failed_stage, run.seed, run.target_phase, run.source_file].join(' ').toLowerCase();
       const statusMatch = status === 'all' || (status === 'success' ? run.success : !run.success);
       const phaseMatch = phase === 'all' || run.phases.some(item => item.phase === phase);
-      return (!query || haystack.includes(query)) && statusMatch && phaseMatch;
+      const queryMatch = state.view !== 'runs' || !query || haystack.includes(query);
+      return queryMatch && statusMatch && phaseMatch;
     });
     state.filtered.sort((a, b) => {
       const av = a[state.sortKey] ?? ''; const bv = b[state.sortKey] ?? '';
       return (typeof av === 'number' ? av - Number(bv) : String(av).localeCompare(String(bv))) * state.sortDir;
     });
-    const pages = Math.max(1, Math.ceil(state.filtered.length / state.pageSize));
-    state.page = Math.min(state.page, pages);
-    $('filter-count').textContent = `${number(state.filtered.length)} of ${number(state.data.runs.length)} runs`;
-    renderTable();
+    renderContentView();
     renderTrend();
   }
 
@@ -406,21 +972,83 @@
 
   function renderStatic() {
     const s = state.data.summary;
+    const challengeSummary = challengeRatio(s.unique_challenges, s.challenges, s.unique_challenges_complete);
     const kpis = [
       ['Total runs', number(s.total_runs), `${number(s.successes)} passed · ${number(s.failures)} failed`, ''],
       ['Pass rate', `${(s.pass_rate * 100).toFixed(1)}%`, `<span class="good">${number(s.successes)} successful</span>`, 'primary'],
-      ['Median duration', duration(s.median_duration_s), `P95 ${duration(s.p95_duration_s)}`, ''],
+      ['Median total time', duration(s.median_duration_s), `P95 ${duration(s.p95_duration_s)}`, ''],
       ['Compute time', duration(s.cpu_total_s), `${duration(s.total_duration_s)} wall time`, ''],
       ['Output tokens', compact(s.estimated_output_tokens), `${number(s.estimated_output_tokens)} estimated`, ''],
-      ['Artifacts', bytes(s.artifact_total_size_bytes), `${number(s.challenges)} challenges`, '']
+      ['Artifacts', bytes(s.artifact_total_size_bytes), `${challengeSummary} challenges (unique / total)`, '']
     ];
     $('kpi-grid').innerHTML = kpis.map(([label, value, detail, cls]) => `<article class="kpi-card ${cls}"><div class="kpi-label">${label}</div><div class="kpi-value">${value}</div><div class="kpi-detail">${detail}</div></article>`).join('');
     renderBars('phase-chart', state.data.phase_summary, 'phase', 'avg_duration_s', value => duration(value), false);
     renderBars('failure-chart', state.data.failure_stages, 'stage', 'count', value => number(value), true);
+    renderComposition();
+  }
+
+  function renderComposition() {
+    const s = state.data.summary;
     const composition = [
-      ['◇', 'Challenges', s.challenges], ['⌁', 'Chains', s.chains], ['↗', 'Pivots', s.pivots], ['#', 'Output tokens', s.estimated_output_tokens]
+      {icon: '▦', label: 'Runs', value: number(s.total_runs), title: 'Show evaluator runs', view: 'runs'},
+      {icon: '◇', label: 'Challenges', value: challengeRatio(s.unique_challenges, s.challenges, s.unique_challenges_complete), title: 'Distinct generator catalog/id pairs / total generated challenges', view: 'challenges'},
+      {icon: '◆', label: 'Flag-node-generators', value: challengeRatio(s.flag_node_generators_unique, s.flag_node_generators_total, true), title: 'Distinct flag-node-generators / total uses', view: 'flag_node_generators'},
+      {icon: '⚑', label: 'Flag-generators', value: challengeRatio(s.flag_generators_unique, s.flag_generators_total, true), title: 'Distinct flag-generators / total uses', view: 'flag_generators'},
+      {icon: '!', label: 'Vulnerabilities', value: challengeRatio(s.vulnerabilities_unique, s.vulnerabilities_total, s.vulnerabilities_complete), title: 'Distinct vulnerabilities / total selections', view: 'vulnerabilities'},
+      {icon: '⌁', label: 'Chains', value: compact(s.chains), title: 'Generated Flow chains'},
+      {icon: '↗', label: 'Pivots', value: compact(s.pivot_total), title: `${number(s.pivot_challenges)} challenge pivots · ${number(s.pivot_providers)} segmentation providers`},
+      {icon: '#', label: 'Output tokens', value: compact(s.estimated_output_tokens), title: 'Estimated output tokens'}
     ];
-    $('composition').innerHTML = composition.map(([icon, label, value]) => `<div class="composition-row"><div class="composition-name"><span class="composition-icon">${icon}</span>${label}</div><div class="composition-value">${compact(value)}</div></div>`).join('');
+    $('composition').innerHTML = composition.map(item => item.view
+      ? `<button class="composition-row composition-button" type="button" data-content-view="${item.view}" aria-pressed="${state.view === item.view}" title="${esc(item.title)}"><span class="composition-name"><span class="composition-icon">${item.icon}</span>${esc(item.label)}</span><span class="composition-value">${esc(item.value)}</span></button>`
+      : `<div class="composition-row" title="${esc(item.title)}"><div class="composition-name"><span class="composition-icon">${item.icon}</span>${esc(item.label)}</div><div class="composition-value">${esc(item.value)}</div></div>`
+    ).join('');
+    document.querySelectorAll('[data-content-view]').forEach(button => button.addEventListener('click', () => setContentView(button.dataset.contentView)));
+  }
+
+  function setContentView(view) {
+    state.view = view;
+    state.page = 1;
+    $('search-input').value = '';
+    if (view !== 'runs') {
+      $('status-filter').value = 'all';
+      $('phase-filter').value = 'all';
+    }
+    $('search-input').placeholder = view === 'runs' ? 'Search spec, stage, or seed' : `Search ${view.replaceAll('_', ' ')}`;
+    $('status-filter').disabled = view !== 'runs';
+    $('phase-filter').disabled = view !== 'runs';
+    renderComposition();
+    applyFilters();
+  }
+
+  function renderContentView() {
+    const isRuns = state.view === 'runs';
+    $('runs-view').classList.toggle('hidden', !isRuns);
+    $('inventory-view').classList.toggle('hidden', isRuns);
+    $('run-selection-actions').classList.toggle('hidden', !isRuns);
+    if (isRuns) {
+      $('content-view-title').textContent = 'Runs';
+      $('content-view-note').textContent = 'Select a row for full metrics';
+      $('filter-count').textContent = `${number(state.filtered.length)} of ${number(state.data.runs.length)} runs`;
+      renderTable();
+      return;
+    }
+    const labels = {
+      challenges: 'Challenges',
+      flag_node_generators: 'Flag-node-generators',
+      flag_generators: 'Flag-generators',
+      vulnerabilities: 'Vulnerabilities'
+    };
+    const query = $('search-input').value.trim().toLowerCase();
+    const allRows = state.data.inventories?.[state.view] || [];
+    state.inventoryRows = allRows.filter(row => !query || [row.name, row.id, row.catalog].join(' ').toLowerCase().includes(query));
+    const pages = Math.max(1, Math.ceil(state.inventoryRows.length / state.pageSize));
+    state.page = Math.min(state.page, pages);
+    const uses = state.inventoryRows.reduce((total, row) => total + Number(row.count || 0), 0);
+    $('content-view-title').textContent = labels[state.view] || 'Inventory';
+    $('content-view-note').textContent = `${number(uses)} uses across ${number(state.inventoryRows.length)} unique items`;
+    $('filter-count').textContent = `${number(state.inventoryRows.length)} of ${number(allRows.length)} items`;
+    renderInventory();
   }
 
   function renderBars(id, rows, labelKey, valueKey, formatter, failure) {
@@ -434,27 +1062,154 @@
     const el = $('trend-chart');
     const rows = [...state.filtered].sort((a, b) => String(a.started_at).localeCompare(String(b.started_at)) || a.spec_name.localeCompare(b.spec_name));
     if (!rows.length) { el.innerHTML = '<div class="no-data">No runs match the current filters</div>'; return; }
+    const definitions = [
+      {key: 'total', field: 'total_duration_s', label: 'Total', color: 'var(--accent)'},
+      {key: 'create', field: 'create_duration_s', label: 'Create', color: 'var(--cyan)'},
+      {key: 'test', field: 'test_duration_s', label: 'Test', color: 'var(--warning)'},
+      {key: 'run', field: 'run_duration_s', label: 'Run', color: 'var(--danger)'}
+    ];
+    const active = definitions.filter(series => state.visibleSeries[series.key]);
+    if (!active.length) { el.innerHTML = '<div class="no-data">Enable at least one timing series</div>'; return; }
     const w = 800, h = 280, left = 48, right = 15, top = 12, bottom = 30;
-    const values = rows.map(run => Number(run.duration_s || 0)); const max = Math.max(...values, 1);
+    const hasCreate = active.some(series => series.key === 'create');
+    const hasLongerPhase = active.some(series => series.key !== 'create');
+    const splitCreate = hasCreate && hasLongerPhase;
+    const mainSeries = splitCreate ? active.filter(series => series.key !== 'create') : active;
+    const mainMax = Math.max(...mainSeries.flatMap(series => rows.map(run => Number(run[series.field] || 0))), .001);
+    const createMax = splitCreate ? Math.max(...rows.map(run => Number(run.create_duration_s || 0)), .001) : mainMax;
+    const mainBottom = splitCreate ? 184 : h-bottom;
+    const createTop = 213;
+    const createBottom = h-bottom;
     const x = index => left + (rows.length === 1 ? (w-left-right)/2 : index/(rows.length-1)*(w-left-right));
-    const y = value => top + (1 - value/max) * (h-top-bottom);
-    const points = values.map((value, index) => `${x(index)},${y(value)}`).join(' ');
-    const areaPoints = `${left},${h-bottom} ${points} ${x(rows.length-1)},${h-bottom}`;
+    const y = (value, max, plotTop, plotBottom) => plotTop + (1 - value/max) * (plotBottom-plotTop);
     const grid = [0, .25, .5, .75, 1].map(fraction => {
-      const gy = y(max*fraction);
-      return `<line class="grid-line" x1="${left}" y1="${gy}" x2="${w-right}" y2="${gy}"/><text x="${left-8}" y="${gy+3}" text-anchor="end">${esc(duration(max*fraction))}</text>`;
+      const gy = y(mainMax*fraction, mainMax, top, mainBottom);
+      return `<line class="grid-line" x1="${left}" y1="${gy}" x2="${w-right}" y2="${gy}"/><text x="${left-8}" y="${gy+3}" text-anchor="end">${esc(duration(mainMax*fraction))}</text>`;
     }).join('');
+    const createPane = splitCreate
+      ? `<line class="grid-line" x1="${left}" y1="${createTop}" x2="${w-right}" y2="${createTop}"/><line class="grid-line" x1="${left}" y1="${createBottom}" x2="${w-right}" y2="${createBottom}"/><text x="${left}" y="${createTop-7}" fill="var(--cyan)">Create · separate scale</text><text x="${left-8}" y="${createTop+3}" text-anchor="end">${esc(duration(createMax))}</text><text x="${left-8}" y="${createBottom+3}" text-anchor="end">0ms</text>`
+      : '';
     const stride = Math.max(1, Math.ceil(rows.length / 120));
-    const dots = rows.map((run, index) => index % stride ? '' : `<circle class="point" cx="${x(index)}" cy="${y(run.duration_s)}" r="4" fill="${run.success ? 'var(--cyan)' : 'var(--danger)'}"><title>${esc(run.spec_name)} · ${esc(duration(run.duration_s))} · ${run.success ? 'passed' : 'failed'}</title></circle>`).join('');
-    el.innerHTML = `<svg viewBox="0 0 ${w} ${h}" role="img" aria-label="Run duration trend"><defs><linearGradient id="trendFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="var(--cyan)" stop-opacity=".22"/><stop offset="1" stop-color="var(--cyan)" stop-opacity="0"/></linearGradient></defs>${grid}<polygon class="area" points="${areaPoints}"/><polyline class="trend-line" points="${points}"/>${dots}<text x="${left}" y="${h-5}">${esc(date(rows[0].started_at))}</text><text x="${w-right}" y="${h-5}" text-anchor="end">${esc(date(rows[rows.length-1].started_at))}</text></svg>`;
+    const seriesMarkup = active.map(series => {
+      const values = rows.map(run => Number(run[series.field] || 0));
+      const inCreatePane = splitCreate && series.key === 'create';
+      const seriesMax = inCreatePane ? createMax : mainMax;
+      const plotTop = inCreatePane ? createTop : top;
+      const plotBottom = inCreatePane ? createBottom : mainBottom;
+      const points = values.map((value, index) => `${x(index)},${y(value, seriesMax, plotTop, plotBottom)}`).join(' ');
+      const dots = rows.map((run, index) => index % stride ? '' : `<circle class="point" cx="${x(index)}" cy="${y(values[index], seriesMax, plotTop, plotBottom)}" r="${series.key === 'total' ? 3.8 : 3}" fill="${series.color}" opacity="${run.success ? 1 : .58}"><title>${esc(run.spec_name)} · ${series.label} ${esc(duration(values[index]))} · ${run.success ? 'passed' : 'failed'}</title></circle>`).join('');
+      return `<polyline class="trend-line" points="${points}" stroke="${series.color}" stroke-width="${series.key === 'total' ? 2.7 : 2}" opacity="${series.key === 'total' ? 1 : .84}"/>${dots}`;
+    }).join('');
+    el.innerHTML = `<svg viewBox="0 0 ${w} ${h}" role="img" aria-label="Time to create, test, run, and total trend. Create uses a separate lower mini-chart when needed.">${grid}${createPane}${seriesMarkup}<text x="${left}" y="${h-5}">${esc(date(rows[0].started_at))}</text><text x="${w-right}" y="${h-5}" text-anchor="end">${esc(date(rows[rows.length-1].started_at))}</text></svg>`;
   }
 
   function renderTable() {
     const start = (state.page - 1) * state.pageSize;
     const pageRows = state.filtered.slice(start, start + state.pageSize);
-    $('runs-body').innerHTML = pageRows.length ? pageRows.map(run => `<tr><td><button class="row-button" type="button" data-run-id="${esc(run.id)}"><span class="run-name">${esc(run.spec_name)}</span><span class="run-sub">${esc(run.source_file)}</span></button></td><td><span class="badge ${run.success ? 'pass' : 'fail'}">${run.success ? 'Passed' : 'Failed'}</span>${!run.success ? `<span class="run-sub">${esc(run.failed_stage)}</span>` : ''}</td><td><span class="cell-main">${esc(duration(run.duration_s))}</span><span class="cell-sub">CPU ${esc(duration(run.cpu_total_s))}</span></td><td><span class="cell-main">${number(run.challenge_count)} challenges</span><span class="cell-sub">${number(run.node_count)} nodes · ${number(run.chain_count)} chains</span></td><td><span class="cell-main">${compact(run.estimated_output_tokens)} tokens</span><span class="cell-sub">${esc(bytes(run.artifact_total_size_bytes))} artifacts</span></td><td><span class="cell-main">${esc(date(run.started_at))}</span><span class="cell-sub">seed ${esc(run.seed || '—')}</span></td></tr>`).join('') : '<tr><td colspan="6"><div class="no-data">No runs match the current filters</div></td></tr>';
+    $('runs-body').innerHTML = pageRows.length ? pageRows.map(run => {
+      const selected = state.selectedRunIds.has(run.id);
+      const selectTitle = run.rerunnable ? `Select ${run.spec_name}` : (run.rerun_unavailable_reason || 'Run cannot be re-run');
+      return `<tr class="${selected ? 'selected' : ''}"><td class="select-column"><input class="run-select" type="checkbox" data-run-select="${esc(run.id)}" aria-label="${esc(selectTitle)}" title="${esc(selectTitle)}" ${selected ? 'checked' : ''} ${run.rerunnable ? '' : 'disabled'}></td><td><button class="row-button" type="button" data-run-id="${esc(run.id)}"><span class="run-name">${esc(run.spec_name)}</span><span class="run-sub">${esc(run.source_file)}</span></button></td><td><span class="badge ${run.success ? 'pass' : 'fail'}">${run.success ? 'Passed' : 'Failed'}</span>${!run.success ? `<span class="run-sub">${esc(run.failed_stage)}</span>` : ''}</td><td><span class="cell-main">${esc(duration(run.total_duration_s))}</span><span class="cell-sub">create ${esc(duration(run.create_duration_s))} · test ${esc(duration(run.test_duration_s))} · run ${esc(duration(run.run_duration_s))}</span></td><td><span class="cell-main">${challengeRatio(run.unique_challenge_count, run.challenge_count, run.unique_challenges_complete)} challenges</span><span class="cell-sub">unique / total · ${number(run.node_count)} nodes · ${number(run.chain_count)} chains</span></td><td><span class="cell-main">${compact(run.estimated_output_tokens)} tokens</span><span class="cell-sub">${esc(bytes(run.artifact_total_size_bytes))} artifacts</span></td><td><span class="cell-main">${esc(date(run.started_at))}</span><span class="cell-sub">seed ${esc(run.seed || '—')}</span></td></tr>`;
+    }).join('') : '<tr><td colspan="7"><div class="no-data">No runs match the current filters</div></td></tr>';
     document.querySelectorAll('[data-run-id]').forEach(button => button.addEventListener('click', () => openDrawer(button.dataset.runId)));
+    document.querySelectorAll('[data-run-select]').forEach(input => input.addEventListener('change', () => {
+      if (input.checked) state.selectedRunIds.add(input.dataset.runSelect);
+      else state.selectedRunIds.delete(input.dataset.runSelect);
+      renderTable();
+    }));
+    updateRunSelection();
     renderPagination();
+  }
+
+  function currentPageRuns() {
+    const start = (state.page - 1) * state.pageSize;
+    return state.filtered.slice(start, start + state.pageSize);
+  }
+
+  function updateRunSelection() {
+    const validIds = new Set((state.data?.runs || []).filter(run => run.rerunnable).map(run => run.id));
+    [...state.selectedRunIds].forEach(id => { if (!validIds.has(id)) state.selectedRunIds.delete(id); });
+    const count = state.selectedRunIds.size;
+    $('run-selection-count').textContent = `${number(count)} selected`;
+    $('rerun-selected').disabled = count === 0;
+    const pageRuns = currentPageRuns().filter(run => run.rerunnable);
+    const selectedOnPage = pageRuns.filter(run => state.selectedRunIds.has(run.id)).length;
+    const selectAll = $('select-visible-runs');
+    selectAll.disabled = pageRuns.length === 0;
+    selectAll.checked = pageRuns.length > 0 && selectedOnPage === pageRuns.length;
+    selectAll.indeterminate = selectedOnPage > 0 && selectedOnPage < pageRuns.length;
+  }
+
+  function openRerunModal() {
+    const selected = (state.data?.runs || []).filter(run => state.selectedRunIds.has(run.id));
+    if (!selected.length) return;
+    $('rerun-summary').textContent = `${number(selected.length)} run${selected.length === 1 ? '' : 's'} will be executed again using the original spec and iteration.`;
+    $('rerun-list').innerHTML = selected.map(run => `<span title="${esc(run.source_file)}">${esc(run.spec_name)} · iteration ${number(run.iteration_index)}</span>`).join('');
+    $('rerun-replace').checked = false;
+    $('rerun-error').classList.add('hidden');
+    $('rerun-error').textContent = '';
+    $('rerun-backdrop').classList.remove('hidden');
+    $('rerun-modal').classList.remove('hidden');
+    window.setTimeout(() => $('rerun-submit').focus(), 0);
+  }
+
+  function closeRerunModal() {
+    $('rerun-backdrop').classList.add('hidden');
+    $('rerun-modal').classList.add('hidden');
+    $('rerun-selected').focus();
+  }
+
+  async function startRerun(event) {
+    event.preventDefault();
+    const submit = $('rerun-submit');
+    submit.disabled = true;
+    $('rerun-error').classList.add('hidden');
+    try {
+      const response = await fetch('/api/rerun', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          run_ids: [...state.selectedRunIds],
+          replace_original: $('rerun-replace').checked,
+          sf_path: $('execution-sf-path').value.trim(),
+          verbose: $('execution-verbose').checked,
+          dangerous_cleanup_between_runs: $('execution-dangerous-cleanup').checked
+        })
+      });
+      const payload = await jsonResponse(response, 'Re-run API');
+      closeRerunModal();
+      state.selectedRunIds.clear();
+      switchTab('execute');
+      renderExecution(payload);
+    } catch (error) {
+      $('rerun-error').textContent = error.message;
+      $('rerun-error').classList.remove('hidden');
+    } finally { submit.disabled = false; }
+  }
+
+  function catalogLabel(value) {
+    return ({flag_node_generators: 'Flag node generator', flag_generators: 'Flag generator', vulnerabilities: 'Vulnerability'})[value] || value.replaceAll('_', ' ');
+  }
+
+  function renderInventory() {
+    const start = (state.page - 1) * state.pageSize;
+    const pageRows = state.inventoryRows.slice(start, start + state.pageSize);
+    $('inventory-body').innerHTML = pageRows.length ? pageRows.map(row => {
+      const runNames = (row.runs || []).slice(0, 3).map(run => run.spec_name).join(' · ');
+      const extraRuns = Number(row.run_count || 0) - Math.min(Number(row.run_count || 0), 3);
+      const runDetail = `${runNames}${extraRuns > 0 ? ` · +${number(extraRuns)} more` : ''}`;
+      return `<tr><td><span class="run-name" title="${esc(row.name)}">${esc(row.name)}</span><span class="run-sub" title="${esc(row.id)}">${esc(row.id)}</span></td><td><span class="badge pass">${esc(catalogLabel(row.catalog))}</span></td><td><span class="cell-main">${number(row.count)}</span><span class="cell-sub">total uses</span></td><td><span class="cell-main">${number(row.run_count)}</span><span class="cell-sub" title="${esc(runDetail)}">${esc(runDetail)}</span></td></tr>`;
+    }).join('') : '<tr><td colspan="4"><div class="no-data">No items match the current search</div></td></tr>';
+    renderInventoryPagination();
+  }
+
+  function renderInventoryPagination() {
+    const pages = Math.max(1, Math.ceil(state.inventoryRows.length / state.pageSize));
+    const start = state.inventoryRows.length ? (state.page - 1) * state.pageSize + 1 : 0;
+    const end = Math.min(state.page * state.pageSize, state.inventoryRows.length);
+    $('inventory-pagination').innerHTML = `<span>${number(start)}–${number(end)} of ${number(state.inventoryRows.length)}</span><div class="page-actions"><button class="page-button" id="inventory-prev" type="button" ${state.page <= 1 ? 'disabled' : ''} aria-label="Previous page">←</button><button class="page-button" id="inventory-next" type="button" ${state.page >= pages ? 'disabled' : ''} aria-label="Next page">→</button></div>`;
+    $('inventory-prev').addEventListener('click', () => { state.page -= 1; renderInventory(); });
+    $('inventory-next').addEventListener('click', () => { state.page += 1; renderInventory(); });
   }
 
   function renderPagination() {
@@ -469,12 +1224,18 @@
   function openDrawer(id) {
     const run = state.data.runs.find(item => item.id === id); if (!run) return;
     $('drawer-title').textContent = run.spec_name;
+    $('open-run-folder').dataset.runId = run.id;
     const metrics = [
-      ['Duration', duration(run.duration_s)], ['CPU time', duration(run.cpu_total_s)],
+      ['Total time', duration(run.total_duration_s)], ['Create time', duration(run.create_duration_s)],
+      ['Test time', duration(run.test_duration_s)], ['Run time', duration(run.run_duration_s)],
+      ['CPU time', duration(run.cpu_total_s)],
       ['Nodes', number(run.node_count)], ['Services', number(run.service_count)],
-      ['Vulnerabilities', number(run.vulnerability_count)], ['Challenges', number(run.challenge_count)],
+      ['Vulnerabilities', number(run.vulnerability_count)], ['Challenges (unique / total)', challengeRatio(run.unique_challenge_count, run.challenge_count, run.unique_challenges_complete)],
+      ['Chains', number(run.chain_count)], ['Pivot challenges', number(run.pivot_count)],
+      ['Pivot providers', number(run.pivot_provider_count)], ['Average chain length', number(run.average_chain_length)],
       ['Output tokens', number(run.estimated_output_tokens)], ['Artifacts', bytes(run.artifact_total_size_bytes)],
-      ['Peak RSS', bytes(run.max_rss_bytes)], ['Warnings', number(run.warning_count)]
+      ['Peak RSS', bytes(run.max_rss_bytes)], ['Warnings', number(run.warning_count)],
+      ['Phases', number(run.phases.length)]
     ];
     const phases = run.phases.length ? run.phases.map(phase => `<div class="phase-row"><strong>${esc(phase.phase)}</strong><span>${esc(duration(phase.duration_s))}</span><span>${compact(phase.estimated_output_tokens)} tok</span></div>`).join('') : '<div class="no-data">No phase metrics</div>';
     const stages = Object.entries(run.stages || {}).map(([key, value]) => `<span class="stage-chip">${esc(key)}<strong>${esc(value)}</strong></span>`).join('');
@@ -491,7 +1252,41 @@
     $('run-drawer').setAttribute('aria-hidden', 'true');
   }
 
+  document.querySelectorAll('[data-tab]').forEach(button => button.addEventListener('click', () => switchTab(button.dataset.tab)));
+  document.querySelectorAll('[data-path-target]').forEach(button => button.addEventListener('click', () => selectExecutionPath(button)));
+  $('execution-form').addEventListener('submit', startExecution);
+  $('execution-follow').addEventListener('change', event => {
+    if (event.currentTarget.checked) $('execution-console').scrollTop = $('execution-console').scrollHeight;
+  });
+  $('execution-stop').addEventListener('click', stopExecution);
+  $('execution-analyze').addEventListener('click', analyzeExecutionOutput);
+  document.querySelectorAll('#execution-form input, #execution-form select').forEach(field => field.addEventListener('input', renderCommandPreview));
   $('refresh-button').addEventListener('click', load);
+  $('new-data-source').addEventListener('click', openDatasourceModal);
+  $('open-source-folder').addEventListener('click', event => openFolder('', event.currentTarget));
+  $('open-run-folder').addEventListener('click', event => openFolder(event.currentTarget.dataset.runId, event.currentTarget));
+  $('datasource-form').addEventListener('submit', setDatasource);
+  $('datasource-close').addEventListener('click', closeDatasourceModal);
+  $('datasource-cancel').addEventListener('click', closeDatasourceModal);
+  $('datasource-backdrop').addEventListener('click', closeDatasourceModal);
+  $('select-visible-runs').addEventListener('change', event => {
+    currentPageRuns().filter(run => run.rerunnable).forEach(run => {
+      if (event.currentTarget.checked) state.selectedRunIds.add(run.id);
+      else state.selectedRunIds.delete(run.id);
+    });
+    renderTable();
+  });
+  $('rerun-selected').addEventListener('click', openRerunModal);
+  $('rerun-form').addEventListener('submit', startRerun);
+  $('rerun-close').addEventListener('click', closeRerunModal);
+  $('rerun-cancel').addEventListener('click', closeRerunModal);
+  $('rerun-backdrop').addEventListener('click', closeRerunModal);
+  document.querySelectorAll('[data-series]').forEach(button => button.addEventListener('click', () => {
+    const key = button.dataset.series;
+    state.visibleSeries[key] = !state.visibleSeries[key];
+    button.setAttribute('aria-pressed', String(state.visibleSeries[key]));
+    renderTrend();
+  }));
   $('search-input').addEventListener('input', () => { state.page = 1; applyFilters(); });
   $('status-filter').addEventListener('change', () => { state.page = 1; applyFilters(); });
   $('phase-filter').addEventListener('change', () => { state.page = 1; applyFilters(); });
@@ -502,7 +1297,13 @@
   }));
   $('drawer-close').addEventListener('click', closeDrawer);
   $('drawer-backdrop').addEventListener('click', closeDrawer);
-  document.addEventListener('keydown', event => { if (event.key === 'Escape') closeDrawer(); });
+  document.addEventListener('keydown', event => {
+    if (event.key !== 'Escape') return;
+    if (!$('rerun-modal').classList.contains('hidden')) closeRerunModal();
+    else if (!$('datasource-modal').classList.contains('hidden')) closeDatasourceModal();
+    else closeDrawer();
+  });
+  loadExecutionStatus();
   load();
 })();
 </script>

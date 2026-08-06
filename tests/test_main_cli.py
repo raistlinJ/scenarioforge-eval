@@ -224,6 +224,53 @@ class MainCliPhaseSelectionTests(unittest.TestCase):
         self.assertEqual(captured['target_phase'], 'execute')
         self.assertTrue(captured['stream_execute_output'])
 
+    def test_main_runs_only_requested_iteration_indexes(self):
+        captured = []
+        fake_spec = mock.Mock()
+        fake_spec.spec = {'iterations': 3, 'seed': 100}
+        fake_spec.get_name.return_value = 'selected-spec'
+        fake_spec.get_topology_spec.return_value = {}
+        fake_spec.get_services_spec.return_value = {}
+        fake_spec.get_traffic_spec.return_value = {}
+        fake_spec.get_vulns_spec.return_value = {}
+        fake_spec.get_flag_node_generators_spec.return_value = {}
+        fake_spec.get_flows_spec.return_value = {}
+        fake_spec.get_segmentation_spec.return_value = {}
+        fake_spec.get_hitl_spec.return_value = {}
+        fake_spec.get_validation_spec.return_value = {}
+
+        class _FakeExecutor:
+            def __init__(self, spec, *args, **kwargs):
+                captured.append((spec['name'], spec['seed']))
+
+            def run(self):
+                return {'success': True, 'stages': {}, 'artifacts': {}}
+
+        with tempfile.NamedTemporaryFile('w', suffix='.spec.yaml') as spec_file, \
+             tempfile.TemporaryDirectory() as out_dir, \
+             mock.patch.object(main_module, 'SpecParser', return_value=fake_spec), \
+             mock.patch.object(main_module, 'Executor', _FakeExecutor), \
+             mock.patch.object(main_module.Reporter, 'log_result', return_value=None), \
+             mock.patch.object(main_module.Reporter, 'write_batch_metrics', return_value={}), \
+             mock.patch(
+                 'sys.argv',
+                 [
+                     'scenarioforge-eval',
+                     spec_file.name,
+                     '--sf-path',
+                     '/tmp/scenarioforge',
+                     '--out',
+                     out_dir,
+                     '--iteration-index',
+                     '1',
+                     '--iteration-index',
+                     '3',
+                 ],
+             ):
+            main_module.main()
+
+        self.assertEqual(captured, [('selected-spec_run1', 100), ('selected-spec_run3', 102)])
+
     def test_error_report_includes_validation_diagnostics_and_generators(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             execute_log = os.path.join(temp_dir, 'execute.log')

@@ -444,6 +444,16 @@ def main():
             "build cache, and unused volumes/networks on the configured remote CORE host."
         ),
     )
+    parser.add_argument(
+        '--iteration-index',
+        action='append',
+        type=int,
+        default=[],
+        help=(
+            'Run only the selected 1-based iteration from a single spec file. '
+            'May be repeated; intended for dashboard re-runs.'
+        ),
+    )
     args = parser.parse_args()
 
     if args.verbose:
@@ -476,7 +486,20 @@ def main():
 
     target_phase = resolve_target_phase(args)
     spec_entries = [(spec_file, SpecParser(spec_file)) for spec_file in spec_files]
-    total_iterations = sum(_spec_iterations(spec) for _, spec in spec_entries)
+    requested_iterations = sorted(set(args.iteration_index or []))
+    if requested_iterations and len(spec_entries) != 1:
+        parser.error('--iteration-index requires a single .spec.yaml file')
+    if requested_iterations:
+        available_iterations = _spec_iterations(spec_entries[0][1])
+        invalid = [index for index in requested_iterations if index < 1 or index > available_iterations]
+        if invalid:
+            parser.error(
+                '--iteration-index must be between 1 and '
+                f'{available_iterations}; got {", ".join(str(index) for index in invalid)}'
+            )
+        total_iterations = len(requested_iterations)
+    else:
+        total_iterations = sum(_spec_iterations(spec) for _, spec in spec_entries)
     footer = BatchStatusFooter(total_iterations, target_phase, output_root)
     footer.render("ready")
     batch_results = []
@@ -486,6 +509,8 @@ def main():
         
         iterations = _spec_iterations(spec)
         for i in range(iterations):
+            if requested_iterations and (i + 1) not in requested_iterations:
+                continue
             spec_name = spec.get_name()
             if iterations > 1:
                 spec_name = f"{spec_name}_run{i+1}"

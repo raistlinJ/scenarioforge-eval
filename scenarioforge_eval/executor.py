@@ -33,6 +33,21 @@ class PhaseExecutionError(RuntimeError):
 class Executor:
     DEFAULT_VM_SAFE_SERVICES = ("SSH", "HTTP")
     ANSI_RE = re.compile(r"\x1b\[[0-?]*[ -/]*[@-~]")
+    ARTIFACT_CHECK_STEP_RE = re.compile(
+        r"\[check-artifacts\]\s+Step\s+(\d+)(?:/(\d+))?:\s*(.*)",
+        re.IGNORECASE,
+    )
+    ARTIFACT_CHECK_STEP_LABELS = (
+        "Containers running on correct nodes",
+        "Services running",
+        "Ports open",
+        "Inject files placed",
+        "Firewall/segmentation rules in place",
+        "Required traffic agents running",
+        "Required traffic reaches its destination",
+        "Flow pivot paths traversable (source → target)",
+        "Pivot providers reachable from the participant",
+    )
     VALIDATION_ERROR_FIELDS = (
         'missing_nodes',
         'missing_docker_nodes',
@@ -74,6 +89,9 @@ class Executor:
         self._rng = random.Random(self.seed)
         self._vulnerability_selection: dict | None = None
         self._flag_node_generator_selection: dict | None = None
+        self._artifact_check_progress_active = False
+        self._artifact_check_last_step = 0
+        self._artifact_check_total_steps = 0
         self.phase_timeout_s = self._resolve_phase_timeout()
         self.cleanup_timeout_s = self._resolve_cleanup_timeout()
         os.makedirs(self.out_dir, exist_ok=True)
@@ -225,8 +243,69 @@ class Executor:
             line = raw_line.strip()
             if not line:
                 continue
+
+            if '[check-artifacts] Running checks against session' in line:
+                self._artifact_check_progress_active = True
+                self._artifact_check_last_step = 0
+                self._artifact_check_total_steps = 0
+
+            step_match = self.ARTIFACT_CHECK_STEP_RE.search(line)
+            if step_match and self._artifact_check_progress_active:
+                step = int(step_match.group(1))
+                total = int(step_match.group(2) or 0)
+                if total > 0:
+                    self._artifact_check_total_steps = total
+                self._print_missing_artifact_check_steps(step)
+
+            if (
+                'CHECK_ARTIFACTS_SUMMARY_JSON:' in line
+                and self._artifact_check_progress_active
+            ):
+                self._complete_artifact_check_progress(line)
+
             if self.verbose or any(pattern in line for pattern in progress_patterns):
                 print(f"  {line}")
+
+            if step_match and self._artifact_check_progress_active:
+                self._artifact_check_last_step = max(
+                    self._artifact_check_last_step,
+                    int(step_match.group(1)),
+                )
+
+    def _artifact_check_step_label(self, step: int) -> str:
+        if 1 <= step <= len(self.ARTIFACT_CHECK_STEP_LABELS):
+            return self.ARTIFACT_CHECK_STEP_LABELS[step - 1]
+        return "Running"
+
+    def _print_missing_artifact_check_steps(self, next_step: int) -> None:
+        total = self._artifact_check_total_steps or len(self.ARTIFACT_CHECK_STEP_LABELS)
+        for step in range(self._artifact_check_last_step + 1, next_step):
+            label = self._artifact_check_step_label(step)
+            print(f"  [check-artifacts] Step {step}/{total}: {label}")
+            self._artifact_check_last_step = step
+
+    def _complete_artifact_check_progress(self, marker_line: str) -> None:
+        marker = 'CHECK_ARTIFACTS_SUMMARY_JSON:'
+        try:
+            payload = json.loads(marker_line.split(marker, 1)[1].strip())
+        except (IndexError, json.JSONDecodeError, TypeError):
+            payload = {}
+        checks = payload.get('checks') if isinstance(payload, dict) else []
+        completed_step = self._artifact_check_last_step
+        if isinstance(checks, list) and checks:
+            self._artifact_check_total_steps = len(checks)
+            completed_step = max(
+                [
+                    index
+                    for index, check in enumerate(checks, start=1)
+                    if isinstance(check, dict)
+                    and str(check.get('status') or '').strip().lower()
+                    in {'pass', 'warn', 'fail', 'skip', 'error', 'running'}
+                ]
+                or [completed_step]
+            )
+        self._print_missing_artifact_check_steps(completed_step + 1)
+        self._artifact_check_progress_active = False
 
     def _run_streaming_cli_command(self, cmd: list[str]) -> tuple[int | None, str, bool]:
         """Run a CLI command while forwarding selected output lines as they arrive."""
