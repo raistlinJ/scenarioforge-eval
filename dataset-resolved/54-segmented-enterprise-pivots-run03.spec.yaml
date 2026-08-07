@@ -85,3 +85,7 @@ hitl:
   use_env: false
 validation:
   policy: strict
+  check_artifacts:
+    enabled: true
+    delay_seconds: 15
+    strict: true
