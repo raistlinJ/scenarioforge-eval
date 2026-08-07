@@ -21,7 +21,9 @@ from typing import Any, Iterable
 from uuid import uuid4
 
 from flask import Flask, Response, jsonify, request
+from yaml import YAMLError
 
+from .parser import SpecParser
 from .reporter import Reporter
 
 
@@ -145,6 +147,187 @@ def _build_execution_command(payload: Any, *, cwd: Path) -> tuple[list[str], dic
     return command, public_config
 
 
+def _execution_spec_files(spec_path: Path) -> list[Path]:
+    if spec_path.is_file():
+        return [spec_path]
+    spec_files = sorted(spec_path.glob("*.spec.yaml"))
+    if not spec_files:
+        raise ValueError(f"no .spec.yaml files found in spec folder: {spec_path}")
+    return spec_files
+
+
+def _existing_result_status(
+    result_path: Path,
+    *,
+    run_name: str,
+    iteration_index: int,
+    phase: str,
+    reproduction_mode: str,
+) -> tuple[bool, bool]:
+    if not result_path.is_file():
+        return False, False
+    try:
+        result = json.loads(result_path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError):
+        return False, False
+    if not isinstance(result, dict):
+        return False, False
+    metadata = result.get("metadata") or {}
+    if not isinstance(metadata, dict):
+        return False, False
+    if str(metadata.get("spec_name") or run_name) != run_name:
+        return False, False
+    if _integer(metadata.get("iteration_index"), iteration_index) != iteration_index:
+        return False, False
+
+    phase_rank = {"scenario-xml": 0, "topology": 1, "flag-sequencing": 2, "execute": 3}
+    existing_phase = str(metadata.get("target_phase") or "scenario-xml").strip().lower()
+    if phase_rank.get(existing_phase, -1) < phase_rank[phase]:
+        return False, False
+    reproduction_rank = {"xml": 0, "replay": 1, "bundle": 2}
+    existing_reproduction = str(metadata.get("reproduction_mode") or "xml").strip().lower()
+    completed = (
+        reproduction_rank.get(existing_reproduction, -1)
+        >= reproduction_rank[reproduction_mode]
+    )
+    return completed, completed and bool(result.get("success"))
+
+
+def _execution_run_cleanup_paths(output_root: Path, run: dict[str, Any]) -> tuple[Path, ...]:
+    run_name = run["run_name"]
+    candidates = (
+        run["output_dir"],
+        run["result_path"],
+        output_root / f"{run_name}_ai_prompt.md",
+        output_root / "metrics" / "runs" / Reporter._safe_metric_dir_name(run_name),
+        output_root / "webui-xml" / f"{Reporter._safe_metric_dir_name(run_name)}.xml",
+    )
+    return tuple(
+        path for path in candidates
+        if _path_inside_root(output_root, str(path)) is not None
+    )
+
+
+def _scan_execution_runs(payload: Any, *, cwd: Path) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    _, config = _build_execution_command(payload, cwd=cwd)
+    spec_path = Path(config["spec_path"])
+    output_root = Path(config["out_path"])
+    runs: list[dict[str, Any]] = []
+    for spec_file in _execution_spec_files(spec_path):
+        try:
+            spec = SpecParser(str(spec_file))
+            iterations = max(0, int(spec.spec.get("iterations", 1)))
+        except (OSError, UnicodeError, AttributeError, TypeError, ValueError, YAMLError) as exc:
+            raise ValueError(f"unable to read spec {spec_file}: {exc}") from exc
+        base_name = str(spec.get_name())
+        for iteration_index in range(1, iterations + 1):
+            run_name = base_name if iterations == 1 else f"{base_name}_run{iteration_index}"
+            result_path = output_root / f"{run_name}_result.json"
+            output_dir = output_root / run_name
+            completed, succeeded = _existing_result_status(
+                result_path,
+                run_name=run_name,
+                iteration_index=iteration_index,
+                phase=config["phase"],
+                reproduction_mode=config["reproduction_mode"],
+            )
+            runs.append({
+                "spec_file": spec_file,
+                "iteration_index": iteration_index,
+                "run_name": run_name,
+                "result_path": result_path,
+                "output_dir": output_dir,
+                "completed": completed,
+                "succeeded": succeeded,
+                "existing": result_path.exists() or output_dir.exists(),
+            })
+    if not runs:
+        raise ValueError("the selected spec path contains zero planned runs")
+
+    completed = sum(1 for run in runs if run["completed"])
+    passed = sum(1 for run in runs if run["completed"] and run["succeeded"])
+    existing = [run for run in runs if run["existing"]]
+    incomplete = sum(1 for run in existing if not run["completed"])
+    preflight = {
+        "planned": len(runs),
+        "completed": completed,
+        "passed": passed,
+        "failed": completed - passed,
+        "remaining": len(runs) - completed,
+        "existing": len(existing),
+        "incomplete": incomplete,
+        "has_existing": bool(existing),
+        "existing_run_names": [run["run_name"] for run in existing[:10]],
+    }
+    return preflight, runs
+
+
+def _build_execution_plan(
+    payload: Any,
+    *,
+    cwd: Path,
+) -> tuple[list[list[str]], dict[str, Any], tuple[Path, ...]]:
+    if not isinstance(payload, dict):
+        raise ValueError("request body must be a JSON object")
+    action = payload.get("existing_runs_action")
+    if action not in {None, "resume", "restart"}:
+        raise ValueError("existing_runs_action must be 'resume' or 'restart'")
+
+    command, config = _build_execution_command(payload, cwd=cwd)
+    preflight, runs = _scan_execution_runs(payload, cwd=cwd)
+    if preflight["has_existing"] and action is None:
+        raise RuntimeError("existing runs require choosing Resume or Start from beginning")
+
+    cleanup_paths: tuple[Path, ...] = ()
+    if action == "resume":
+        remaining = [run for run in runs if not run["completed"]]
+        if not remaining:
+            raise ValueError(
+                "all planned runs already have completed results; choose Start from beginning to run them again"
+            )
+        grouped: dict[Path, list[int]] = defaultdict(list)
+        for run in remaining:
+            grouped[run["spec_file"]].append(run["iteration_index"])
+        commands = []
+        for spec_file, iteration_indexes in grouped.items():
+            resume_payload = {**payload, "spec_path": str(spec_file)}
+            resume_command, _ = _build_execution_command(resume_payload, cwd=cwd)
+            for iteration_index in iteration_indexes:
+                resume_command.extend(["--iteration-index", str(iteration_index)])
+            commands.append(resume_command)
+        cleanup_paths = tuple(dict.fromkeys(
+            path
+            for run in remaining
+            if run["existing"]
+            for path in _execution_run_cleanup_paths(Path(config["out_path"]), run)
+        ))
+        config.update({
+            "kind": "resume",
+            "run_count": len(runs),
+            "execution_run_count": len(remaining),
+            "progress_completed_offset": preflight["completed"],
+            "progress_passed_offset": preflight["passed"],
+            "progress_failed_offset": preflight["failed"],
+        })
+    else:
+        commands = [command]
+        config.update({"kind": "execution", "run_count": len(runs)})
+        if action == "restart":
+            cleanup_paths = tuple(dict.fromkeys(
+                path
+                for run in runs
+                for path in _execution_run_cleanup_paths(Path(config["out_path"]), run)
+            ))
+            config["kind"] = "restart"
+
+    config.update({
+        "existing_runs_action": action or "new",
+        "planned_run_count": preflight["planned"],
+        "previously_completed_run_count": preflight["completed"],
+    })
+    return commands, config, cleanup_paths
+
+
 class EvaluationJobManager:
     """Run one evaluator subprocess at a time and retain bounded console output."""
 
@@ -166,25 +349,27 @@ class EvaluationJobManager:
             if parsed_progress is not None:
                 command_progress = self._job["_command_progress"]
                 command_progress[command_index or 1] = parsed_progress
-                if self._job["_command_count"] == 1:
-                    self._job["progress"] = dict(parsed_progress)
-                else:
-                    completed = sum(item["completed"] for item in command_progress.values())
-                    passed = sum(item["passed"] for item in command_progress.values())
-                    failed = sum(item["failed"] for item in command_progress.values())
-                    configured_total = _integer(
-                        self._job.get("config", {}).get("run_count")
-                    )
-                    discovered_total = sum(
-                        item["total"] for item in command_progress.values()
-                    )
-                    total = configured_total or discovered_total
-                    self._job["progress"] = {
-                        "completed": min(completed, total),
-                        "total": total,
-                        "passed": passed,
-                        "failed": failed,
-                    }
+                config = self._job.get("config", {})
+                completed = _integer(config.get("progress_completed_offset")) + sum(
+                    item["completed"] for item in command_progress.values()
+                )
+                passed = _integer(config.get("progress_passed_offset")) + sum(
+                    item["passed"] for item in command_progress.values()
+                )
+                failed = _integer(config.get("progress_failed_offset")) + sum(
+                    item["failed"] for item in command_progress.values()
+                )
+                configured_total = _integer(config.get("run_count"))
+                discovered_total = _integer(config.get("progress_completed_offset")) + sum(
+                    item["total"] for item in command_progress.values()
+                )
+                total = configured_total or discovered_total
+                self._job["progress"] = {
+                    "completed": min(completed, total),
+                    "total": total,
+                    "passed": passed,
+                    "failed": failed,
+                }
 
     def snapshot(self, *, after: int = 0) -> dict[str, Any]:
         with self._lock:
@@ -240,10 +425,10 @@ class EvaluationJobManager:
                 "pid": None,
                 "error": "",
                 "progress": {
-                    "completed": 0,
+                    "completed": _integer(config.get("progress_completed_offset")),
                     "total": _integer(config.get("run_count")),
-                    "passed": 0,
-                    "failed": 0,
+                    "passed": _integer(config.get("progress_passed_offset")),
+                    "failed": _integer(config.get("progress_failed_offset")),
                 },
                 "stop_requested": False,
                 "log_sequence": 0,
@@ -326,6 +511,11 @@ class EvaluationJobManager:
                 self._process = None
                 if self._job and self._job.get("stop_requested"):
                     break
+                stop_on_error = bool(
+                    self._job and self._job.get("config", {}).get("stop_on_error")
+                )
+            if command_returncode and stop_on_error:
+                break
 
         if rebuild_root is not None:
             try:
@@ -1284,12 +1474,32 @@ def create_app(root_path: str | os.PathLike[str]) -> Flask:
     @app.post("/api/execution")
     def start_execution():
         try:
-            snapshot = execution_manager.start(request.get_json(silent=True))
+            commands, config, cleanup_paths = _build_execution_plan(
+                request.get_json(silent=True),
+                cwd=PROJECT_ROOT,
+            )
+            snapshot = execution_manager.start_commands(
+                commands,
+                config=config,
+                cleanup_paths=cleanup_paths,
+                rebuild_root=Path(config["out_path"]),
+            )
         except ValueError as exc:
             return jsonify({"ok": False, "error": str(exc)}), 400
         except RuntimeError as exc:
             return jsonify({"ok": False, "error": str(exc)}), 409
         return jsonify({"ok": True, **snapshot}), 202
+
+    @app.post("/api/execution/preflight")
+    def execution_preflight():
+        try:
+            preflight, _ = _scan_execution_runs(
+                request.get_json(silent=True),
+                cwd=PROJECT_ROOT,
+            )
+        except ValueError as exc:
+            return jsonify({"ok": False, "error": str(exc)}), 400
+        return jsonify({"ok": True, **preflight})
 
     @app.post("/api/rerun")
     def rerun_selected():

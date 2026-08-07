@@ -1,3 +1,4 @@
+import hashlib
 import json
 import tempfile
 import unittest
@@ -14,6 +15,15 @@ from scenarioforge_eval.reproduction import (
 class ReproductionBundleTests(unittest.TestCase):
     def _scenario_xml(self, root: Path, artifact_dir: Path) -> Path:
         document = ET.Element("Scenarios")
+        ET.SubElement(
+            document,
+            "CoreConnection",
+            {
+                "ssh_host": "source-core.invalid",
+                "ssh_username": "source-user",
+                "ssh_password": "source-secret",
+            },
+        )
         scenario = ET.SubElement(document, "Scenario", {"name": "portable-demo"})
         sequencing = ET.SubElement(scenario, "FlagSequencing")
         state = ET.SubElement(sequencing, "FlowState")
@@ -57,10 +67,20 @@ class ReproductionBundleTests(unittest.TestCase):
             self.assertEqual(manifest["fidelity"], "portable-artifacts")
             self.assertEqual(manifest["flow"]["chain_ids"], ["7"])
             self.assertTrue(manifest["artifact_sources"][0]["bundled"])
+            self.assertEqual(manifest["credentials"]["source"], "destination-runtime")
+            self.assertEqual(manifest["credentials"]["removed_attributes"], 1)
             with zipfile.ZipFile(bundle_path) as archive:
                 self.assertIn(MANIFEST_NAME, archive.namelist())
                 self.assertIn("scenario.xml", archive.namelist())
                 self.assertIn("artifacts/001/flag.txt", archive.namelist())
+                archived_xml = archive.read("scenario.xml")
+                self.assertNotIn(b"source-secret", archived_xml)
+                self.assertNotIn(b"ssh_password", archived_xml)
+                self.assertEqual(
+                    manifest["scenario"]["sha256"],
+                    hashlib.sha256(archived_xml).hexdigest(),
+                )
+            self.assertIn("source-secret", xml_path.read_text(encoding="utf-8"))
 
     def test_replay_package_records_sources_without_copying_payloads(self):
         with tempfile.TemporaryDirectory() as temp_dir:

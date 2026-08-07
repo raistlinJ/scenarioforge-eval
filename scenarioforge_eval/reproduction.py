@@ -8,6 +8,7 @@ the generated flow artifact directories referenced by FlowState/PlanPreview.
 from __future__ import annotations
 
 import hashlib
+import io
 import json
 import os
 import stat
@@ -33,6 +34,22 @@ def _sha256_file(path: Path) -> str:
         for chunk in iter(lambda: handle.read(1024 * 1024), b""):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def _portable_scenario_xml(xml_file: Path) -> tuple[bytes, int]:
+    """Build the archive XML without transporting CORE authentication secrets."""
+    tree = ET.parse(xml_file)
+    removed = 0
+    for element in tree.getroot().iter():
+        if str(element.tag).rsplit("}", 1)[-1] != "CoreConnection":
+            continue
+        for attribute in ("ssh_password", "password"):
+            if attribute in element.attrib:
+                element.attrib.pop(attribute, None)
+                removed += 1
+    output = io.BytesIO()
+    tree.write(output, encoding="utf-8", xml_declaration=True)
+    return output.getvalue(), removed
 
 
 def _git_revision(repo: Path) -> str:
@@ -190,6 +207,7 @@ def create_reproduction_bundle(
     xml_file = Path(xml_path).resolve()
     out_dir = Path(output_dir).resolve()
     sf_repo = Path(sf_path).resolve()
+    portable_xml, removed_credential_attributes = _portable_scenario_xml(xml_file)
     payloads = _embedded_json_payloads(xml_file)
     sources = _referenced_artifact_paths(payloads)
     artifact_sources: list[dict[str, Any]] = []
@@ -243,7 +261,12 @@ def create_reproduction_bundle(
         "fidelity": fidelity,
         "scenario": {
             "path": SCENARIO_NAME,
-            "sha256": _sha256_file(xml_file),
+            "sha256": hashlib.sha256(portable_xml).hexdigest(),
+        },
+        "credentials": {
+            "included": False,
+            "source": "destination-runtime",
+            "removed_attributes": removed_credential_attributes,
         },
         "seed": seed,
         "flow": _flow_summary(payloads),
@@ -261,7 +284,7 @@ def create_reproduction_bundle(
     temporary = Path(temporary_name)
     try:
         with zipfile.ZipFile(temporary, "w", compression=zipfile.ZIP_DEFLATED, allowZip64=True) as archive:
-            archive.write(xml_file, SCENARIO_NAME)
+            archive.writestr(SCENARIO_NAME, portable_xml)
             for local_path, archive_name in archive_files:
                 archive.write(local_path, archive_name)
             archive.writestr(

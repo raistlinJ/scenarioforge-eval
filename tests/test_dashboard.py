@@ -10,9 +10,11 @@ from unittest import mock
 
 from scenarioforge_eval.dashboard import (
     _build_execution_command,
+    _build_execution_plan,
     _build_rerun_plan,
     _delete_rerun_paths,
     _parse_execution_progress_line,
+    _scan_execution_runs,
     EvaluationJobManager,
     create_app,
     load_dashboard_data,
@@ -194,6 +196,42 @@ class DashboardDataTests(unittest.TestCase):
                 {"completed": 2, "total": 2, "passed": 1, "failed": 1},
             )
 
+    def test_execution_manager_includes_resumed_run_progress(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            process = mock.Mock(
+                pid=5003,
+                stdout=io.StringIO(
+                    "[DONE] | runs 2/2 | ok 1 | fail 1 | pending 0\n"
+                ),
+            )
+            process.wait.return_value = 0
+            manager = EvaluationJobManager(Path(temp_dir))
+
+            with mock.patch(
+                "scenarioforge_eval.dashboard.subprocess.Popen",
+                return_value=process,
+            ):
+                manager.start_commands(
+                    [[sys.executable, "-m", "scenarioforge_eval.main", "remaining"]],
+                    config={
+                        "kind": "resume",
+                        "run_count": 5,
+                        "progress_completed_offset": 3,
+                        "progress_passed_offset": 2,
+                        "progress_failed_offset": 1,
+                    },
+                )
+                for _ in range(100):
+                    snapshot = manager.snapshot()
+                    if snapshot["status"] == "succeeded":
+                        break
+                    time.sleep(0.01)
+
+            self.assertEqual(
+                snapshot["progress"],
+                {"completed": 5, "total": 5, "passed": 3, "failed": 2},
+            )
+
     def test_active_execution_survives_page_reload(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
@@ -275,6 +313,74 @@ class DashboardDataTests(unittest.TestCase):
                     },
                     cwd=root,
                 )
+
+    def test_preflights_existing_runs_and_builds_resume_or_restart_plan(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir).resolve()
+            spec_path = root / "sample.spec.yaml"
+            spec_path.write_text("name: sample\niterations: 3\nseed: 41\n", encoding="utf-8")
+            sf_path = root / "scenarioforge"
+            sf_path.mkdir()
+            out_path = root / "results"
+            out_path.mkdir()
+            completed_result = _result(
+                "sample_run1",
+                success=True,
+                duration=1,
+                started_at="2026-08-01T12:00:00Z",
+            )
+            completed_result["metadata"].update({
+                "iteration_index": 1,
+                "iteration_count": 3,
+                "target_phase": "execute",
+                "reproduction_mode": "xml",
+            })
+            (out_path / "sample_run1_result.json").write_text(
+                json.dumps(completed_result), encoding="utf-8"
+            )
+            incomplete_dir = out_path / "sample_run2"
+            incomplete_dir.mkdir()
+
+            payload = {
+                "spec_path": str(spec_path),
+                "sf_path": str(sf_path),
+                "out_path": str(out_path),
+                "phase": "execute",
+            }
+            preflight, _ = _scan_execution_runs(payload, cwd=root)
+            self.assertEqual(preflight["planned"], 3)
+            self.assertEqual(preflight["completed"], 1)
+            self.assertEqual(preflight["remaining"], 2)
+            self.assertEqual(preflight["existing"], 2)
+            self.assertEqual(preflight["incomplete"], 1)
+            self.assertTrue(preflight["has_existing"])
+
+            with self.assertRaisesRegex(RuntimeError, "Resume or Start from beginning"):
+                _build_execution_plan(payload, cwd=root)
+
+            commands, config, cleanup_paths = _build_execution_plan(
+                {**payload, "existing_runs_action": "resume"}, cwd=root
+            )
+            self.assertEqual(len(commands), 1)
+            self.assertEqual(commands[0].count("--iteration-index"), 2)
+            self.assertIn("2", commands[0])
+            self.assertIn("3", commands[0])
+            self.assertEqual(config["kind"], "resume")
+            self.assertEqual(config["run_count"], 3)
+            self.assertEqual(config["execution_run_count"], 2)
+            self.assertEqual(config["progress_completed_offset"], 1)
+            self.assertEqual(config["progress_passed_offset"], 1)
+            self.assertIn(incomplete_dir, cleanup_paths)
+            self.assertNotIn(out_path / "sample_run1_result.json", cleanup_paths)
+
+            commands, config, cleanup_paths = _build_execution_plan(
+                {**payload, "existing_runs_action": "restart"}, cwd=root
+            )
+            self.assertEqual(len(commands), 1)
+            self.assertEqual(config["kind"], "restart")
+            self.assertEqual(config["run_count"], 3)
+            self.assertIn(out_path / "sample_run1_result.json", cleanup_paths)
+            self.assertIn(incomplete_dir, cleanup_paths)
 
     def test_builds_selected_iteration_reruns_with_optional_replacement(self):
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -631,6 +737,9 @@ class DashboardDataTests(unittest.TestCase):
             self.assertIn(b'id="rerun-modal"', page.data)
             self.assertIn(b"Replace selected run data", page.data)
             self.assertIn(b"/api/rerun", page.data)
+            self.assertIn(b'id="existing-runs-modal"', page.data)
+            self.assertIn(b"Resume or start from beginning?", page.data)
+            self.assertIn(b"/api/execution/preflight", page.data)
             self.assertEqual(page.headers["Cache-Control"], "no-store")
 
             response = client.get("/api/dashboard")
@@ -649,9 +758,12 @@ class DashboardDataTests(unittest.TestCase):
             self.assertEqual(execution_status.json["defaults"]["out_path"], str(Path(temp_dir).resolve()))
 
             manager = app.extensions["evaluation_job_manager"]
-            with mock.patch.object(
+            with mock.patch(
+                "scenarioforge_eval.dashboard._build_execution_plan",
+                return_value=([["evaluator"]], {"out_path": temp_dir}, ()),
+            ), mock.patch.object(
                 manager,
-                "start",
+                "start_commands",
                 return_value={"status": "starting", "logs": [], "log_sequence": 0},
             ):
                 start_response = client.post("/api/execution", json={"phase": "execute"})
