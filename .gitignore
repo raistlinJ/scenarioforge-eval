@@ -26,3 +26,4 @@ wheels/
 .coverage
 htmlcov/
 .DS_Store
+/Original result folders
