@@ -13,11 +13,14 @@ from scenarioforge_eval.dashboard import (
     _build_execution_plan,
     _build_rerun_plan,
     _delete_rerun_paths,
+    _load_dashboard_settings,
     _parse_execution_progress_line,
+    _save_dashboard_settings,
     _scan_execution_runs,
     EvaluationJobManager,
     create_app,
     load_dashboard_data,
+    main,
 )
 
 
@@ -88,6 +91,18 @@ def _result(name, *, success, duration, started_at, phase="execute", failed_stag
 
 
 class DashboardDataTests(unittest.TestCase):
+    def setUp(self):
+        # Redirect persisted dashboard settings to an isolated temp file so tests
+        # never read or write the developer's real ~/.scenarioforge_eval settings.
+        self._settings_dir = tempfile.TemporaryDirectory()
+        self.addCleanup(self._settings_dir.cleanup)
+        settings_path = os.path.join(self._settings_dir.name, "dashboard_settings.json")
+        env_patch = mock.patch.dict(
+            os.environ, {"SCENARIOFORGE_EVAL_DASHBOARD_SETTINGS": settings_path}
+        )
+        env_patch.start()
+        self.addCleanup(env_patch.stop)
+
     def test_parses_authoritative_execution_progress_lines(self):
         self.assertEqual(
             _parse_execution_progress_line(
@@ -850,6 +865,89 @@ class DashboardDataTests(unittest.TestCase):
                 json={"path": os.path.join(temp_dir, "missing")},
             )
             self.assertEqual(invalid_datasource.status_code, 400)
+
+    def test_dashboard_settings_round_trip_through_disk(self):
+        self.assertEqual(_load_dashboard_settings(), {})
+        _save_dashboard_settings({"root": "/tmp/example-root"})
+        _save_dashboard_settings({
+            "execution": {"spec_path": "/tmp/example-spec", "phase": "topology"}
+        })
+        settings = _load_dashboard_settings()
+        self.assertEqual(settings["root"], "/tmp/example-root")
+        self.assertEqual(settings["execution"]["spec_path"], "/tmp/example-spec")
+        self.assertEqual(settings["execution"]["phase"], "topology")
+
+    def test_data_source_switch_persists_as_new_root_setting(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            app = create_app(temp_dir)
+            client = app.test_client()
+            with tempfile.TemporaryDirectory() as second_dir:
+                response = client.post("/api/data-source", json={"path": second_dir})
+                self.assertEqual(response.status_code, 200)
+                settings = _load_dashboard_settings()
+                self.assertEqual(settings["root"], str(Path(second_dir).resolve()))
+
+    def test_starting_execution_persists_settings_for_next_launch(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            with tempfile.TemporaryDirectory() as sf_dir:
+                spec_path = Path(temp_dir) / "sample.spec.yaml"
+                spec_path.write_text("name: sample\n", encoding="utf-8")
+                app = create_app(temp_dir)
+                client = app.test_client()
+                manager = app.extensions["evaluation_job_manager"]
+                with mock.patch.object(
+                    manager,
+                    "start_commands",
+                    return_value={"status": "starting", "logs": [], "log_sequence": 0},
+                ):
+                    response = client.post(
+                        "/api/execution",
+                        json={
+                            "spec_path": str(spec_path),
+                            "sf_path": sf_dir,
+                            "out_path": temp_dir,
+                            "phase": "topology",
+                            "verbose": True,
+                        },
+                    )
+                self.assertEqual(response.status_code, 202)
+
+                settings = _load_dashboard_settings()
+                self.assertEqual(settings["execution"]["spec_path"], str(spec_path.resolve()))
+                self.assertEqual(settings["execution"]["sf_path"], str(Path(sf_dir).resolve()))
+                self.assertEqual(settings["execution"]["phase"], "topology")
+                self.assertTrue(settings["execution"]["verbose"])
+
+                defaults = client.get("/api/execution").json["defaults"]
+                self.assertEqual(defaults["spec_path"], str(spec_path.resolve()))
+                self.assertEqual(defaults["phase"], "topology")
+                self.assertTrue(defaults["verbose"])
+
+    def test_main_falls_back_to_saved_root_when_omitted(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            _save_dashboard_settings({"root": temp_dir})
+            fake_app = mock.Mock()
+            with mock.patch(
+                "scenarioforge_eval.dashboard.create_app", return_value=fake_app
+            ) as create_app_mock:
+                main([])
+            create_app_mock.assert_called_once_with(Path(temp_dir).resolve())
+            fake_app.run.assert_called_once()
+
+    def test_main_cli_root_overrides_and_updates_saved_root(self):
+        with tempfile.TemporaryDirectory() as saved_dir, tempfile.TemporaryDirectory() as cli_dir:
+            _save_dashboard_settings({"root": saved_dir})
+            fake_app = mock.Mock()
+            with mock.patch(
+                "scenarioforge_eval.dashboard.create_app", return_value=fake_app
+            ) as create_app_mock:
+                main([cli_dir])
+            create_app_mock.assert_called_once_with(Path(cli_dir).resolve())
+            self.assertEqual(_load_dashboard_settings()["root"], str(Path(cli_dir).resolve()))
+
+    def test_main_errors_without_root_or_saved_settings(self):
+        with self.assertRaises(SystemExit):
+            main([])
 
 
 if __name__ == "__main__":

@@ -32,6 +32,16 @@ DASHBOARD_SCHEMA_VERSION = 3
 HTML_PATH = Path(__file__).with_name("templates") / "dashboard.html"
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 MAX_EXECUTION_LOG_LINES = 5000
+DASHBOARD_SETTINGS_ENV_VAR = "SCENARIOFORGE_EVAL_DASHBOARD_SETTINGS"
+EXECUTION_SETTINGS_KEYS = (
+    "spec_path",
+    "sf_path",
+    "phase",
+    "reproduction_mode",
+    "verbose",
+    "stop_on_error",
+    "dangerous_cleanup_between_runs",
+)
 
 EXECUTION_PROGRESS_PATTERN = re.compile(
     r"\bruns\s+(?P<completed>\d+)\s*/\s*(?P<total>\d+)"
@@ -43,6 +53,39 @@ EXECUTION_PROGRESS_PATTERN = re.compile(
 
 def _utc_now() -> str:
     return datetime.now(UTC).isoformat(timespec="seconds").replace("+00:00", "Z")
+
+
+def _dashboard_settings_path() -> Path:
+    override = os.environ.get(DASHBOARD_SETTINGS_ENV_VAR)
+    if override:
+        return Path(override).expanduser()
+    return Path.home() / ".scenarioforge_eval" / "dashboard_settings.json"
+
+
+def _load_dashboard_settings() -> dict[str, Any]:
+    try:
+        raw = json.loads(_dashboard_settings_path().read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError):
+        return {}
+    return raw if isinstance(raw, dict) else {}
+
+
+def _save_dashboard_settings(updates: dict[str, Any]) -> None:
+    """Persist dashboard settings so the next launch can restore last-used values."""
+    settings = _load_dashboard_settings()
+    settings.update(updates)
+    path = _dashboard_settings_path()
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(settings, indent=2, sort_keys=True), encoding="utf-8")
+    except OSError:
+        pass
+
+
+def _save_execution_settings(config: dict[str, Any]) -> None:
+    _save_dashboard_settings({
+        "execution": {key: config[key] for key in EXECUTION_SETTINGS_KEYS if key in config}
+    })
 
 
 def _parse_execution_progress_line(text: str) -> dict[str, int] | None:
@@ -1460,12 +1503,22 @@ def create_app(root_path: str | os.PathLike[str]) -> Flask:
         except ValueError:
             return jsonify({"ok": False, "error": "after must be an integer"}), 400
         snapshot = execution_manager.snapshot(after=after)
+        settings = _load_dashboard_settings()
+        execution_settings = settings.get("execution")
+        if not isinstance(execution_settings, dict):
+            execution_settings = {}
         snapshot["defaults"] = {
-            "spec_path": str(PROJECT_ROOT / "test_specs"),
-            "sf_path": str((PROJECT_ROOT.parent / "scenarioforge").resolve()),
+            "spec_path": execution_settings.get("spec_path") or str(PROJECT_ROOT / "test_specs"),
+            "sf_path": execution_settings.get("sf_path")
+            or str((PROJECT_ROOT.parent / "scenarioforge").resolve()),
             "out_path": app.config["DASHBOARD_ROOT"],
-            "phase": "execute",
-            "reproduction_mode": "xml",
+            "phase": execution_settings.get("phase") or "execute",
+            "reproduction_mode": execution_settings.get("reproduction_mode") or "xml",
+            "verbose": bool(execution_settings.get("verbose", False)),
+            "stop_on_error": bool(execution_settings.get("stop_on_error", False)),
+            "dangerous_cleanup_between_runs": bool(
+                execution_settings.get("dangerous_cleanup_between_runs", False)
+            ),
         }
         response = jsonify(snapshot)
         response.headers["Cache-Control"] = "no-store"
@@ -1478,6 +1531,7 @@ def create_app(root_path: str | os.PathLike[str]) -> Flask:
                 request.get_json(silent=True),
                 cwd=PROJECT_ROOT,
             )
+            _save_execution_settings(config)
             snapshot = execution_manager.start_commands(
                 commands,
                 config=config,
@@ -1542,6 +1596,7 @@ def create_app(root_path: str | os.PathLike[str]) -> Flask:
         if not data_root.is_dir():
             return jsonify({"ok": False, "error": f"folder was not found: {data_root}"}), 400
         app.config["DASHBOARD_ROOT"] = str(data_root)
+        _save_dashboard_settings({"root": str(data_root)})
         return jsonify({"ok": True, "root": str(data_root)})
 
     @app.post("/api/select-path")
@@ -1591,17 +1646,33 @@ def create_app(root_path: str | os.PathLike[str]) -> Flask:
 
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description="Browse ScenarioForge evaluator run metrics")
-    parser.add_argument("root", help="Parent folder containing *_result.json files")
+    parser.add_argument(
+        "root",
+        nargs="?",
+        default=None,
+        help=(
+            "Parent folder containing *_result.json files "
+            "(defaults to the last folder used by the dashboard)"
+        ),
+    )
     parser.add_argument("--host", default="127.0.0.1", help="Bind host (default: 127.0.0.1)")
     parser.add_argument("--port", default=8088, type=int, help="Bind port (default: 8088)")
     parser.add_argument("--open", action="store_true", help="Open the dashboard in the default browser")
     args = parser.parse_args(argv)
 
-    root = Path(args.root).expanduser().resolve()
+    settings = _load_dashboard_settings()
+    if args.root:
+        root = Path(args.root).expanduser().resolve()
+    elif settings.get("root"):
+        root = Path(str(settings["root"])).expanduser().resolve()
+    else:
+        parser.error("root is required on first run (no previously used folder is saved yet)")
     if not root.is_dir():
         parser.error(f"root is not a directory: {root}")
     if not 1 <= args.port <= 65535:
         parser.error("port must be between 1 and 65535")
+
+    _save_dashboard_settings({"root": str(root)})
 
     url_host = "localhost" if args.host in {"0.0.0.0", "::"} else args.host
     url = f"http://{url_host}:{args.port}"

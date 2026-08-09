@@ -37,19 +37,26 @@ def _sha256_file(path: Path) -> str:
 
 
 def _portable_scenario_xml(xml_file: Path) -> tuple[bytes, int]:
-    """Build the archive XML without transporting CORE authentication secrets."""
+    """Build the archive XML, retaining its CORE connection as authored.
+
+    Credentials are deliberately carried: a bundle is meant to reproduce a run
+    without the importer re-entering connection details, and stripping them
+    left imported scenarios unable to reach any CORE host (Materialize stalled
+    on an SSH connection it had no password for). The bundle is therefore a
+    secret-bearing artifact -- treat it like the credentials it contains and
+    do not publish one you would not hand the CORE VM's password to.
+    """
     tree = ET.parse(xml_file)
-    removed = 0
+    carried = 0
     for element in tree.getroot().iter():
         if str(element.tag).rsplit("}", 1)[-1] != "CoreConnection":
             continue
         for attribute in ("ssh_password", "password"):
-            if attribute in element.attrib:
-                element.attrib.pop(attribute, None)
-                removed += 1
+            if element.attrib.get(attribute):
+                carried += 1
     output = io.BytesIO()
     tree.write(output, encoding="utf-8", xml_declaration=True)
-    return output.getvalue(), removed
+    return output.getvalue(), carried
 
 
 def _git_revision(repo: Path) -> str:
@@ -207,7 +214,7 @@ def create_reproduction_bundle(
     xml_file = Path(xml_path).resolve()
     out_dir = Path(output_dir).resolve()
     sf_repo = Path(sf_path).resolve()
-    portable_xml, removed_credential_attributes = _portable_scenario_xml(xml_file)
+    portable_xml, carried_credential_attributes = _portable_scenario_xml(xml_file)
     payloads = _embedded_json_payloads(xml_file)
     sources = _referenced_artifact_paths(payloads)
     artifact_sources: list[dict[str, Any]] = []
@@ -263,10 +270,12 @@ def create_reproduction_bundle(
             "path": SCENARIO_NAME,
             "sha256": hashlib.sha256(portable_xml).hexdigest(),
         },
+        # Reported honestly so a reader can tell whether this archive is a
+        # secret-bearing artifact before sharing it.
         "credentials": {
-            "included": False,
-            "source": "destination-runtime",
-            "removed_attributes": removed_credential_attributes,
+            "included": bool(carried_credential_attributes),
+            "source": "source-scenario" if carried_credential_attributes else "destination-runtime",
+            "carried_attributes": carried_credential_attributes,
         },
         "seed": seed,
         "flow": _flow_summary(payloads),

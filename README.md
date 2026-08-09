@@ -82,9 +82,13 @@ payloads from the CORE VM. If any source cannot be collected, it automatically
 records a lower `partial-artifacts` or `deterministic-replay` fidelity instead of
 claiming a complete portable copy.
 
-Artifact bundles can contain flags, credentials, and other generated secrets. The
-evaluator writes them with owner-only permissions, but they should still be handled
-as sensitive data and not committed to source control.
+Artifact bundles can contain flags, credentials, and other generated secrets. They
+also carry the scenario's own `CoreConnection` credentials — including its SSH
+password — so that importing one can reach a CORE host without re-entering them;
+the bundle manifest records this under `credentials`. The evaluator writes bundles
+with owner-only permissions, but they should still be handled as sensitive data,
+kept out of source control, and shared only with people you would give the CORE
+host's password.
 
 ## Remote Helper VM Workflow
 
@@ -272,6 +276,13 @@ content metrics.
 ```bash
 uv run scenarioforge-eval-dashboard /tmp/scenarioforge-eval-out --open
 ```
+
+The `root` folder argument is optional after the first run: the dashboard remembers
+the data source folder and Execute tab settings (spec path, ScenarioForge path,
+target phase, reproduction mode, and flags) in
+`~/.scenarioforge_eval/dashboard_settings.json`, and restores them the next time it
+starts. Passing a `root` folder on the command line overrides the saved folder (and
+becomes the new saved folder for next time); omit it to reopen where you left off.
 
 The dashboard listens on `127.0.0.1:8088` by default. Use `--host` and `--port` to
 change the listener. The **Execute** tab configures a spec file or folder,

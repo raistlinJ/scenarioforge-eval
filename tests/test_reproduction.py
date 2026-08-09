@@ -67,15 +67,20 @@ class ReproductionBundleTests(unittest.TestCase):
             self.assertEqual(manifest["fidelity"], "portable-artifacts")
             self.assertEqual(manifest["flow"]["chain_ids"], ["7"])
             self.assertTrue(manifest["artifact_sources"][0]["bundled"])
-            self.assertEqual(manifest["credentials"]["source"], "destination-runtime")
-            self.assertEqual(manifest["credentials"]["removed_attributes"], 1)
+            # The bundle carries its scenario's CORE credentials so an import
+            # can reach a host without re-entering them, and the manifest says
+            # so plainly -- a reader has to be able to tell that this archive
+            # is secret-bearing before passing it on.
+            self.assertTrue(manifest["credentials"]["included"])
+            self.assertEqual(manifest["credentials"]["source"], "source-scenario")
+            self.assertEqual(manifest["credentials"]["carried_attributes"], 1)
             with zipfile.ZipFile(bundle_path) as archive:
                 self.assertIn(MANIFEST_NAME, archive.namelist())
                 self.assertIn("scenario.xml", archive.namelist())
                 self.assertIn("artifacts/001/flag.txt", archive.namelist())
                 archived_xml = archive.read("scenario.xml")
-                self.assertNotIn(b"source-secret", archived_xml)
-                self.assertNotIn(b"ssh_password", archived_xml)
+                self.assertIn(b"source-secret", archived_xml)
+                self.assertIn(b"ssh_password", archived_xml)
                 self.assertEqual(
                     manifest["scenario"]["sha256"],
                     hashlib.sha256(archived_xml).hexdigest(),
