@@ -236,6 +236,21 @@ def _existing_result_status(
     return completed, completed and bool(result.get("success"))
 
 
+_REPEATED_ITERATION_FLAGS = re.compile(r"--iteration-index \d+(?: --iteration-index \d+){2,}")
+
+
+def _summarize_command_texts(command_texts: list[str]) -> str:
+    """Collapse resume plans so the console header stays a single readable line."""
+    summary = _REPEATED_ITERATION_FLAGS.sub(
+        lambda match: f"--iteration-index x{match.group(0).count('--iteration-index')}",
+        command_texts[0],
+    )
+    extra = len(command_texts) - 1
+    if extra:
+        summary += f" · +{extra} more command{'' if extra == 1 else 's'}"
+    return summary
+
+
 def _execution_run_cleanup_paths(output_root: Path, run: dict[str, Any]) -> tuple[Path, ...]:
     run_name = run["run_name"]
     candidates = (
@@ -453,14 +468,15 @@ class EvaluationJobManager:
             if self._job and self._job.get("status") in self.ACTIVE_STATUSES:
                 raise RuntimeError("an evaluator job is already running")
             job_id = uuid4().hex
-            command_text = " && ".join(
+            command_texts = [
                 shlex.join(["scenarioforge-eval", *command[3:]])
                 for command in commands
-            )
+            ]
             self._job = {
                 "id": job_id,
                 "status": "starting",
-                "command": command_text,
+                "command": " && ".join(command_texts),
+                "command_display": _summarize_command_texts(command_texts),
                 "config": config,
                 "started_at": _utc_now(),
                 "ended_at": "",
@@ -514,7 +530,8 @@ class EvaluationJobManager:
                     break
             if len(commands) > 1:
                 self._append_log(
-                    f"[rerun] Command {index}/{len(commands)}: {shlex.join(command)}",
+                    f"[rerun] Command {index}/{len(commands)}: "
+                    f"{_summarize_command_texts([shlex.join(command)])}",
                     command_index=index,
                 )
             try:

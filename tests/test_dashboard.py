@@ -17,6 +17,7 @@ from scenarioforge_eval.dashboard import (
     _parse_execution_progress_line,
     _save_dashboard_settings,
     _scan_execution_runs,
+    _summarize_command_texts,
     EvaluationJobManager,
     create_app,
     load_dashboard_data,
@@ -168,6 +169,47 @@ class DashboardDataTests(unittest.TestCase):
             self.assertEqual(
                 snapshot["progress"],
                 {"completed": 2, "total": 2, "passed": 2, "failed": 0},
+            )
+
+    def test_resume_command_summary_stays_short(self):
+        self.assertEqual(
+            _summarize_command_texts(["scenarioforge-eval --execute --spec a.yaml"]),
+            "scenarioforge-eval --execute --spec a.yaml",
+        )
+        self.assertEqual(
+            _summarize_command_texts([
+                "scenarioforge-eval --spec a.yaml"
+                " --iteration-index 2 --iteration-index 3 --iteration-index 7",
+                "scenarioforge-eval --spec b.yaml --iteration-index 1",
+            ]),
+            "scenarioforge-eval --spec a.yaml --iteration-index x3 · +1 more command",
+        )
+
+    def test_execution_manager_keeps_full_command_alongside_summary(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            process = mock.Mock(pid=5004, stdout=io.StringIO(""))
+            process.wait.return_value = 0
+            manager = EvaluationJobManager(Path(temp_dir))
+
+            with mock.patch(
+                "scenarioforge_eval.dashboard.subprocess.Popen",
+                return_value=process,
+            ):
+                snapshot = manager.start_commands(
+                    [
+                        [sys.executable, "-m", "scenarioforge_eval.main", "first"],
+                        [sys.executable, "-m", "scenarioforge_eval.main", "second"],
+                    ],
+                    config={"kind": "resume", "run_count": 2},
+                )
+
+            self.assertEqual(
+                snapshot["command"],
+                "scenarioforge-eval first && scenarioforge-eval second",
+            )
+            self.assertEqual(
+                snapshot["command_display"],
+                "scenarioforge-eval first · +1 more command",
             )
 
     def test_execution_manager_aggregates_progress_across_rerun_commands(self):
