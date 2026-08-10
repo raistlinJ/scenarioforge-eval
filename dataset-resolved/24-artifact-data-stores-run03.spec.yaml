@@ -1,12 +1,12 @@
 name: dataset-artifact-data-stores_run03
 iterations: 1
-seed: 1839815312
+seed: 1710473365
 topology:
   routers: 2
-  hosts: 6
+  hosts: 5
 services:
   enabled: true
-  count: 4
+  count: 3
   density: 1.0
   include:
   - HTTP
@@ -41,11 +41,11 @@ flag_node_generators:
   enabled: true
   count: 4
   specific:
-  - id: '135'
-    name: 'Database: Mongo Export Documents'
-    count: 1
   - id: postgres_customer_dump
     name: 'Database: Postgres Customer Dump'
+    count: 1
+  - id: '131'
+    name: 'Cache: CDN Manifest Cache'
     count: 1
   - id: '132'
     name: 'Database: Postgres Audit Schema'

@@ -36,10 +36,8 @@ vulns:
   count: 2
   specific:
   - name: nginx/CVE-2013-4547
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/nginx/CVE-2013-4547/docker-compose.yml
     count: 1
   - name: nginx/insecure-configuration
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/nginx/insecure-configuration/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: false

@@ -16,6 +16,11 @@ from scenarioforge_eval.dashboard import (
     _load_dashboard_settings,
     _parse_execution_progress_line,
     _save_dashboard_settings,
+    _core_ssh_settings,
+    _local_disk_usage,
+    _parse_df_output,
+    _parse_execution_current_run,
+    _read_env_file,
     _scan_execution_runs,
     _summarize_command_texts,
     EvaluationJobManager,
@@ -170,6 +175,303 @@ class DashboardDataTests(unittest.TestCase):
                 snapshot["progress"],
                 {"completed": 2, "total": 2, "passed": 2, "failed": 0},
             )
+
+    def _stopped_job_manager(self, temp_dir, out_path, *, current_run):
+        """A manager whose finished job looks like it was stopped mid-run."""
+        process = mock.Mock(pid=7001, stdout=io.StringIO(""))
+        process.wait.return_value = 0
+        manager = EvaluationJobManager(Path(temp_dir))
+        with mock.patch(
+            "scenarioforge_eval.dashboard.subprocess.Popen", return_value=process
+        ), mock.patch(
+            "scenarioforge_eval.dashboard._core_vm_disk_usage", return_value={"error": "n/a"}
+        ), mock.patch(
+            "scenarioforge_eval.dashboard._local_disk_usage", return_value={"free_bytes": 1}
+        ):
+            manager.start_commands(
+                [[sys.executable, "-c", "pass"]],
+                config={"kind": "execution", "run_count": 3, "out_path": str(out_path)},
+            )
+            for _ in range(200):
+                if manager.snapshot()["status"] in {"succeeded", "failed", "stopped"}:
+                    break
+                time.sleep(0.01)
+        with manager._lock:
+            manager._job["stop_requested"] = True
+            manager._job["current_run"] = current_run
+        return manager
+
+    def _completed_run_fixture(self, out_path, run_name):
+        result = _result(run_name, success=True, duration=1, started_at="2026-08-01T12:00:00Z")
+        result["metadata"].update({
+            "iteration_index": 2,
+            "iteration_count": 3,
+            "target_phase": "execute",
+            "reproduction_mode": "xml",
+        })
+        result_path = out_path / f"{run_name}_result.json"
+        result_path.write_text(json.dumps(result), encoding="utf-8")
+        prompt_path = out_path / f"{run_name}_ai_prompt.md"
+        prompt_path.write_text("stale prompt", encoding="utf-8")
+        metrics_dir = out_path / "metrics" / "runs" / run_name
+        metrics_dir.mkdir(parents=True)
+        (metrics_dir / "run_metrics.csv").write_text("stale", encoding="utf-8")
+        run_dir = out_path / run_name
+        run_dir.mkdir()
+        (run_dir / "execute.log").write_text("partial output", encoding="utf-8")
+        return result_path, prompt_path, metrics_dir, run_dir
+
+    def test_stop_discards_a_stale_result_for_the_interrupted_run(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            out_path = Path(temp_dir).resolve() / "results"
+            out_path.mkdir()
+            result_path, prompt_path, metrics_dir, run_dir = self._completed_run_fixture(
+                out_path, "sample_run2"
+            )
+            manager = self._stopped_job_manager(temp_dir, out_path, current_run="sample_run2")
+            manager._invalidate_interrupted_run(manager.snapshot()["id"])
+
+            # The markers that would make preflight call the run finished are gone.
+            self.assertFalse(result_path.exists())
+            self.assertFalse(prompt_path.exists())
+            self.assertFalse(metrics_dir.exists())
+            # The partial output survives for inspection.
+            self.assertTrue(run_dir.is_dir())
+            self.assertEqual((run_dir / "execute.log").read_text(encoding="utf-8"), "partial output")
+
+    def test_interrupted_run_is_replanned_by_resume(self):
+        """The user-visible outcome: Resume runs the stopped run again."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir).resolve()
+            spec_path = root / "sample.spec.yaml"
+            spec_path.write_text("name: sample\niterations: 3\nseed: 41\n", encoding="utf-8")
+            sf_path = root / "scenarioforge"
+            sf_path.mkdir()
+            out_path = root / "results"
+            out_path.mkdir()
+            self._completed_run_fixture(out_path, "sample_run2")
+
+            payload = {
+                "spec_path": str(spec_path),
+                "sf_path": str(sf_path),
+                "out_path": str(out_path),
+                "phase": "execute",
+            }
+            before, _ = _scan_execution_runs(payload, cwd=root)
+            self.assertEqual(before["completed"], 1)
+
+            manager = self._stopped_job_manager(temp_dir, out_path, current_run="sample_run2")
+            manager._invalidate_interrupted_run(manager.snapshot()["id"])
+
+            after, _ = _scan_execution_runs(payload, cwd=root)
+            self.assertEqual(after["completed"], 0)
+            self.assertEqual(after["remaining"], 3)
+            commands, config, _cleanup = _build_execution_plan(
+                {**payload, "existing_runs_action": "resume"}, cwd=root
+            )
+            self.assertEqual(config["execution_run_count"], 3)
+            self.assertIn("2", commands[0])
+
+    def test_stop_discards_results_under_a_symlinked_output_root(self):
+        # macOS hands out /var/folders/... temp paths that resolve to
+        # /private/var/...; comparing a resolved candidate against an
+        # unresolved root silently matched nothing and kept the stale result.
+        with tempfile.TemporaryDirectory() as temp_dir:
+            out_path = Path(temp_dir) / "results"  # deliberately not resolved
+            out_path.mkdir()
+            result_path, _prompt, _metrics, run_dir = self._completed_run_fixture(
+                out_path, "sample_run2"
+            )
+            manager = self._stopped_job_manager(temp_dir, out_path, current_run="sample_run2")
+            manager._invalidate_interrupted_run(manager.snapshot()["id"])
+            self.assertFalse(result_path.exists())
+            self.assertTrue(run_dir.is_dir())
+
+    def test_finishing_normally_keeps_every_result(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            out_path = Path(temp_dir).resolve() / "results"
+            out_path.mkdir()
+            result_path, _prompt, _metrics, _run_dir = self._completed_run_fixture(
+                out_path, "sample_run2"
+            )
+            manager = self._stopped_job_manager(temp_dir, out_path, current_run="sample_run2")
+            with manager._lock:
+                manager._job["stop_requested"] = False  # completed on its own
+            manager._invalidate_interrupted_run(manager.snapshot()["id"])
+            self.assertTrue(result_path.exists())
+
+    def test_stop_between_runs_discards_nothing(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            out_path = Path(temp_dir).resolve() / "results"
+            out_path.mkdir()
+            result_path, _prompt, _metrics, _run_dir = self._completed_run_fixture(
+                out_path, "sample_run2"
+            )
+            manager = self._stopped_job_manager(temp_dir, out_path, current_run=None)
+            manager._invalidate_interrupted_run(manager.snapshot()["id"])
+            self.assertTrue(result_path.exists())
+
+    def test_current_run_tracks_and_clears_between_runs(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            out_path = Path(temp_dir).resolve()
+            manager = self._stopped_job_manager(temp_dir, out_path, current_run=None)
+            manager._append_log(
+                "[RUNNING] | runs 0/3 | ok 0 | fail 0 | pending 3 | current sample_run1 seed=1"
+            )
+            self.assertEqual(manager.snapshot()["current_run"], "sample_run1")
+            manager._append_log("[DONE] | runs 3/3 | ok 3 | fail 0 | pending 0")
+            self.assertIsNone(manager.snapshot()["current_run"])
+
+    def test_plain_output_does_not_clear_the_in_flight_run(self):
+        # Ordinary evaluator chatter between status lines must not look like
+        # the batch moving between runs.
+        with tempfile.TemporaryDirectory() as temp_dir:
+            out_path = Path(temp_dir).resolve()
+            manager = self._stopped_job_manager(temp_dir, out_path, current_run=None)
+            manager._append_log(
+                "[RUNNING] | runs 0/3 | ok 0 | fail 0 | pending 3 | current sample_run1 seed=1"
+            )
+            manager._append_log("  building docker image ...")
+            self.assertEqual(manager.snapshot()["current_run"], "sample_run1")
+
+    def test_parses_current_run_through_ansi_colouring(self):
+        line = (
+            "\x1b[36;1m[RUNNING]\x1b[0m | runs 3/10 | ok 3 | fail 0 | pending 7 | "
+            "\x1b[33;1mcurrent dataset-vuln-cms_run02 seed=42\x1b[0m"
+        )
+        self.assertEqual(_parse_execution_current_run(line), "dataset-vuln-cms_run02")
+
+    def test_no_current_run_between_iterations(self):
+        # The evaluator drops `current` once an iteration finishes; that must
+        # not be read as a new run starting.
+        self.assertIsNone(
+            _parse_execution_current_run("[READY] | runs 0/10 | ok 0 | fail 0 | pending 10")
+        )
+
+    def test_parses_df_output(self):
+        output = (
+            "Filesystem     1024-blocks     Used Available Capacity Mounted on\n"
+            "/dev/nvme0n1p2   121764504 30758232  84774772      27% /\n"
+        )
+        self.assertEqual(
+            _parse_df_output(output),
+            {"total_bytes": 121764504 * 1024, "free_bytes": 84774772 * 1024},
+        )
+
+    def test_unparseable_df_output_reports_an_error(self):
+        self.assertIn("error", _parse_df_output("df: /: No such file or directory"))
+
+    def test_reads_env_file_like_scenarioforge_does(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            env_path = Path(temp_dir) / ".scenarioforge.env"
+            env_path.write_text(
+                "# comment\n"
+                "\n"
+                "CORE_SSH_HOST=12.0.0.100\n"
+                "export CORE_SSH_USERNAME=corevm\n"
+                'CORE_SSH_PASSWORD="pw with spaces"\n'
+                "CORE_SSH_PORT=22 # trailing comment\n"
+                "NOT_AN_ASSIGNMENT\n",
+                encoding="utf-8",
+            )
+            values = _read_env_file(env_path)
+
+        self.assertEqual(values["CORE_SSH_HOST"], "12.0.0.100")
+        self.assertEqual(values["CORE_SSH_USERNAME"], "corevm")
+        self.assertEqual(values["CORE_SSH_PASSWORD"], "pw with spaces")
+        self.assertEqual(values["CORE_SSH_PORT"], "22")
+        self.assertNotIn("NOT_AN_ASSIGNMENT", values)
+
+    def test_core_ssh_settings_absent_without_a_full_target(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            (Path(temp_dir) / ".scenarioforge.env").write_text(
+                "CORE_SSH_HOST=12.0.0.100\n", encoding="utf-8"
+            )
+            with mock.patch.dict(os.environ, {}, clear=True):
+                self.assertIsNone(_core_ssh_settings(temp_dir))
+
+    def test_local_disk_usage_walks_up_to_an_existing_parent(self):
+        # The output root often does not exist yet on a first run.
+        with tempfile.TemporaryDirectory() as temp_dir:
+            usage = _local_disk_usage(str(Path(temp_dir) / "not" / "created" / "yet"))
+        self.assertGreater(usage["total_bytes"], 0)
+        self.assertNotIn("error", usage)
+
+    def test_disk_usage_samples_per_run_and_ends_on_the_newest(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            process = mock.Mock(
+                pid=6001,
+                stdout=io.StringIO(
+                    "[RUNNING] | runs 0/2 | ok 0 | fail 0 | pending 2 | current spec_run1 seed=1\n"
+                    "some other output for the same run\n"
+                    "[RUNNING] | runs 1/2 | ok 1 | fail 0 | pending 1 | current spec_run1 seed=1\n"
+                    "[RUNNING] | runs 1/2 | ok 1 | fail 0 | pending 1 | current spec_run2 seed=2\n"
+                    "[DONE] | runs 2/2 | ok 2 | fail 0 | pending 0\n"
+                ),
+            )
+            process.wait.return_value = 0
+            manager = EvaluationJobManager(Path(temp_dir))
+
+            observed: list[str] = []
+
+            def fake_core_vm(sf_path):
+                observed.append(sf_path)
+                return {"free_bytes": 5, "total_bytes": 10, "label": "vm-host"}
+
+            with mock.patch(
+                "scenarioforge_eval.dashboard.subprocess.Popen", return_value=process
+            ), mock.patch(
+                "scenarioforge_eval.dashboard._core_vm_disk_usage", side_effect=fake_core_vm
+            ), mock.patch(
+                "scenarioforge_eval.dashboard._local_disk_usage",
+                return_value={"free_bytes": 7, "total_bytes": 20},
+            ):
+                manager.start_commands(
+                    [[sys.executable, "-m", "scenarioforge_eval.main", "run"]],
+                    config={"kind": "execution", "run_count": 2, "sf_path": "/sf", "out_path": temp_dir},
+                )
+                for _ in range(200):
+                    snapshot = manager.snapshot()
+                    if snapshot["status"] == "succeeded":
+                        break
+                    time.sleep(0.01)
+                # Refreshes are threaded; let the last one land.
+                for _ in range(200):
+                    if manager.snapshot().get("disk_usage", {}).get("run_name") == "spec_run2":
+                        break
+                    time.sleep(0.01)
+
+            disk_usage = manager.snapshot()["disk_usage"]
+            self.assertEqual(disk_usage["core_vm"], {"free_bytes": 5, "total_bytes": 10, "label": "vm-host"})
+            self.assertEqual(disk_usage["local"], {"free_bytes": 7, "total_bytes": 20})
+            # The newest run's reading always lands, whatever the thread timing.
+            self.assertEqual(disk_usage["run_name"], "spec_run2")
+            # Sampling is per run, not per log line, and readings that queue up
+            # behind an in-flight one coalesce: at most a seed plus two runs,
+            # never one for each of the five lines above.
+            self.assertTrue(1 <= len(observed) <= 3, observed)
+            self.assertEqual(set(observed), {"/sf"})
+
+    def test_disk_refresh_bookkeeping_stays_out_of_the_snapshot(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            process = mock.Mock(pid=6002, stdout=io.StringIO(""))
+            process.wait.return_value = 0
+            manager = EvaluationJobManager(Path(temp_dir))
+            with mock.patch(
+                "scenarioforge_eval.dashboard.subprocess.Popen", return_value=process
+            ), mock.patch(
+                "scenarioforge_eval.dashboard._core_vm_disk_usage", return_value={"error": "no vm"}
+            ), mock.patch(
+                "scenarioforge_eval.dashboard._local_disk_usage", return_value={"free_bytes": 1}
+            ):
+                snapshot = manager.start_commands(
+                    [[sys.executable, "-m", "scenarioforge_eval.main", "run"]],
+                    config={"kind": "execution", "run_count": 1},
+                )
+
+        self.assertNotIn("_disk_refresh_active", snapshot)
+        self.assertNotIn("_disk_refresh_run", snapshot)
+        self.assertIn("disk_usage", snapshot)
 
     def test_resume_command_summary_stays_short(self):
         self.assertEqual(

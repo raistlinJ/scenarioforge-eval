@@ -37,13 +37,10 @@ vulns:
   count: 3
   specific:
   - name: gitlab/CVE-2021-22205
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/gitlab/CVE-2021-22205/docker-compose.yml
     count: 1
   - name: gitlist/CVE-2018-1000533
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/gitlist/CVE-2018-1000533/docker-compose.yml
     count: 1
   - name: glassfish/CVE-2017-1000028
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/glassfish/CVE-2017-1000028/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: true

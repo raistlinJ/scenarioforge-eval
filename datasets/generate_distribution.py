@@ -208,7 +208,7 @@ def render(summary: dict) -> str:
         f'  <text x="242" y="355" class="big">{features["Flag-node generators"]}</text><text x="242" y="377" class="note">flag-node-generator scenarios</text>',
         f'  <text x="500" y="355" class="big">{features["Segmentation"]}</text><text x="500" y="377" class="note">segmented scenarios</text>',
         f'  <text x="700" y="355" class="big">{features["Pivot paths"]}</text><text x="700" y="377" class="note">pivot-path scenarios</text>',
-        f'  <text x="64" y="425" class="note">Fixed chain lengths: {" · ".join(f"{length} hops × {chain_lengths[length]}" for length in sorted(chain_lengths))}</text>',
+        f'  <text x="64" y="425" class="note">Requested chain lengths (a floor, not a cap — see dataset-resolved for the chain length each scenario actually solves): {" · ".join(f"{length} hops × {chain_lengths[length]}" for length in sorted(chain_lengths))}</text>',
         f'  <text x="700" y="425" class="note">Explicit boundary coverage: Firewall × {segmentation_types["Firewall"]} · NAT × {segmentation_types["Nat"]}</text>',
         '  <rect x="40" y="485" width="1320" height="610" rx="12" class="panel"/>',
         '  <text x="64" y="522" class="panel-title">Services</text>',

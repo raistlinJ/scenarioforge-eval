@@ -1,12 +1,12 @@
 name: dataset-mixed-perimeter-identity_run02
 iterations: 1
-seed: 1776123926
+seed: 1382483471
 topology:
   routers: 2
-  hosts: 6
+  hosts: 5
 services:
   enabled: true
-  count: 4
+  count: 3
   density: 1.0
   include:
   - SSH
@@ -36,21 +36,22 @@ vulns:
   enabled: true
   count: 2
   specific:
-  - name: nginx/CVE-2013-4547
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/nginx/CVE-2013-4547/docker-compose.yml
-    count: 1
   - name: nginx/insecure-configuration
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/nginx/insecure-configuration/docker-compose.yml
+    count: 1
+  - name: nginx/nginx_parsing_vulnerability
     count: 1
 flag_node_generators:
   enabled: true
   count: 3
   specific:
-  - id: dns_zone_transfer_records
-    name: 'DNS: Zone Transfer Records'
-    count: 2
   - id: '138'
     name: 'DNS: SRV Admin Endpoint'
+    count: 1
+  - id: dns_zone_transfer_records
+    name: 'DNS: Zone Transfer Records'
+    count: 1
+  - id: '139'
+    name: 'DNS: Reverse Zone Note'
     count: 1
 flows:
   enabled: true

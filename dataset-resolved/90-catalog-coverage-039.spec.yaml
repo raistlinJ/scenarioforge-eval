@@ -29,13 +29,10 @@ vulns:
   count: 3
   specific:
   - name: libssh/CVE-2018-10933
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/libssh/CVE-2018-10933/docker-compose.yml
     count: 1
   - name: liferay-portal/CVE-2020-7961
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/liferay-portal/CVE-2020-7961/docker-compose.yml
     count: 1
   - name: livewire/CVE-2025-54068
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/livewire/CVE-2025-54068/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: true

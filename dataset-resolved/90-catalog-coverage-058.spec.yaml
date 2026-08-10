@@ -37,13 +37,10 @@ vulns:
   count: 3
   specific:
   - name: ruby/CVE-2017-17405
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/ruby/CVE-2017-17405/docker-compose.yml
     count: 1
   - name: saltstack/CVE-2020-11651
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/saltstack/CVE-2020-11651/docker-compose.yml
     count: 1
   - name: saltstack/CVE-2020-11652
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/saltstack/CVE-2020-11652/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: true

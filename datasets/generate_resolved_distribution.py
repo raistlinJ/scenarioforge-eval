@@ -70,7 +70,14 @@ def _network_summary(summary: dict) -> dict:
             service_assignments += int(services['count'])
         flows = spec['flows']
         if flows.get('enabled'):
-            flow_lengths.append(int(flows['chain_length']))
+            # `chain_length` is a ceiling only when the topology has slot
+            # nodes for the solver to pick a subset from; this suite never
+            # configures those, so every vuln/flag-node-generator is
+            # mandatory and the real chain is their full count. See the
+            # matching comment in generate_ground_truth_figures.py.
+            vuln_count = int(spec['vulns'].get('count') or 0) if spec['vulns'].get('enabled') else 0
+            generator_count = int(spec['flag_node_generators'].get('count') or 0) if spec['flag_node_generators'].get('enabled') else 0
+            flow_lengths.append(vuln_count + generator_count)
         segmentation = spec['segmentation']
         if segmentation.get('enabled'):
             segmented += 1

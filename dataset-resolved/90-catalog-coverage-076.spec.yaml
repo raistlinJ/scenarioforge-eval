@@ -37,13 +37,10 @@ vulns:
   count: 3
   specific:
   - name: zabbix/CVE-2016-10134
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/zabbix/CVE-2016-10134/docker-compose.yml
     count: 1
   - name: zabbix/CVE-2017-2824
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/zabbix/CVE-2017-2824/docker-compose.yml
     count: 1
   - name: zabbix/CVE-2020-11800
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/zabbix/CVE-2020-11800/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: true

@@ -1752,25 +1752,30 @@ class Executor:
         specific_entries = vulns_spec.get('specific') or []
         if specific_entries:
             eligible_catalog = self._load_eligible_vulnerability_catalog()
-            catalog = {
-                (entry['name'], entry['path']): entry
-                for entry in (eligible_catalog or [])
-            }
+            # Keyed by name alone, matching `_build_flag_node_generator_section`'s
+            # own pattern (keyed by id). A resolved spec's stored `path` is an
+            # absolute filesystem location baked in by materialize_catalog_selections.py
+            # on whatever machine ran it -- under a catalog-install directory
+            # name that is itself unique per install, so it cannot be expected
+            # to match on a different machine, or even this one after a catalog
+            # reinstall. `name` (e.g. "struts2/s2-009") is the portable
+            # identifier; the path used below is always the one freshly
+            # discovered on the machine actually running this eval.
+            catalog = {entry['name']: entry for entry in (eligible_catalog or [])}
             selected = []
             for raw_entry in specific_entries:
                 name = str(raw_entry.get('name') or '').strip()
-                path = os.path.abspath(str(raw_entry.get('path') or '').strip())
                 try:
                     count = max(0, int(raw_entry.get('count', 0)))
                 except (TypeError, ValueError):
                     count = 0
-                entry = catalog.get((name, path))
+                entry = catalog.get(name)
                 if not entry or count <= 0:
                     raise ValueError(
                         "vulns.specific contains an unavailable or changed validated catalog entry: "
-                        f"name={name!r}, path={path!r}. Regenerate dataset-resolved."
+                        f"name={name!r}. Regenerate dataset-resolved."
                     )
-                selected.append({'name': name, 'path': path, 'count': count, **{
+                selected.append({'name': name, 'path': entry['path'], 'count': count, **{
                     key: entry.get(key) for key in ('validated_ok', 'validated_at')
                 }})
             self._vulnerability_selection = {
@@ -2119,10 +2124,32 @@ class Executor:
                     ]
                     if chain_ids:
                         flow_args.extend(['--flow-chain-ids', ','.join(chain_ids)])
-                    # Operational knobs. Each is only passed when the spec says
-                    # so, leaving ScenarioForge's own default in charge
-                    # otherwise -- a bounded flag-sequencing phase matters most
-                    # for a long evaluation run that would otherwise hang.
+                    # Operational knob, overridable per-spec via flows.timeout_s.
+                    #
+                    # Always pass an explicit value here rather than leaving it
+                    # unset. `--flow-best-effort` above is only about letting the
+                    # solver clamp to available eligible nodes (see its CLI help
+                    # text) -- it has nothing to do with timing. But
+                    # ScenarioForge's own request handler
+                    # (`_load_prepare_preview_request_context` in
+                    # webapp/flow_prepare_preview_execute.py) has an unrelated,
+                    # undocumented side effect: any request with best_effort=true
+                    # and no explicit timeout_s silently gets a hardcoded 30s
+                    # total budget for the whole generator-run phase. That's fine
+                    # for a quick interactive hint/preview peek, but nowhere near
+                    # enough for real generator execution -- each generator may
+                    # need to build/pull a fresh Docker image, and this phase's
+                    # own flag-sequencing.log has shown two ~5-15s cold builds
+                    # alone. Once the budget is exhausted mid-chain, remaining
+                    # generators are silently skipped (not failed) and the run
+                    # only blows up much later, at `execute`, with a confusing
+                    # "missing flag outputs" error disconnected from the real
+                    # cause. ScenarioForge's own web UI never hits this: its
+                    # "Resolve" action always sends best_effort=false plus an
+                    # explicit timeout_s of max(600, chain_length*150 + 180)
+                    # (see resolveTimeoutSeconds in webapp/templates/flow.html).
+                    # Mirror that formula here so batch runs get the same
+                    # generous, chain-length-scaled budget the UI always has.
                     timeout_s = flows_spec.get('timeout_s')
                     if timeout_s not in (None, ''):
                         try:
@@ -2135,7 +2162,10 @@ class Executor:
                             raise ValueError(
                                 f'flows.timeout_s must be positive, got {timeout_value}'
                             )
-                        flow_args.extend(['--flow-timeout-s', str(timeout_value)])
+                    else:
+                        chain_length_for_timeout = int(flows_spec.get('chain_length', 3) or 3)
+                        timeout_value = max(600, chain_length_for_timeout * 150 + 180)
+                    flow_args.extend(['--flow-timeout-s', str(timeout_value)])
                     if flows_spec.get('cleanup_generated_artifacts'):
                         flow_args.append('--flow-cleanup-generated-artifacts')
                     execution = str(flows_spec.get('execution') or '').strip().lower()

@@ -37,13 +37,10 @@ vulns:
   count: 3
   specific:
   - name: erlang/CVE-2025-32433
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/erlang/CVE-2025-32433/docker-compose.yml
     count: 1
   - name: fastjson/1.2.24-rce
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/fastjson/1.2.24-rce/docker-compose.yml
     count: 1
   - name: fastjson/1.2.47-rce
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/fastjson/1.2.47-rce/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: true

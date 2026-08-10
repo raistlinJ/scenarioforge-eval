@@ -37,13 +37,10 @@ vulns:
   count: 3
   specific:
   - name: wordpress/pwnscriptum
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/wordpress/pwnscriptum/docker-compose.yml
     count: 1
   - name: xstream/CVE-2021-21351
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/xstream/CVE-2021-21351/docker-compose.yml
     count: 1
   - name: xstream/CVE-2021-29505
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/xstream/CVE-2021-29505/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: true

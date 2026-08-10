@@ -37,13 +37,10 @@ vulns:
   count: 3
   specific:
   - name: ghostscript/CVE-2018-16509
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/ghostscript/CVE-2018-16509/docker-compose.yml
     count: 1
   - name: ghostscript/CVE-2018-19475
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/ghostscript/CVE-2018-19475/docker-compose.yml
     count: 1
   - name: ghostscript/CVE-2019-6116
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/ghostscript/CVE-2019-6116/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: true

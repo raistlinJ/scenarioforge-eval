@@ -37,13 +37,10 @@ vulns:
   count: 3
   specific:
   - name: jira/CVE-2019-11581
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/jira/CVE-2019-11581/docker-compose.yml
     count: 1
   - name: jmeter/CVE-2018-1297
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/jmeter/CVE-2018-1297/docker-compose.yml
     count: 1
   - name: joomla/CVE-2015-8562
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/joomla/CVE-2015-8562/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: true

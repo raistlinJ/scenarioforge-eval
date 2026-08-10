@@ -37,13 +37,10 @@ vulns:
   count: 3
   specific:
   - name: tomcat/CVE-2017-12615
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/tomcat/CVE-2017-12615/docker-compose.yml
     count: 1
   - name: tomcat/CVE-2020-1938
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/tomcat/CVE-2020-1938/docker-compose.yml
     count: 1
   - name: tomcat/CVE-2025-24813
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/tomcat/CVE-2025-24813/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: true

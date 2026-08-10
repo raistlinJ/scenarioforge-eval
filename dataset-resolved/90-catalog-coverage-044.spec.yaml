@@ -37,13 +37,10 @@ vulns:
   count: 3
   specific:
   - name: nacos/CVE-2021-29442
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/nacos/CVE-2021-29442/docker-compose.yml
     count: 1
   - name: neo4j/CVE-2021-34371
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/neo4j/CVE-2021-34371/docker-compose.yml
     count: 1
   - name: next.js/CVE-2025-29927
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/next.js/CVE-2025-29927/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: true

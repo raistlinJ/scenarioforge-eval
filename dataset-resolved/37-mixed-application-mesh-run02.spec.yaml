@@ -37,16 +37,12 @@ vulns:
   count: 4
   specific:
   - name: spring/CVE-2022-22947
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/spring/CVE-2022-22947/docker-compose.yml
     count: 1
   - name: php/fpm
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/php/fpm/docker-compose.yml
     count: 1
   - name: phpunit/CVE-2017-9841
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/phpunit/CVE-2017-9841/docker-compose.yml
     count: 1
   - name: php/CVE-2024-2961
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/php/CVE-2024-2961/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: true

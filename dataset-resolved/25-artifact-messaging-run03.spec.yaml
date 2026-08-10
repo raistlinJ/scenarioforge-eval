@@ -45,8 +45,8 @@ flag_node_generators:
     name: 'Mail: SMTP Open Relay Queue'
     count: 1
 flows:
-  enabled: false
-  chain_length: 0
+  enabled: true
+  chain_length: 1
   allow_duplicates: false
   include_all_topology_pivots: false
 segmentation:

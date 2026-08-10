@@ -37,13 +37,10 @@ vulns:
   count: 3
   specific:
   - name: showdoc/3.2.5-sqli
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/showdoc/3.2.5-sqli/docker-compose.yml
     count: 1
   - name: showdoc/CNVD-2020-26585
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/showdoc/CNVD-2020-26585/docker-compose.yml
     count: 1
   - name: skywalking/8.3.0-sqli
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/skywalking/8.3.0-sqli/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: true

@@ -1,9 +1,9 @@
 name: dataset-segmented-mixed-perimeter_run02
 iterations: 1
-seed: 383870187
+seed: 224927548
 topology:
-  routers: 2
-  hosts: 6
+  routers: 3
+  hosts: 8
 services:
   enabled: true
   count: 3
@@ -34,13 +34,9 @@ traffic:
     content_type: gibberish
 vulns:
   enabled: true
-  count: 2
+  count: 1
   specific:
   - name: nginx/CVE-2017-7529
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/nginx/CVE-2017-7529/docker-compose.yml
-    count: 1
-  - name: ingress-nginx/CVE-2025-1974
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/ingress-nginx/CVE-2025-1974/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: true

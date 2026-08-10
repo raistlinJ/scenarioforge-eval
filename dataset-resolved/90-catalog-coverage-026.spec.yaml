@@ -37,13 +37,10 @@ vulns:
   count: 3
   specific:
   - name: h2database/CVE-2022-23221
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/h2database/CVE-2022-23221/docker-compose.yml
     count: 1
   - name: hadoop/unauthorized-yarn
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/hadoop/unauthorized-yarn/docker-compose.yml
     count: 1
   - name: hertzbeat/CVE-2024-42323
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/hertzbeat/CVE-2024-42323/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: true

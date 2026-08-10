@@ -37,13 +37,10 @@ vulns:
   count: 3
   specific:
   - name: coldfusion/CVE-2023-29300
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/coldfusion/CVE-2023-29300/docker-compose.yml
     count: 1
   - name: couchdb/CVE-2017-12635
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/couchdb/CVE-2017-12635/docker-compose.yml
     count: 1
   - name: couchdb/CVE-2017-12636
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/couchdb/CVE-2017-12636/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: true

@@ -37,13 +37,10 @@ vulns:
   count: 3
   specific:
   - name: discuz/x3.4-arbitrary-file-deletion
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/discuz/x3.4-arbitrary-file-deletion/docker-compose.yml
     count: 1
   - name: dns/dns-zone-transfer
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/dns/dns-zone-transfer/docker-compose.yml
     count: 1
   - name: docker/unauthorized-rce
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/docker/unauthorized-rce/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: true

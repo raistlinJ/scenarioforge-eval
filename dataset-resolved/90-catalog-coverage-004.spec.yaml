@@ -37,13 +37,10 @@ vulns:
   count: 3
   specific:
   - name: aj-report/CNVD-2024-15077
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/aj-report/CNVD-2024-15077/docker-compose.yml
     count: 1
   - name: apache-cxf/CVE-2024-28752
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/apache-cxf/CVE-2024-28752/docker-compose.yml
     count: 1
   - name: apache-druid/CVE-2021-25646
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/apache-druid/CVE-2021-25646/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: true

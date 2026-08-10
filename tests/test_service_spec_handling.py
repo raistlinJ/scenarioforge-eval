@@ -487,6 +487,56 @@ class ExecutorServiceItemTests(unittest.TestCase):
 
         self.assertIsNone(executor._build_vulnerability_section({'count': 0}))
 
+    def test_vulns_specific_matches_by_name_across_machines(self):
+        """A resolved spec's stored `path` is machine-specific (baked in by
+        materialize_catalog_selections.py under a catalog-install directory
+        unique per install); only `name` is portable. Matching must succeed
+        even when the stored path differs from what this machine discovers.
+        """
+        executor = Executor(
+            spec={'seed': 789, 'name': 'portable-check'},
+            out_dir=tempfile.gettempdir(),
+            sf_path='.',
+        )
+        # As installed on *this* machine -- a different absolute path than
+        # whatever machine originally materialized the resolved spec.
+        catalog = [{
+            'name': 'struts2/s2-009',
+            'path': '/opt/scenarioforge/catalogs/install-abc123/vulhub/struts2/s2-009/docker-compose.yml',
+            'validated_ok': True,
+            'validated_at': '2026-06-04 16:33:40',
+        }]
+        specific = [{
+            'name': 'struts2/s2-009',
+            'path': '/Users/someone-else/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-009/docker-compose.yml',
+            'count': 1,
+        }]
+
+        with mock.patch.object(executor, '_load_eligible_vulnerability_catalog', return_value=catalog):
+            section = executor._build_vulnerability_section({'specific': specific})
+
+        self.assertEqual(len(section['items']), 1)
+        self.assertEqual(section['items'][0]['v_name'], 'struts2/s2-009')
+        # The path actually used for execution is this machine's, not the
+        # foreign one the resolved spec happened to store.
+        self.assertEqual(section['items'][0]['v_path'], catalog[0]['path'])
+        self.assertEqual(
+            executor._vulnerability_selection['selected'][0]['path'], catalog[0]['path']
+        )
+        self.assertEqual(executor._vulnerability_selection['mode'], 'specific_from_resolved_spec')
+
+    def test_vulns_specific_fails_when_name_is_not_in_the_current_catalog(self):
+        executor = Executor(
+            spec={'seed': 789, 'name': 'portable-check'},
+            out_dir=tempfile.gettempdir(),
+            sf_path='.',
+        )
+        specific = [{'name': 'struts2/s2-009', 'path': '/anywhere/docker-compose.yml', 'count': 1}]
+
+        with mock.patch.object(executor, '_load_eligible_vulnerability_catalog', return_value=[]):
+            with self.assertRaisesRegex(ValueError, "name='struts2/s2-009'"):
+                executor._build_vulnerability_section({'specific': specific})
+
     def test_flag_node_generators_are_specific_enabled_catalog_rows(self):
         executor = Executor(
             spec={'seed': 791, 'name': 'node-generator-check'},

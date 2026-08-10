@@ -37,13 +37,10 @@ vulns:
   count: 3
   specific:
   - name: apereo-cas/4.1-rce
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/apereo-cas/4.1-rce/docker-compose.yml
     count: 1
   - name: apisix/CVE-2020-13945
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/apisix/CVE-2020-13945/docker-compose.yml
     count: 1
   - name: apisix/CVE-2021-45232
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/apisix/CVE-2021-45232/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: true

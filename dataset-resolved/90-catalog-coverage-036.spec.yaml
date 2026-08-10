@@ -29,13 +29,10 @@ vulns:
   count: 3
   specific:
   - name: jupyter/notebook-rce
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/jupyter/notebook-rce/docker-compose.yml
     count: 1
   - name: kafka/CVE-2023-25194
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/kafka/CVE-2023-25194/docker-compose.yml
     count: 1
   - name: kibana/CVE-2018-17246
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/kibana/CVE-2018-17246/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: true

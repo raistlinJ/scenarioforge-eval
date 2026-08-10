@@ -18,8 +18,9 @@ flag_node_generators:
   count: [1, 3]
   include: ["HTTP:*", "HTTPS:*"]
 flows:
-  enabled: false
-  chain_length: 0
+  enabled: true
+  chain_length: 1
+  allow_duplicates: false
 traffic:
   profile: light
   payload_types: [photo]

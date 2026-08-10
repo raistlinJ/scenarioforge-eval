@@ -117,20 +117,26 @@ into plausible attack-path contexts, such as web exploitation with delivery
 artifacts, a CMS with remote-access material, CI with source-control artifacts,
 or data-service vulnerabilities with shares and database evidence.
 
-Flows and segmentation introduce structure beyond independent nodes. Six
-specifications (`10`--`12`, `20`, `21`, and `25`) remain unchained baselines.
-The other 24 specifications produce 120 chained scenarios, with an exact even
-split of 30 scenarios at each fixed chain length from two through five. Every
-chain is duplicate-free and its minimum vulnerability plus
-flag-node-generator count is at least its requested length.
+Flows and segmentation introduce structure beyond independent nodes. Every
+specification is chained, so no scenario resolves to zero challenges. Each
+spec's `chain_length` is a request, not a guarantee: none of these
+specifications configure the topology "slot" nodes
+(`vulnerability_slots`/`flag_gen_slots`) that would let the flag-sequencing
+solver leave a node out of the chain, so every topology-placed vulnerability
+and flag-node-generator is mandatory, and the chain actually solved is the
+full count of those nodes — `vulns.count` plus `flag_node_generators.count`,
+resolved per iteration. `dataset-resolved` computes that real per-scenario
+length (see its README) rather than trusting the declared field, since a
+declared length below that total is silently exceeded, not enforced. Every
+chain is still duplicate-free.
 
 Segmentation is similarly distributed rather than confined to one family: 22
 specifications (110 scenarios) declare explicit boundary rows. Across the
 source suite, Firewall and NAT each occur in 65 scenarios. Six specifications
 (30 scenarios) enable pivots and request topology-pivot inclusion: `13`, `22`,
 `31`, `41`, `53`, and `54`. This supports controlled comparisons among
-unchained, chained, segmented, and pivot-expanded challenges without coupling
-network complexity to only the largest topologies.
+chained, segmented, and pivot-expanded challenges without coupling network
+complexity to only the largest topologies.
 
 The evaluator writes those explicit segmentation rows into scenario XML, so
 the dataset distinguishes a simple density request from an actual boundary

@@ -7,13 +7,19 @@ its deterministic seed.
 
 The static topology, service, traffic, vulnerability count,
 flag-node-generator count, flow length, and segmentation values are resolved.
-The 150 base files preserve the source suite's exact chain balance: 30 scenarios
-at each chain length from two through five, plus 30 unchained baselines. Once
-the current catalog-coverage fixtures are materialized, the full 226-file suite
-contains 49 scenarios at chain lengths two and three, 68 at length four, and 30
-at length five (196 chained total), plus 148 segmented scenarios and 42
-pivot-enabled scenarios. Coverage fixtures cap their duplicate-free chain at
-their concrete vulnerability plus flag-node-generator capacity.
+Flow length here is computed, not copied from the source spec's declared
+`chain_length`: none of these specifications use topology "slot" nodes, so the
+flag-sequencing solver treats every resolved vulnerability and
+flag-node-generator as mandatory, and the chain it actually builds is their
+full count regardless of what `chain_length` requested. The 150 base files'
+real chain lengths are 14 at length one, 24 at two, 35 at three, 38 at four,
+11 at five, 11 at six, 11 at seven, 5 at eight, and 1 at ten (150 chained
+total, none unchained). Once the current catalog-coverage fixtures are
+materialized, the full 226-file suite adds 76 more at length four (each
+fixture's concrete vulnerability plus flag-node-generator capacity), for 14 at
+one, 24 at two, 35 at three, 114 at four, 11 at five, 11 at six, 11 at seven,
+5 at eight, and 1 at ten, plus 148 segmented scenarios and 42 pivot-enabled
+scenarios.
 To persist the exact selected Vulhub image and self-generated service names,
 materialize this suite against the intended ScenarioForge catalog. This replaces
 the filter lists with schema-validated `specific` rows and writes the complete

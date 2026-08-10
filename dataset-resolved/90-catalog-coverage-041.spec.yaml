@@ -37,13 +37,10 @@ vulns:
   count: 3
   specific:
   - name: metabase/CVE-2021-41277
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/metabase/CVE-2021-41277/docker-compose.yml
     count: 1
   - name: metabase/CVE-2023-38646
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/metabase/CVE-2023-38646/docker-compose.yml
     count: 1
   - name: metersphere/CVE-2021-45788
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/metersphere/CVE-2021-45788/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: true

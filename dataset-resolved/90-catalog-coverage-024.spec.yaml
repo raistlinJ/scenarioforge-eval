@@ -29,13 +29,10 @@ vulns:
   count: 3
   specific:
   - name: gradio/CVE-2023-51449
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/gradio/CVE-2023-51449/docker-compose.yml
     count: 1
   - name: gradio/CVE-2024-1561
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/gradio/CVE-2024-1561/docker-compose.yml
     count: 1
   - name: grafana/CVE-2021-43798
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/grafana/CVE-2021-43798/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: true

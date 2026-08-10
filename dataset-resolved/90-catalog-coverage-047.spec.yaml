@@ -37,13 +37,10 @@ vulns:
   count: 3
   specific:
   - name: ofbiz/CVE-2023-49070
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/ofbiz/CVE-2023-49070/docker-compose.yml
     count: 1
   - name: ofbiz/CVE-2023-51467
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/ofbiz/CVE-2023-51467/docker-compose.yml
     count: 1
   - name: ofbiz/CVE-2024-38856
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/ofbiz/CVE-2024-38856/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: true

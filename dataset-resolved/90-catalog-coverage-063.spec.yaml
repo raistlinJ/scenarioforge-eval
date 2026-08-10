@@ -29,13 +29,10 @@ vulns:
   count: 3
   specific:
   - name: solr/CVE-2019-17558
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/solr/CVE-2019-17558/docker-compose.yml
     count: 1
   - name: solr/Remote-Streaming-Fileread
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/solr/Remote-Streaming-Fileread/docker-compose.yml
     count: 1
   - name: spark/unacc
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/spark/unacc/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: true

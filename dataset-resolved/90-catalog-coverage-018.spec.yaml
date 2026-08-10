@@ -29,13 +29,10 @@ vulns:
   count: 3
   specific:
   - name: flink/CVE-2020-17518
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/flink/CVE-2020-17518/docker-compose.yml
     count: 1
   - name: flink/CVE-2020-17519
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/flink/CVE-2020-17519/docker-compose.yml
     count: 1
   - name: geoserver/CVE-2021-40822
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/geoserver/CVE-2021-40822/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: true

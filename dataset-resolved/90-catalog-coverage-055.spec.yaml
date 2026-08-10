@@ -37,13 +37,10 @@ vulns:
   count: 3
   specific:
   - name: python/CVE-2024-23334
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/python/CVE-2024-23334/docker-compose.yml
     count: 1
   - name: python/PIL-CVE-2017-8291
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/python/PIL-CVE-2017-8291/docker-compose.yml
     count: 1
   - name: python/PIL-CVE-2018-16509
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/python/PIL-CVE-2018-16509/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: true

@@ -37,13 +37,10 @@ vulns:
   count: 3
   specific:
   - name: httpd/CVE-2021-42013
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/httpd/CVE-2021-42013/docker-compose.yml
     count: 1
   - name: httpd/apache_parsing_vulnerability
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/httpd/apache_parsing_vulnerability/docker-compose.yml
     count: 1
   - name: httpd/ssi-rce
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/httpd/ssi-rce/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: true

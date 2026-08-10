@@ -29,13 +29,10 @@ vulns:
   count: 3
   specific:
   - name: tomcat/tomcat8
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/tomcat/tomcat8/docker-compose.yml
     count: 1
   - name: unomi/CVE-2020-13942
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/unomi/CVE-2020-13942/docker-compose.yml
     count: 1
   - name: uwsgi/CVE-2018-7490
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/uwsgi/CVE-2018-7490/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: true

@@ -77,7 +77,10 @@
           <div class="execution-progress hidden" id="execution-progress" aria-live="polite">
             <div class="execution-progress-heading">
               <span>Run progress</span>
-              <strong id="execution-progress-count">0 / — runs</strong>
+              <div class="execution-progress-headline">
+                <strong id="execution-progress-count">0 / — runs</strong>
+                <span class="execution-disk hidden" id="execution-disk"></span>
+              </div>
             </div>
             <div class="execution-progress-track" id="execution-progress-track" role="progressbar" aria-label="Evaluation runs completed" aria-valuemin="0" aria-valuenow="0" aria-valuemax="1">
               <span class="execution-progress-pass" id="execution-progress-pass-bar"></span>
@@ -412,6 +415,10 @@
   .execution-progress-heading, .execution-progress-stats { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
   .execution-progress-heading { margin-bottom: 8px; color: var(--muted); font-size: 10px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
   .execution-progress-heading strong { color: var(--text); font: 600 12px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 0; text-transform: none; }
+  .execution-progress-headline { display: flex; align-items: baseline; gap: 10px; min-width: 0; flex-wrap: wrap; justify-content: flex-end; }
+  .execution-disk { color: var(--muted); font: 500 11px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 0; text-transform: none; white-space: nowrap; }
+  .execution-disk .disk-low { color: var(--warning); }
+  .execution-disk .disk-critical { color: var(--danger); }
   .execution-progress-track { height: 8px; display: flex; overflow: hidden; border: 1px solid var(--border); border-radius: 999px; background: var(--surface-3); }
   .execution-progress-track span { width: 0; height: 100%; transition: width .2s ease; }
   .execution-progress-pass { background: #58db8b; }
@@ -842,6 +849,38 @@
     state.executionProgress = parsed;
   }
 
+  function diskEntry(label, entry) {
+    if (!entry || typeof entry !== 'object') return null;
+    if (entry.error) return `${label} <span class="disk-critical">n/a</span>`;
+    const free = Number(entry.free_bytes);
+    if (!Number.isFinite(free)) return null;
+    const total = Number(entry.total_bytes);
+    // Absolute headroom matters more than percentage here: a run needs room
+    // for container images, so flag the floor rather than the ratio.
+    const gb = free / (1024 ** 3);
+    const severity = gb < 5 ? ' disk-critical' : gb < 15 ? ' disk-low' : '';
+    const pct = Number.isFinite(total) && total > 0 ? ` (${Math.round((free / total) * 100)}%)` : '';
+    return `${label} <span class="${severity.trim()}">${esc(bytes(free))} free${pct}</span>`;
+  }
+
+  function renderDiskUsage(diskUsage, active) {
+    const element = $('execution-disk');
+    const usage = diskUsage && typeof diskUsage === 'object' ? diskUsage : {};
+    const coreLabel = usage.core_vm && usage.core_vm.label ? `CORE ${usage.core_vm.label}` : 'CORE VM';
+    const parts = [
+      diskEntry(coreLabel, usage.core_vm),
+      diskEntry('local', usage.local),
+    ].filter(Boolean);
+    element.classList.toggle('hidden', !active || parts.length === 0);
+    element.innerHTML = parts.join(' &middot; ');
+    const errors = ['core_vm', 'local']
+      .map(key => (usage[key] && usage[key].error ? `${key}: ${usage[key].error}` : ''))
+      .filter(Boolean);
+    element.title = errors.length
+      ? errors.join('\n')
+      : (usage.updated_at ? `Free disk space, sampled ${date(usage.updated_at)}` : '');
+  }
+
   function renderExecution(payload) {
     applyInitialExecutionConfig(payload);
     const status = payload.status || 'idle';
@@ -879,6 +918,7 @@
     const progressElement = $('execution-progress');
     progressElement.classList.toggle('hidden', status === 'idle');
     $('execution-progress-count').textContent = `${progressCompleted} / ${progressTotal || '—'} runs`;
+    renderDiskUsage(payload.disk_usage, active);
     $('execution-progress-passed').textContent = progressPassed;
     $('execution-progress-failed').textContent = progressFailed;
     $('execution-progress-pending').textContent = progressPending === null ? '—' : progressPending;

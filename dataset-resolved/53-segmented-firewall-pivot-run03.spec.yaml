@@ -37,7 +37,6 @@ vulns:
   count: 1
   specific:
   - name: drupal/CVE-2017-6920
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/drupal/CVE-2017-6920/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: true

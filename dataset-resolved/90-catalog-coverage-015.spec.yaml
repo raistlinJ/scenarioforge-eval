@@ -29,13 +29,10 @@ vulns:
   count: 3
   specific:
   - name: electron/CVE-2018-1000006
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/electron/CVE-2018-1000006/docker-compose.yml
     count: 1
   - name: electron/CVE-2018-15685
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/electron/CVE-2018-15685/docker-compose.yml
     count: 1
   - name: elfinder/CVE-2021-32682
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/elfinder/CVE-2021-32682/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: true

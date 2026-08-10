@@ -37,13 +37,10 @@ vulns:
   count: 3
   specific:
   - name: jackson/CVE-2017-7525
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/jackson/CVE-2017-7525/docker-compose.yml
     count: 1
   - name: java/rmi-codebase
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/java/rmi-codebase/docker-compose.yml
     count: 1
   - name: jboss/CVE-2017-12149
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/jboss/CVE-2017-12149/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: true

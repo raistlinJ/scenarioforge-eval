@@ -37,13 +37,10 @@ vulns:
   count: 3
   specific:
   - name: spring/CVE-2022-22963
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/spring/CVE-2022-22963/docker-compose.yml
     count: 1
   - name: superset/CVE-2023-27524
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/superset/CVE-2023-27524/docker-compose.yml
     count: 1
   - name: superset/CVE-2023-37941
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/superset/CVE-2023-37941/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: true

@@ -37,13 +37,10 @@ vulns:
   count: 3
   specific:
   - name: dubbo/CVE-2019-17564
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/dubbo/CVE-2019-17564/docker-compose.yml
     count: 1
   - name: ecshop/collection_list-sqli
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/ecshop/collection_list-sqli/docker-compose.yml
     count: 1
   - name: ecshop/xianzhi-2017-02-82239600
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/ecshop/xianzhi-2017-02-82239600/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: true

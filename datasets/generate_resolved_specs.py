@@ -21,9 +21,32 @@ REPOSITORY_ROOT = Path(__file__).resolve().parent.parent
 SOURCE_DIR = REPOSITORY_ROOT / "datasets"
 OUTPUT_DIR = REPOSITORY_ROOT / "dataset-resolved"
 
+# (source stem, iteration) -> retry suffix, for iterations whose default seed
+# resolved a vulnerability/flag-node-generator combination the flag-sequencing
+# solver cannot find a distinct compatible generator assignment for (chain
+# nodes are all mandatory in this suite -- see the flow-length comment in
+# generate_ground_truth_figures.py -- so an incompatible combination cannot
+# fall back to a shorter chain; it just fails). Bumping to a fresh seed keeps
+# the dataset's declared config unchanged while giving the solver a different
+# random selection to work with. Confirmed against real flag-sequencing
+# failures: eligible_flag_generators=59, eligible_flag_node_generators=87 in
+# every case, so the pool was never the constraint.
+_RETRY_SEED_OVERRIDES: dict[tuple[str, int], str] = {
+    ("24-artifact-data-stores", 3): "retry1",
+    ("35-mixed-perimeter-identity", 2): "retry1",
+    ("54-segmented-enterprise-pivots", 2): "retry1",
+    ("52-segmented-mixed-perimeter", 2): "retry1",
+}
+
 
 def _seed_for(source: Path, iteration: int) -> int:
-    digest = hashlib.sha256(f"{source.name}:{iteration}".encode("utf-8")).digest()
+    key = f"{source.name}:{iteration}"
+    # `.stem` only strips one suffix, leaving ".spec" on a ".spec.yaml" name.
+    stem = source.name.removesuffix(".spec.yaml")
+    retry = _RETRY_SEED_OVERRIDES.get((stem, iteration))
+    if retry:
+        key = f"{key}:{retry}"
+    digest = hashlib.sha256(key.encode("utf-8")).digest()
     return int.from_bytes(digest[:4], "big") & 0x7FFFFFFF
 
 

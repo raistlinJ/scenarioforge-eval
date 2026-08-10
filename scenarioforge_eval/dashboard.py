@@ -50,6 +50,10 @@ EXECUTION_PROGRESS_PATTERN = re.compile(
     re.IGNORECASE,
 )
 
+ANSI_ESCAPE_PATTERN = re.compile(r"\x1b\[[0-9;]*m")
+EXECUTION_CURRENT_RUN_PATTERN = re.compile(r"\bcurrent\s+(?P<name>\S+)")
+DISK_USAGE_SSH_TIMEOUT_S = 10.0
+
 
 def _utc_now() -> str:
     return datetime.now(UTC).isoformat(timespec="seconds").replace("+00:00", "Z")
@@ -99,6 +103,147 @@ def _parse_execution_progress_line(text: str) -> dict[str, int] | None:
     if progress["passed"] + progress["failed"] != progress["completed"]:
         return None
     return progress
+
+
+def _strip_ansi(text: Any) -> str:
+    return ANSI_ESCAPE_PATTERN.sub("", str(text or ""))
+
+
+def _parse_execution_current_run(text: Any) -> str | None:
+    """Name of the run the evaluator currently has in flight, if any.
+
+    The status line carries `current <spec_name>` only while an iteration is
+    running, so a change in this value marks the batch starting a new run.
+    """
+    match = EXECUTION_CURRENT_RUN_PATTERN.search(_strip_ansi(text))
+    if match is None:
+        return None
+    return match.group("name") or None
+
+
+def _read_env_file(path: Path) -> dict[str, str]:
+    """Minimal reader for ScenarioForge's .scenarioforge.env.
+
+    Mirrors webapp/env_loader.py's rules (optional `export`, quoted values,
+    trailing ` #` comments) rather than importing it: the dashboard should not
+    need ScenarioForge importable, and must not mutate this process's
+    environment the way `load_runtime_env_files` does.
+    """
+    values: dict[str, str] = {}
+    try:
+        lines = path.read_text(encoding="utf-8", errors="ignore").splitlines()
+    except OSError:
+        return values
+    for raw_line in lines:
+        line = raw_line.strip()
+        if not line or line.startswith("#"):
+            continue
+        if line.startswith("export "):
+            line = line[7:].lstrip()
+        key, separator, raw_value = line.partition("=")
+        key = key.strip()
+        if not separator or not key:
+            continue
+        value = raw_value.strip()
+        if len(value) >= 2 and value[0] in {'"', "'"} and value[-1] == value[0]:
+            value = value[1:-1]
+        else:
+            comment_index = value.find(" #")
+            if comment_index >= 0:
+                value = value[:comment_index].rstrip()
+        values[key] = value
+    return values
+
+
+def _core_ssh_settings(sf_path: str) -> dict[str, Any] | None:
+    """CORE VM SSH target, real environment first (env_loader's precedence)."""
+    env_file = _read_env_file(Path(sf_path) / ".scenarioforge.env")
+
+    def _setting(key: str, default: str = "") -> str:
+        return str(os.environ.get(key) or env_file.get(key) or default).strip()
+
+    host = _setting("CORE_SSH_HOST")
+    username = _setting("CORE_SSH_USERNAME")
+    if not host or not username:
+        return None
+    try:
+        port = int(_setting("CORE_SSH_PORT", "22"))
+    except ValueError:
+        port = 22
+    return {
+        "host": host,
+        "port": port,
+        "username": username,
+        "password": _setting("CORE_SSH_PASSWORD"),
+    }
+
+
+def _parse_df_output(output: str) -> dict[str, Any]:
+    """Pull totals from `df -P -k` output, which is one data row after a header."""
+    rows = [line.split() for line in _strip_ansi(output).splitlines() if line.strip()]
+    for fields in reversed(rows):
+        if len(fields) < 4 or not fields[1].isdigit() or not fields[3].isdigit():
+            continue
+        return {
+            "total_bytes": int(fields[1]) * 1024,
+            "free_bytes": int(fields[3]) * 1024,
+        }
+    return {"error": "could not parse df output"}
+
+
+def _local_disk_usage(path: str) -> dict[str, Any]:
+    target = Path(path or ".").expanduser()
+    # The output root may not exist yet on a first run; the filesystem that
+    # will hold it is what matters, so walk up to the nearest existing parent.
+    while not target.exists() and target != target.parent:
+        target = target.parent
+    try:
+        usage = shutil.disk_usage(str(target))
+    except OSError as exc:
+        return {"error": str(exc)}
+    return {"free_bytes": int(usage.free), "total_bytes": int(usage.total)}
+
+
+def _core_vm_disk_usage(sf_path: str) -> dict[str, Any]:
+    settings = _core_ssh_settings(sf_path)
+    if settings is None:
+        return {"error": "CORE VM SSH settings not found in .scenarioforge.env"}
+    try:
+        import paramiko
+    except ImportError:
+        return {"error": "paramiko is not installed"}
+
+    client = paramiko.SSHClient()
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    try:
+        client.connect(
+            hostname=settings["host"],
+            port=settings["port"],
+            username=settings["username"],
+            password=settings["password"] or None,
+            look_for_keys=True,
+            allow_agent=True,
+            timeout=DISK_USAGE_SSH_TIMEOUT_S,
+            banner_timeout=DISK_USAGE_SSH_TIMEOUT_S,
+            auth_timeout=DISK_USAGE_SSH_TIMEOUT_S,
+        )
+        # Read-only, so this deliberately does not take the shared VM lock the
+        # executor uses; it must never delay a run it is only reporting on.
+        _stdin, stdout, _stderr = client.exec_command(
+            "df -P -k /", timeout=DISK_USAGE_SSH_TIMEOUT_S
+        )
+        output = stdout.read().decode("utf-8", "replace")
+    except Exception as exc:  # paramiko raises a wide range of socket/auth errors
+        return {"error": f"{type(exc).__name__}: {exc}".strip()}
+    finally:
+        try:
+            client.close()
+        except Exception:
+            pass
+
+    usage = _parse_df_output(output)
+    usage["label"] = settings["host"]
+    return usage
 
 
 def _resolve_execution_path(
@@ -251,6 +396,26 @@ def _summarize_command_texts(command_texts: list[str]) -> str:
     return summary
 
 
+def _interrupted_run_completion_paths(output_root: Path, run_name: str) -> tuple[Path, ...]:
+    """Artifacts that would make an interrupted run look finished.
+
+    Only the completion markers, not the run's output directory: a stopped run
+    is usually stopped because something looked wrong, so its logs and partial
+    artifacts stay put for inspection. Resume clears the directory itself
+    before re-running.
+    """
+    safe_name = Reporter._safe_metric_dir_name(run_name)
+    candidates = (
+        output_root / f"{run_name}_result.json",
+        output_root / f"{run_name}_ai_prompt.md",
+        output_root / "metrics" / "runs" / safe_name,
+    )
+    return tuple(
+        path for path in candidates
+        if _path_inside_root(output_root, str(path)) is not None
+    )
+
+
 def _execution_run_cleanup_paths(output_root: Path, run: dict[str, Any]) -> tuple[Path, ...]:
     run_name = run["run_name"]
     candidates = (
@@ -397,11 +562,65 @@ class EvaluationJobManager:
         self._job: dict[str, Any] | None = None
         self._process: subprocess.Popen[str] | None = None
 
+    def _disk_usage_worker(self, job_id: str) -> None:
+        # Loops rather than returning after one reading: runs can start while a
+        # reading is in flight, and the newest run is the one worth showing.
+        while True:
+            with self._lock:
+                if self._job is None or self._job.get("id") != job_id:
+                    return
+                if not self._job.get("_disk_refresh_pending"):
+                    self._job["_disk_refresh_active"] = False
+                    return
+                run_name = str(self._job.get("_disk_refresh_run_name") or "")
+                self._job["_disk_refresh_pending"] = False
+                config = dict(self._job.get("config") or {})
+
+            local = _local_disk_usage(str(config.get("out_path") or self.cwd))
+            core_vm = _core_vm_disk_usage(str(config.get("sf_path") or ""))
+
+            with self._lock:
+                if self._job is None or self._job.get("id") != job_id:
+                    return
+                self._job["disk_usage"] = {
+                    "local": local,
+                    "core_vm": core_vm,
+                    "run_name": run_name,
+                    "updated_at": _utc_now(),
+                }
+
+    def _request_disk_usage_refresh(self, run_name: str) -> str | None:
+        """Queue a reading. Caller holds the lock; returns a job id to spawn on."""
+        if self._job is None:
+            return None
+        self._job["_disk_refresh_run_name"] = run_name
+        self._job["_disk_refresh_pending"] = True
+        if self._job.get("_disk_refresh_active"):
+            return None
+        self._job["_disk_refresh_active"] = True
+        return str(self._job.get("id") or "")
+
+    def _schedule_disk_usage_refresh(self, job_id: str) -> None:
+        Thread(target=self._disk_usage_worker, args=(job_id,), daemon=True).start()
+
     def _append_log(self, text: str, *, command_index: int | None = None) -> None:
         parsed_progress = _parse_execution_progress_line(text)
+        current_run = _parse_execution_current_run(text)
+        refresh_job_id: str | None = None
         with self._lock:
             if self._job is None:
                 return
+            # The evaluator names the run it has in flight only while that run
+            # is executing, so a status line without one means the batch is
+            # between runs and nothing would be lost to a stop right now.
+            if parsed_progress is not None or current_run is not None:
+                self._job["current_run"] = current_run
+            # Sample free space as each run begins. An SSH round trip is far
+            # too slow to do per log line, and the numbers only move
+            # meaningfully between runs anyway.
+            if current_run is not None and current_run != self._job.get("_disk_refresh_seen"):
+                self._job["_disk_refresh_seen"] = current_run
+                refresh_job_id = self._request_disk_usage_refresh(current_run)
             self._job["log_sequence"] += 1
             self._job["logs"].append((self._job["log_sequence"], text.rstrip("\r\n")))
             if parsed_progress is not None:
@@ -428,6 +647,8 @@ class EvaluationJobManager:
                     "passed": passed,
                     "failed": failed,
                 }
+        if refresh_job_id:
+            self._schedule_disk_usage_refresh(refresh_job_id)
 
     def snapshot(self, *, after: int = 0) -> dict[str, Any]:
         with self._lock:
@@ -441,6 +662,10 @@ class EvaluationJobManager:
                     "stop_requested",
                     "_command_count",
                     "_command_progress",
+                    "_disk_refresh_active",
+                    "_disk_refresh_pending",
+                    "_disk_refresh_run_name",
+                    "_disk_refresh_seen",
                 }
             }
             public["logs"] = [
@@ -492,9 +717,18 @@ class EvaluationJobManager:
                 "stop_requested": False,
                 "log_sequence": 0,
                 "logs": deque(maxlen=MAX_EXECUTION_LOG_LINES),
+                "current_run": None,
+                "disk_usage": {},
                 "_command_count": len(commands),
                 "_command_progress": {},
+                # Seed a reading before the first run reports in, so the panel
+                # is populated for the whole job, not just from run one onward.
+                "_disk_refresh_active": True,
+                "_disk_refresh_pending": True,
+                "_disk_refresh_run_name": "",
+                "_disk_refresh_seen": None,
             }
+        self._schedule_disk_usage_refresh(job_id)
         Thread(
             target=self._run,
             args=(job_id, commands, tuple(cleanup_paths), rebuild_root),
@@ -577,6 +811,8 @@ class EvaluationJobManager:
             if command_returncode and stop_on_error:
                 break
 
+        self._invalidate_interrupted_run(job_id)
+
         if rebuild_root is not None:
             try:
                 _rebuild_batch_metrics(rebuild_root)
@@ -592,6 +828,54 @@ class EvaluationJobManager:
                     "returncode": returncode,
                 })
                 self._process = None
+
+    def _invalidate_interrupted_run(self, job_id: str) -> None:
+        """Make the run that a stop cut short count as not completed.
+
+        Killing the evaluator mid-run leaves no fresh result file, but a result
+        file from an earlier attempt at the same run may still be sitting
+        there. Preflight decides completion from that file alone, so leaving it
+        would let Resume skip the very run the stop interrupted, and the run
+        folder on disk would no longer be what the result claims.
+        """
+        with self._lock:
+            if not self._job or self._job.get("id") != job_id:
+                return
+            if not self._job.get("stop_requested"):
+                return
+            run_name = str(self._job.get("current_run") or "").strip()
+            output_root = str((self._job.get("config") or {}).get("out_path") or "").strip()
+            self._job["current_run"] = None
+        if not run_name or not output_root:
+            return
+
+        # Resolve before the containment check: on macOS the output root can be
+        # reached through a symlink (/var -> /private/var), and comparing a
+        # resolved path against an unresolved root rejects every candidate.
+        root = Path(output_root).expanduser().resolve()
+        paths = [
+            path
+            for path in _interrupted_run_completion_paths(root, run_name)
+            if path.exists() or path.is_symlink()
+        ]
+        if not paths:
+            self._append_log(
+                f"[stop] {run_name} was interrupted; it has no completed result, "
+                "so Resume will run it again."
+            )
+            return
+        try:
+            _delete_rerun_paths(paths)
+        except OSError as exc:
+            self._append_log(
+                f"[stop] Unable to clear the interrupted run {run_name}: {exc}. "
+                "Choose Start from beginning, or delete its result file by hand."
+            )
+            return
+        self._append_log(
+            f"[stop] {run_name} was interrupted; discarded its stale result so "
+            "Resume will run it again."
+        )
 
     @staticmethod
     def _terminate(process: subprocess.Popen[str]) -> None:

@@ -7,8 +7,19 @@ silently used the default of 3 and the other four levels went unexercised.
 `--flow-chain-ids` pins an explicit chain instead of letting the solver choose.
 
 The remaining options are operational -- timeout, artifact cleanup, execution
-locality -- and each is passed only when a spec asks, so ScenarioForge keeps
-its own default otherwise.
+locality. Artifact cleanup and execution locality are passed only when a spec
+asks, so ScenarioForge keeps its own default otherwise. Timeout is the
+exception: ScenarioForge's own "default otherwise" for the flag-sequencing
+phase is an undocumented 30s total budget that only applies when best_effort
+is set (see `_load_prepare_preview_request_context` in
+webapp/flow_prepare_preview_execute.py) -- and the evaluator always sets
+best_effort unless a spec explicitly allows node duplicates. 30s is nowhere
+near enough for real generator execution (each generator may need to
+build/pull a Docker image), so an unset `flows.timeout_s` now gets an
+explicit, chain-length-scaled default computed here instead, mirroring the
+formula ScenarioForge's own web UI already uses for its "Resolve" action
+(`resolveTimeoutSeconds` in webapp/templates/flow.html):
+`max(600, chain_length * 150 + 180)`.
 """
 
 import ast
@@ -120,18 +131,40 @@ class FlowArgumentWiringTests(unittest.TestCase):
 
 
 class OperationalOptionTests(unittest.TestCase):
-    """Each is passed only when the spec asks, so ScenarioForge keeps its own
-    default otherwise."""
+    """Artifact cleanup and execution locality are passed only when the spec
+    asks, so ScenarioForge keeps its own default otherwise. Timeout is
+    unconditional -- see the module docstring for why."""
 
     @staticmethod
     def _block():
         return FlowArgumentWiringTests._flow_arg_block()
 
-    def test_timeout_is_bounded_and_validated(self):
+    def test_timeout_is_bounded_and_validated_when_the_spec_sets_it(self):
         block = self._block()
         self.assertIn("'--flow-timeout-s'", block)
         self.assertIn('must be an integer', block)
         self.assertIn('must be positive', block)
+
+    def test_timeout_defaults_to_the_uis_own_resolve_formula_when_unset(self):
+        """An unset flows.timeout_s must not fall through to ScenarioForge's
+        internal 30s best-effort budget -- compute the same floor-600,
+        150s/node default its web UI already sends explicitly."""
+        block = self._block()
+        self.assertIn(
+            "chain_length_for_timeout = int(flows_spec.get('chain_length', 3) or 3)",
+            block,
+        )
+        self.assertIn(
+            'timeout_value = max(600, chain_length_for_timeout * 150 + 180)',
+            block,
+        )
+        # Exactly one extend call: it must run unconditionally (outside the
+        # if/else that only decides *how* timeout_value was derived), not be
+        # duplicated per-branch or left inside the `if timeout_s is set` arm.
+        self.assertEqual(
+            block.count("flow_args.extend(['--flow-timeout-s', str(timeout_value)])"),
+            1,
+        )
 
     def test_artifact_cleanup_is_opt_in(self):
         block = self._block()
@@ -144,10 +177,11 @@ class OperationalOptionTests(unittest.TestCase):
         self.assertIn("'--flow-run-local'", block)
         self.assertIn("must be 'local' or 'remote'", block)
 
-    def test_an_unset_option_passes_no_flag(self):
-        """Absence must mean absence, not a default spelled out."""
+    def test_an_unset_execution_locality_passes_no_flag(self):
+        """Absence must mean absence, not a default spelled out -- true for
+        execution locality; timeout_s is deliberately the exception (see
+        test_timeout_defaults_to_the_uis_own_resolve_formula_when_unset)."""
         block = self._block()
-        self.assertIn("if timeout_s not in (None, '')", block)
         self.assertIn('elif execution:', block)
 
 

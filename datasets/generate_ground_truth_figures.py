@@ -134,7 +134,17 @@ def _network_data(summary: dict) -> tuple[dict[str, dict], dict[str, dict], list
         if generators.get('enabled'):
             feature_counts['flag_node_generator_scenarios'] += 1
         if flows.get('enabled'):
-            length = int(flows['chain_length'])
+            # `chain_length` is only a ceiling when the topology has slot
+            # nodes (`vulnerability_slots`/`flag_gen_slots`) for the solver to
+            # pick a subset from; none of this suite's specs use that
+            # mechanism. Without it, every topology-placed vuln and
+            # flag-node-generator is mandatory, so the chain the solver
+            # actually builds is their full count, not the declared value —
+            # confirmed against real flag-sequencing.log runs. Recomputing it
+            # here is what the declared field itself cannot tell you.
+            vuln_count = int(spec['vulns'].get('count') or 0) if spec['vulns'].get('enabled') else 0
+            generator_count = int(generators.get('count') or 0) if generators.get('enabled') else 0
+            length = vuln_count + generator_count
             feature_counts['chained_scenarios'] += 1
             flow_length_histogram[length] += 1
         else:
@@ -165,6 +175,12 @@ def _network_data(summary: dict) -> tuple[dict[str, dict], dict[str, dict], list
         {'type': name, 'rows': traffic_types[name], 'requested_pairs': traffic_pairs[name]}
         for name in sorted(traffic_types)
     ]
+    # Both keys have to reach the payload even at zero: the figures read them
+    # unconditionally, and a suite where every scenario is chained never
+    # increments `unchained_scenarios` at all.
+    feature_counts.setdefault('chained_scenarios', 0)
+    feature_counts.setdefault('unchained_scenarios', 0)
+
     return (
         {name: rounded(population(items)) for name, items in values.items()},
         {name: rounded(population(items)) for name, items in traffic_values.items()},

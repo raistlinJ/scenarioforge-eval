@@ -37,13 +37,10 @@ vulns:
   count: 3
   specific:
   - name: openssl/CVE-2022-0778
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/openssl/CVE-2022-0778/docker-compose.yml
     count: 1
   - name: opentsdb/CVE-2020-35476
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/opentsdb/CVE-2020-35476/docker-compose.yml
     count: 1
   - name: opentsdb/CVE-2023-25826
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/opentsdb/CVE-2023-25826/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: true

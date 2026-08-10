@@ -37,13 +37,10 @@ vulns:
   count: 3
   specific:
   - name: cacti/CVE-2022-46169
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/cacti/CVE-2022-46169/docker-compose.yml
     count: 1
   - name: cacti/CVE-2023-39361
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/cacti/CVE-2023-39361/docker-compose.yml
     count: 1
   - name: cacti/CVE-2025-24367
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/cacti/CVE-2025-24367/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: true

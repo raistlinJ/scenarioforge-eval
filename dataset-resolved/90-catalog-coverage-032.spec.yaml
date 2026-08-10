@@ -37,13 +37,10 @@ vulns:
   count: 3
   specific:
   - name: jboss/CVE-2017-7504
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/jboss/CVE-2017-7504/docker-compose.yml
     count: 1
   - name: jboss/JMXInvokerServlet-deserialization
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/jboss/JMXInvokerServlet-deserialization/docker-compose.yml
     count: 1
   - name: jetty/CVE-2021-28164
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/jetty/CVE-2021-28164/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: true

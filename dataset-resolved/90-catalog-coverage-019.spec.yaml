@@ -37,13 +37,10 @@ vulns:
   count: 3
   specific:
   - name: geoserver/CVE-2022-24816
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/geoserver/CVE-2022-24816/docker-compose.yml
     count: 1
   - name: geoserver/CVE-2023-25157
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/geoserver/CVE-2023-25157/docker-compose.yml
     count: 1
   - name: geoserver/CVE-2024-36401
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/geoserver/CVE-2024-36401/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: true

@@ -29,13 +29,10 @@ vulns:
   count: 3
   specific:
   - name: imagemagick/CVE-2020-29599
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/imagemagick/CVE-2020-29599/docker-compose.yml
     count: 1
   - name: imagemagick/CVE-2022-44268
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/imagemagick/CVE-2022-44268/docker-compose.yml
     count: 1
   - name: influxdb/CVE-2019-20933
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/influxdb/CVE-2019-20933/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: true

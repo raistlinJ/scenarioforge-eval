@@ -97,7 +97,7 @@ def _coverage_spec(index: int, vulnerabilities: list[dict], generator: dict) -> 
         'vulns': {
             'enabled': True,
             'count': len(vulnerabilities),
-            'specific': [{'name': item['name'], 'path': item['path'], 'count': 1} for item in vulnerabilities],
+            'specific': [{'name': item['name'], 'count': 1} for item in vulnerabilities],
         },
         'flag_node_generators': {
             'enabled': True,
@@ -159,7 +159,7 @@ def main() -> None:
                 unique=True,
             )
             vuln_spec['specific'] = [
-                {'name': item['name'], 'path': item['path'], 'count': 1}
+                {'name': item['name'], 'count': 1}
                 for item in selected
             ]
             vuln_spec['count'] = len(selected)

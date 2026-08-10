@@ -37,13 +37,10 @@ vulns:
   count: 3
   specific:
   - name: vite/CVE-2025-30208
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/vite/CVE-2025-30208/docker-compose.yml
     count: 1
   - name: weblogic/CVE-2017-10271
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/weblogic/CVE-2017-10271/docker-compose.yml
     count: 1
   - name: weblogic/CVE-2018-2628
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/weblogic/CVE-2018-2628/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: true

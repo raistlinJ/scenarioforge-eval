@@ -1,13 +1,18 @@
 {
   "catalog_snapshot": "/Users/jcacosta/Documents/GitHub/scenarioforge",
   "challenge_features": {
-    "chained_scenarios": 196,
+    "chained_scenarios": 226,
     "flag_node_generator_scenarios": 186,
     "flow_length_histogram": {
-      "2": 49,
-      "3": 49,
-      "4": 68,
-      "5": 30
+      "1": 14,
+      "2": 24,
+      "3": 35,
+      "4": 114,
+      "5": 11,
+      "6": 11,
+      "7": 11,
+      "8": 5,
+      "10": 1
     },
     "pivot_provider_rows": {
       "flag-node-generator": 15,
@@ -21,7 +26,7 @@
       "NAT": 103
     },
     "segmented_scenarios": 148,
-    "unchained_scenarios": 30
+    "unchained_scenarios": 0
   },
   "methodology": {
     "excluded_generator_family": "Sample",
@@ -50,13 +55,13 @@
       "variance": 5.928
     },
     "flow_hops": {
-      "maximum": 5,
-      "mean": 2.951,
-      "minimum": 0,
+      "maximum": 10,
+      "mean": 3.854,
+      "minimum": 1,
       "n": 226,
-      "std_dev": 1.497,
-      "total": 667,
-      "variance": 2.241
+      "std_dev": 1.52,
+      "total": 871,
+      "variance": 2.311
     },
     "routers": {
       "maximum": 5,

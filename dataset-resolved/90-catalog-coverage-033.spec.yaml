@@ -29,13 +29,10 @@ vulns:
   count: 3
   specific:
   - name: jetty/CVE-2021-28169
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/jetty/CVE-2021-28169/docker-compose.yml
     count: 1
   - name: jetty/CVE-2021-34429
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/jetty/CVE-2021-34429/docker-compose.yml
     count: 1
   - name: jimureport/CVE-2023-4450
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/jimureport/CVE-2023-4450/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: true

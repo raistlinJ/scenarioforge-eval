@@ -37,10 +37,8 @@ vulns:
   count: 2
   specific:
   - name: redis/4-unacc
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/redis/4-unacc/docker-compose.yml
     count: 1
   - name: redis/CVE-2022-0543
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/redis/CVE-2022-0543/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: true

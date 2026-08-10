@@ -147,12 +147,12 @@
   <text x="58" y="1172" class="label">Base nodes</text><text x="280" y="1172" class="value">8.836</text><text x="360" y="1172" class="value">9.553</text><text x="460" y="1172" class="value">3.091</text><text x="555" y="1172" class="value">4–20</text>
   <text x="58" y="1194" class="label">Total planned nodes</text><text x="280" y="1194" class="value">12.690</text><text x="360" y="1194" class="value">18.161</text><text x="460" y="1194" class="value">4.262</text><text x="555" y="1194" class="value">5–27</text>
   <text x="58" y="1216" class="label">Service assignments</text><text x="280" y="1216" class="value">3.668</text><text x="360" y="1216" class="value">1.930</text><text x="460" y="1216" class="value">1.389</text><text x="555" y="1216" class="value">1–8</text>
-  <text x="58" y="1238" class="label">Flow hops / segmentation rows</text><text x="280" y="1238" class="value">2.951 / 0.920</text><text x="460" y="1238" class="value">SD 1.497 / 0.789</text><text x="555" y="1238" class="value">0–5 / 0–3</text>
+  <text x="58" y="1238" class="label">Flow hops / segmentation rows</text><text x="280" y="1238" class="value">3.854 / 0.920</text><text x="460" y="1238" class="value">SD 1.520 / 0.789</text><text x="555" y="1238" class="value">1–10 / 0–3</text>
   <rect x="715" y="1015" width="650" height="245" rx="12" class="panel"/>
   <text x="738" y="1051" class="panel-title">Selection-frequency ground truth</text>
   <text x="738" y="1080" class="value">Vulhub images</text><text x="738" y="1102" class="note">243 entries × 1 use · 4 entries × 2 uses · 3 entries × 3 uses · 26 entries × 4 uses · 12 entries × 5 uses · 6 entries × 6 uses</text>
   <text x="738" y="1133" class="value">Self-generated services</text><text x="738" y="1155" class="note">14 entries × 4 uses · 71 entries × 5 uses</text>
-  <text x="738" y="1187" class="value">Chained challenges</text><text x="738" y="1209" class="note">196 chained / 30 baseline · 2 hops × 49 · 3 hops × 49 · 4 hops × 68 · 5 hops × 30</text>
+  <text x="738" y="1187" class="value">Chained challenges</text><text x="738" y="1209" class="note">226 chained / 0 baseline · 1 hops × 14 · 2 hops × 24 · 3 hops × 35 · 4 hops × 114 · 5 hops × 11 · 6 hops × 11 · 7 hops × 11 · 8 hops × 5 · 10 hops × 1</text>
   <text x="738" y="1235" class="note">186 generator · 148 segmented · 42 pivot scenarios</text>
   <text x="45" y="1330" class="note">Generated from catalog-selections.json and the fixed resolved YAMLs. No runtime execution outcome is implied.</text>
 </svg>

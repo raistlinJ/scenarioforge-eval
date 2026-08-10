@@ -37,13 +37,10 @@ vulns:
   count: 3
   specific:
   - name: saltstack/CVE-2020-16846
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/saltstack/CVE-2020-16846/docker-compose.yml
     count: 1
   - name: samba/CVE-2017-7494
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/samba/CVE-2017-7494/docker-compose.yml
     count: 1
   - name: scrapy/scrapyd-unacc
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/scrapy/scrapyd-unacc/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: true

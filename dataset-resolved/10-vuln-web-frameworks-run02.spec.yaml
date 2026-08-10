@@ -28,7 +28,6 @@ vulns:
   count: 1
   specific:
   - name: struts2/s2-009
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-009/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: false
@@ -36,8 +35,8 @@ flag_node_generators:
   include: []
   exclude: []
 flows:
-  enabled: false
-  chain_length: 0
+  enabled: true
+  chain_length: 1
   allow_duplicates: false
   include_all_topology_pivots: false
 segmentation:

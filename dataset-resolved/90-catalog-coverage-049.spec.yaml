@@ -37,13 +37,10 @@ vulns:
   count: 3
   specific:
   - name: opensmtpd/CVE-2020-7247
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/opensmtpd/CVE-2020-7247/docker-compose.yml
     count: 1
   - name: openssh/CVE-2018-15473
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/openssh/CVE-2018-15473/docker-compose.yml
     count: 1
   - name: openssl/CVE-2014-0160
-    path: /Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/openssl/CVE-2014-0160/docker-compose.yml
     count: 1
 flag_node_generators:
   enabled: true

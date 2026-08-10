@@ -28,11 +28,11 @@
   <text x="729" y="220" class="note">Vulhub-image and self-generated counts add topology nodes; they do not create additional scenarios.</text>
   <rect x="40" y="275" width="1320" height="180" rx="12" class="panel"/>
   <text x="64" y="312" class="panel-title">Chained challenge and network-feature balance</text>
-  <text x="64" y="355" class="big">120</text><text x="64" y="377" class="note">chained scenarios</text>
+  <text x="64" y="355" class="big">150</text><text x="64" y="377" class="note">chained scenarios</text>
   <text x="242" y="355" class="big">110</text><text x="242" y="377" class="note">flag-node-generator scenarios</text>
   <text x="500" y="355" class="big">110</text><text x="500" y="377" class="note">segmented scenarios</text>
   <text x="700" y="355" class="big">30</text><text x="700" y="377" class="note">pivot-path scenarios</text>
-  <text x="64" y="425" class="note">Fixed chain lengths: 2 hops × 30 · 3 hops × 30 · 4 hops × 30 · 5 hops × 30</text>
+  <text x="64" y="425" class="note">Requested chain lengths (a floor, not a cap — see dataset-resolved for the chain length each scenario actually solves): 1 hops × 30 · 2 hops × 30 · 3 hops × 30 · 4 hops × 30 · 5 hops × 30</text>
   <text x="700" y="425" class="note">Explicit boundary coverage: Firewall × 65 · NAT × 65</text>
   <rect x="40" y="485" width="1320" height="610" rx="12" class="panel"/>
   <text x="64" y="522" class="panel-title">Services</text>
