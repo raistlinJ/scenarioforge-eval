@@ -149,3 +149,78 @@ PY
 Last run over 147 manifests: 34 secret-gated, 33 rescued by promotion, and
 `https_token_debug_api` the only genuine break — now fixed, so the sweep
 should print nothing.
+
+---
+
+## 2. Comma-split facts across 32 of 87 generator manifests
+
+**Files:** `outputs/installed_generators/*/*/manifest.yaml`
+**Backups:** `manifest.yaml.prefacts` beside each repaired file
+**Repair script:** `scripts/repair_generator_manifest_facts.py` (idempotent)
+
+### Symptom
+
+Dependency analysis reports requirements nothing can satisfy, and generators
+appear to produce facts no one consumes. Chains that look unsolvable are
+really being compared against fact names that do not exist.
+
+### Root cause
+
+A fact name may contain a comma — `Credential(user, password)`,
+`PortForward(host, port)`, `Directory(host, path)`. In the packs installed
+here, each of those was stored as *two* entries, split on that comma. Two
+shapes occur:
+
+```yaml
+artifacts:
+  requires:
+  - Knowledge(ip)
+  - Credential(user       # one fact, split
+  - password)
+
+inputs:
+- name: Credential(user
+  password): null         # tail became a stray mapping key
+  type: string
+```
+
+Not produced by the current code: `_split_artifact_list` was checked against
+list, dict, newline and comma-separated inputs and preserves commas in every
+case. This is damage carried inside the packs (installed 2026-07-01), from an
+older importer or the upstream export.
+
+It matters because a fragment never matches a real producer.
+`_normalize_fact_names` does not rejoin them either, so `Credential(user` and
+`password)` reach chain validation as two distinct, unsatisfiable facts.
+
+### Fix applied
+
+`scripts/repair_generator_manifest_facts.py --sf-path ../scenarioforge --apply`
+
+Rejoins any entry whose parentheses are unbalanced with the entries that
+follow, until balanced; handles the stray-mapping-key shape as well. Backs up
+each file it touches and is safe to re-run.
+
+### Effect (measured)
+
+| | before | after |
+|---|---|---|
+| manifests with split facts | 32 / 87 | 0 |
+| `Credential(user, password)` producers | fragmented | 36 |
+| `PortForward(host, port)` producers | fragmented | 87 |
+| required facts with no producer anywhere | several phantoms | `Ticket(id)` only |
+
+### Remaining, and not a repair job
+
+`Ticket(id)` has **zero** producers in the catalog, so any generator requiring
+it cannot be satisfied by any chain. That is a catalog gap — either add a
+generator that produces it, or stop selecting its consumers — and no amount of
+solver or dataset work fixes it.
+
+### Verifying
+
+```bash
+python3 scripts/repair_generator_manifest_facts.py --sf-path ../scenarioforge
+```
+
+Prints `0 need repair` when the catalog is clean.
