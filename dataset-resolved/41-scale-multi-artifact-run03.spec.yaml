@@ -47,8 +47,8 @@ flag_node_generators:
   - id: ssh_key_ops_bastion
     name: 'SSH: Key Ops Bastion'
     count: 1
-  - id: '140'
-    name: 'DNS: DKIM Selector Secret'
+  - id: ssh_key_backup_operator
+    name: 'SSH: Key Backup Operator'
     count: 1
   - id: ssh_password_finance_terminal
     name: 'SSH: Password Finance Terminal'

@@ -46,8 +46,8 @@ flag_node_generators:
   enabled: true
   count: 4
   specific:
-  - id: dep_checksum_evidence_gate
-    name: 'Dependency Consumer: Checksum Evidence Gate'
+  - id: dep_api_key_admin_endpoint
+    name: 'Dependency Consumer: API Key Admin Endpoint'
     count: 1
   - id: dep_port_forward_pivot
     name: 'Dependency Consumer: Port Forward Pivot'

@@ -46,8 +46,8 @@ flag_node_generators:
   enabled: true
   count: 1
   specific:
-  - id: https_sqli_invoice_portal
-    name: 'HTTPS: SQLi Invoice Portal'
+  - id: nfs_backup_archive_passphrase
+    name: 'NFS: Passphrase Backup Archive'
     count: 1
 flows:
   enabled: true

@@ -49,7 +49,7 @@
     "http_directory_traversal_docs": 4,
     "http_login_staff_portal": 5,
     "http_public_file_drop": 5,
-    "http_source_secret_repo": 5,
+    "http_source_secret_repo": 4,
     "http_sqli_customer_lookup": 4,
     "http_upload_file_drop": 5,
     "https_basic_auth_reports": 4,
@@ -57,8 +57,8 @@
     "https_login_admin_console": 5,
     "https_public_status_page": 4,
     "https_source_secret_ci": 5,
-    "https_sqli_invoice_portal": 5,
-    "https_token_debug_api": 4,
+    "https_sqli_invoice_portal": 4,
+    "https_token_debug_api": 5,
     "imap_shared_mailbox": 5,
     "ldap_anonymous_directory": 4,
     "ldap_bind_service_account": 5,
@@ -863,13 +863,13 @@
       "generators": [
         {
           "count": 1,
-          "id": "135",
-          "name": "Database: Mongo Export Documents"
+          "id": "postgres_customer_dump",
+          "name": "Database: Postgres Customer Dump"
         },
         {
           "count": 1,
-          "id": "postgres_customer_dump",
-          "name": "Database: Postgres Customer Dump"
+          "id": "131",
+          "name": "Cache: CDN Manifest Cache"
         },
         {
           "count": 1,
@@ -895,8 +895,8 @@
         },
         {
           "count": 1,
-          "id": "131",
-          "name": "Cache: CDN Manifest Cache"
+          "id": "135",
+          "name": "Database: Mongo Export Documents"
         },
         {
           "count": 1,
@@ -1766,20 +1766,25 @@
       "file": "35-mixed-perimeter-identity-run02.spec.yaml",
       "generators": [
         {
-          "count": 2,
+          "count": 1,
+          "id": "138",
+          "name": "DNS: SRV Admin Endpoint"
+        },
+        {
+          "count": 1,
           "id": "dns_zone_transfer_records",
           "name": "DNS: Zone Transfer Records"
         },
         {
           "count": 1,
-          "id": "138",
-          "name": "DNS: SRV Admin Endpoint"
+          "id": "139",
+          "name": "DNS: Reverse Zone Note"
         }
       ],
       "name": "dataset-mixed-perimeter-identity_run02",
       "vulnerabilities": [
-        "nginx/CVE-2013-4547",
-        "nginx/insecure-configuration"
+        "nginx/insecure-configuration",
+        "nginx/nginx_parsing_vulnerability"
       ]
     },
     {
@@ -1787,8 +1792,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "139",
-          "name": "DNS: Reverse Zone Note"
+          "id": "138",
+          "name": "DNS: SRV Admin Endpoint"
         },
         {
           "count": 1,
@@ -1798,7 +1803,7 @@
       ],
       "name": "dataset-mixed-perimeter-identity_run03",
       "vulnerabilities": [
-        "ingress-nginx/CVE-2025-1974"
+        "nginx/CVE-2013-4547"
       ]
     },
     {
@@ -1816,13 +1821,13 @@
         },
         {
           "count": 1,
-          "id": "138",
-          "name": "DNS: SRV Admin Endpoint"
+          "id": "ldap_bind_service_account",
+          "name": "LDAP: Service Account Bind"
         }
       ],
       "name": "dataset-mixed-perimeter-identity_run04",
       "vulnerabilities": [
-        "nginx/nginx_parsing_vulnerability"
+        "ingress-nginx/CVE-2025-1974"
       ]
     },
     {
@@ -1835,8 +1840,8 @@
         },
         {
           "count": 1,
-          "id": "ldap_bind_service_account",
-          "name": "LDAP: Service Account Bind"
+          "id": "140",
+          "name": "DNS: DKIM Selector Secret"
         }
       ],
       "name": "dataset-mixed-perimeter-identity_run05",
@@ -2325,8 +2330,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "ssh_password_timeout_shell",
-          "name": "SSH: Password Timeout Shell"
+          "id": "dns_zone_transfer_records",
+          "name": "DNS: Zone Transfer Records"
         },
         {
           "count": 1,
@@ -2362,8 +2367,8 @@
         },
         {
           "count": 1,
-          "id": "ssh_key_backup_operator",
-          "name": "SSH: Key Backup Operator"
+          "id": "ssh_password_timeout_shell",
+          "name": "SSH: Password Timeout Shell"
         }
       ],
       "name": "dataset-scale-multi-artifact_run02",
@@ -2384,8 +2389,8 @@
         },
         {
           "count": 1,
-          "id": "140",
-          "name": "DNS: DKIM Selector Secret"
+          "id": "ssh_key_backup_operator",
+          "name": "SSH: Key Backup Operator"
         },
         {
           "count": 1,
@@ -2770,8 +2775,7 @@
       ],
       "name": "dataset-segmented-mixed-perimeter_run02",
       "vulnerabilities": [
-        "nginx/CVE-2017-7529",
-        "ingress-nginx/CVE-2025-1974"
+        "nginx/CVE-2017-7529"
       ]
     },
     {
@@ -2835,7 +2839,7 @@
       "name": "dataset-segmented-mixed-perimeter_run05",
       "vulnerabilities": [
         "nginx/CVE-2013-4547",
-        "nginx/CVE-2017-7529"
+        "ingress-nginx/CVE-2025-1974"
       ]
     },
     {
@@ -3001,19 +3005,14 @@
         },
         {
           "count": 1,
-          "id": "132",
-          "name": "Database: Postgres Audit Schema"
-        },
-        {
-          "count": 1,
-          "id": "dep_ticket_attachment_portal",
-          "name": "Dependency Consumer: Ticket Attachment Portal"
+          "id": "dep_checksum_evidence_gate",
+          "name": "Dependency Consumer: Checksum Evidence Gate"
         }
       ],
       "name": "dataset-segmented-enterprise-pivots_run02",
       "vulnerabilities": [
         "struts2/s2-007",
-        "struts2/s2-046"
+        "struts2/s2-009"
       ]
     },
     {
@@ -3052,8 +3051,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "dep_checksum_evidence_gate",
-          "name": "Dependency Consumer: Checksum Evidence Gate"
+          "id": "dep_api_key_admin_endpoint",
+          "name": "Dependency Consumer: API Key Admin Endpoint"
         },
         {
           "count": 1,
@@ -3093,14 +3092,14 @@
         },
         {
           "count": 1,
-          "id": "nfs_backup_archive_passphrase",
-          "name": "NFS: Passphrase Backup Archive"
+          "id": "132",
+          "name": "Database: Postgres Audit Schema"
         }
       ],
       "name": "dataset-segmented-enterprise-pivots_run05",
       "vulnerabilities": [
         "struts2/s2-057",
-        "struts2/s2-005",
+        "struts2/s2-046",
         "struts2/s2-061",
         "struts2/s2-048"
       ]
@@ -3672,8 +3671,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "dep_api_key_admin_endpoint",
-          "name": "Dependency Consumer: API Key Admin Endpoint"
+          "id": "144",
+          "name": "Mail: POP3 Shared Dropbox"
         }
       ],
       "name": "dataset-catalog-coverage-034",
@@ -3842,8 +3841,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "http_source_secret_repo",
-          "name": "HTTP: Source Secret Repository"
+          "id": "dep_ticket_attachment_portal",
+          "name": "Dependency Consumer: Ticket Attachment Portal"
         }
       ],
       "name": "dataset-catalog-coverage-044",
@@ -4148,8 +4147,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "https_sqli_invoice_portal",
-          "name": "HTTPS: SQLi Invoice Portal"
+          "id": "nfs_backup_archive_passphrase",
+          "name": "NFS: Passphrase Backup Archive"
         }
       ],
       "name": "dataset-catalog-coverage-062",
@@ -4250,8 +4249,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "144",
-          "name": "Mail: POP3 Shared Dropbox"
+          "id": "137",
+          "name": "DNS: Split Horizon TXT"
         }
       ],
       "name": "dataset-catalog-coverage-068",
@@ -4284,8 +4283,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "137",
-          "name": "DNS: Split Horizon TXT"
+          "id": "https_token_debug_api",
+          "name": "HTTPS: Token Debug API"
         }
       ],
       "name": "dataset-catalog-coverage-070",
@@ -4562,7 +4561,7 @@
     "nexus/CVE-2020-10204|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/nexus/CVE-2020-10204/docker-compose.yml": 1,
     "nexus/CVE-2024-4956|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/nexus/CVE-2024-4956/docker-compose.yml": 1,
     "nginx/CVE-2013-4547|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/nginx/CVE-2013-4547/docker-compose.yml": 5,
-    "nginx/CVE-2017-7529|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/nginx/CVE-2017-7529/docker-compose.yml": 6,
+    "nginx/CVE-2017-7529|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/nginx/CVE-2017-7529/docker-compose.yml": 5,
     "nginx/insecure-configuration|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/nginx/insecure-configuration/docker-compose.yml": 5,
     "nginx/nginx_parsing_vulnerability|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/nginx/nginx_parsing_vulnerability/docker-compose.yml": 5,
     "ntopng/CVE-2021-28073|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/ntopng/CVE-2021-28073/docker-compose.yml": 1,
@@ -4639,10 +4638,10 @@
     "spring/CVE-2022-22965|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/spring/CVE-2022-22965/docker-compose.yml": 1,
     "spring/CVE-2022-22978|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/spring/CVE-2022-22978/docker-compose.yml": 1,
     "struts2/s2-001|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-001/docker-compose.yml": 4,
-    "struts2/s2-005|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-005/docker-compose.yml": 4,
+    "struts2/s2-005|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-005/docker-compose.yml": 3,
     "struts2/s2-007|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-007/docker-compose.yml": 4,
     "struts2/s2-008|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-008/docker-compose.yml": 4,
-    "struts2/s2-009|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-009/docker-compose.yml": 3,
+    "struts2/s2-009|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-009/docker-compose.yml": 4,
     "struts2/s2-012|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-012/docker-compose.yml": 3,
     "struts2/s2-013|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-013/docker-compose.yml": 4,
     "struts2/s2-015|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-015/docker-compose.yml": 4,

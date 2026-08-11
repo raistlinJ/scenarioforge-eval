@@ -38,7 +38,7 @@ vulns:
   specific:
   - name: struts2/s2-057
     count: 1
-  - name: struts2/s2-005
+  - name: struts2/s2-046
     count: 1
   - name: struts2/s2-061
     count: 1
@@ -54,8 +54,8 @@ flag_node_generators:
   - id: dep_ssh_key_bastion
     name: 'Dependency Consumer: SSH Key Bastion'
     count: 1
-  - id: nfs_backup_archive_passphrase
-    name: 'NFS: Passphrase Backup Archive'
+  - id: '132'
+    name: 'Database: Postgres Audit Schema'
     count: 1
 flows:
   enabled: true

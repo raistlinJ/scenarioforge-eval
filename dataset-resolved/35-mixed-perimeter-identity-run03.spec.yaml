@@ -36,14 +36,14 @@ vulns:
   enabled: true
   count: 1
   specific:
-  - name: ingress-nginx/CVE-2025-1974
+  - name: nginx/CVE-2013-4547
     count: 1
 flag_node_generators:
   enabled: true
   count: 2
   specific:
-  - id: '139'
-    name: 'DNS: Reverse Zone Note'
+  - id: '138'
+    name: 'DNS: SRV Admin Endpoint'
     count: 1
   - id: '137'
     name: 'DNS: Split Horizon TXT'

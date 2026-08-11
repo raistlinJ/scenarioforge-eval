@@ -104,10 +104,35 @@ def _coverage_spec(index: int, vulnerabilities: list[dict], generator: dict) -> 
             'count': 1,
             'specific': [{'id': generator['id'], 'name': generator['name'], 'count': 1}],
         },
-        'flows': {'enabled': True, 'chain_length': 2 + index % 4, 'allow_duplicates': False, 'include_all_topology_pivots': bool(index % 6 == 0)},
+        # Vary the requested chain length, but never ask for more steps than
+        # this fixture actually has nodes to fill. Every chain node here is
+        # mandatory (see the flow-length comment in
+        # generate_ground_truth_figures.py), so the achievable length is just
+        # vulnerabilities + generators; asking beyond that does not produce a
+        # longer chain, it fails to solve. `2 + index % 4` reaches 5 on one
+        # index in four, one past the 3 vulns + 1 generator these fixtures
+        # carry, so it is clamped rather than narrowed -- keeping the 2/3/4
+        # variation the varied-network intent wants.
+        'flows': {
+            'enabled': True,
+            'chain_length': min(2 + index % 4, len(vulnerabilities) + 1),
+            'allow_duplicates': False,
+            'include_all_topology_pivots': bool(index % 6 == 0),
+        },
         'segmentation': {'enabled': bool(segmentation_items), 'density': 0.35 + (index % 3) * 0.10, 'items': segmentation_items},
         'hitl': {'use_env': False},
-        'validation': {'policy': 'strict'},
+        # Coverage fixtures are run by the same evaluator as the rest of the
+        # suite and are held to the same bar, so they carry the same artifact
+        # checks. Without this block they were the only specs in
+        # dataset-resolved that ran none.
+        'validation': {
+            'policy': 'strict',
+            # Key order matches the rest of dataset-resolved -- these files are
+            # written with sort_keys=False, so insertion order is what lands on
+            # disk and a different order would show up as a diff on every
+            # coverage fixture without changing anything.
+            'check_artifacts': {'enabled': True, 'delay_seconds': 15, 'strict': True},
+        },
     }
 
 

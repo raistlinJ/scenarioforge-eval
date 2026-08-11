@@ -41,8 +41,8 @@ flag_node_generators:
   enabled: true
   count: 4
   specific:
-  - id: ssh_password_timeout_shell
-    name: 'SSH: Password Timeout Shell'
+  - id: dns_zone_transfer_records
+    name: 'DNS: Zone Transfer Records'
     count: 1
   - id: http_cookie_role_escalation
     name: 'HTTP: Cookie Role Escalation'

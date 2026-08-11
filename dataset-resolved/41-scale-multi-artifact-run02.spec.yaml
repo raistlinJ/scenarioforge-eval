@@ -47,8 +47,8 @@ flag_node_generators:
   - id: ssh_password_helpdesk_home
     name: 'SSH: Password Helpdesk Home'
     count: 1
-  - id: ssh_key_backup_operator
-    name: 'SSH: Key Backup Operator'
+  - id: ssh_password_timeout_shell
+    name: 'SSH: Password Timeout Shell'
     count: 1
 flows:
   enabled: true

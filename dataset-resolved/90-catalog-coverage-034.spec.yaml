@@ -46,8 +46,8 @@ flag_node_generators:
   enabled: true
   count: 1
   specific:
-  - id: dep_api_key_admin_endpoint
-    name: 'Dependency Consumer: API Key Admin Endpoint'
+  - id: '144'
+    name: 'Mail: POP3 Shared Dropbox'
     count: 1
 flows:
   enabled: true

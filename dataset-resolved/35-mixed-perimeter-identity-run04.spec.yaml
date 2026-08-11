@@ -36,7 +36,7 @@ vulns:
   enabled: true
   count: 1
   specific:
-  - name: nginx/nginx_parsing_vulnerability
+  - name: ingress-nginx/CVE-2025-1974
     count: 1
 flag_node_generators:
   enabled: true
@@ -48,8 +48,8 @@ flag_node_generators:
   - id: '141'
     name: 'DNS: Delegation Glue Hint'
     count: 1
-  - id: '138'
-    name: 'DNS: SRV Admin Endpoint'
+  - id: ldap_bind_service_account
+    name: 'LDAP: Service Account Bind'
     count: 1
 flows:
   enabled: true

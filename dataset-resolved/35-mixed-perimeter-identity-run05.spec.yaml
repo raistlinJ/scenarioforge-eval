@@ -47,8 +47,8 @@ flag_node_generators:
   - id: ldap_anonymous_directory
     name: 'LDAP: Anonymous Directory'
     count: 1
-  - id: ldap_bind_service_account
-    name: 'LDAP: Service Account Bind'
+  - id: '140'
+    name: 'DNS: DKIM Selector Secret'
     count: 1
 flows:
   enabled: true

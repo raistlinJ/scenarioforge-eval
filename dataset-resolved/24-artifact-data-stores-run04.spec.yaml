@@ -44,8 +44,8 @@ flag_node_generators:
   - id: redis_exposed_keys
     name: 'Cache: Exposed Redis Keys'
     count: 1
-  - id: '131'
-    name: 'Cache: CDN Manifest Cache'
+  - id: '135'
+    name: 'Database: Mongo Export Documents'
     count: 1
   - id: '134'
     name: 'Database: SQLite Backup File'
