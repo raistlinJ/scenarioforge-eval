@@ -36,7 +36,7 @@ vulns:
   enabled: true
   count: 2
   specific:
-  - name: struts2/s2-007
+  - name: struts2/s2-001
     count: 1
   - name: struts2/s2-009
     count: 1
@@ -44,9 +44,12 @@ flag_node_generators:
   enabled: true
   count: 3
   specific:
+  - id: '134'
+    name: 'Database: SQLite Backup File'
+    count: 1
   - id: dep_endpoint_hidden_followup
     name: 'Dependency Consumer: Hidden Endpoint Follow-Up'
-    count: 2
+    count: 1
   - id: dep_checksum_evidence_gate
     name: 'Dependency Consumer: Checksum Evidence Gate'
     count: 1

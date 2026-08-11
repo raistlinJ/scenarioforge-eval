@@ -1,12 +1,12 @@
 name: dataset-segmented-enterprise-pivots_run04
 iterations: 1
-seed: 317229950
+seed: 1635023766
 topology:
-  routers: 3
+  routers: 5
   hosts: 12
 services:
   enabled: true
-  count: 6
+  count: 5
   density: 1.0
   include:
   - SSH
@@ -40,23 +40,23 @@ vulns:
     count: 1
   - name: struts2/s2-013
     count: 1
-  - name: struts2/s2-059
+  - name: struts2/s2-052
     count: 1
 flag_node_generators:
   enabled: true
   count: 4
   specific:
+  - id: '134'
+    name: 'Database: SQLite Backup File'
+    count: 1
   - id: dep_api_key_admin_endpoint
     name: 'Dependency Consumer: API Key Admin Endpoint'
     count: 1
-  - id: dep_port_forward_pivot
-    name: 'Dependency Consumer: Port Forward Pivot'
+  - id: nfs_backup_archive_passphrase
+    name: 'NFS: Passphrase Backup Archive'
     count: 1
-  - id: '133'
-    name: 'Database: MySQL Reports Dump'
-    count: 1
-  - id: '135'
-    name: 'Database: Mongo Export Documents'
+  - id: dep_ticket_attachment_portal
+    name: 'Dependency Consumer: Ticket Attachment Portal'
     count: 1
 flows:
   enabled: true
@@ -72,7 +72,7 @@ segmentation:
     pivot_enabled: true
     pivot_provider: vulnerability
     type: Firewall
-    count: 1
+    count: 2
   - factor: 1.0
     pivot_enabled: true
     pivot_provider: flag-node-generator

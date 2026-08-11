@@ -46,8 +46,8 @@ flag_node_generators:
   enabled: true
   count: 1
   specific:
-  - id: http_public_file_drop
-    name: 'HTTP: Public File Drop'
+  - id: nfs_finance_cifs_share
+    name: 'Network Share: Finance CIFS Mount'
     count: 1
 flows:
   enabled: true

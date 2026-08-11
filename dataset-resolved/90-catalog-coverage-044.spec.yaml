@@ -46,8 +46,8 @@ flag_node_generators:
   enabled: true
   count: 1
   specific:
-  - id: dep_ticket_attachment_portal
-    name: 'Dependency Consumer: Ticket Attachment Portal'
+  - id: http_source_secret_repo
+    name: 'HTTP: Source Secret Repository'
     count: 1
 flows:
   enabled: true

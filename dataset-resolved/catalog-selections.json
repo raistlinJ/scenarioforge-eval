@@ -33,14 +33,14 @@
     "dep_checksum_evidence_gate": 5,
     "dep_endpoint_hidden_followup": 5,
     "dep_file_parser_console": 5,
-    "dep_port_forward_pivot": 5,
+    "dep_port_forward_pivot": 4,
     "dep_ssh_key_bastion": 5,
     "dep_ticket_attachment_portal": 5,
     "dep_version_exploit_selector": 5,
     "dep_webauth_bypass_console": 5,
     "dns_txt_secret_record": 5,
     "dns_zone_transfer_records": 5,
-    "ftp_anonymous_finance_drop": 5,
+    "ftp_anonymous_finance_drop": 4,
     "ftp_user_backup_home": 5,
     "git_deploy_key_repo": 5,
     "git_http_bare_repo": 5,
@@ -48,8 +48,8 @@
     "http_cookie_role_escalation": 5,
     "http_directory_traversal_docs": 4,
     "http_login_staff_portal": 5,
-    "http_public_file_drop": 5,
-    "http_source_secret_repo": 4,
+    "http_public_file_drop": 4,
+    "http_source_secret_repo": 5,
     "http_sqli_customer_lookup": 4,
     "http_upload_file_drop": 5,
     "https_basic_auth_reports": 4,
@@ -57,7 +57,7 @@
     "https_login_admin_console": 5,
     "https_public_status_page": 4,
     "https_source_secret_ci": 5,
-    "https_sqli_invoice_portal": 4,
+    "https_sqli_invoice_portal": 5,
     "https_token_debug_api": 5,
     "imap_shared_mailbox": 5,
     "ldap_anonymous_directory": 4,
@@ -87,7 +87,7 @@
     "ssh_password_audit_workstation": 5,
     "ssh_password_finance_terminal": 5,
     "ssh_password_helpdesk_home": 5,
-    "ssh_password_timeout_shell": 4,
+    "ssh_password_timeout_shell": 5,
     "ssh_sftp_dropbox_key": 5
   },
   "resolved_spec_count": 226,
@@ -2968,8 +2968,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "dep_ssh_key_bastion",
-          "name": "Dependency Consumer: SSH Key Bastion"
+          "id": "136",
+          "name": "Database: Oracle Wallet Note"
         },
         {
           "count": 1,
@@ -2978,28 +2978,31 @@
         },
         {
           "count": 1,
-          "id": "134",
-          "name": "Database: SQLite Backup File"
+          "id": "dep_ssh_key_bastion",
+          "name": "Dependency Consumer: SSH Key Bastion"
         },
         {
           "count": 1,
-          "id": "136",
-          "name": "Database: Oracle Wallet Note"
+          "id": "dep_endpoint_hidden_followup",
+          "name": "Dependency Consumer: Hidden Endpoint Follow-Up"
         }
       ],
       "name": "dataset-segmented-enterprise-pivots_run01",
       "vulnerabilities": [
-        "struts2/s2-067",
-        "struts2/s2-052",
-        "struts2/s2-001",
-        "struts2/s2-032"
+        "struts2/s2-012",
+        "struts2/s2-048"
       ]
     },
     {
       "file": "54-segmented-enterprise-pivots-run02.spec.yaml",
       "generators": [
         {
-          "count": 2,
+          "count": 1,
+          "id": "134",
+          "name": "Database: SQLite Backup File"
+        },
+        {
+          "count": 1,
           "id": "dep_endpoint_hidden_followup",
           "name": "Dependency Consumer: Hidden Endpoint Follow-Up"
         },
@@ -3011,7 +3014,7 @@
       ],
       "name": "dataset-segmented-enterprise-pivots_run02",
       "vulnerabilities": [
-        "struts2/s2-007",
+        "struts2/s2-001",
         "struts2/s2-009"
       ]
     },
@@ -3051,30 +3054,30 @@
       "generators": [
         {
           "count": 1,
+          "id": "134",
+          "name": "Database: SQLite Backup File"
+        },
+        {
+          "count": 1,
           "id": "dep_api_key_admin_endpoint",
           "name": "Dependency Consumer: API Key Admin Endpoint"
         },
         {
           "count": 1,
-          "id": "dep_port_forward_pivot",
-          "name": "Dependency Consumer: Port Forward Pivot"
+          "id": "nfs_backup_archive_passphrase",
+          "name": "NFS: Passphrase Backup Archive"
         },
         {
           "count": 1,
-          "id": "133",
-          "name": "Database: MySQL Reports Dump"
-        },
-        {
-          "count": 1,
-          "id": "135",
-          "name": "Database: Mongo Export Documents"
+          "id": "dep_ticket_attachment_portal",
+          "name": "Dependency Consumer: Ticket Attachment Portal"
         }
       ],
       "name": "dataset-segmented-enterprise-pivots_run04",
       "vulnerabilities": [
         "struts2/s2-008",
         "struts2/s2-013",
-        "struts2/s2-059"
+        "struts2/s2-052"
       ]
     },
     {
@@ -3100,8 +3103,8 @@
       "vulnerabilities": [
         "struts2/s2-057",
         "struts2/s2-046",
-        "struts2/s2-061",
-        "struts2/s2-048"
+        "struts2/s2-032",
+        "struts2/s2-005"
       ]
     },
     {
@@ -3841,8 +3844,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "dep_ticket_attachment_portal",
-          "name": "Dependency Consumer: Ticket Attachment Portal"
+          "id": "http_source_secret_repo",
+          "name": "HTTP: Source Secret Repository"
         }
       ],
       "name": "dataset-catalog-coverage-044",
@@ -4028,8 +4031,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "nfs_finance_cifs_share",
-          "name": "Network Share: Finance CIFS Mount"
+          "id": "135",
+          "name": "Database: Mongo Export Documents"
         }
       ],
       "name": "dataset-catalog-coverage-055",
@@ -4147,8 +4150,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "nfs_backup_archive_passphrase",
-          "name": "NFS: Passphrase Backup Archive"
+          "id": "https_sqli_invoice_portal",
+          "name": "HTTPS: SQLi Invoice Portal"
         }
       ],
       "name": "dataset-catalog-coverage-062",
@@ -4232,8 +4235,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "134",
-          "name": "Database: SQLite Backup File"
+          "id": "ssh_password_timeout_shell",
+          "name": "SSH: Password Timeout Shell"
         }
       ],
       "name": "dataset-catalog-coverage-067",
@@ -4351,8 +4354,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "ftp_anonymous_finance_drop",
-          "name": "FTP: Anonymous Finance Drop"
+          "id": "133",
+          "name": "Database: MySQL Reports Dump"
         }
       ],
       "name": "dataset-catalog-coverage-074",
@@ -4385,8 +4388,8 @@
       "generators": [
         {
           "count": 1,
-          "id": "http_public_file_drop",
-          "name": "HTTP: Public File Drop"
+          "id": "nfs_finance_cifs_share",
+          "name": "Network Share: Finance CIFS Mount"
         }
       ],
       "name": "dataset-catalog-coverage-076",
@@ -4638,11 +4641,11 @@
     "spring/CVE-2022-22965|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/spring/CVE-2022-22965/docker-compose.yml": 1,
     "spring/CVE-2022-22978|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/spring/CVE-2022-22978/docker-compose.yml": 1,
     "struts2/s2-001|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-001/docker-compose.yml": 4,
-    "struts2/s2-005|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-005/docker-compose.yml": 3,
-    "struts2/s2-007|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-007/docker-compose.yml": 4,
+    "struts2/s2-005|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-005/docker-compose.yml": 4,
+    "struts2/s2-007|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-007/docker-compose.yml": 3,
     "struts2/s2-008|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-008/docker-compose.yml": 4,
     "struts2/s2-009|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-009/docker-compose.yml": 4,
-    "struts2/s2-012|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-012/docker-compose.yml": 3,
+    "struts2/s2-012|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-012/docker-compose.yml": 4,
     "struts2/s2-013|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-013/docker-compose.yml": 4,
     "struts2/s2-015|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-015/docker-compose.yml": 4,
     "struts2/s2-032|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-032/docker-compose.yml": 4,
@@ -4652,10 +4655,10 @@
     "struts2/s2-052|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-052/docker-compose.yml": 4,
     "struts2/s2-053|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-053/docker-compose.yml": 4,
     "struts2/s2-057|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-057/docker-compose.yml": 4,
-    "struts2/s2-059|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-059/docker-compose.yml": 4,
-    "struts2/s2-061|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-061/docker-compose.yml": 4,
+    "struts2/s2-059|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-059/docker-compose.yml": 3,
+    "struts2/s2-061|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-061/docker-compose.yml": 3,
     "struts2/s2-066|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-066/docker-compose.yml": 4,
-    "struts2/s2-067|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-067/docker-compose.yml": 4,
+    "struts2/s2-067|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/struts2/s2-067/docker-compose.yml": 3,
     "superset/CVE-2023-27524|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/superset/CVE-2023-27524/docker-compose.yml": 1,
     "superset/CVE-2023-37941|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/superset/CVE-2023-37941/docker-compose.yml": 1,
     "teamcity/CVE-2023-42793|/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/teamcity/CVE-2023-42793/docker-compose.yml": 1,

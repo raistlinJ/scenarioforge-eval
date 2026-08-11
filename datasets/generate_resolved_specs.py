@@ -36,6 +36,28 @@ _RETRY_SEED_OVERRIDES: dict[tuple[str, int], str] = {
     ("35-mixed-perimeter-identity", 2): "retry1",
     ("54-segmented-enterprise-pivots", 2): "retry1",
     ("52-segmented-mixed-perimeter", 2): "retry1",
+    # Iterations 1 and 4 land a "dependency consumer" generator
+    # (dep_ssh_key_bastion, dep_api_key_admin_endpoint) on a pivot target, and
+    # the two constraints that puts on the step cannot both hold. The consumer
+    # needs an artifact -- SSHPrivateKey(path), APIKey(service) -- that nothing
+    # in the chain produces, so Flow can only hand it over at a chain start;
+    # being a pivot target simultaneously pins the step after its provider.
+    # First position or after the provider: no ordering is both. The solver
+    # picks the pair anyway because a pivot requirement is attached during
+    # assignment enrichment, after selection has already committed, so the
+    # constraint is invisible where the choice is made. Teaching selection
+    # about pivots was tried and reverted: pivot requirements are pervasive
+    # here (7 of 8 steps in run01 want one), so every version of that rule
+    # starved the solver into producing no chain at all rather than a
+    # different one. Re-seeding avoids the pairing outright and leaves the
+    # declared config untouched; a real fix means solving selection and
+    # ordering together instead of in sequence.
+    # Iteration 4 needed a second bump: `retry1` still landed a consumer on a
+    # pivot target (`Pivot(docker-11)` required at position 0). `retry2`
+    # resolves cleanly. Both were checked by running flag-sequencing against
+    # the regenerated spec, not by inspection.
+    ("54-segmented-enterprise-pivots", 1): "retry1",
+    ("54-segmented-enterprise-pivots", 4): "retry2",
 }
 
 

@@ -46,8 +46,8 @@ flag_node_generators:
   enabled: true
   count: 1
   specific:
-  - id: '134'
-    name: 'Database: SQLite Backup File'
+  - id: ssh_password_timeout_shell
+    name: 'SSH: Password Timeout Shell'
     count: 1
 flows:
   enabled: true
