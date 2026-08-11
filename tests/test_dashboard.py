@@ -714,6 +714,20 @@ class DashboardDataTests(unittest.TestCase):
             self.assertEqual(preflight["incomplete"], 1)
             self.assertTrue(preflight["has_existing"])
 
+            # The dialog labels each listed run, so the per-run completion
+            # state has to reach the client rather than only the totals.
+            self.assertEqual(
+                preflight["existing_runs"],
+                [
+                    {"name": "sample_run2", "completed": False, "succeeded": False},
+                    {"name": "sample_run1", "completed": True, "succeeded": True},
+                ],
+            )
+            # Incomplete first: the list is capped, and these are the runs the
+            # reader has to act on.
+            self.assertFalse(preflight["existing_runs"][0]["completed"])
+            self.assertEqual(preflight["existing_not_listed"], 0)
+
             with self.assertRaisesRegex(RuntimeError, "Resume or Start from beginning"):
                 _build_execution_plan(payload, cwd=root)
 
@@ -740,6 +754,68 @@ class DashboardDataTests(unittest.TestCase):
             self.assertEqual(config["run_count"], 3)
             self.assertIn(out_path / "sample_run1_result.json", cleanup_paths)
             self.assertIn(incomplete_dir, cleanup_paths)
+
+    def test_existing_run_list_caps_entries_but_keeps_incomplete_visible(self):
+        """A long tail of finished runs must not bury the incomplete ones.
+
+        The listing is capped, so if it were left in plan order the runs the
+        reader actually has to decide about could all fall past the cap and
+        the dialog would look like there was nothing to resume.
+        """
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir).resolve()
+            spec_path = root / "sample.spec.yaml"
+            spec_path.write_text("name: sample\niterations: 14\nseed: 41\n", encoding="utf-8")
+            sf_path = root / "scenarioforge"
+            sf_path.mkdir()
+            out_path = root / "results"
+            out_path.mkdir()
+
+            # Runs 1-12 completed; 13 and 14 only ever got a directory, so they
+            # sort last by plan order and would be cut off without the reorder.
+            for index in range(1, 13):
+                run_name = f"sample_run{index}"
+                result = _result(
+                    run_name, success=True, duration=1, started_at="2026-08-01T12:00:00Z"
+                )
+                result["metadata"].update({
+                    "iteration_index": index,
+                    "iteration_count": 14,
+                    "target_phase": "execute",
+                    "reproduction_mode": "xml",
+                })
+                (out_path / f"{run_name}_result.json").write_text(
+                    json.dumps(result), encoding="utf-8"
+                )
+            for index in (13, 14):
+                (out_path / f"sample_run{index}").mkdir()
+
+            preflight, _ = _scan_execution_runs(
+                {
+                    "spec_path": str(spec_path),
+                    "sf_path": str(sf_path),
+                    "out_path": str(out_path),
+                    "phase": "execute",
+                },
+                cwd=root,
+            )
+
+            self.assertEqual(preflight["existing"], 14)
+            self.assertEqual(preflight["incomplete"], 2)
+
+            listed = preflight["existing_runs"]
+            self.assertEqual(len(listed), 10)
+            self.assertEqual(preflight["existing_not_listed"], 4)
+            # Both incomplete runs survive the cap, and lead the list.
+            self.assertEqual(
+                [run["name"] for run in listed[:2]], ["sample_run13", "sample_run14"]
+            )
+            self.assertTrue(all(not run["completed"] for run in listed[:2]))
+            self.assertTrue(all(run["completed"] for run in listed[2:]))
+            # Nothing is dropped without being accounted for.
+            self.assertEqual(
+                len(listed) + preflight["existing_not_listed"], preflight["existing"]
+            )
 
     def test_builds_selected_iteration_reruns_with_optional_replacement(self):
         with tempfile.TemporaryDirectory() as temp_dir:

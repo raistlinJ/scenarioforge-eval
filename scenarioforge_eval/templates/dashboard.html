@@ -588,6 +588,13 @@
   .modal-content .existing-runs-summary { margin: 0 0 10px; color: var(--text); font-size: 13px; }
   .rerun-list { max-height: 142px; margin-bottom: 15px; padding: 8px 11px; overflow: auto; border: 1px solid var(--border); border-radius: 9px; color: var(--muted); background: var(--bg); font: 11px/1.7 ui-monospace, SFMono-Regular, Menlo, monospace; }
   .rerun-list span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .rerun-list .run-row { display: flex; align-items: center; gap: 8px; }
+  .run-row-name { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .run-tag { flex: 0 0 auto; padding: 0 6px; border: 1px solid transparent; border-radius: 999px; font-size: 10px; line-height: 15px; text-transform: uppercase; letter-spacing: .06em; }
+  .run-tag-incomplete { color: var(--warning); border-color: rgba(255, 201, 102, .38); background: rgba(255, 201, 102, .13); font-weight: 600; }
+  .run-tag-passed { color: var(--cyan); border-color: rgba(88, 219, 193, .32); background: var(--cyan-soft); }
+  .run-tag-failed { color: var(--danger); border-color: rgba(255, 123, 114, .32); background: var(--danger-soft); }
+  .rerun-list .run-row-more { margin-top: 4px; color: var(--muted-2); font-style: italic; }
   .replace-choice { margin: 0; padding: 12px; display: flex !important; align-items: flex-start; gap: 10px; border: 1px solid rgba(255, 123, 114, .35); border-radius: 9px; background: var(--danger-soft); cursor: pointer; }
   .modal-content .replace-choice input { flex: 0 0 auto; width: 16px; height: 16px; margin: 2px 0 0; padding: 0; accent-color: var(--danger); }
   .replace-choice strong, .replace-choice small { display: block; }
@@ -1004,9 +1011,27 @@
     const planned = Number(preflight.planned || 0);
     const incomplete = Number(preflight.incomplete || 0);
     $('existing-runs-summary').textContent = `${completed} of ${planned} planned runs have completed results. ${incomplete} existing run folder${incomplete === 1 ? '' : 's'} will be treated as incomplete.`;
-    const names = Array.isArray(preflight.existing_run_names) ? preflight.existing_run_names : [];
-    $('existing-runs-list').innerHTML = names.length
-      ? names.map(name => `<span>${esc(name)}</span>`).join('')
+    const existingRuns = Array.isArray(preflight.existing_runs) ? preflight.existing_runs : [];
+    const notListed = Number(preflight.existing_not_listed || 0);
+    const rows = existingRuns.map(run => {
+      // Incomplete is the state that decides what the buttons do to this run,
+      // so it gets the emphasized tag; complete runs still report pass/fail
+      // because that is what the reader is deciding whether to discard.
+      const state = !run.completed
+        ? { cls: 'incomplete', text: 'incomplete', hint: 'No completed result; Resume will run this one' }
+        : run.succeeded
+          ? { cls: 'passed', text: 'passed', hint: 'Completed and passed; Resume will skip this one' }
+          : { cls: 'failed', text: 'failed', hint: 'Completed but failed; Resume will skip this one' };
+      return `<span class="run-row" title="${esc(state.hint)}">`
+        + `<span class="run-row-name">${esc(run.name)}</span>`
+        + `<span class="run-tag run-tag-${state.cls}">${state.text}</span>`
+        + `</span>`;
+    });
+    if (notListed > 0) {
+      rows.push(`<span class="run-row-more">+${notListed} more existing run${notListed === 1 ? '' : 's'} not listed</span>`);
+    }
+    $('existing-runs-list').innerHTML = rows.length
+      ? rows.join('')
       : '<span>Matching output files were found.</span>';
     $('existing-runs-resume').disabled = Number(preflight.remaining || 0) === 0;
     $('existing-runs-resume').title = Number(preflight.remaining || 0) === 0 ? 'All planned runs are already complete' : '';

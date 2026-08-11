@@ -27,3 +27,8 @@ wheels/
 htmlcov/
 .DS_Store
 /Original result folders
+
+# Result folders moved aside before a dataset re-sync, kept only so the
+# previous runs stay recoverable. Large and machine-local, like the results
+# directory itself above.
+/archived-results

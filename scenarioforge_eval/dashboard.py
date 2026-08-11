@@ -396,6 +396,11 @@ def _summarize_command_texts(command_texts: list[str]) -> str:
     return summary
 
 
+# How many existing runs the resume dialog lists by name. The rest are
+# reported as a trailing count rather than dropped silently.
+_EXISTING_RUN_LIST_LIMIT = 10
+
+
 def _interrupted_run_completion_paths(output_root: Path, run_name: str) -> tuple[Path, ...]:
     """Artifacts that would make an interrupted run look finished.
 
@@ -471,6 +476,12 @@ def _scan_execution_runs(payload: Any, *, cwd: Path) -> tuple[dict[str, Any], li
     passed = sum(1 for run in runs if run["completed"] and run["succeeded"])
     existing = [run for run in runs if run["existing"]]
     incomplete = sum(1 for run in existing if not run["completed"])
+    # Incomplete first: the list shown in the dialog is capped, and an
+    # incomplete run is the one the reader has to act on (Resume re-runs it,
+    # Start from beginning discards it). Ordering by completion keeps those
+    # visible instead of letting a long tail of finished runs bury them.
+    # sorted() is stable, so runs stay in plan order within each group.
+    listed = sorted(existing, key=lambda run: bool(run["completed"]))[:_EXISTING_RUN_LIST_LIMIT]
     preflight = {
         "planned": len(runs),
         "completed": completed,
@@ -480,7 +491,15 @@ def _scan_execution_runs(payload: Any, *, cwd: Path) -> tuple[dict[str, Any], li
         "existing": len(existing),
         "incomplete": incomplete,
         "has_existing": bool(existing),
-        "existing_run_names": [run["run_name"] for run in existing[:10]],
+        "existing_runs": [
+            {
+                "name": run["run_name"],
+                "completed": bool(run["completed"]),
+                "succeeded": bool(run["succeeded"]),
+            }
+            for run in listed
+        ],
+        "existing_not_listed": len(existing) - len(listed),
     }
     return preflight, runs
 
