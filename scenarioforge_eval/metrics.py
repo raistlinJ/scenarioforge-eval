@@ -1,10 +1,16 @@
 import datetime
 import os
 import re
-import resource
 import sys
 import time
 from typing import Any
+
+try:
+    import resource
+except ImportError:
+    # Windows has no getrusage. Timings still work; the CPU/memory columns
+    # come back empty rather than blocking the dashboard from importing.
+    resource = None
 
 
 TOKEN_RE = re.compile(r"\w+|[^\w\s]", re.UNICODE)
@@ -45,11 +51,18 @@ def _maxrss_to_bytes(value: int) -> int:
 
 
 def _usage_snapshot(kind: str) -> dict[str, Any] | None:
+    if kind not in ('self', 'children', 'self_children'):
+        raise ValueError(f"unknown resource usage kind: {kind}")
+
+    if resource is None:
+        # _usage_delta turns a missing snapshot into an empty resource dict.
+        return None
+
     if kind == 'self':
         usage = resource.getrusage(resource.RUSAGE_SELF)
     elif kind == 'children':
         usage = resource.getrusage(resource.RUSAGE_CHILDREN)
-    elif kind == 'self_children':
+    else:
         own = resource.getrusage(resource.RUSAGE_SELF)
         children = resource.getrusage(resource.RUSAGE_CHILDREN)
         return {
@@ -63,8 +76,6 @@ def _usage_snapshot(kind: str) -> dict[str, Any] | None:
             'voluntary_context_switches': own.ru_nvcsw + children.ru_nvcsw,
             'involuntary_context_switches': own.ru_nivcsw + children.ru_nivcsw,
         }
-    else:
-        raise ValueError(f"unknown resource usage kind: {kind}")
 
     return {
         'cpu_user_s': usage.ru_utime,

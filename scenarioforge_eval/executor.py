@@ -1,4 +1,3 @@
-import fcntl
 import fnmatch
 import hashlib
 import ipaddress
@@ -21,6 +20,14 @@ from contextlib import contextmanager, nullcontext
 from copy import deepcopy
 
 try:
+    import fcntl
+    msvcrt = None
+except ImportError:
+    # Windows: _lock_file_exclusive falls back to msvcrt byte-range locking.
+    import msvcrt
+    fcntl = None
+
+try:
     from .metrics import MetricSpan, directory_metrics, file_metrics, rounded_seconds, text_metrics
     from .reproduction import (
         REPRODUCTION_MODES,
@@ -36,6 +43,29 @@ except ImportError:
         create_reproduction_bundle,
         local_artifact_source,
     )
+
+
+def _lock_file_exclusive(handle) -> None:
+    if fcntl is not None:
+        fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+        return
+    # msvcrt.locking gives up after ~10s of contention, so retry until the
+    # byte range is ours to match flock's block-until-acquired behaviour.
+    handle.seek(0)
+    while True:
+        try:
+            msvcrt.locking(handle.fileno(), msvcrt.LK_LOCK, 1)
+            return
+        except OSError:
+            continue
+
+
+def _unlock_file(handle) -> None:
+    if fcntl is not None:
+        fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+        return
+    handle.seek(0)
+    msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
 
 
 class PhaseExecutionError(RuntimeError):
@@ -1051,12 +1081,12 @@ class Executor:
         lock_path = os.path.join(tempfile.gettempdir(), f'scenarioforge-eval-{digest}.lock')
         with open(lock_path, 'a+', encoding='utf-8') as handle:
             wait_started = time.perf_counter()
-            fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+            _lock_file_exclusive(handle)
             wait_s = rounded_seconds(time.perf_counter() - wait_started)
             try:
                 yield {'key': lock_key, 'path': lock_path, 'wait_s': wait_s}
             finally:
-                fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+                _unlock_file(handle)
 
     @staticmethod
     def _is_loopback_host(host: str) -> bool:
