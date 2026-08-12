@@ -1,0 +1,266 @@
+{
+  "actual_nodes": [],
+  "actual_nodes_detail": [],
+  "actual_vuln_nodes": [
+    "docker-6",
+    "docker-7",
+    "docker-8"
+  ],
+  "cli_post_execution_validation": true,
+  "docker_missing": [],
+  "docker_nodes": [
+    "docker-6",
+    "docker-7",
+    "docker-8"
+  ],
+  "docker_not_running": [],
+  "docker_not_running_details": [],
+  "docker_restarting": [],
+  "docker_running": [
+    "docker-6",
+    "docker-7",
+    "docker-8"
+  ],
+  "docker_start_pending": [],
+  "expected_docker_nodes": [
+    "docker-6",
+    "docker-7",
+    "docker-8"
+  ],
+  "expected_nodes": [],
+  "expected_vuln_nodes": [],
+  "extra_docker_nodes": [],
+  "extra_node_ids": [],
+  "extra_nodes": [],
+  "flag_verification_checked": [],
+  "flag_verification_details": [],
+  "flag_verification_failed": [],
+  "flow_live_paths_checked": 9,
+  "flow_live_paths_detail": [
+    {
+      "exists_local": false,
+      "generator_id": "146",
+      "is_remote": true,
+      "missing_local": false,
+      "node_id": "7",
+      "path": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/01_146_docker-6",
+      "path_type": "artifacts_dir"
+    },
+    {
+      "exists_local": false,
+      "generator_id": "146",
+      "is_remote": true,
+      "missing_local": false,
+      "node_id": "7",
+      "path": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/01_146_docker-6",
+      "path_type": "inject_source_dir"
+    },
+    {
+      "exists_local": false,
+      "generator_id": "146",
+      "is_remote": true,
+      "missing_local": false,
+      "node_id": "7",
+      "path": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/01_146_docker-6/service",
+      "path_type": "inject_source"
+    },
+    {
+      "exists_local": false,
+      "generator_id": "142",
+      "is_remote": true,
+      "missing_local": false,
+      "node_id": "8",
+      "path": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/02_142_docker-7",
+      "path_type": "artifacts_dir"
+    },
+    {
+      "exists_local": false,
+      "generator_id": "142",
+      "is_remote": true,
+      "missing_local": false,
+      "node_id": "8",
+      "path": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/02_142_docker-7",
+      "path_type": "inject_source_dir"
+    },
+    {
+      "exists_local": false,
+      "generator_id": "142",
+      "is_remote": true,
+      "missing_local": false,
+      "node_id": "8",
+      "path": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/02_142_docker-7/service",
+      "path_type": "inject_source"
+    },
+    {
+      "exists_local": false,
+      "generator_id": "143",
+      "is_remote": true,
+      "missing_local": false,
+      "node_id": "9",
+      "path": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/03_143_docker-8",
+      "path_type": "artifacts_dir"
+    },
+    {
+      "exists_local": false,
+      "generator_id": "143",
+      "is_remote": true,
+      "missing_local": false,
+      "node_id": "9",
+      "path": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/03_143_docker-8",
+      "path_type": "inject_source_dir"
+    },
+    {
+      "exists_local": false,
+      "generator_id": "143",
+      "is_remote": true,
+      "missing_local": false,
+      "node_id": "9",
+      "path": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/03_143_docker-8/service",
+      "path_type": "inject_source"
+    }
+  ],
+  "flow_live_paths_missing": [],
+  "flow_live_paths_missing_count": 0,
+  "generator_injects_missing": [],
+  "generator_outputs_missing": [],
+  "generator_validation_detail": [
+    {
+      "artifacts_dir": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/01_146_docker-6",
+      "container_check_error": "",
+      "container_checked": [],
+      "container_missing": [],
+      "container_name": "docker-6",
+      "flag_delivery_mode": "file",
+      "flag_file_path": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/01_146_docker-6/service/reports/dmarc-aggregate.xml",
+      "generator_id": "146",
+      "generator_name": "Mail: DMARC Report Queue",
+      "generator_type": "flag-node-generator",
+      "inject_checked": [
+        "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/01_146_docker-6/service",
+        "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/01_146_docker-6/service/reports/dmarc-aggregate.xml"
+      ],
+      "inject_missing": [],
+      "node_id": "7",
+      "node_name": "docker-6",
+      "outputs_checked": [
+        "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/01_146_docker-6/service/reports/dmarc-aggregate.xml",
+        "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/01_146_docker-6/docker-compose.yml"
+      ],
+      "outputs_manifest": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/01_146_docker-6/outputs.json",
+      "outputs_manifest_exists": true,
+      "outputs_missing": [],
+      "outputs_resolved": {
+        "File(path)": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/01_146_docker-6/docker-compose.yml",
+        "FlagFile(path)": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/01_146_docker-6/service/reports/dmarc-aggregate.xml"
+      },
+      "run_dir": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/01_146_docker-6"
+    },
+    {
+      "artifacts_dir": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/02_142_docker-7",
+      "container_check_error": "",
+      "container_checked": [],
+      "container_missing": [],
+      "container_name": "docker-7",
+      "flag_delivery_mode": "file",
+      "flag_file_path": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/02_142_docker-7/service/Archive/0042.eml",
+      "generator_id": "142",
+      "generator_name": "Mail: IMAP Archive Mailbox",
+      "generator_type": "flag-node-generator",
+      "inject_checked": [
+        "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/02_142_docker-7/service",
+        "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/02_142_docker-7/service/Archive/0042.eml"
+      ],
+      "inject_missing": [],
+      "node_id": "8",
+      "node_name": "docker-7",
+      "outputs_checked": [
+        "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/02_142_docker-7/service/Archive/0042.eml",
+        "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/02_142_docker-7/docker-compose.yml"
+      ],
+      "outputs_manifest": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/02_142_docker-7/outputs.json",
+      "outputs_manifest_exists": true,
+      "outputs_missing": [],
+      "outputs_resolved": {
+        "File(path)": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/02_142_docker-7/docker-compose.yml",
+        "FlagFile(path)": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/02_142_docker-7/service/Archive/0042.eml"
+      },
+      "run_dir": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/02_142_docker-7"
+    },
+    {
+      "artifacts_dir": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/03_143_docker-8",
+      "container_check_error": "",
+      "container_checked": [],
+      "container_missing": [],
+      "container_name": "docker-8",
+      "flag_delivery_mode": "file",
+      "flag_file_path": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/03_143_docker-8/service/spool/bounce-2401.eml",
+      "generator_id": "143",
+      "generator_name": "Mail: SMTP Bounce Spool",
+      "generator_type": "flag-node-generator",
+      "inject_checked": [
+        "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/03_143_docker-8/service",
+        "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/03_143_docker-8/service/spool/bounce-2401.eml"
+      ],
+      "inject_missing": [],
+      "node_id": "9",
+      "node_name": "docker-8",
+      "outputs_checked": [
+        "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/03_143_docker-8/service/spool/bounce-2401.eml",
+        "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/03_143_docker-8/docker-compose.yml"
+      ],
+      "outputs_manifest": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/03_143_docker-8/outputs.json",
+      "outputs_manifest_exists": true,
+      "outputs_missing": [],
+      "outputs_resolved": {
+        "File(path)": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/03_143_docker-8/docker-compose.yml",
+        "FlagFile(path)": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/03_143_docker-8/service/spool/bounce-2401.eml"
+      },
+      "run_dir": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/03_143_docker-8"
+    }
+  ],
+  "inject_dirs_expected": [
+    "/flow_injects"
+  ],
+  "inject_files_expected": [
+    "/flow_injects/service"
+  ],
+  "inject_files_expected_by_node": {
+    "docker-6": [
+      "/flow_injects/service"
+    ],
+    "docker-7": [
+      "/flow_injects/service"
+    ],
+    "docker-8": [
+      "/flow_injects/service"
+    ]
+  },
+  "inject_nodes_expected": [
+    "docker-6",
+    "docker-7",
+    "docker-8"
+  ],
+  "injects_detail": [
+    "docker-6: 3 file(s) in /flow_injects (e.g., /flow_injects/service/reports/dmarc-aggregate.xml, /flow_injects/service/reports/README.txt, /flow_injects/service/config.json); expected /flow_injects/service",
+    "docker-7: 3 file(s) in /flow_injects (e.g., /flow_injects/service/INBOX/0001.eml, /flow_injects/service/config.json, /flow_injects/service/Archive/0042.eml); expected /flow_injects/service",
+    "docker-8: 3 file(s) in /flow_injects (e.g., /flow_injects/service/spool/bounce-2401.eml, /flow_injects/service/spool/README.txt, /flow_injects/service/config.json); expected /flow_injects/service"
+  ],
+  "injects_missing": [],
+  "injects_unreadable": [],
+  "injects_unreadable_details": [],
+  "missing_docker_nodes": [],
+  "missing_node_ids": [],
+  "missing_nodes": [],
+  "missing_vuln_nodes": [],
+  "ok": true,
+  "port_unreachable": [],
+  "port_unreachable_details": [],
+  "ports_checked": [],
+  "scenario_xml_path": "/Users/jcacosta/Documents/GitHub/scenarioforge-eval/verify-supply-fix/dataset-artifact-messaging_run02/scenario.xml",
+  "session_id": 1,
+  "session_xml_path": "/Users/jcacosta/Documents/GitHub/scenarioforge-eval/verify-supply-fix/dataset-artifact-messaging_run02/core-post/session-1.xml",
+  "topology_port_unreachable": [],
+  "topology_port_unreachable_details": [],
+  "topology_probe_checked": false,
+  "topology_probe_error": null
+}

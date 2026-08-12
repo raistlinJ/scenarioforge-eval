@@ -1,0 +1,337 @@
+{
+  "actual_nodes": [],
+  "actual_nodes_detail": [],
+  "actual_vuln_nodes": [
+    "docker-8",
+    "docker-9",
+    "docker-10",
+    "docker-11",
+    "pivot-172-27-207-0"
+  ],
+  "cli_post_execution_validation": true,
+  "docker_missing": [],
+  "docker_nodes": [
+    "docker-8",
+    "docker-9",
+    "docker-10",
+    "docker-11",
+    "pivot-172-27-207-0"
+  ],
+  "docker_not_running": [],
+  "docker_not_running_details": [],
+  "docker_restarting": [],
+  "docker_running": [
+    "docker-8",
+    "docker-9",
+    "docker-10",
+    "docker-11"
+  ],
+  "docker_start_pending": [],
+  "expected_docker_nodes": [
+    "docker-8",
+    "docker-9",
+    "docker-10",
+    "docker-11",
+    "pivot-172-27-207-0"
+  ],
+  "expected_nodes": [],
+  "expected_vuln_nodes": [
+    "docker-8"
+  ],
+  "extra_docker_nodes": [],
+  "extra_node_ids": [],
+  "extra_nodes": [],
+  "flag_verification_checked": [],
+  "flag_verification_details": [],
+  "flag_verification_failed": [],
+  "flow_live_paths_checked": 12,
+  "flow_live_paths_detail": [
+    {
+      "exists_local": false,
+      "generator_id": "git_http_bare_repo",
+      "is_remote": true,
+      "missing_local": false,
+      "node_id": "13",
+      "path": "/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/01_git_http_bare_repo_docker-10",
+      "path_type": "artifacts_dir"
+    },
+    {
+      "exists_local": false,
+      "generator_id": "git_http_bare_repo",
+      "is_remote": true,
+      "missing_local": false,
+      "node_id": "13",
+      "path": "/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/01_git_http_bare_repo_docker-10",
+      "path_type": "inject_source_dir"
+    },
+    {
+      "exists_local": false,
+      "generator_id": "git_http_bare_repo",
+      "is_remote": true,
+      "missing_local": false,
+      "node_id": "13",
+      "path": "/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/01_git_http_bare_repo_docker-10/service",
+      "path_type": "inject_source"
+    },
+    {
+      "exists_local": false,
+      "generator_id": "ssh_password_finance_terminal",
+      "is_remote": true,
+      "missing_local": false,
+      "node_id": "12",
+      "path": "/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/02_ssh_password_finance_terminal_docker-9",
+      "path_type": "artifacts_dir"
+    },
+    {
+      "exists_local": false,
+      "generator_id": "ssh_password_finance_terminal",
+      "is_remote": true,
+      "missing_local": false,
+      "node_id": "12",
+      "path": "/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/02_ssh_password_finance_terminal_docker-9",
+      "path_type": "inject_source_dir"
+    },
+    {
+      "exists_local": false,
+      "generator_id": "ssh_password_finance_terminal",
+      "is_remote": true,
+      "missing_local": false,
+      "node_id": "12",
+      "path": "/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/02_ssh_password_finance_terminal_docker-9/workspace",
+      "path_type": "inject_source"
+    },
+    {
+      "exists_local": false,
+      "generator_id": "git_deploy_key_repo",
+      "is_remote": true,
+      "missing_local": false,
+      "node_id": "14",
+      "path": "/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/03_git_deploy_key_repo_docker-11",
+      "path_type": "artifacts_dir"
+    },
+    {
+      "exists_local": false,
+      "generator_id": "git_deploy_key_repo",
+      "is_remote": true,
+      "missing_local": false,
+      "node_id": "14",
+      "path": "/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/03_git_deploy_key_repo_docker-11",
+      "path_type": "inject_source_dir"
+    },
+    {
+      "exists_local": false,
+      "generator_id": "git_deploy_key_repo",
+      "is_remote": true,
+      "missing_local": false,
+      "node_id": "14",
+      "path": "/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/03_git_deploy_key_repo_docker-11/service",
+      "path_type": "inject_source"
+    },
+    {
+      "exists_local": false,
+      "generator_id": "encoded_base64_dispatch",
+      "is_remote": true,
+      "missing_local": false,
+      "node_id": "11",
+      "path": "/tmp/vulns/flag_generators_runs/flow-datasetsegmentedfirewallpivotrun02/04_encoded_base64_dispatch_docker-8",
+      "path_type": "artifacts_dir"
+    },
+    {
+      "exists_local": false,
+      "generator_id": "encoded_base64_dispatch",
+      "is_remote": true,
+      "missing_local": false,
+      "node_id": "11",
+      "path": "/tmp/vulns/flag_generators_runs/flow-datasetsegmentedfirewallpivotrun02/04_encoded_base64_dispatch_docker-8",
+      "path_type": "inject_source_dir"
+    },
+    {
+      "exists_local": false,
+      "generator_id": "encoded_base64_dispatch",
+      "is_remote": true,
+      "missing_local": false,
+      "node_id": "11",
+      "path": "/tmp/vulns/flag_generators_runs/flow-datasetsegmentedfirewallpivotrun02/04_encoded_base64_dispatch_docker-8/artifacts/dispatch_note.b64",
+      "path_type": "inject_source"
+    }
+  ],
+  "flow_live_paths_missing": [],
+  "flow_live_paths_missing_count": 0,
+  "generator_injects_missing": [],
+  "generator_outputs_missing": [],
+  "generator_validation_detail": [
+    {
+      "artifacts_dir": "/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/01_git_http_bare_repo_docker-10",
+      "container_check_error": "",
+      "container_checked": [],
+      "container_missing": [],
+      "container_name": "docker-10",
+      "flag_delivery_mode": "file",
+      "flag_file_path": "/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/01_git_http_bare_repo_docker-10/service/repo/config",
+      "generator_id": "git_http_bare_repo",
+      "generator_name": "Git: HTTP Bare Repository",
+      "generator_type": "flag-node-generator",
+      "inject_checked": [
+        "/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/01_git_http_bare_repo_docker-10/service",
+        "/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/01_git_http_bare_repo_docker-10/service/repo/config"
+      ],
+      "inject_missing": [],
+      "node_id": "13",
+      "node_name": "docker-10",
+      "outputs_checked": [
+        "/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/01_git_http_bare_repo_docker-10/service/repo/config",
+        "/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/01_git_http_bare_repo_docker-10/docker-compose.yml"
+      ],
+      "outputs_manifest": "/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/01_git_http_bare_repo_docker-10/outputs.json",
+      "outputs_manifest_exists": true,
+      "outputs_missing": [],
+      "outputs_resolved": {
+        "File(path)": "/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/01_git_http_bare_repo_docker-10/docker-compose.yml",
+        "FlagFile(path)": "/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/01_git_http_bare_repo_docker-10/service/repo/config"
+      },
+      "run_dir": "/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/01_git_http_bare_repo_docker-10"
+    },
+    {
+      "artifacts_dir": "/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/02_ssh_password_finance_terminal_docker-9",
+      "container_check_error": "",
+      "container_checked": [],
+      "container_missing": [],
+      "container_name": "docker-9",
+      "flag_delivery_mode": "file",
+      "flag_file_path": "/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/02_ssh_password_finance_terminal_docker-9/workspace/finance/reconciliations/q2-be5c3328a0.csv",
+      "generator_id": "ssh_password_finance_terminal",
+      "generator_name": "SSH: Password Finance Terminal",
+      "generator_type": "flag-node-generator",
+      "inject_checked": [
+        "/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/02_ssh_password_finance_terminal_docker-9/workspace",
+        "/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/02_ssh_password_finance_terminal_docker-9/workspace/finance/reconciliations/q2-be5c3328a0.csv"
+      ],
+      "inject_missing": [],
+      "node_id": "12",
+      "node_name": "docker-9",
+      "outputs_checked": [
+        "/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/02_ssh_password_finance_terminal_docker-9/workspace/finance/reconciliations/q2-be5c3328a0.csv",
+        "/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/02_ssh_password_finance_terminal_docker-9/docker-compose.yml"
+      ],
+      "outputs_manifest": "/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/02_ssh_password_finance_terminal_docker-9/outputs.json",
+      "outputs_manifest_exists": true,
+      "outputs_missing": [],
+      "outputs_resolved": {
+        "File(path)": "/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/02_ssh_password_finance_terminal_docker-9/docker-compose.yml",
+        "FlagFile(path)": "/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/02_ssh_password_finance_terminal_docker-9/workspace/finance/reconciliations/q2-be5c3328a0.csv"
+      },
+      "run_dir": "/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/02_ssh_password_finance_terminal_docker-9"
+    },
+    {
+      "artifacts_dir": "/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/03_git_deploy_key_repo_docker-11",
+      "container_check_error": "",
+      "container_checked": [],
+      "container_missing": [],
+      "container_name": "docker-11",
+      "flag_delivery_mode": "file",
+      "flag_file_path": "/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/03_git_deploy_key_repo_docker-11/service/repo/deploy.env",
+      "generator_id": "git_deploy_key_repo",
+      "generator_name": "Git: Deploy Key Repository",
+      "generator_type": "flag-node-generator",
+      "inject_checked": [
+        "/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/03_git_deploy_key_repo_docker-11/service",
+        "/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/03_git_deploy_key_repo_docker-11/service/repo/deploy.env"
+      ],
+      "inject_missing": [],
+      "node_id": "14",
+      "node_name": "docker-11",
+      "outputs_checked": [
+        "/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/03_git_deploy_key_repo_docker-11/service/repo/deploy.env",
+        "/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/03_git_deploy_key_repo_docker-11/docker-compose.yml"
+      ],
+      "outputs_manifest": "/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/03_git_deploy_key_repo_docker-11/outputs.json",
+      "outputs_manifest_exists": true,
+      "outputs_missing": [],
+      "outputs_resolved": {
+        "File(path)": "/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/03_git_deploy_key_repo_docker-11/docker-compose.yml",
+        "FlagFile(path)": "/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/03_git_deploy_key_repo_docker-11/service/repo/deploy.env"
+      },
+      "run_dir": "/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/03_git_deploy_key_repo_docker-11"
+    },
+    {
+      "artifacts_dir": "/tmp/vulns/flag_generators_runs/flow-datasetsegmentedfirewallpivotrun02/04_encoded_base64_dispatch_docker-8",
+      "container_check_error": "",
+      "container_checked": [],
+      "container_missing": [],
+      "container_name": "docker-8",
+      "flag_delivery_mode": "embedded",
+      "flag_file_path": "",
+      "generator_id": "encoded_base64_dispatch",
+      "generator_name": "Encoded: Base64 Dispatch Note",
+      "generator_type": "flag-generator",
+      "inject_checked": [
+        "/tmp/vulns/flag_generators_runs/flow-datasetsegmentedfirewallpivotrun02/04_encoded_base64_dispatch_docker-8/artifacts/dispatch_note.b64"
+      ],
+      "inject_missing": [],
+      "node_id": "11",
+      "node_name": "docker-8",
+      "outputs_checked": [
+        "/tmp/vulns/flag_generators_runs/flow-datasetsegmentedfirewallpivotrun02/04_encoded_base64_dispatch_docker-8/artifacts/dispatch_note.b64"
+      ],
+      "outputs_manifest": "/tmp/vulns/flag_generators_runs/flow-datasetsegmentedfirewallpivotrun02/04_encoded_base64_dispatch_docker-8/outputs.json",
+      "outputs_manifest_exists": true,
+      "outputs_missing": [],
+      "outputs_resolved": {
+        "File(path)": "/tmp/vulns/flag_generators_runs/flow-datasetsegmentedfirewallpivotrun02/04_encoded_base64_dispatch_docker-8/artifacts/dispatch_note.b64"
+      },
+      "run_dir": "/tmp/vulns/flag_generators_runs/flow-datasetsegmentedfirewallpivotrun02/04_encoded_base64_dispatch_docker-8"
+    }
+  ],
+  "inject_dirs_expected": [
+    "/flow_injects"
+  ],
+  "inject_files_expected": [
+    "/flow_injects/service",
+    "/flow_injects/workspace",
+    "/flow_injects/dispatch_note.b64"
+  ],
+  "inject_files_expected_by_node": {
+    "docker-10": [
+      "/flow_injects/service"
+    ],
+    "docker-11": [
+      "/flow_injects/service"
+    ],
+    "docker-8": [
+      "/flow_injects/dispatch_note.b64"
+    ],
+    "docker-9": [
+      "/flow_injects/workspace"
+    ]
+  },
+  "inject_nodes_expected": [
+    "docker-8",
+    "docker-9",
+    "docker-10",
+    "docker-11"
+  ],
+  "injects_detail": [
+    "docker-8: 1 file(s) in /flow_injects (e.g., /flow_injects/dispatch_note.b64); expected /flow_injects/dispatch_note.b64",
+    "docker-9: 3 file(s) in /flow_injects (e.g., /flow_injects/workspace/finance/exports/vendors.csv, /flow_injects/workspace/finance/reconciliations/q2-be5c3328a0.csv, /flow_injects/workspace/finance/README.txt); expected /flow_injects/workspace",
+    "docker-10: 3 file(s) in /flow_injects (e.g., /flow_injects/service/repo/config, /flow_injects/service/repo/HEAD, /flow_injects/service/config.json); expected /flow_injects/service",
+    "docker-11: 3 file(s) in /flow_injects (e.g., /flow_injects/service/repo/deploy.env, /flow_injects/service/repo/README.md, /flow_injects/service/config.json); expected /flow_injects/service"
+  ],
+  "injects_missing": [],
+  "injects_unreadable": [],
+  "injects_unreadable_details": [],
+  "missing_docker_nodes": [],
+  "missing_node_ids": [],
+  "missing_nodes": [],
+  "missing_vuln_nodes": [],
+  "ok": true,
+  "port_unreachable": [],
+  "port_unreachable_details": [],
+  "ports_checked": [],
+  "scenario_xml_path": "/Users/jcacosta/Documents/GitHub/scenarioforge-eval/verify-supply-fix/dataset-segmented-firewall-pivot_run02/scenario.xml",
+  "session_id": 1,
+  "session_xml_path": "/Users/jcacosta/Documents/GitHub/scenarioforge-eval/verify-supply-fix/dataset-segmented-firewall-pivot_run02/core-post/session-1.xml",
+  "topology_port_unreachable": [],
+  "topology_port_unreachable_details": [],
+  "topology_probe_checked": false,
+  "topology_probe_error": null
+}

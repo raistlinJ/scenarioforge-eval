@@ -1,0 +1,27 @@
+# ScenarioForge latest warnings/errors
+# Started: 2026-08-12T01:13:54.920636+00:00
+# Includes log records at WARNING and ERROR level.
+
+[2026-08-11 19:17:10,951] INFO in app_backend: [core.remote] (remote.vulns_inventory(before_copy.cli-postrun)) executing via /opt/core/venv/bin/python3
+[2026-08-11 19:17:12,073] INFO in app_backend: [core.remote] (docker.copy_flow_artifacts(cli-postrun)) executing via /opt/core/venv/bin/python3
+[2026-08-11 19:17:22,552] INFO in app_backend: [core.remote] (docker.exec.verify_flow_artifacts(cli-postrun)) executing via /opt/core/venv/bin/python3
+[2026-08-11 19:17:24,433] INFO in app_backend: [core.remote] (docker.exec.listener_snapshot(cli-postrun)) executing via /opt/core/venv/bin/python3
+[2026-08-11 19:17:26,219] INFO in app_backend: Established SSH tunnel corevm@129.108.4.45:10006 -> 129.108.4.45:50051 (local 56389)
+[2026-08-11 19:17:27,446] INFO in app_backend: [core.remote] (core.save_xml) executing via /opt/core/venv/bin/python3
+[2026-08-11 19:17:33,314] INFO in app_backend: _session_docker_nodes_from_xml parsing /Users/jcacosta/Documents/GitHub/scenarioforge-eval/verify-supply-fix/dataset-artifact-messaging_run02/core-post/session-1.xml
+[2026-08-11 19:17:33,315] INFO in app_backend: _session_docker_nodes_from_xml found 3 nodes: ['docker-6', 'docker-7', 'docker-8']
+[2026-08-11 19:17:34,786] INFO in app_backend: [core.remote] (docker.compose.assignments) executing via /opt/core/venv/bin/python3
+[2026-08-11 19:17:35,833] INFO in app_backend: [core.remote] (docker.exec.injects_status) executing via /opt/core/venv/bin/python3
+[2026-08-11 19:17:41,260] INFO in app_backend: [core.remote] (flow.artifacts.validate) executing via /opt/core/venv/bin/python3
+[2026-08-11 19:17:42,465] INFO in app_backend: [core.remote] (core.get_sessions) executing via /opt/core/venv/bin/python3
+[2026-08-11 19:17:43,079] INFO in app_backend: [core.grpc] remote returned 1 session(s)
+[2026-08-11 19:17:58,727] INFO in app_backend: Established SSH tunnel corevm@129.108.4.45:10006 -> 129.108.4.45:50051 (local 56463)
+[2026-08-11 19:17:59,951] INFO in app_backend: [core.remote] (core.save_xml) executing via /opt/core/venv/bin/python3
+[2026-08-11 19:18:06,216] INFO in app_backend: _session_docker_nodes_from_xml parsing /Users/jcacosta/Documents/GitHub/scenarioforge-eval/verify-supply-fix/dataset-artifact-messaging_run02/artifact-check/session-1.xml
+[2026-08-11 19:18:06,216] INFO in app_backend: _session_docker_nodes_from_xml found 3 nodes: ['docker-6', 'docker-7', 'docker-8']
+[2026-08-11 19:18:07,714] INFO in app_backend: [core.remote] (docker.compose.assignments) executing via /opt/core/venv/bin/python3
+[2026-08-11 19:18:08,686] INFO in app_backend: [core.remote] (docker.exec.injects_status) executing via /opt/core/venv/bin/python3
+[2026-08-11 19:18:14,387] INFO in app_backend: [core.remote] (flow.artifacts.validate) executing via /opt/core/venv/bin/python3
+[2026-08-11 19:18:15,683] INFO in app_backend: [core.remote] (check_artifacts.segmentation) executing via /opt/core/venv/bin/python3
+[2026-08-11 19:18:18,485] INFO in app_backend: [core.remote] (check_artifacts.ports) executing via /opt/core/venv/bin/python3
+[2026-08-11 19:18:24,415] INFO in app_backend: [core.remote] (check_artifacts.traffic) executing via /opt/core/venv/bin/python3

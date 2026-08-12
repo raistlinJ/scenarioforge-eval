@@ -36,9 +36,17 @@ vulns:
   enabled: true
   count: 3
   specific:
+  # jmeter/CVE-2018-1297 was pinned here and could not run: JMeter's RMI server
+  # refuses to bind unless the container's hostname resolves to a real,
+  # non-loopback IP at process start, which a CORE node does not have -- it
+  # starts with network_mode: none and gets its interfaces afterwards. It exits
+  # 1 immediately, and the run then fails later and less obviously as
+  # flow_artifact_copy_error "container not found". Reproduced standalone both
+  # with and without the extra_hosts <node>: 127.0.0.1 that ScenarioForge adds.
+  # See its red catalog note. Replacement is non-JVM and has passed elsewhere.
   - name: jira/CVE-2019-11581
     count: 1
-  - name: jmeter/CVE-2018-1297
+  - name: vite/CVE-2025-30208
     count: 1
   - name: joomla/CVE-2015-8562
     count: 1

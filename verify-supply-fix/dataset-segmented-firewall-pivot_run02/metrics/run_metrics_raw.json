@@ -1,0 +1,716 @@
+{
+  "generated_at": "2026-08-12T00:13:19Z",
+  "metadata": {
+    "dangerous_cleanup_between_runs": false,
+    "flag_node_generator_selection": {
+      "eligible_count": 88,
+      "eligible_count_unfiltered": 88,
+      "exclude": [],
+      "include": [],
+      "mode": "specific_from_resolved_spec",
+      "requested_count": 3,
+      "selected": [
+        {
+          "count": 1,
+          "id": "ssh_password_finance_terminal",
+          "name": "SSH: Password Finance Terminal"
+        },
+        {
+          "count": 1,
+          "id": "git_http_bare_repo",
+          "name": "Git: HTTP Bare Repository"
+        },
+        {
+          "count": 1,
+          "id": "git_deploy_key_repo",
+          "name": "Git: Deploy Key Repository"
+        }
+      ]
+    },
+    "iteration_count": 1,
+    "iteration_index": 1,
+    "reproduction_artifact_sources": 5,
+    "reproduction_artifact_sources_bundled": 5,
+    "reproduction_fidelity": "portable-artifacts",
+    "reproduction_mode": "bundle",
+    "seed": 793857018,
+    "shared_vm_lock": {
+      "key": "129.108.4.45:10006:corevm",
+      "path": "/var/folders/k7/gcvn2q_x0sv4q78sglqf5p0c0000gn/T/scenarioforge-eval-90a6d36daa3361fe.lock",
+      "wait_s": 369.2565
+    },
+    "spec_file": "/Users/jcacosta/Documents/GitHub/scenarioforge-eval/dataset-resolved/53-segmented-firewall-pivot-run02.spec.yaml",
+    "spec_name": "dataset-segmented-firewall-pivot_run02",
+    "target_phase": "execute",
+    "validation_policy": "strict",
+    "vulnerability_selection": {
+      "eligible_count": 291,
+      "eligible_count_unfiltered": 291,
+      "exclude": [],
+      "include": [],
+      "mode": "specific_from_resolved_spec",
+      "requested_count": 1,
+      "selected": [
+        {
+          "count": 1,
+          "name": "drupal/CVE-2019-6341",
+          "path": "/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/installed_vuln_catalogs/05-27-26-14-40-12-f61521/content/vulhub/drupal/CVE-2019-6341/docker-compose.yml",
+          "validated_at": "2026-06-04 16:33:40",
+          "validated_ok": true
+        }
+      ]
+    }
+  },
+  "metrics": {
+    "artifacts": {
+      "execute_check_artifacts_json": {
+        "estimated_tokens": 3015,
+        "exists": true,
+        "lines": 341,
+        "path": "/Users/jcacosta/Documents/GitHub/scenarioforge-eval/verify-supply-fix/dataset-segmented-firewall-pivot_run02/execute-check-artifacts.json",
+        "size_bytes": 11227,
+        "token_estimate_truncated": false
+      },
+      "execute_log": {
+        "estimated_tokens": 47360,
+        "exists": true,
+        "lines": 1002,
+        "path": "/Users/jcacosta/Documents/GitHub/scenarioforge-eval/verify-supply-fix/dataset-segmented-firewall-pivot_run02/execute.log",
+        "size_bytes": 165415,
+        "token_estimate_truncated": false
+      },
+      "execute_report": {
+        "estimated_tokens": 0,
+        "exists": false,
+        "lines": 0,
+        "path": "/tmp/scenarioforge/reports/scenario_report_08-11-26-18-10-54-493332.md",
+        "size_bytes": 0,
+        "token_estimate_truncated": false
+      },
+      "execute_summary": {
+        "estimated_tokens": 0,
+        "exists": false,
+        "lines": 0,
+        "path": "/tmp/scenarioforge/reports/scenario_report_08-11-26-18-10-54-493332.json",
+        "size_bytes": 0,
+        "token_estimate_truncated": false
+      },
+      "execute_validation_json": {
+        "estimated_tokens": 3078,
+        "exists": true,
+        "lines": 337,
+        "path": "/Users/jcacosta/Documents/GitHub/scenarioforge-eval/verify-supply-fix/dataset-segmented-firewall-pivot_run02/execute-validation.json",
+        "size_bytes": 15133,
+        "token_estimate_truncated": false
+      },
+      "flag_sequencing_json": {
+        "estimated_tokens": 17288,
+        "exists": true,
+        "lines": 1588,
+        "path": "/Users/jcacosta/Documents/GitHub/scenarioforge-eval/verify-supply-fix/dataset-segmented-firewall-pivot_run02/flag-sequencing.json",
+        "size_bytes": 70785,
+        "token_estimate_truncated": false
+      },
+      "flag_sequencing_log": {
+        "estimated_tokens": 21286,
+        "exists": true,
+        "lines": 1695,
+        "path": "/Users/jcacosta/Documents/GitHub/scenarioforge-eval/verify-supply-fix/dataset-segmented-firewall-pivot_run02/flag-sequencing.log",
+        "size_bytes": 86952,
+        "token_estimate_truncated": false
+      },
+      "output_dir": {
+        "exists": true,
+        "file_count": 15,
+        "path": "/Users/jcacosta/Documents/GitHub/scenarioforge-eval/verify-supply-fix/dataset-segmented-firewall-pivot_run02",
+        "total_size_bytes": 982383
+      },
+      "preview_plan_json": {
+        "estimated_tokens": 24800,
+        "exists": true,
+        "lines": 3321,
+        "path": "/Users/jcacosta/Documents/GitHub/scenarioforge-eval/verify-supply-fix/dataset-segmented-firewall-pivot_run02/preview-plan.json",
+        "size_bytes": 102326,
+        "token_estimate_truncated": false
+      },
+      "preview_plan_log": {
+        "estimated_tokens": 24800,
+        "exists": true,
+        "lines": 3321,
+        "path": "/Users/jcacosta/Documents/GitHub/scenarioforge-eval/verify-supply-fix/dataset-segmented-firewall-pivot_run02/preview-plan.log",
+        "size_bytes": 102326,
+        "token_estimate_truncated": false
+      },
+      "scenario_xml": {
+        "estimated_tokens": 54502,
+        "exists": true,
+        "lines": 2,
+        "path": "/Users/jcacosta/Documents/GitHub/scenarioforge-eval/verify-supply-fix/dataset-segmented-firewall-pivot_run02/scenario.xml",
+        "size_bytes": 153343,
+        "token_estimate_truncated": false
+      },
+      "scenarioforge_reproduction_bundle": {
+        "estimated_tokens": 26943,
+        "exists": true,
+        "lines": 138,
+        "path": "/Users/jcacosta/Documents/GitHub/scenarioforge-eval/verify-supply-fix/dataset-segmented-firewall-pivot_run02/scenarioforge-reproduction.zip",
+        "size_bytes": 33555,
+        "token_estimate_truncated": false
+      },
+      "scenarioforge_webui_xml": {
+        "estimated_tokens": 54502,
+        "exists": true,
+        "lines": 2,
+        "path": "/Users/jcacosta/Documents/GitHub/scenarioforge-eval/verify-supply-fix/dataset-segmented-firewall-pivot_run02/scenarioforge-webui.xml",
+        "size_bytes": 153343,
+        "token_estimate_truncated": false
+      },
+      "seed_txt": {
+        "estimated_tokens": 1,
+        "exists": true,
+        "lines": 1,
+        "path": "/Users/jcacosta/Documents/GitHub/scenarioforge-eval/verify-supply-fix/dataset-segmented-firewall-pivot_run02/seed.txt",
+        "size_bytes": 10,
+        "token_estimate_truncated": false
+      }
+    },
+    "content": {
+      "chains": {
+        "average_length": 4.0,
+        "count": 1,
+        "length": 4,
+        "length_gt_1_count": 1
+      },
+      "challenges": {
+        "count": 4,
+        "flag_node_generator_count": 3,
+        "pivot_count": 1
+      },
+      "topology": {
+        "flag_node_generator_count": 3,
+        "pivot_provider_count": 2
+      }
+    },
+    "phases": {
+      "execute": {
+        "command": {
+          "argv": [
+            "/Users/jcacosta/Documents/GitHub/scenarioforge/.venv/bin/python",
+            "-m",
+            "scenarioforge.cli",
+            "execute",
+            "--xml",
+            "/Users/jcacosta/Documents/GitHub/scenarioforge-eval/verify-supply-fix/dataset-segmented-firewall-pivot_run02/scenario.xml",
+            "--scenario",
+            "datasetsegmentedfirewallpivotrun02",
+            "--seed",
+            "793857018",
+            "--verbose",
+            "--post-execution-validation",
+            "--check-artifacts",
+            "--check-artifacts-delay",
+            "15.0",
+            "--strict"
+          ],
+          "cwd": "/Users/jcacosta/Documents/GitHub/scenarioforge",
+          "timeout_s": 1200
+        },
+        "duration_s": 365.232957,
+        "ended_at": "2026-08-12T00:12:57Z",
+        "log": {
+          "estimated_tokens": 47360,
+          "exists": true,
+          "lines": 1002,
+          "path": "/Users/jcacosta/Documents/GitHub/scenarioforge-eval/verify-supply-fix/dataset-segmented-firewall-pivot_run02/execute.log",
+          "size_bytes": 165415,
+          "token_estimate_truncated": false
+        },
+        "outputs": {
+          "combined": {
+            "bytes": 165415,
+            "chars": 165405,
+            "estimated_tokens": 47360,
+            "lines": 1002
+          },
+          "stderr": {
+            "bytes": 0,
+            "chars": 0,
+            "estimated_tokens": 0,
+            "lines": 0
+          },
+          "stdout": {
+            "bytes": 165415,
+            "chars": 165405,
+            "estimated_tokens": 47360,
+            "lines": 1002
+          }
+        },
+        "resources": {
+          "cpu_system_s": 1.430158,
+          "cpu_total_s": 15.460981,
+          "cpu_user_s": 14.030823,
+          "input_blocks": 0,
+          "involuntary_context_switches": 9959,
+          "major_page_faults": 25,
+          "max_rss_bytes": 139870208,
+          "minor_page_faults": 14021,
+          "output_blocks": 0,
+          "voluntary_context_switches": 1911
+        },
+        "returncode": 0,
+        "started_at": "2026-08-12T00:06:52Z",
+        "timed_out": false
+      },
+      "flag-sequencing": {
+        "command": {
+          "argv": [
+            "/Users/jcacosta/Documents/GitHub/scenarioforge/.venv/bin/python",
+            "-m",
+            "scenarioforge.cli",
+            "flag-sequencing",
+            "--xml",
+            "/Users/jcacosta/Documents/GitHub/scenarioforge-eval/verify-supply-fix/dataset-segmented-firewall-pivot_run02/scenario.xml",
+            "--scenario",
+            "datasetsegmentedfirewallpivotrun02",
+            "--seed",
+            "793857018",
+            "--verbose",
+            "--plan-output",
+            "/Users/jcacosta/Documents/GitHub/scenarioforge-eval/verify-supply-fix/dataset-segmented-firewall-pivot_run02/flag-sequencing.json",
+            "--flow-mode",
+            "resolve",
+            "--flow-length",
+            "4",
+            "--flow-best-effort",
+            "--flow-timeout-s",
+            "780"
+          ],
+          "cwd": "/Users/jcacosta/Documents/GitHub/scenarioforge",
+          "timeout_s": 1200
+        },
+        "duration_s": 49.176967,
+        "ended_at": "2026-08-12T00:06:52Z",
+        "log": {
+          "estimated_tokens": 21286,
+          "exists": true,
+          "lines": 1695,
+          "path": "/Users/jcacosta/Documents/GitHub/scenarioforge-eval/verify-supply-fix/dataset-segmented-firewall-pivot_run02/flag-sequencing.log",
+          "size_bytes": 86952,
+          "token_estimate_truncated": false
+        },
+        "outputs": {
+          "combined": {
+            "bytes": 86952,
+            "chars": 86952,
+            "estimated_tokens": 21286,
+            "lines": 1695
+          },
+          "stderr": {
+            "bytes": 15556,
+            "chars": 15556,
+            "estimated_tokens": 3914,
+            "lines": 102
+          },
+          "stdout": {
+            "bytes": 71395,
+            "chars": 71395,
+            "estimated_tokens": 17372,
+            "lines": 1592
+          }
+        },
+        "plan_output": {
+          "estimated_tokens": 17288,
+          "exists": true,
+          "lines": 1588,
+          "path": "/Users/jcacosta/Documents/GitHub/scenarioforge-eval/verify-supply-fix/dataset-segmented-firewall-pivot_run02/flag-sequencing.json",
+          "size_bytes": 70785,
+          "token_estimate_truncated": false
+        },
+        "resources": {
+          "cpu_system_s": 1.016586,
+          "cpu_total_s": 11.560176,
+          "cpu_user_s": 10.54359,
+          "input_blocks": 0,
+          "involuntary_context_switches": 2267,
+          "major_page_faults": 21,
+          "max_rss_bytes": 139870208,
+          "minor_page_faults": 14412,
+          "output_blocks": 0,
+          "voluntary_context_switches": 1628
+        },
+        "returncode": 0,
+        "started_at": "2026-08-12T00:06:03Z",
+        "timed_out": false
+      },
+      "preview-plan": {
+        "command": {
+          "argv": [
+            "/Users/jcacosta/Documents/GitHub/scenarioforge/.venv/bin/python",
+            "-m",
+            "scenarioforge.cli",
+            "preview-plan",
+            "--xml",
+            "/Users/jcacosta/Documents/GitHub/scenarioforge-eval/verify-supply-fix/dataset-segmented-firewall-pivot_run02/scenario.xml",
+            "--scenario",
+            "datasetsegmentedfirewallpivotrun02",
+            "--seed",
+            "793857018",
+            "--verbose",
+            "--plan-output",
+            "/Users/jcacosta/Documents/GitHub/scenarioforge-eval/verify-supply-fix/dataset-segmented-firewall-pivot_run02/preview-plan.json"
+          ],
+          "cwd": "/Users/jcacosta/Documents/GitHub/scenarioforge",
+          "timeout_s": 1200
+        },
+        "duration_s": 0.589873,
+        "ended_at": "2026-08-11T23:59:54Z",
+        "log": {
+          "estimated_tokens": 24800,
+          "exists": true,
+          "lines": 3321,
+          "path": "/Users/jcacosta/Documents/GitHub/scenarioforge-eval/verify-supply-fix/dataset-segmented-firewall-pivot_run02/preview-plan.log",
+          "size_bytes": 102326,
+          "token_estimate_truncated": false
+        },
+        "outputs": {
+          "combined": {
+            "bytes": 102326,
+            "chars": 102326,
+            "estimated_tokens": 24800,
+            "lines": 3321
+          },
+          "stderr": {
+            "bytes": 0,
+            "chars": 0,
+            "estimated_tokens": 0,
+            "lines": 0
+          },
+          "stdout": {
+            "bytes": 102326,
+            "chars": 102326,
+            "estimated_tokens": 24800,
+            "lines": 3321
+          }
+        },
+        "plan_output": {
+          "estimated_tokens": 24800,
+          "exists": true,
+          "lines": 3321,
+          "path": "/Users/jcacosta/Documents/GitHub/scenarioforge-eval/verify-supply-fix/dataset-segmented-firewall-pivot_run02/preview-plan.json",
+          "size_bytes": 102326,
+          "token_estimate_truncated": false
+        },
+        "resources": {
+          "cpu_system_s": 0.080122,
+          "cpu_total_s": 0.502595,
+          "cpu_user_s": 0.422473,
+          "input_blocks": 0,
+          "involuntary_context_switches": 104,
+          "major_page_faults": 2,
+          "max_rss_bytes": 111493120,
+          "minor_page_faults": 12654,
+          "output_blocks": 0,
+          "voluntary_context_switches": 969
+        },
+        "returncode": 0,
+        "started_at": "2026-08-11T23:59:53Z",
+        "timed_out": false
+      },
+      "scenario-xml": {
+        "duration_s": 0.614887,
+        "ended_at": "2026-08-11T23:59:53Z",
+        "resources": {
+          "cpu_system_s": 0.0706,
+          "cpu_total_s": 0.528848,
+          "cpu_user_s": 0.458248,
+          "input_blocks": 0,
+          "involuntary_context_switches": 102,
+          "major_page_faults": 9,
+          "max_rss_bytes": 105545728,
+          "minor_page_faults": 8358,
+          "output_blocks": 0,
+          "voluntary_context_switches": 865
+        },
+        "started_at": "2026-08-11T23:59:52Z"
+      }
+    },
+    "run": {
+      "duration_s": 806.123748,
+      "ended_at": "2026-08-12T00:13:18Z",
+      "resources": {
+        "cpu_system_s": 2.652032,
+        "cpu_total_s": 28.241069,
+        "cpu_user_s": 25.589037,
+        "input_blocks": 0,
+        "involuntary_context_switches": 15013,
+        "major_page_faults": 73,
+        "max_rss_bytes": 139870208,
+        "minor_page_faults": 55340,
+        "output_blocks": 0,
+        "voluntary_context_switches": 5531
+      },
+      "started_at": "2026-08-11T23:59:52Z"
+    },
+    "schema_version": 1,
+    "spec": {
+      "flag_node_generators": {
+        "count": 3,
+        "enabled": true
+      },
+      "flows": {
+        "allow_duplicates": false,
+        "chain_length": 4,
+        "enabled": true,
+        "include_all_topology_pivots": true
+      },
+      "name": "dataset-segmented-firewall-pivot_run02",
+      "seed": 793857018,
+      "segmentation": {
+        "density": 0.45,
+        "enabled": true,
+        "items": [
+          {
+            "factor": 1.0,
+            "pivot_enabled": true,
+            "pivot_provider": "ssh-fallback",
+            "selected": "Firewall",
+            "v_count": 1,
+            "v_metric": "Count"
+          },
+          {
+            "factor": 1.0,
+            "pivot_enabled": false,
+            "selected": "NAT",
+            "v_count": 1,
+            "v_metric": "Count"
+          }
+        ]
+      },
+      "services": {
+        "count": 6,
+        "enabled": true
+      },
+      "target_phase": "execute",
+      "topology": {
+        "hosts": 7,
+        "nodes": 10,
+        "routers": 3
+      },
+      "traffic": {
+        "count": 4,
+        "density": 0.85,
+        "enabled": true,
+        "payload_types": [],
+        "profile": null
+      },
+      "validation_policy": "strict",
+      "vulnerabilities": {
+        "count": 1,
+        "enabled": true
+      }
+    },
+    "token_estimator": "regex_word_or_punctuation"
+  },
+  "phases": [
+    {
+      "combined_bytes": 0,
+      "combined_lines": 0,
+      "cpu_system_s": 0.0706,
+      "cpu_total_s": 0.528848,
+      "cpu_user_s": 0.458248,
+      "duration_s": 0.614887,
+      "ended_at": "2026-08-11T23:59:53Z",
+      "estimated_output_tokens": 0,
+      "input_blocks": 0,
+      "involuntary_context_switches": 102,
+      "iteration_index": 1,
+      "log_path": "",
+      "log_size_bytes": 0,
+      "major_page_faults": 9,
+      "max_rss_bytes": 105545728,
+      "minor_page_faults": 8358,
+      "output_blocks": 0,
+      "phase": "scenario-xml",
+      "plan_output_size_bytes": 0,
+      "returncode": null,
+      "run_index": 1,
+      "seed": 793857018,
+      "session_id": "",
+      "spec_file": "/Users/jcacosta/Documents/GitHub/scenarioforge-eval/dataset-resolved/53-segmented-firewall-pivot-run02.spec.yaml",
+      "spec_name": "dataset-segmented-firewall-pivot_run02",
+      "stage_status": "PASS",
+      "started_at": "2026-08-11T23:59:52Z",
+      "stderr_bytes": 0,
+      "stdout_bytes": 0,
+      "success": true,
+      "target_phase": "execute",
+      "timed_out": false,
+      "validation_ok": "",
+      "voluntary_context_switches": 865
+    },
+    {
+      "combined_bytes": 102326,
+      "combined_lines": 3321,
+      "cpu_system_s": 0.080122,
+      "cpu_total_s": 0.502595,
+      "cpu_user_s": 0.422473,
+      "duration_s": 0.589873,
+      "ended_at": "2026-08-11T23:59:54Z",
+      "estimated_output_tokens": 24800,
+      "input_blocks": 0,
+      "involuntary_context_switches": 104,
+      "iteration_index": 1,
+      "log_path": "/Users/jcacosta/Documents/GitHub/scenarioforge-eval/verify-supply-fix/dataset-segmented-firewall-pivot_run02/preview-plan.log",
+      "log_size_bytes": 102326,
+      "major_page_faults": 2,
+      "max_rss_bytes": 111493120,
+      "minor_page_faults": 12654,
+      "output_blocks": 0,
+      "phase": "preview-plan",
+      "plan_output_size_bytes": 102326,
+      "returncode": 0,
+      "run_index": 1,
+      "seed": 793857018,
+      "session_id": "",
+      "spec_file": "/Users/jcacosta/Documents/GitHub/scenarioforge-eval/dataset-resolved/53-segmented-firewall-pivot-run02.spec.yaml",
+      "spec_name": "dataset-segmented-firewall-pivot_run02",
+      "stage_status": "PASS",
+      "started_at": "2026-08-11T23:59:53Z",
+      "stderr_bytes": 0,
+      "stdout_bytes": 102326,
+      "success": true,
+      "target_phase": "execute",
+      "timed_out": false,
+      "validation_ok": "",
+      "voluntary_context_switches": 969
+    },
+    {
+      "combined_bytes": 86952,
+      "combined_lines": 1695,
+      "cpu_system_s": 1.016586,
+      "cpu_total_s": 11.560176,
+      "cpu_user_s": 10.54359,
+      "duration_s": 49.176967,
+      "ended_at": "2026-08-12T00:06:52Z",
+      "estimated_output_tokens": 21286,
+      "input_blocks": 0,
+      "involuntary_context_switches": 2267,
+      "iteration_index": 1,
+      "log_path": "/Users/jcacosta/Documents/GitHub/scenarioforge-eval/verify-supply-fix/dataset-segmented-firewall-pivot_run02/flag-sequencing.log",
+      "log_size_bytes": 86952,
+      "major_page_faults": 21,
+      "max_rss_bytes": 139870208,
+      "minor_page_faults": 14412,
+      "output_blocks": 0,
+      "phase": "flag-sequencing",
+      "plan_output_size_bytes": 70785,
+      "returncode": 0,
+      "run_index": 1,
+      "seed": 793857018,
+      "session_id": "",
+      "spec_file": "/Users/jcacosta/Documents/GitHub/scenarioforge-eval/dataset-resolved/53-segmented-firewall-pivot-run02.spec.yaml",
+      "spec_name": "dataset-segmented-firewall-pivot_run02",
+      "stage_status": "PASS",
+      "started_at": "2026-08-12T00:06:03Z",
+      "stderr_bytes": 15556,
+      "stdout_bytes": 71395,
+      "success": true,
+      "target_phase": "execute",
+      "timed_out": false,
+      "validation_ok": "",
+      "voluntary_context_switches": 1628
+    },
+    {
+      "combined_bytes": 165415,
+      "combined_lines": 1002,
+      "cpu_system_s": 1.430158,
+      "cpu_total_s": 15.460981,
+      "cpu_user_s": 14.030823,
+      "duration_s": 365.232957,
+      "ended_at": "2026-08-12T00:12:57Z",
+      "estimated_output_tokens": 47360,
+      "input_blocks": 0,
+      "involuntary_context_switches": 9959,
+      "iteration_index": 1,
+      "log_path": "/Users/jcacosta/Documents/GitHub/scenarioforge-eval/verify-supply-fix/dataset-segmented-firewall-pivot_run02/execute.log",
+      "log_size_bytes": 165415,
+      "major_page_faults": 25,
+      "max_rss_bytes": 139870208,
+      "minor_page_faults": 14021,
+      "output_blocks": 0,
+      "phase": "execute",
+      "plan_output_size_bytes": 0,
+      "returncode": 0,
+      "run_index": 1,
+      "seed": 793857018,
+      "session_id": "1",
+      "spec_file": "/Users/jcacosta/Documents/GitHub/scenarioforge-eval/dataset-resolved/53-segmented-firewall-pivot-run02.spec.yaml",
+      "spec_name": "dataset-segmented-firewall-pivot_run02",
+      "stage_status": "PASS",
+      "started_at": "2026-08-12T00:06:52Z",
+      "stderr_bytes": 0,
+      "stdout_bytes": 165415,
+      "success": true,
+      "target_phase": "execute",
+      "timed_out": false,
+      "validation_ok": true,
+      "voluntary_context_switches": 1911
+    }
+  ],
+  "run": {
+    "artifact_file_count": 15,
+    "artifact_total_size_bytes": 982383,
+    "average_chain_length": 4.0,
+    "chain_count": 1,
+    "chains_length_gt_1": 1,
+    "challenge_count": 4,
+    "check_artifacts_ok": true,
+    "check_artifacts_overall": "pass",
+    "context_switches": 20544,
+    "cpu_system_s": 2.652032,
+    "cpu_total_s": 28.241069,
+    "cpu_user_s": 25.589037,
+    "duration_s": 806.123748,
+    "ended_at": "2026-08-12T00:13:18Z",
+    "estimated_output_tokens": 93446,
+    "failed_at": "",
+    "failed_stage": "",
+    "flag_node_generator_count": 3,
+    "flow_chain_length": 4,
+    "flow_enabled": true,
+    "host_count": 7,
+    "input_blocks": 0,
+    "iteration_count": 1,
+    "iteration_index": 1,
+    "log_size_bytes": 354693,
+    "max_rss_bytes": 139870208,
+    "node_count": 10,
+    "output_blocks": 0,
+    "phase_count": 4,
+    "phase_duration_s": 415.614684,
+    "pivot_count": 1,
+    "pivot_provider_count": 2,
+    "router_count": 3,
+    "run_index": 1,
+    "seed": 793857018,
+    "service_count": 6,
+    "spec_file": "/Users/jcacosta/Documents/GitHub/scenarioforge-eval/dataset-resolved/53-segmented-firewall-pivot-run02.spec.yaml",
+    "spec_name": "dataset-segmented-firewall-pivot_run02",
+    "started_at": "2026-08-11T23:59:52Z",
+    "success": true,
+    "target_phase": "execute",
+    "topology_flag_node_generator_count": 3,
+    "validation_ok": true,
+    "vulnerability_count": 1
+  },
+  "schema_version": 1,
+  "spec_name": "dataset-segmented-firewall-pivot_run02",
+  "stages": {
+    "execute": "PASS",
+    "flag_sequencing": "PASS",
+    "preview_plan": "PASS",
+    "scenario_xml": "PASS"
+  },
+  "success": true,
+  "warnings": []
+}

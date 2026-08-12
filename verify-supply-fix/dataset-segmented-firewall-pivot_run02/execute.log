@@ -1,0 +1,1002 @@
+[remote] Target: corevm@129.108.4.45:10006; CORE 129.108.4.45:50051
+[remote] Refreshing custom CORE services...
+[remote] Preparing remote workspace and uploads...
+[remote] Using repo at /tmp/scenarioforge
+[remote] syncing runtime subset to CORE host...
+[remote] runtime subset sync plan: files=803 bytes=6592234
+[remote] runtime subset sync progress: 0% (0/803 files, 0/6592234 bytes)
+[remote] runtime subset archive ready: bytes=1459963 target=/tmp/.coretg-runtime-subset-4377f29687f64f7496272468732aeec3.tar.gz
+[remote] runtime subset sync progress: 2% (32768/1459963 archive bytes)
+[remote] runtime subset sync progress: 6% (98304/1459963 archive bytes)
+[remote] runtime subset sync progress: 11% (163840/1459963 archive bytes)
+[remote] runtime subset sync progress: 15% (229376/1459963 archive bytes)
+[remote] runtime subset sync progress: 20% (294912/1459963 archive bytes)
+[remote] runtime subset sync progress: 26% (393216/1459963 archive bytes)
+[remote] runtime subset sync progress: 31% (458752/1459963 archive bytes)
+[remote] runtime subset sync progress: 35% (524288/1459963 archive bytes)
+[remote] runtime subset sync progress: 40% (589824/1459963 archive bytes)
+[remote] runtime subset sync progress: 47% (688128/1459963 archive bytes)
+[remote] runtime subset sync progress: 51% (753664/1459963 archive bytes)
+[remote] runtime subset sync progress: 56% (819200/1459963 archive bytes)
+[remote] runtime subset sync progress: 60% (884736/1459963 archive bytes)
+[remote] runtime subset sync progress: 65% (950272/1459963 archive bytes)
+[remote] runtime subset sync progress: 71% (1048576/1459963 archive bytes)
+[remote] runtime subset sync progress: 76% (1114112/1459963 archive bytes)
+[remote] runtime subset sync progress: 80% (1179648/1459963 archive bytes)
+[remote] runtime subset sync progress: 85% (1245184/1459963 archive bytes)
+[remote] runtime subset sync progress: 92% (1343488/1459963 archive bytes)
+[remote] runtime subset sync progress: 96% (1409024/1459963 archive bytes)
+[remote] runtime subset sync progress: 100% (1459963/1459963 archive bytes)
+[remote] runtime subset sync progress: 100% (1459963/1459963 archive bytes)
+[remote] synced runtime subset (core package/runner/generators) files=803/803 bytes=6592234/6592234 archive_bytes=1459963
+[remote] preparing scenario XML upload: /Users/jcacosta/Documents/GitHub/scenarioforge-eval/verify-supply-fix/dataset-segmented-firewall-pivot_run02/scenario.xml -> /tmp/scenarioforge/runs/cli-491e59bd/scenario.xml
+[remote] uploaded/relinked 1 vulnerability compose path(s) into run dir
+[remote] uploading scenario XML: /var/folders/k7/gcvn2q_x0sv4q78sglqf5p0c0000gn/T/coretg-remote-xml-b7i3vu3n.xml -> /tmp/scenarioforge/runs/cli-491e59bd/scenario.xml
+[remote] checking flow artifacts for preview plan: dirs=5 path=/Users/jcacosta/Documents/GitHub/scenarioforge-eval/verify-supply-fix/dataset-segmented-firewall-pivot_run02/scenario.xml
+[remote] flow.artifacts.upload skip (already remote): /tmp/vulns/flag_generators_runs/flow-datasetsegmentedfirewallpivotrun02/04_encoded_base64_dispatch_docker-8
+[remote] flow.artifacts.upload skip (already remote): /tmp/vulns/flag_generators_runs/flow-datasetsegmentedfirewallpivotrun02/04_encoded_base64_dispatch_docker-8/artifacts
+[remote] flow.artifacts.upload skip (already remote): /tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/02_ssh_password_finance_terminal_docker-9
+[remote] flow.artifacts.upload skip (already remote): /tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/01_git_http_bare_repo_docker-10
+[remote] flow.artifacts.upload skip (already remote): /tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/03_git_deploy_key_repo_docker-11
+[remote] flow.artifacts.upload complete files=0 bytes=0
+[remote] checking remote flow artifact regeneration: assignments=4 path=/Users/jcacosta/Documents/GitHub/scenarioforge-eval/verify-supply-fix/dataset-segmented-firewall-pivot_run02/scenario.xml
+[remote] Starting CLI execution...
+[remote] Command: /opt/core/venv/bin/python3 -u -m scenarioforge.cli execute --xml /tmp/scenarioforge/runs/cli-491e59bd/scenario.xml --scenario datasetsegmentedfirewallpivotrun02 --seed 793857018 --verbose --strict --preview-plan /tmp/scenarioforge/runs/cli-491e59bd/scenario.xml --host 127.0.0.1 --port 50051
+[REDACTED]
+2026-08-11 18:07:21,926 INFO __main__ - Writing latest warnings/errors to /tmp/scenarioforge/runs/cli-491e59bd/latest.errors
+2026-08-11 18:07:21,935 INFO __main__ - Loaded preview plan from /tmp/scenarioforge/runs/cli-491e59bd/scenario.xml
+2026-08-11 18:07:21,942 INFO scenarioforge.builders.topology - Applied global random seed 793857018 for topology generation
+2026-08-11 18:07:21,942 INFO root - PHASE: Parse scenario inputs
+2026-08-11 18:07:21,946 INFO root - PHASE: Role counts computed (hosts=7)
+2026-08-11 18:07:21,948 DEBUG scenarioforge.parsers.routing - Parsed routing: density=0.0 items=[('', 0.0)]
+2026-08-11 18:07:21,948 INFO root - PHASE: Planning topology
+2026-08-11 18:07:21,953 DEBUG scenarioforge.parsers.vulnerabilities - Parsed vulnerabilities: density=0.0 items=[{'selected': 'Specific', 'factor': 1.0, 'v_metric': 'Count', 'v_count': 1, 'v_name': 'drupal/CVE-2019-6341', 'v_path': '/tmp/scenarioforge/runs/cli-491e59bd/drupal-cve-2019-6341/docker-compose.yml'}]
+2026-08-11 18:07:21,957 DEBUG scenarioforge.parsers.routing - Parsed routing: density=0.0 items=[('', 0.0)]
+2026-08-11 18:07:21,957 INFO scenarioforge.planning.router_plan - [router.plan] ---- ROUTER PLANNING START ----
+2026-08-11 18:07:21,957 INFO scenarioforge.planning.router_plan - [router.plan] inputs: total_hosts=11 base_host_pool(raw)=7 routing_density(raw)=0.000000 items=1
+2026-08-11 18:07:21,957 INFO scenarioforge.planning.router_plan - [router.plan.item] #0 protocol= abs_count=3 factor=0.000000 classification=count
+2026-08-11 18:07:21,957 INFO scenarioforge.planning.router_plan - [router.plan] eligibility: has_weight_based=False rd_raw=0.000000 rd_clamped=0.000000
+2026-08-11 18:07:21,957 INFO scenarioforge.planning.router_plan - [router.plan] density_component=floor(rd_clamped * effective_base)=floor(0.000000 * 7)=0
+2026-08-11 18:07:21,957 INFO scenarioforge.planning.router_plan - [router.plan] components: count_based=3 + density_component=0 => raw_total=3
+2026-08-11 18:07:21,957 INFO scenarioforge.planning.router_plan - [router.plan] ---- ROUTER PLANNING END (final=3) ----
+2026-08-11 18:07:21,959 DEBUG scenarioforge.parsers.segmentation - Parsed segmentation: density=0.45 items=[('Firewall', 1.0), ('NAT', 1.0)]
+2026-08-11 18:07:21,963 DEBUG scenarioforge.parsers.pivoting - Parsed pivoting: density=1.0 items=[PivotInfo(name='Firewall', factor=1.0, pivot_node='', pivot_role='', target_node='', target_role='', target_ports='', target_protocols='', exposure='pivot-only', source_scope='host', access_provider='ssh-fallback', entry_ports='', produces='', requires='', abs_count=1, origin='segmentation')]
+2026-08-11 18:07:21,965 DEBUG scenarioforge.parsers.traffic - Parsed traffic: density=0.85 items=[('TCP', 1.0, 'continuous', 512.0, 1.0, 10.0), ('UDP', 1.0, 'burst', 256.0, 2.0, 20.0)]
+2026-08-11 18:07:21,978 INFO scenarioforge.utils.segmentation - Segmentation: prepared output dir /tmp/scenarioforge-preview-seg-793857018 (removed 4 items)
+2026-08-11 18:07:21,978 INFO scenarioforge.utils.segmentation - Segmentation: planning 2 slots across 3 subnets (density=0.45)
+2026-08-11 18:07:21,978 DEBUG scenarioforge.utils.segmentation - Segmentation slot 1: NAT on router 3
+2026-08-11 18:07:21,978 DEBUG scenarioforge.utils.services - services.add(node_id=3, CoreTGPrereqs)
+2026-08-11 18:07:21,978 DEBUG scenarioforge.utils.services - services.add(node_id=3, Segmentation)
+2026-08-11 18:07:21,979 INFO scenarioforge.utils.segmentation - Segmentation: enabled Segmentation on node 3
+2026-08-11 18:07:21,979 DEBUG scenarioforge.utils.segmentation - Segmentation slot 2: Firewall on router 1
+2026-08-11 18:07:21,979 DEBUG scenarioforge.utils.segmentation - Segmentation: wrote seg_subnet_block_1_1.py for node 1
+2026-08-11 18:07:21,979 DEBUG scenarioforge.utils.services - services.add(node_id=1, CoreTGPrereqs)
+2026-08-11 18:07:21,979 DEBUG scenarioforge.utils.services - services.add(node_id=1, Segmentation)
+2026-08-11 18:07:21,979 INFO scenarioforge.utils.segmentation - Segmentation: enabled Segmentation on node 1
+2026-08-11 18:07:21,979 DEBUG scenarioforge.utils.segmentation - Segmentation: wrote seg_none_1_1.py for node 1
+2026-08-11 18:07:21,979 INFO scenarioforge.utils.segmentation - Segmentation: enabled Segmentation on node 1
+2026-08-11 18:07:21,980 INFO scenarioforge.utils.segmentation - Segmentation scripts written to /tmp/scenarioforge-preview-seg-793857018 (rules=3 on 2 nodes; NAT=1; FW=1; CUSTOM=0; slots=2)
+2026-08-11 18:07:22,006 INFO scenarioforge.utils.segmentation - Segmentation-Allow: inserted 20 allow rules across 11 nodes
+2026-08-11 18:07:22,025 INFO root - PHASE: Planning complete (routers=3 hosts=11)
+2026-08-11 18:07:22,029 DEBUG scenarioforge.parsers.vulnerabilities - Parsed vulnerabilities: density=0.0 items=[{'selected': 'Specific', 'factor': 1.0, 'v_metric': 'Count', 'v_count': 1, 'v_name': 'drupal/CVE-2019-6341', 'v_path': '/tmp/scenarioforge/runs/cli-491e59bd/drupal-cve-2019-6341/docker-compose.yml'}]
+2026-08-11 18:07:22,030 INFO root - [grpc] CoreGrpcClient.connect() -> 127.0.0.1:50051
+2026-08-11 18:07:22,338 INFO root - Execute cleanup: core-cleanup completed
+2026-08-11 18:07:24,852 INFO root - Execute cleanup: removed 8 generated image(s)
+2026-08-11 18:07:30,457 INFO root - Execute cleanup: pruned Docker build cache
+2026-08-11 18:07:30,461 INFO scenarioforge.utils.grpc_helpers - [grpc] keepalive enabled (interval=20s)
+2026-08-11 18:07:30,463 DEBUG scenarioforge.parsers.pivoting - Parsed pivoting: density=1.0 items=[PivotInfo(name='Firewall', factor=1.0, pivot_node='', pivot_role='', target_node='', target_role='', target_ports='', target_protocols='', exposure='pivot-only', source_scope='host', access_provider='ssh-fallback', entry_ports='', produces='', requires='', abs_count=1, origin='segmentation')]
+2026-08-11 18:07:30,465 DEBUG scenarioforge.parsers.vulnerabilities - Parsed vulnerabilities: density=0.0 items=[{'selected': 'Specific', 'factor': 1.0, 'v_metric': 'Count', 'v_count': 1, 'v_name': 'drupal/CVE-2019-6341', 'v_path': '/tmp/scenarioforge/runs/cli-491e59bd/drupal-cve-2019-6341/docker-compose.yml'}]
+2026-08-11 18:07:30,465 INFO root - Using preview vulnerability slot ordering (1 slots prioritized)
+2026-08-11 18:07:30,465 INFO root - Restricting vulnerability docker assignments to 4 Flow-selected slots
+2026-08-11 18:07:30,465 INFO root - Vulnerabilities config: density=0.000, items=1 (total_hosts=11)
+2026-08-11 18:07:30,465 DEBUG scenarioforge.utils.vuln_process - assign_compose_to_nodes: base_for_density=7 total_nodes=4 dens=0.000 density_target=0
+2026-08-11 18:07:30,466 INFO scenarioforge.utils.vuln_process - [vuln-assign] count allocation node=slot-8 name=drupal/CVE-2019-6341 path=/tmp/scenarioforge/runs/cli-491e59bd/drupal-cve-2019-6341/docker-compose.yml
+2026-08-11 18:07:30,466 INFO root - Applied 1 preview-based vulnerability slot overrides (1 -> 1 total assignments)
+2026-08-11 18:07:30,466 INFO root - Planned 1 docker-compose assignments over 4 host slots
+2026-08-11 18:07:30,466 DEBUG root - Docker slot keys: slot-8
+2026-08-11 18:07:30,466 INFO root - CORE Docker node type available: True
+2026-08-11 18:07:30,649 INFO root - Image already present, not pulling: lscr.io/linuxserver/openssh-server:latest
+2026-08-11 18:07:30,751 INFO root - Image already present, not pulling: busybox:1.36.1-musl
+2026-08-11 18:07:30,841 INFO root - Image already present, not pulling: alpine:3.19
+2026-08-11 18:07:30,934 INFO root - Image already present, not pulling: ubuntu:22.04
+2026-08-11 18:07:30,934 INFO root - Docker images ready: alpine:3.19=cached, busybox:1.36.1-musl=cached, lscr.io/linuxserver/openssh-server:latest=cached, ubuntu:22.04=cached
+2026-08-11 18:07:30,935 INFO root - PHASE: Building topology
+2026-08-11 18:07:30,935 INFO scenarioforge.builders.topology - [docker-node] reset compose caches context=segmented
+2026-08-11 18:07:30,935 INFO scenarioforge.builders.topology - Docker CORE interfaces start at eth0 (CORETG_DOCKER_IFID_START)
+2026-08-11 18:07:30,935 INFO scenarioforge.builders.topology - [docker-node] reset compose caches context=segmented-preview
+2026-08-11 18:07:30,935 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.get_sessions() -> calling
+2026-08-11 18:07:30,937 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.get_sessions() ok in 2.0 ms -> <list>
+2026-08-11 18:07:30,938 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.create_session() -> calling
+2026-08-11 18:07:30,962 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.create_session() ok in 24.8 ms -> <_RetryingProxy id=1>
+2026-08-11 18:07:30,963 INFO scenarioforge.builders.topology - [diag.session.preview] session=<_LoggingProxy for <_RetryingProxy for Session(id=1, state=<SessionState.DEFINITION: 1>, nodes={}, links=[], dir='/tmp/pycore.1', user='', default_services={'mdr': {'zebra', 'IPForward', 'OSPFv3MDR'}, 'PC': {'DefaultRoute'}, 'prouter': set(), 'router': {'zebra', 'IPForward', 'OSPFv2', 'OSPFv3'}, 'host': {'DefaultRoute', 'SSH'}}, location=SessionLocation(x=0.0, y=0.0, z=0.0, lat=47.57917022705078, lon=-122.13231658935547, alt=2.0, scale=150.0), hooks={}, metadata={}, file=None, options={'mtu': ConfigOption(name='mtu', value='0', label='MTU for All Devices', type=<ConfigOptionType.INT32: 7>, group='Options', select=[], regex=''), 'preservedir': ConfigOption(name='preservedir', value='0', label='Preserve session dir', type=<ConfigOptionType.BOOL: 11>, group='Options', select=[], regex=''), 'controlnet': ConfigOption(name='controlnet', value='', label='Control Network', type=<ConfigOptionType.STRING: 10>, group='Options', select=[], regex=''), 'controlnet0': ConfigOption(name='controlnet0', value='', label='Control Network 0', type=<ConfigOptionType.STRING: 10>, group='Options', select=[], regex=''), 'enablerj45': ConfigOption(name='enablerj45', value='1', label='Enable RJ45s', type=<ConfigOptionType.BOOL: 11>, group='Options', select=[], regex=''), 'loss_threshold': ConfigOption(name='loss_threshold', value='30', label='EMANE Link Loss Threshold (%)', type=<ConfigOptionType.INT32: 7>, group='Options', select=[], regex=''), 'sdturl': ConfigOption(name='sdturl', value='tcp://127.0.0.1:50000/', label='SDT3D URL', type=<ConfigOptionType.STRING: 10>, group='Options', select=[], regex=''), 'enablesdt': ConfigOption(name='enablesdt', value='0', label='Enable SDT3D output', type=<ConfigOptionType.BOOL: 11>, group='Options', select=[], regex=''), 'controlnet1': ConfigOption(name='controlnet1', value='', label='Control Network 1', type=<ConfigOptionType.STRING: 10>, group='Options', select=[], regex=''), 'link_interval': ConfigOption(name='link_interval', value='1', label='EMANE Link Check Interval (sec)', type=<ConfigOptionType.INT32: 7>, group='Options', select=[], regex=''), 'nem_id_start': ConfigOption(name='nem_id_start', value='1', label='EMANE NEM ID Start', type=<ConfigOptionType.INT32: 7>, group='Options', select=[], regex=''), 'ovs': ConfigOption(name='ovs', value='0', label='Enable OVS', type=<ConfigOptionType.BOOL: 11>, group='Options', select=[], regex=''), 'controlnet2': ConfigOption(name='controlnet2', value='', label='Control Network 2', type=<ConfigOptionType.STRING: 10>, group='Options', select=[], regex=''), 'checksums': ConfigOption(name='checksums', value='0', label='Enable Eth Checksums?', type=<ConfigOptionType.BOOL: 11>, group='Options', select=[], regex=''), 'link_enabled': ConfigOption(name='link_enabled', value='1', label='EMANE Links?', type=<ConfigOptionType.BOOL: 11>, group='Options', select=[], regex=''), 'controlnet_updown_script': ConfigOption(name='controlnet_updown_script', value='', label='Control Network Script', type=<ConfigOptionType.STRING: 10>, group='Options', select=[], regex=''), 'controlnet3': ConfigOption(name='controlnet3', value='', label='Control Network 3', type=<ConfigOptionType.STRING: 10>, group='Options', select=[], regex=''), 'platform_id_start': ConfigOption(name='platform_id_start', value='1', label='EMANE Platform ID Start', type=<ConfigOptionType.INT32: 7>, group='Options', select=[], regex=''), 'link_timeout': ConfigOption(name='link_timeout', value='4', label='EMANE Link Timeout (sec)', type=<ConfigOptionType.INT32: 7>, group='Options', select=[], regex='')}, servers=[])>> has_add_link=True add_link_type=<class 'function'>
+2026-08-11 18:07:30,963 INFO scenarioforge.builders.topology - [preview] add_router id=1 name=router-1 pos=(500,500)
+2026-08-11 18:07:30,964 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_node(1, name='router-1', _type=<NodeType name=DEFAULT>, position=<Position>) -> calling
+2026-08-11 18:07:30,964 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_node() ok in 0.2 ms -> <_RetryingProxy id=1>
+2026-08-11 18:07:30,964 INFO scenarioforge.builders.topology - [grpc.call] session.add_node name=router-1 requested_id=1 actual_id=1 type=DEFAULT session_type=_LoggingProxy position=(500, 500) attr_type=<_LoggingProxy for <_RetryingProxy for <NodeType.DEFAULT: 0>>> attr_image=None compose=None compose_name=None option_compose=None option_compose_name=None
+2026-08-11 18:07:30,965 INFO scenarioforge.builders.topology - [preview] add_router id=2 name=router-2 pos=(1500,500)
+2026-08-11 18:07:30,965 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_node(2, name='router-2', _type=<NodeType name=DEFAULT>, position=<Position>) -> calling
+2026-08-11 18:07:30,965 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_node() ok in 0.1 ms -> <_RetryingProxy id=2>
+2026-08-11 18:07:30,965 INFO scenarioforge.builders.topology - [grpc.call] session.add_node name=router-2 requested_id=2 actual_id=2 type=DEFAULT session_type=_LoggingProxy position=(1500, 500) attr_type=<_LoggingProxy for <_RetryingProxy for <NodeType.DEFAULT: 0>>> attr_image=None compose=None compose_name=None option_compose=None option_compose_name=None
+2026-08-11 18:07:30,965 INFO scenarioforge.builders.topology - [preview] add_router id=3 name=router-3 pos=(500,1500)
+2026-08-11 18:07:30,966 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_node(3, name='router-3', _type=<NodeType name=DEFAULT>, position=<Position>) -> calling
+2026-08-11 18:07:30,966 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_node() ok in 0.2 ms -> <_RetryingProxy id=3>
+2026-08-11 18:07:30,966 INFO scenarioforge.builders.topology - [grpc.call] session.add_node name=router-3 requested_id=3 actual_id=3 type=DEFAULT session_type=_LoggingProxy position=(500, 1500) attr_type=<_LoggingProxy for <_RetryingProxy for <NodeType.DEFAULT: 0>>> attr_image=None compose=None compose_name=None option_compose=None option_compose_name=None
+2026-08-11 18:07:30,967 INFO scenarioforge.builders.topology - [preview] add_host id=4 name=workstation-1 type=DEFAULT pos=(977,500)
+2026-08-11 18:07:30,967 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_node(4, name='workstation-1', _type=<NodeType name=DEFAULT>, position=<Position>) -> calling
+2026-08-11 18:07:30,967 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_node() ok in 0.2 ms -> <_RetryingProxy id=4>
+2026-08-11 18:07:30,968 INFO scenarioforge.builders.topology - [grpc.call] session.add_node name=workstation-1 requested_id=4 actual_id=4 type=DEFAULT session_type=_LoggingProxy position=(977, 500) attr_type=<_LoggingProxy for <_RetryingProxy for <NodeType.DEFAULT: 0>>> attr_image=None compose=None compose_name=None option_compose=None option_compose_name=None
+2026-08-11 18:07:30,968 INFO scenarioforge.builders.topology - [preview] add_host id=5 name=workstation-2 type=DEFAULT pos=(1940,500)
+2026-08-11 18:07:30,968 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_node(5, name='workstation-2', _type=<NodeType name=DEFAULT>, position=<Position>) -> calling
+2026-08-11 18:07:30,968 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_node() ok in 0.2 ms -> <_RetryingProxy id=5>
+2026-08-11 18:07:30,969 INFO scenarioforge.builders.topology - [grpc.call] session.add_node name=workstation-2 requested_id=5 actual_id=5 type=DEFAULT session_type=_LoggingProxy position=(1940, 500) attr_type=<_LoggingProxy for <_RetryingProxy for <NodeType.DEFAULT: 0>>> attr_image=None compose=None compose_name=None option_compose=None option_compose_name=None
+2026-08-11 18:07:30,969 INFO scenarioforge.builders.topology - [preview] add_host id=6 name=workstation-3 type=DEFAULT pos=(977,1500)
+2026-08-11 18:07:30,969 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_node(6, name='workstation-3', _type=<NodeType name=DEFAULT>, position=<Position>) -> calling
+2026-08-11 18:07:30,969 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_node() ok in 0.1 ms -> <_RetryingProxy id=6>
+2026-08-11 18:07:30,969 INFO scenarioforge.builders.topology - [grpc.call] session.add_node name=workstation-3 requested_id=6 actual_id=6 type=DEFAULT session_type=_LoggingProxy position=(977, 1500) attr_type=<_LoggingProxy for <_RetryingProxy for <NodeType.DEFAULT: 0>>> attr_image=None compose=None compose_name=None option_compose=None option_compose_name=None
+2026-08-11 18:07:30,969 INFO scenarioforge.builders.topology - [preview] add_host id=7 name=workstation-4 type=DEFAULT pos=(808,669)
+2026-08-11 18:07:30,970 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_node(7, name='workstation-4', _type=<NodeType name=DEFAULT>, position=<Position>) -> calling
+2026-08-11 18:07:30,970 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_node() ok in 0.1 ms -> <_RetryingProxy id=7>
+2026-08-11 18:07:30,970 INFO scenarioforge.builders.topology - [grpc.call] session.add_node name=workstation-4 requested_id=7 actual_id=7 type=DEFAULT session_type=_LoggingProxy position=(808, 669) attr_type=<_LoggingProxy for <_RetryingProxy for <NodeType.DEFAULT: 0>>> attr_image=None compose=None compose_name=None option_compose=None option_compose_name=None
+2026-08-11 18:07:30,970 INFO scenarioforge.builders.topology - [preview] add_host id=8 name=workstation-5 type=DEFAULT pos=(1808,669)
+2026-08-11 18:07:30,970 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_node(8, name='workstation-5', _type=<NodeType name=DEFAULT>, position=<Position>) -> calling
+2026-08-11 18:07:30,970 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_node() ok in 0.2 ms -> <_RetryingProxy id=8>
+2026-08-11 18:07:30,971 INFO scenarioforge.builders.topology - [grpc.call] session.add_node name=workstation-5 requested_id=8 actual_id=8 type=DEFAULT session_type=_LoggingProxy position=(1808, 669) attr_type=<_LoggingProxy for <_RetryingProxy for <NodeType.DEFAULT: 0>>> attr_image=None compose=None compose_name=None option_compose=None option_compose_name=None
+2026-08-11 18:07:30,971 INFO scenarioforge.builders.topology - [preview] add_host id=9 name=workstation-6 type=DEFAULT pos=(808,1669)
+2026-08-11 18:07:30,971 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_node(9, name='workstation-6', _type=<NodeType name=DEFAULT>, position=<Position>) -> calling
+2026-08-11 18:07:30,971 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_node() ok in 0.1 ms -> <_RetryingProxy id=9>
+2026-08-11 18:07:30,971 INFO scenarioforge.builders.topology - [grpc.call] session.add_node name=workstation-6 requested_id=9 actual_id=9 type=DEFAULT session_type=_LoggingProxy position=(808, 1669) attr_type=<_LoggingProxy for <_RetryingProxy for <NodeType.DEFAULT: 0>>> attr_image=None compose=None compose_name=None option_compose=None option_compose_name=None
+2026-08-11 18:07:30,971 INFO scenarioforge.builders.topology - [preview] add_host id=10 name=workstation-7 type=DEFAULT pos=(639,500)
+2026-08-11 18:07:30,972 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_node(10, name='workstation-7', _type=<NodeType name=DEFAULT>, position=<Position>) -> calling
+2026-08-11 18:07:30,972 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_node() ok in 0.1 ms -> <_RetryingProxy id=10>
+2026-08-11 18:07:30,972 INFO scenarioforge.builders.topology - [grpc.call] session.add_node name=workstation-7 requested_id=10 actual_id=10 type=DEFAULT session_type=_LoggingProxy position=(639, 500) attr_type=<_LoggingProxy for <_RetryingProxy for <NodeType.DEFAULT: 0>>> attr_image=None compose=None compose_name=None option_compose=None option_compose_name=None
+2026-08-11 18:07:30,973 INFO scenarioforge.builders.topology - [docker-node] compose prep node=docker-8 src=provided out=/tmp/vulns/.compose-projects/docker-8/docker-compose.yml rec_name=drupal/CVE-2019-6341 rec_path=/tmp/scenarioforge/runs/cli-491e59bd/drupal-cve-2019-6341/docker-compose.yml skip_iproute2_wrapper=False
+2026-08-11 18:07:30,973 INFO scenarioforge.utils.vuln_process - [vuln] preparing docker-compose for node=docker-8 name=drupal/CVE-2019-6341 path=/tmp/scenarioforge/runs/cli-491e59bd/drupal-cve-2019-6341/docker-compose.yml
+2026-08-11 18:07:30,974 INFO scenarioforge.utils.vuln_process - [vuln] copying compose from local path=/tmp/scenarioforge/runs/cli-491e59bd/drupal-cve-2019-6341/docker-compose.yml dest=/tmp/vulns/drupal-cve-2019-6341/docker-compose.yml
+2026-08-11 18:07:30,976 DEBUG scenarioforge.utils.vuln_process - [vuln] parsed compose yaml key=('drupal/CVE-2019-6341', '/tmp/scenarioforge/runs/cli-491e59bd/drupal-cve-2019-6341/docker-compose.yml') services=['web']
+2026-08-11 18:07:30,977 INFO scenarioforge.utils.vuln_process - [vuln] compose selected service node=docker-8 service=web
+2026-08-11 18:07:30,977 INFO scenarioforge.utils.vuln_process - [injects] prepare injects source_dir=/tmp/vulns/flag_generators_runs/flow-datasetsegmentedfirewallpivotrun02/04_encoded_base64_dispatch_docker-8/artifacts outputs_manifest=/tmp/vulns/flag_generators_runs/flow-datasetsegmentedfirewallpivotrun02/04_encoded_base64_dispatch_docker-8/outputs.json inject_files=['artifacts/dispatch_note.b64']
+2026-08-11 18:07:30,977 INFO scenarioforge.utils.vuln_process - [injects] expanded injects=['artifacts/dispatch_note.b64']
+2026-08-11 18:07:30,977 INFO scenarioforge.utils.vuln_process - [injects] applying injects to service=web mode=copy map={'dispatch_note.b64': '/flow_injects'}
+2026-08-11 18:07:30,977 INFO scenarioforge.utils.vuln_process - [injects] clearing destination directories before copy: ['/flow_injects']
+2026-08-11 18:07:30,985 INFO scenarioforge.utils.vuln_process - [vuln] wrote compose yaml node=docker-8 services=['inject_copy', 'docker-8'] dest=/tmp/vulns/docker-compose-docker-8.yml
+2026-08-11 18:07:30,985 INFO scenarioforge.utils.vuln_process - [vuln] compose file ready for node=docker-8 compose=/tmp/vulns/docker-compose-docker-8.yml
+2026-08-11 18:07:30,985 INFO scenarioforge.utils.vuln_process - [vuln] compose verification: expected=1 present=1 missing=0
+2026-08-11 18:07:31,106 INFO scenarioforge.builders.topology - [docker-node] preflight begin node=docker-8 compose=/tmp/vulns/.compose-projects/docker-8/docker-compose.yml cmd=sudo -S -p  docker compose
+2026-08-11 18:07:31,124 INFO scenarioforge.builders.topology - [docker-node] preflight wrapper build service=docker-8 image=coretg/dataset-segmented-firewall-pivot_run02-datasetsegmentedfirewallpivotrun02-docker-8-94ff96e31dbb:iproute2 context=/tmp/vulns/docker-wrap-dataset-segmented-firewall-pivot_run02-datasetsegmentedfirewallpivotrun02-docker-8-94ff96e31dbb dockerfile=/tmp/vulns/docker-wrap-dataset-segmented-firewall-pivot_run02-datasetsegmentedfirewallpivotrun02-docker-8-94ff96e31dbb/Dockerfile
+2026-08-11 18:07:57,184 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker build --network host -t coretg/dataset-segmented-firewall-pivot_run02-datasetsegmentedfirewallpivotrun02-docker-8-94ff96e31dbb:iproute2 -f /tmp/vulns/docker-wrap-dataset-segmented-firewall-pivot_run02-datasetsegmentedfirewallpivotrun02-docker-8-94ff96e31dbb/Dockerfile /tmp/vulns/docker-wrap-dataset-segmented-firewall-pivot_run02-datasetsegmentedfirewallpivotrun02-docker-8-94ff96e31dbb rc=0
+#14 exporting to image
+#14 exporting layers
+#14 exporting layers 0.9s done
+#14 exporting manifest sha256:4eb99b130bce58ab2055d040763228a4d76589467fbd74f9eed054851647edf4 0.1s done
+#14 exporting config sha256:b1df37d6643b619ccce9dfa4644da3e61fe29159ee65dd03df17e1709fee5de1 0.0s done
+#14 exporting attestation manifest sha256:25dc982e4c19e2a0c3bd5c58b627bcc238917f2007a88c02968b60191f8fa7fd 0.1s done
+#14 exporting manifest list sha256:ddd814ff6f25afc8a5e9a0d94556ea69166bcd25bacb2b86b83c37b8d48c4e36
+#14 exporting manifest list sha256:ddd814ff6f25afc8a5e9a0d94556ea69166bcd25bacb2b86b83c37b8d48c4e36 0.0s done
+#14 naming to docker.io/coretg/dataset-segmented-firewall-pivot_run02-datasetsegmentedfirewallpivotrun02-docker-8-94ff96e31dbb:iproute2 done
+#14 unpacking to docker.io/coretg/dataset-segmented-firewall-pivot_run02-datasetsegmentedfirewallpivotrun02-docker-8-94ff96e31dbb:iproute2
+#14 unpacking to docker.io/coretg/dataset-segmented-firewall-pivot_run02-datasetsegmentedfirewallpivotrun02-docker-8-94ff96e31dbb:iproute2 0.3s done
+#14 DONE 1.6s
+2026-08-11 18:07:57,244 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker image inspect --format {{json .Config}} vulhub/drupal:8.5.0 rc=1
+Error response from daemon: No such image: vulhub/drupal:8.5.0
+2026-08-11 18:07:57,353 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker image inspect --format {{json .Config}} coretg/dataset-segmented-firewall-pivot_run02-datasetsegmentedfirewallpivotrun02-docker-8-94ff96e31dbb:iproute2 rc=0
+{"User":"0","ExposedPorts":{"80/tcp":{}},"Env":["PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin","PHPIZE_DEPS=autoconf \t\tdpkg-dev \t\tfile \t\tg++ \t\tgcc \t\tlibc-dev \t\tmake \t\tpkg-config \t\tre2c","PHP_INI_DIR=/usr/local/etc/php","APACHE_CONFDIR=/etc/apache2","APACHE_ENVVARS=/etc/apache2/envvars","PHP_EXTRA_BUILD_DEPS=apache2-dev","PHP_EXTRA_CONFIGURE_ARGS=--with-apxs2","PHP_CFLAGS=-fstack-protector-strong -fpic -fpie -O2","PHP_CPPFLAGS=-fstack-protector-strong -fpic -fpie -O2","PHP_LDFLAGS=-Wl,-O1 -Wl,--hash-style=both -pie","GPG_KEYS=1729F83938DA44E27BA0F4D3DBDB397470D12172 B1B44D8F021E4E2D6021E995DC9FF8D3EE5AF27F","PHP_VERSION=7.2.3","PHP_URL=https://secure.php.net/get/php-7.2.3.tar.xz/from/this/mirror","PHP_ASC_URL=https://secure.php.net/get/php-7.2.3.tar.xz.asc/from/this/mirror","PHP_SHA256=b3a94f1b562f413c0b96f54bc309706d83b29ac65d9b172bc7ed9fb40a5e651f","PHP_MD5=","DRUPAL_VERSION=8.5.0","DRUPAL_MD5=5679d3fa188fb80368ee46ab40acdb6b"],"Entrypoint":["docker-php-entrypoint"],"Cmd":["apache2-foreground"],"WorkingDir":"/var/www/html","Labels":{"maintainer":"phithon <root@leavesongs.com>"},"ArgsEscaped":true}
+2026-08-11 18:07:57,353 INFO scenarioforge.builders.topology - [docker-node] app-user shim: base tag unavailable; using wrapper config node=docker-8 service=docker-8 base=vulhub/drupal:8.5.0 wrapper=coretg/dataset-segmented-firewall-pivot_run02-datasetsegmentedfirewallpivotrun02-docker-8-94ff96e31dbb:iproute2
+2026-08-11 18:07:57,353 INFO scenarioforge.builders.topology - [docker-node] app-user shim applied node=docker-8 service=docker-8 base=vulhub/drupal:8.5.0 user=0
+2026-08-11 18:07:57,446 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker image inspect --format {{json .Config}} alpine:3.19 rc=0
+{"Env":["PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"],"Cmd":["/bin/sh"],"WorkingDir":"/"}
+2026-08-11 18:07:57,549 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker image inspect --format {{json .Config}} coretg/dataset-segmented-firewall-pivot_run02-datasetsegmentedfirewallpivotrun02-docker-8-94ff96e31dbb:iproute2 rc=0
+{"User":"0","ExposedPorts":{"80/tcp":{}},"Env":["PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin","PHPIZE_DEPS=autoconf \t\tdpkg-dev \t\tfile \t\tg++ \t\tgcc \t\tlibc-dev \t\tmake \t\tpkg-config \t\tre2c","PHP_INI_DIR=/usr/local/etc/php","APACHE_CONFDIR=/etc/apache2","APACHE_ENVVARS=/etc/apache2/envvars","PHP_EXTRA_BUILD_DEPS=apache2-dev","PHP_EXTRA_CONFIGURE_ARGS=--with-apxs2","PHP_CFLAGS=-fstack-protector-strong -fpic -fpie -O2","PHP_CPPFLAGS=-fstack-protector-strong -fpic -fpie -O2","PHP_LDFLAGS=-Wl,-O1 -Wl,--hash-style=both -pie","GPG_KEYS=1729F83938DA44E27BA0F4D3DBDB397470D12172 B1B44D8F021E4E2D6021E995DC9FF8D3EE5AF27F","PHP_VERSION=7.2.3","PHP_URL=https://secure.php.net/get/php-7.2.3.tar.xz/from/this/mirror","PHP_ASC_URL=https://secure.php.net/get/php-7.2.3.tar.xz.asc/from/this/mirror","PHP_SHA256=b3a94f1b562f413c0b96f54bc309706d83b29ac65d9b172bc7ed9fb40a5e651f","PHP_MD5=","DRUPAL_VERSION=8.5.0","DRUPAL_MD5=5679d3fa188fb80368ee46ab40acdb6b"],"Entrypoint":["docker-php-entrypoint"],"Cmd":["apache2-foreground"],"WorkingDir":"/var/www/html","Labels":{"maintainer":"phithon <root@leavesongs.com>"},"ArgsEscaped":true}
+2026-08-11 18:07:57,642 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker image inspect --format {{.Id}} alpine:3.19 rc=0
+sha256:6baf43584bcb78f2e5847d1de515f23499913ac9f12bdf834811a3145eb11ca1
+2026-08-11 18:07:57,642 INFO scenarioforge.builders.topology - [docker-node] preflight pull skipped node=docker-8; every pull-only image is cached: ['alpine:3.19']
+[images] pulling=0 cached=1 pending=4
+2026-08-11 18:07:58,194 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker compose -p docker-8conf -f /tmp/vulns/.compose-projects/docker-8/docker-compose.yml up --no-start --no-build rc=0
+Volume docker-8conf_inject-flow-injects Creating 
+ Volume docker-8conf_inject-flow-injects Created 
+ Container docker-8conf-inject_copy-1 Creating 
+ Container docker-8conf-inject_copy-1 Created 
+ Container docker-8 Creating 
+ Container docker-8 Created
+2026-08-11 18:07:58,880 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker compose -p docker-8conf -f /tmp/vulns/.compose-projects/docker-8/docker-compose.yml up --no-build inject_copy rc=0
+Attaching to inject_copy-1
+ Container docker-8conf-inject_copy-1 Starting 
+ Container docker-8conf-inject_copy-1 Started 
+
+inject_copy-1 exited with code 0
+2026-08-11 18:07:59,037 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker compose -p docker-8conf -f /tmp/vulns/.compose-projects/docker-8/docker-compose.yml ps --all -q inject_copy rc=0
+825c55bc2a19ffb05977b47859bd55242e3436cb696e9ce0a4b49017eb8a07d7
+2026-08-11 18:07:59,082 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker inspect --format {{.State.ExitCode}} {{.State.Status}} 825c55bc2a19ffb05977b47859bd55242e3436cb696e9ce0a4b49017eb8a07d7 rc=0
+0 exited
+2026-08-11 18:07:59,933 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker compose -p docker-8conf -f /tmp/vulns/.compose-projects/docker-8/docker-compose.yml up -d --no-build docker-8 rc=0
+Container docker-8conf-inject_copy-1 Starting 
+ Container docker-8conf-inject_copy-1 Started 
+ Container docker-8 Starting 
+ Container docker-8 Started
+2026-08-11 18:07:59,991 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker inspect --format {{.State.Pid}} {{.State.Status}} docker-8 rc=0
+326409 running
+2026-08-11 18:08:00,167 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker exec docker-8 ip link show rc=0
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+2026-08-11 18:08:00,862 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker compose -p docker-8conf -f /tmp/vulns/.compose-projects/docker-8/docker-compose.yml down --remove-orphans rc=0
+Container docker-8 Stopping 
+ Container docker-8 Stopped 
+ Container docker-8 Removing 
+ Container docker-8 Removed 
+ Container docker-8conf-inject_copy-1 Stopping 
+ Container docker-8conf-inject_copy-1 Stopped 
+ Container docker-8conf-inject_copy-1 Removing 
+ Container docker-8conf-inject_copy-1 Removed
+2026-08-11 18:08:00,863 INFO scenarioforge.builders.topology - [docker-node] preflight done node=docker-8 elapsed_ms=29756
+2026-08-11 18:08:00,863 INFO scenarioforge.builders.topology - [preview] add_host id=11 name=docker-8 type=DOCKER pos=(1639,500)
+2026-08-11 18:08:01,072 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_node(11, name='docker-8', _type=<NodeType name=DOCKER>, position=<Position>, image='') -> calling
+2026-08-11 18:08:01,073 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_node() ok in 0.3 ms -> <_RetryingProxy id=11>
+2026-08-11 18:08:01,073 INFO scenarioforge.builders.topology - [grpc.call] session.add_node name=docker-8 requested_id=11 actual_id=11 type=DOCKER session_type=_LoggingProxy position=(1639, 500) attr_type=<_LoggingProxy for <_RetryingProxy for <NodeType.DOCKER: 15>>> attr_image= compose=None compose_name=None option_compose=None option_compose_name=None
+2026-08-11 18:08:01,073 INFO scenarioforge.builders.topology - [vuln-node] metadata lookup node=docker-8 compose_path=/tmp/vulns/.compose-projects/docker-8/docker-compose.yml record_keys=['ArtifactsDir', 'ArtifactsMountPath', 'EnableTrafficMount', 'HintText', 'InjectCandidatePaths', 'InjectFiles', 'InjectSourceDir', 'Name', 'OutputsManifest', 'Path', 'RunDir', 'ScenarioTag', 'Type', 'Vector', 'compose_path', 'compose_service', 'compose_service_selected', 'legacy_compose_path']
+2026-08-11 18:08:01,073 DEBUG scenarioforge.builders.topology - [vuln-node] node=docker-8 compose file present locally path=/tmp/vulns/.compose-projects/docker-8/docker-compose.yml size=2038 bytes
+2026-08-11 18:08:01,078 DEBUG scenarioforge.builders.topology - [vuln-node] node=docker-8 existing compose attr=None
+2026-08-11 18:08:01,079 DEBUG scenarioforge.builders.topology - [vuln-node] node=docker-8 after attribute set compose=/tmp/vulns/.compose-projects/docker-8/docker-compose.yml compose_name=docker-8
+2026-08-11 18:08:01,079 INFO scenarioforge.builders.topology - [vuln-node] node=docker-8 compose=/tmp/vulns/.compose-projects/docker-8/docker-compose.yml compose_name=docker-8 image=None exists=True size=2038 session_edit=False
+2026-08-11 18:08:01,079 DEBUG scenarioforge.utils.services - Failed to remove service 'DefaultRoute' from node 11 (no supported API)
+2026-08-11 18:08:01,079 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=11, CoreTGPrereqs)
+2026-08-11 18:08:01,080 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=11, CoreTGPrereqs)
+2026-08-11 18:08:01,080 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=11, DockerDefaultRoute)
+2026-08-11 18:08:01,080 DEBUG scenarioforge.utils.services - Failed to remove service 'Traffic' from node 11 (no supported API)
+2026-08-11 18:08:01,080 INFO scenarioforge.builders.topology - [docker-node] compose prep node=docker-9 src=provided out=/tmp/vulns/.compose-projects/docker-9/docker-compose.yml rec_name=SSH: Password Finance Terminal rec_path=/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/02_ssh_password_finance_terminal_docker-9/docker-compose.yml skip_iproute2_wrapper=False
+2026-08-11 18:08:01,081 INFO scenarioforge.utils.vuln_process - [vuln] preparing docker-compose for node=docker-9 name=SSH: Password Finance Terminal path=/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/02_ssh_password_finance_terminal_docker-9/docker-compose.yml
+2026-08-11 18:08:01,081 INFO scenarioforge.utils.vuln_process - [vuln] copying compose from local path=/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/02_ssh_password_finance_terminal_docker-9/docker-compose.yml dest=/tmp/vulns/ssh-password-finance-terminal/docker-compose.yml
+2026-08-11 18:08:01,086 DEBUG scenarioforge.utils.vuln_process - [vuln] parsed compose yaml key=('SSH: Password Finance Terminal', '/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/02_ssh_password_finance_terminal_docker-9/docker-compose.yml') services=['node']
+2026-08-11 18:08:01,089 INFO scenarioforge.utils.vuln_process - [vuln] compose selected service node=docker-9 service=node
+2026-08-11 18:08:01,089 INFO scenarioforge.utils.vuln_process - [injects] prepare injects source_dir=/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/02_ssh_password_finance_terminal_docker-9 outputs_manifest=/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/02_ssh_password_finance_terminal_docker-9/outputs.json inject_files=['workspace']
+2026-08-11 18:08:01,090 INFO scenarioforge.utils.vuln_process - [injects] expanded injects=['workspace']
+2026-08-11 18:08:01,090 INFO scenarioforge.utils.vuln_process - [injects] applying injects to service=node mode=copy map={'workspace': '/flow_injects'}
+2026-08-11 18:08:01,090 INFO scenarioforge.utils.vuln_process - [injects] clearing destination directories before copy: ['/flow_injects']
+2026-08-11 18:08:01,091 INFO scenarioforge.utils.vuln_process - [vuln] injected iproute2 install into build-only Dockerfile node=docker-9 service=node dockerfile=/tmp/vulns/ssh-password-finance-terminal/./Dockerfile
+2026-08-11 18:08:01,096 INFO scenarioforge.utils.vuln_process - [vuln] wrote compose yaml node=docker-9 services=['inject_copy', 'docker-9'] dest=/tmp/vulns/docker-compose-docker-9.yml
+2026-08-11 18:08:01,096 INFO scenarioforge.utils.vuln_process - [vuln] compose file ready for node=docker-9 compose=/tmp/vulns/docker-compose-docker-9.yml
+2026-08-11 18:08:01,096 INFO scenarioforge.utils.vuln_process - [vuln] compose verification: expected=1 present=1 missing=0
+2026-08-11 18:08:01,217 INFO scenarioforge.builders.topology - [docker-node] preflight begin node=docker-9 compose=/tmp/vulns/.compose-projects/docker-9/docker-compose.yml cmd=sudo -S -p  docker compose
+2026-08-11 18:08:01,336 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker image inspect --format {{json .Config}} alpine:3.19 rc=0
+{"Env":["PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"],"Cmd":["/bin/sh"],"WorkingDir":"/"}
+2026-08-11 18:08:01,342 INFO scenarioforge.builders.topology - [docker-node] preflight build service=docker-9 image=docker-9conf-docker-9 context=/tmp/vulns/ssh-password-finance-terminal/. dockerfile=/tmp/vulns/ssh-password-finance-terminal/./Dockerfile
+2026-08-11 18:08:54,386 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker build --network host -t docker-9conf-docker-9 -f /tmp/vulns/ssh-password-finance-terminal/./Dockerfile /tmp/vulns/ssh-password-finance-terminal/. rc=0
+#10 exporting layers
+#10 exporting layers 4.0s done
+#10 exporting manifest sha256:2ae1ecb327fa131b3ca24f1e7d52fb11c455237ea2625581ba6b4d171e64de2c 0.0s done
+#10 exporting config sha256:51cfffc143a0897d29c29247f8dde6c33fdfce39cefc6feccf8c46e57cca5751 0.0s done
+#10 exporting attestation manifest sha256:1409c42254d95905014a197b806efa9a255126da5357c0ebd6fe1ae8182f637c
+#10 exporting attestation manifest sha256:1409c42254d95905014a197b806efa9a255126da5357c0ebd6fe1ae8182f637c 0.1s done
+#10 exporting manifest list sha256:d0f7b6a2a14b6d9dd1467392713141287b44d6c69604ff863d5ac769fe26d78e 0.0s done
+#10 naming to docker.io/library/docker-9conf-docker-9:latest
+#10 naming to docker.io/library/docker-9conf-docker-9:latest done
+#10 unpacking to docker.io/library/docker-9conf-docker-9:latest
+#10 unpacking to docker.io/library/docker-9conf-docker-9:latest 1.0s done
+#10 DONE 5.3s
+2026-08-11 18:08:54,494 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker image inspect --format {{.Id}} alpine:3.19 rc=0
+sha256:6baf43584bcb78f2e5847d1de515f23499913ac9f12bdf834811a3145eb11ca1
+2026-08-11 18:08:54,494 INFO scenarioforge.builders.topology - [docker-node] preflight pull skipped node=docker-9; every pull-only image is cached: ['alpine:3.19']
+[images] pulling=0 cached=2 pending=3
+2026-08-11 18:08:55,727 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker compose -p docker-9conf -f /tmp/vulns/.compose-projects/docker-9/docker-compose.yml up --no-start --no-build rc=0
+Volume docker-9conf_inject-flow-injects Creating 
+ Volume docker-9conf_inject-flow-injects Created 
+ Container docker-9conf-inject_copy-1 Creating 
+ Container docker-9conf-inject_copy-1 Created 
+ Container docker-9 Creating 
+ Container docker-9 Created
+2026-08-11 18:08:56,395 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker compose -p docker-9conf -f /tmp/vulns/.compose-projects/docker-9/docker-compose.yml up --no-build inject_copy rc=0
+Attaching to inject_copy-1
+ Container docker-9conf-inject_copy-1 Starting 
+ Container docker-9conf-inject_copy-1 Started 
+
+inject_copy-1 exited with code 0
+2026-08-11 18:08:56,543 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker compose -p docker-9conf -f /tmp/vulns/.compose-projects/docker-9/docker-compose.yml ps --all -q inject_copy rc=0
+9a190670b4a13b8f141f329b081efa06cb7cdf520b2eb6bb9b8ef9df158a9eb0
+2026-08-11 18:08:56,594 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker inspect --format {{.State.ExitCode}} {{.State.Status}} 9a190670b4a13b8f141f329b081efa06cb7cdf520b2eb6bb9b8ef9df158a9eb0 rc=0
+0 exited
+2026-08-11 18:08:57,449 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker compose -p docker-9conf -f /tmp/vulns/.compose-projects/docker-9/docker-compose.yml up -d --no-build docker-9 rc=0
+Container docker-9conf-inject_copy-1 Starting 
+ Container docker-9conf-inject_copy-1 Started 
+ Container docker-9 Starting 
+ Container docker-9 Started
+2026-08-11 18:08:57,501 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker inspect --format {{.State.Pid}} {{.State.Status}} docker-9 rc=0
+330434 running
+2026-08-11 18:08:57,686 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker exec docker-9 ip link show rc=0
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+2026-08-11 18:08:58,313 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker compose -p docker-9conf -f /tmp/vulns/.compose-projects/docker-9/docker-compose.yml down --remove-orphans rc=0
+Container docker-9 Stopping 
+ Container docker-9 Stopped 
+ Container docker-9 Removing 
+ Container docker-9 Removed 
+ Container docker-9conf-inject_copy-1 Stopping 
+ Container docker-9conf-inject_copy-1 Stopped 
+ Container docker-9conf-inject_copy-1 Removing 
+ Container docker-9conf-inject_copy-1 Removed
+2026-08-11 18:08:58,313 INFO scenarioforge.builders.topology - [docker-node] preflight done node=docker-9 elapsed_ms=57096
+2026-08-11 18:08:58,313 INFO scenarioforge.builders.topology - [preview] add_host id=12 name=docker-9 type=DOCKER pos=(639,1500)
+2026-08-11 18:08:58,319 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_node(12, name='docker-9', _type=<NodeType name=DOCKER>, position=<Position>, image='') -> calling
+2026-08-11 18:08:58,319 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_node() ok in 0.2 ms -> <_RetryingProxy id=12>
+2026-08-11 18:08:58,319 INFO scenarioforge.builders.topology - [grpc.call] session.add_node name=docker-9 requested_id=12 actual_id=12 type=DOCKER session_type=_LoggingProxy position=(639, 1500) attr_type=<_LoggingProxy for <_RetryingProxy for <NodeType.DOCKER: 15>>> attr_image= compose=None compose_name=None option_compose=None option_compose_name=None
+2026-08-11 18:08:58,319 INFO scenarioforge.builders.topology - [vuln-node] metadata lookup node=docker-9 compose_path=/tmp/vulns/.compose-projects/docker-9/docker-compose.yml record_keys=['EnableTrafficMount', 'HintText', 'InjectCandidatePaths', 'InjectFiles', 'InjectSourceDir', 'Name', 'OutputsManifest', 'Path', 'RunDir', 'ScenarioTag', 'Type', 'Vector', 'compose_path', 'compose_service', 'compose_service_selected', 'legacy_compose_path']
+2026-08-11 18:08:58,319 DEBUG scenarioforge.builders.topology - [vuln-node] node=docker-9 compose file present locally path=/tmp/vulns/.compose-projects/docker-9/docker-compose.yml size=1581 bytes
+2026-08-11 18:08:58,327 DEBUG scenarioforge.builders.topology - [vuln-node] node=docker-9 existing compose attr=None
+2026-08-11 18:08:58,327 DEBUG scenarioforge.builders.topology - [vuln-node] node=docker-9 after attribute set compose=/tmp/vulns/.compose-projects/docker-9/docker-compose.yml compose_name=docker-9
+2026-08-11 18:08:58,327 INFO scenarioforge.builders.topology - [vuln-node] node=docker-9 compose=/tmp/vulns/.compose-projects/docker-9/docker-compose.yml compose_name=docker-9 image=None exists=True size=1581 session_edit=False
+2026-08-11 18:08:58,327 DEBUG scenarioforge.utils.services - Failed to remove service 'DefaultRoute' from node 12 (no supported API)
+2026-08-11 18:08:58,327 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=12, CoreTGPrereqs)
+2026-08-11 18:08:58,328 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=12, CoreTGPrereqs)
+2026-08-11 18:08:58,328 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=12, DockerDefaultRoute)
+2026-08-11 18:08:58,328 DEBUG scenarioforge.utils.services - Failed to remove service 'Traffic' from node 12 (no supported API)
+2026-08-11 18:08:58,328 INFO scenarioforge.builders.topology - [docker-node] compose prep node=docker-10 src=provided out=/tmp/vulns/.compose-projects/docker-10/docker-compose.yml rec_name=Git: HTTP Bare Repository rec_path=/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/01_git_http_bare_repo_docker-10/docker-compose.yml skip_iproute2_wrapper=False
+2026-08-11 18:08:58,329 INFO scenarioforge.utils.vuln_process - [vuln] preparing docker-compose for node=docker-10 name=Git: HTTP Bare Repository path=/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/01_git_http_bare_repo_docker-10/docker-compose.yml
+2026-08-11 18:08:58,329 INFO scenarioforge.utils.vuln_process - [vuln] copying compose from local path=/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/01_git_http_bare_repo_docker-10/docker-compose.yml dest=/tmp/vulns/git-http-bare-repository/docker-compose.yml
+2026-08-11 18:08:58,333 DEBUG scenarioforge.utils.vuln_process - [vuln] parsed compose yaml key=('Git: HTTP Bare Repository', '/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/01_git_http_bare_repo_docker-10/docker-compose.yml') services=['node']
+2026-08-11 18:08:58,334 INFO scenarioforge.utils.vuln_process - [vuln] compose selected service node=docker-10 service=node
+2026-08-11 18:08:58,334 INFO scenarioforge.utils.vuln_process - [injects] prepare injects source_dir=/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/01_git_http_bare_repo_docker-10 outputs_manifest=/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/01_git_http_bare_repo_docker-10/outputs.json inject_files=['service']
+2026-08-11 18:08:58,334 INFO scenarioforge.utils.vuln_process - [injects] expanded injects=['service']
+2026-08-11 18:08:58,334 INFO scenarioforge.utils.vuln_process - [injects] applying injects to service=node mode=copy map={'service': '/flow_injects'}
+2026-08-11 18:08:58,334 INFO scenarioforge.utils.vuln_process - [injects] clearing destination directories before copy: ['/flow_injects']
+2026-08-11 18:08:58,335 INFO scenarioforge.utils.vuln_process - [vuln] injected iproute2 install into build-only Dockerfile node=docker-10 service=node dockerfile=/tmp/vulns/git-http-bare-repository/./Dockerfile
+2026-08-11 18:08:58,338 INFO scenarioforge.utils.vuln_process - [vuln] wrote compose yaml node=docker-10 services=['inject_copy', 'docker-10'] dest=/tmp/vulns/docker-compose-docker-10.yml
+2026-08-11 18:08:58,338 INFO scenarioforge.utils.vuln_process - [vuln] compose file ready for node=docker-10 compose=/tmp/vulns/docker-compose-docker-10.yml
+2026-08-11 18:08:58,338 INFO scenarioforge.utils.vuln_process - [vuln] compose verification: expected=1 present=1 missing=0
+2026-08-11 18:08:58,457 INFO scenarioforge.builders.topology - [docker-node] preflight begin node=docker-10 compose=/tmp/vulns/.compose-projects/docker-10/docker-compose.yml cmd=sudo -S -p  docker compose
+2026-08-11 18:08:58,558 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker image inspect --format {{json .Config}} alpine:3.19 rc=0
+{"Env":["PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"],"Cmd":["/bin/sh"],"WorkingDir":"/"}
+2026-08-11 18:08:58,563 INFO scenarioforge.builders.topology - [docker-node] preflight build service=docker-10 image=docker-10conf-docker-10 context=/tmp/vulns/git-http-bare-repository/. dockerfile=/tmp/vulns/git-http-bare-repository/./Dockerfile
+2026-08-11 18:09:36,932 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker build --network host -t docker-10conf-docker-10 -f /tmp/vulns/git-http-bare-repository/./Dockerfile /tmp/vulns/git-http-bare-repository/. rc=0
+#10 exporting layers
+#10 exporting layers 6.0s done
+#10 exporting manifest sha256:7cb190c993612a7af920139af6fb7035aa7a601ab762b7595723602a7d7e0e6d 0.0s done
+#10 exporting config sha256:7b1e9f1b64c11a011c1b7d4aea5ad0fbc5cd533895223d7f6a2908b2bdc67599 0.0s done
+#10 exporting attestation manifest sha256:547e4d9a3c5ecd42d92fb6676141a7bfc5787a4a6153dc8eaaa06009152b5edd
+#10 exporting attestation manifest sha256:547e4d9a3c5ecd42d92fb6676141a7bfc5787a4a6153dc8eaaa06009152b5edd 0.1s done
+#10 exporting manifest list sha256:04fa5013bad1e6860ab34914be0e90a6b8a997363da7e5f3dc96b1b9db598371 0.0s done
+#10 naming to docker.io/library/docker-10conf-docker-10:latest
+#10 naming to docker.io/library/docker-10conf-docker-10:latest done
+#10 unpacking to docker.io/library/docker-10conf-docker-10:latest
+#10 unpacking to docker.io/library/docker-10conf-docker-10:latest 1.1s done
+#10 DONE 7.4s
+2026-08-11 18:09:37,030 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker image inspect --format {{.Id}} alpine:3.19 rc=0
+sha256:6baf43584bcb78f2e5847d1de515f23499913ac9f12bdf834811a3145eb11ca1
+2026-08-11 18:09:37,030 INFO scenarioforge.builders.topology - [docker-node] preflight pull skipped node=docker-10; every pull-only image is cached: ['alpine:3.19']
+[images] pulling=0 cached=3 pending=2
+2026-08-11 18:09:38,561 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker compose -p docker-10conf -f /tmp/vulns/.compose-projects/docker-10/docker-compose.yml up --no-start --no-build rc=0
+Volume docker-10conf_inject-flow-injects Creating 
+ Volume docker-10conf_inject-flow-injects Created 
+ Container docker-10conf-inject_copy-1 Creating 
+ Container docker-10conf-inject_copy-1 Created 
+ Container docker-10 Creating 
+ Container docker-10 Created
+2026-08-11 18:09:39,251 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker compose -p docker-10conf -f /tmp/vulns/.compose-projects/docker-10/docker-compose.yml up --no-build inject_copy rc=0
+Attaching to inject_copy-1
+ Container docker-10conf-inject_copy-1 Starting 
+ Container docker-10conf-inject_copy-1 Started 
+
+inject_copy-1 exited with code 0
+2026-08-11 18:09:39,399 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker compose -p docker-10conf -f /tmp/vulns/.compose-projects/docker-10/docker-compose.yml ps --all -q inject_copy rc=0
+23540017eae02e3af2f54ea33b5dd62984db4a9e77bd82de8ea1c2a3bbb0717d
+2026-08-11 18:09:39,445 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker inspect --format {{.State.ExitCode}} {{.State.Status}} 23540017eae02e3af2f54ea33b5dd62984db4a9e77bd82de8ea1c2a3bbb0717d rc=0
+0 exited
+2026-08-11 18:09:40,290 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker compose -p docker-10conf -f /tmp/vulns/.compose-projects/docker-10/docker-compose.yml up -d --no-build docker-10 rc=0
+Container docker-10conf-inject_copy-1 Starting 
+ Container docker-10conf-inject_copy-1 Started 
+ Container docker-10 Starting 
+ Container docker-10 Started
+2026-08-11 18:09:40,343 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker inspect --format {{.State.Pid}} {{.State.Status}} docker-10 rc=0
+331884 running
+2026-08-11 18:09:40,517 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker exec docker-10 ip link show rc=0
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+2026-08-11 18:09:51,204 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker compose -p docker-10conf -f /tmp/vulns/.compose-projects/docker-10/docker-compose.yml down --remove-orphans rc=0
+Container docker-10 Stopping 
+ Container docker-10 Stopped 
+ Container docker-10 Removing 
+ Container docker-10 Removed 
+ Container docker-10conf-inject_copy-1 Stopping 
+ Container docker-10conf-inject_copy-1 Stopped 
+ Container docker-10conf-inject_copy-1 Removing 
+ Container docker-10conf-inject_copy-1 Removed
+2026-08-11 18:09:51,204 INFO scenarioforge.builders.topology - [docker-node] preflight done node=docker-10 elapsed_ms=52747
+2026-08-11 18:09:51,205 INFO scenarioforge.builders.topology - [preview] add_host id=13 name=docker-10 type=DOCKER pos=(808,331)
+2026-08-11 18:09:51,214 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_node(13, name='docker-10', _type=<NodeType name=DOCKER>, position=<Position>, image='') -> calling
+2026-08-11 18:09:51,214 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_node() ok in 0.3 ms -> <_RetryingProxy id=13>
+2026-08-11 18:09:51,215 INFO scenarioforge.builders.topology - [grpc.call] session.add_node name=docker-10 requested_id=13 actual_id=13 type=DOCKER session_type=_LoggingProxy position=(808, 331) attr_type=<_LoggingProxy for <_RetryingProxy for <NodeType.DOCKER: 15>>> attr_image= compose=None compose_name=None option_compose=None option_compose_name=None
+2026-08-11 18:09:51,215 INFO scenarioforge.builders.topology - [vuln-node] metadata lookup node=docker-10 compose_path=/tmp/vulns/.compose-projects/docker-10/docker-compose.yml record_keys=['EnableTrafficMount', 'HintText', 'InjectCandidatePaths', 'InjectFiles', 'InjectSourceDir', 'Name', 'OutputsManifest', 'Path', 'RunDir', 'ScenarioTag', 'Type', 'Vector', 'compose_path', 'compose_service', 'compose_service_selected', 'legacy_compose_path']
+2026-08-11 18:09:51,215 DEBUG scenarioforge.builders.topology - [vuln-node] node=docker-10 compose file present locally path=/tmp/vulns/.compose-projects/docker-10/docker-compose.yml size=1353 bytes
+2026-08-11 18:09:51,221 DEBUG scenarioforge.builders.topology - [vuln-node] node=docker-10 existing compose attr=None
+2026-08-11 18:09:51,221 DEBUG scenarioforge.builders.topology - [vuln-node] node=docker-10 after attribute set compose=/tmp/vulns/.compose-projects/docker-10/docker-compose.yml compose_name=docker-10
+2026-08-11 18:09:51,221 INFO scenarioforge.builders.topology - [vuln-node] node=docker-10 compose=/tmp/vulns/.compose-projects/docker-10/docker-compose.yml compose_name=docker-10 image=None exists=True size=1353 session_edit=False
+2026-08-11 18:09:51,221 DEBUG scenarioforge.utils.services - Failed to remove service 'DefaultRoute' from node 13 (no supported API)
+2026-08-11 18:09:51,222 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=13, CoreTGPrereqs)
+2026-08-11 18:09:51,222 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=13, CoreTGPrereqs)
+2026-08-11 18:09:51,222 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=13, DockerDefaultRoute)
+2026-08-11 18:09:51,222 DEBUG scenarioforge.utils.services - Failed to remove service 'Traffic' from node 13 (no supported API)
+2026-08-11 18:09:51,223 INFO scenarioforge.builders.topology - [docker-node] compose prep node=docker-11 src=provided out=/tmp/vulns/.compose-projects/docker-11/docker-compose.yml rec_name=Git: Deploy Key Repository rec_path=/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/03_git_deploy_key_repo_docker-11/docker-compose.yml skip_iproute2_wrapper=False
+2026-08-11 18:09:51,223 INFO scenarioforge.utils.vuln_process - [vuln] preparing docker-compose for node=docker-11 name=Git: Deploy Key Repository path=/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/03_git_deploy_key_repo_docker-11/docker-compose.yml
+2026-08-11 18:09:51,223 INFO scenarioforge.utils.vuln_process - [vuln] copying compose from local path=/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/03_git_deploy_key_repo_docker-11/docker-compose.yml dest=/tmp/vulns/git-deploy-key-repository/docker-compose.yml
+2026-08-11 18:09:51,229 DEBUG scenarioforge.utils.vuln_process - [vuln] parsed compose yaml key=('Git: Deploy Key Repository', '/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/03_git_deploy_key_repo_docker-11/docker-compose.yml') services=['node']
+2026-08-11 18:09:51,230 INFO scenarioforge.utils.vuln_process - [vuln] compose selected service node=docker-11 service=node
+2026-08-11 18:09:51,230 INFO scenarioforge.utils.vuln_process - [injects] prepare injects source_dir=/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/03_git_deploy_key_repo_docker-11 outputs_manifest=/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/03_git_deploy_key_repo_docker-11/outputs.json inject_files=['service']
+2026-08-11 18:09:51,230 INFO scenarioforge.utils.vuln_process - [injects] expanded injects=['service']
+2026-08-11 18:09:51,230 INFO scenarioforge.utils.vuln_process - [injects] applying injects to service=node mode=copy map={'service': '/flow_injects'}
+2026-08-11 18:09:51,230 INFO scenarioforge.utils.vuln_process - [injects] clearing destination directories before copy: ['/flow_injects']
+2026-08-11 18:09:51,231 INFO scenarioforge.utils.vuln_process - [vuln] injected iproute2 install into build-only Dockerfile node=docker-11 service=node dockerfile=/tmp/vulns/git-deploy-key-repository/./Dockerfile
+2026-08-11 18:09:51,234 INFO scenarioforge.utils.vuln_process - [vuln] wrote compose yaml node=docker-11 services=['inject_copy', 'docker-11'] dest=/tmp/vulns/docker-compose-docker-11.yml
+2026-08-11 18:09:51,234 INFO scenarioforge.utils.vuln_process - [vuln] compose file ready for node=docker-11 compose=/tmp/vulns/docker-compose-docker-11.yml
+2026-08-11 18:09:51,235 INFO scenarioforge.utils.vuln_process - [vuln] compose verification: expected=1 present=1 missing=0
+2026-08-11 18:09:51,354 INFO scenarioforge.builders.topology - [docker-node] preflight begin node=docker-11 compose=/tmp/vulns/.compose-projects/docker-11/docker-compose.yml cmd=sudo -S -p  docker compose
+2026-08-11 18:09:51,478 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker image inspect --format {{json .Config}} alpine:3.19 rc=0
+{"Env":["PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"],"Cmd":["/bin/sh"],"WorkingDir":"/"}
+2026-08-11 18:09:51,482 INFO scenarioforge.builders.topology - [docker-node] preflight build service=docker-11 image=docker-11conf-docker-11 context=/tmp/vulns/git-deploy-key-repository/. dockerfile=/tmp/vulns/git-deploy-key-repository/./Dockerfile
+2026-08-11 18:10:28,662 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker build --network host -t docker-11conf-docker-11 -f /tmp/vulns/git-deploy-key-repository/./Dockerfile /tmp/vulns/git-deploy-key-repository/. rc=0
+#10 exporting layers
+#10 exporting layers 5.4s done
+#10 exporting manifest sha256:44b6a4c28445ff5897a64572599654f0a87d24c6e09bc74cb183a987bb272783 0.0s done
+#10 exporting config sha256:7b1b2c27b396cf4f97998b95dacc736c2a087799ccc31f33cf9f0e4fca264653 0.0s done
+#10 exporting attestation manifest sha256:7d5a7e5f2e573ad0978bc779c10b176f4b508fedf2bd8b05a0f961aa35f5cbb8
+#10 exporting attestation manifest sha256:7d5a7e5f2e573ad0978bc779c10b176f4b508fedf2bd8b05a0f961aa35f5cbb8 0.1s done
+#10 exporting manifest list sha256:8f8f6ccf18471e7d3478f27a694687af5afef4f5e01659eea29f1880068eb659 0.0s done
+#10 naming to docker.io/library/docker-11conf-docker-11:latest
+#10 naming to docker.io/library/docker-11conf-docker-11:latest done
+#10 unpacking to docker.io/library/docker-11conf-docker-11:latest
+#10 unpacking to docker.io/library/docker-11conf-docker-11:latest 1.0s done
+#10 DONE 6.8s
+2026-08-11 18:10:28,749 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker image inspect --format {{.Id}} alpine:3.19 rc=0
+sha256:6baf43584bcb78f2e5847d1de515f23499913ac9f12bdf834811a3145eb11ca1
+2026-08-11 18:10:28,749 INFO scenarioforge.builders.topology - [docker-node] preflight pull skipped node=docker-11; every pull-only image is cached: ['alpine:3.19']
+[images] pulling=0 cached=4 pending=1
+2026-08-11 18:10:30,228 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker compose -p docker-11conf -f /tmp/vulns/.compose-projects/docker-11/docker-compose.yml up --no-start --no-build rc=0
+Volume docker-11conf_inject-flow-injects Creating 
+ Volume docker-11conf_inject-flow-injects Created 
+ Container docker-11conf-inject_copy-1 Creating 
+ Container docker-11conf-inject_copy-1 Created 
+ Container docker-11 Creating 
+ Container docker-11 Created
+2026-08-11 18:10:30,862 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker compose -p docker-11conf -f /tmp/vulns/.compose-projects/docker-11/docker-compose.yml up --no-build inject_copy rc=0
+Attaching to inject_copy-1
+ Container docker-11conf-inject_copy-1 Starting 
+ Container docker-11conf-inject_copy-1 Started 
+
+inject_copy-1 exited with code 0
+2026-08-11 18:10:31,011 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker compose -p docker-11conf -f /tmp/vulns/.compose-projects/docker-11/docker-compose.yml ps --all -q inject_copy rc=0
+7aa55728c1799f4ba15bc1fd63f4cf24740b11f4b91140b537db1fbb21862ba6
+2026-08-11 18:10:31,054 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker inspect --format {{.State.ExitCode}} {{.State.Status}} 7aa55728c1799f4ba15bc1fd63f4cf24740b11f4b91140b537db1fbb21862ba6 rc=0
+0 exited
+2026-08-11 18:10:31,857 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker compose -p docker-11conf -f /tmp/vulns/.compose-projects/docker-11/docker-compose.yml up -d --no-build docker-11 rc=0
+Container docker-11conf-inject_copy-1 Starting 
+ Container docker-11conf-inject_copy-1 Started 
+ Container docker-11 Starting 
+ Container docker-11 Started
+2026-08-11 18:10:31,911 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker inspect --format {{.State.Pid}} {{.State.Status}} docker-11 rc=0
+333291 running
+2026-08-11 18:10:32,093 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker exec docker-11 ip link show rc=0
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+2026-08-11 18:10:42,758 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker compose -p docker-11conf -f /tmp/vulns/.compose-projects/docker-11/docker-compose.yml down --remove-orphans rc=0
+Container docker-11 Stopping 
+ Container docker-11 Stopped 
+ Container docker-11 Removing 
+ Container docker-11 Removed 
+ Container docker-11conf-inject_copy-1 Stopping 
+ Container docker-11conf-inject_copy-1 Stopped 
+ Container docker-11conf-inject_copy-1 Removing 
+ Container docker-11conf-inject_copy-1 Removed
+2026-08-11 18:10:42,758 INFO scenarioforge.builders.topology - [docker-node] preflight done node=docker-11 elapsed_ms=51404
+2026-08-11 18:10:42,759 INFO scenarioforge.builders.topology - [preview] add_host id=14 name=docker-11 type=DOCKER pos=(1808,331)
+2026-08-11 18:10:42,765 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_node(14, name='docker-11', _type=<NodeType name=DOCKER>, position=<Position>, image='') -> calling
+2026-08-11 18:10:42,766 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_node() ok in 0.2 ms -> <_RetryingProxy id=14>
+2026-08-11 18:10:42,766 INFO scenarioforge.builders.topology - [grpc.call] session.add_node name=docker-11 requested_id=14 actual_id=14 type=DOCKER session_type=_LoggingProxy position=(1808, 331) attr_type=<_LoggingProxy for <_RetryingProxy for <NodeType.DOCKER: 15>>> attr_image= compose=None compose_name=None option_compose=None option_compose_name=None
+2026-08-11 18:10:42,766 INFO scenarioforge.builders.topology - [vuln-node] metadata lookup node=docker-11 compose_path=/tmp/vulns/.compose-projects/docker-11/docker-compose.yml record_keys=['EnableTrafficMount', 'HintText', 'InjectCandidatePaths', 'InjectFiles', 'InjectSourceDir', 'Name', 'OutputsManifest', 'Path', 'RunDir', 'ScenarioTag', 'Type', 'Vector', 'compose_path', 'compose_service', 'compose_service_selected', 'legacy_compose_path']
+2026-08-11 18:10:42,766 DEBUG scenarioforge.builders.topology - [vuln-node] node=docker-11 compose file present locally path=/tmp/vulns/.compose-projects/docker-11/docker-compose.yml size=1356 bytes
+2026-08-11 18:10:42,771 DEBUG scenarioforge.builders.topology - [vuln-node] node=docker-11 existing compose attr=None
+2026-08-11 18:10:42,771 DEBUG scenarioforge.builders.topology - [vuln-node] node=docker-11 after attribute set compose=/tmp/vulns/.compose-projects/docker-11/docker-compose.yml compose_name=docker-11
+2026-08-11 18:10:42,771 INFO scenarioforge.builders.topology - [vuln-node] node=docker-11 compose=/tmp/vulns/.compose-projects/docker-11/docker-compose.yml compose_name=docker-11 image=None exists=True size=1356 session_edit=False
+2026-08-11 18:10:42,771 DEBUG scenarioforge.utils.services - Failed to remove service 'DefaultRoute' from node 14 (no supported API)
+2026-08-11 18:10:42,771 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=14, CoreTGPrereqs)
+2026-08-11 18:10:42,772 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=14, CoreTGPrereqs)
+2026-08-11 18:10:42,772 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=14, DockerDefaultRoute)
+2026-08-11 18:10:42,772 DEBUG scenarioforge.utils.services - Failed to remove service 'Traffic' from node 14 (no supported API)
+2026-08-11 18:10:42,773 WARNING scenarioforge.builders.topology - Pivot access: compose template unavailable ([Errno 2] No such file or directory: '/tmp/scenarioforge/generator_templates/pivot-ssh-compose/docker-compose.yml'); falling back to a bare lscr.io/linuxserver/openssh-server:latest container
+2026-08-11 18:10:42,774 INFO scenarioforge.builders.topology - [pivot-access] provider node=pivot-172-27-207-0 image=lscr.io/linuxserver/openssh-server:latest port=2222 subnet=172.27.207.0/24
+2026-08-11 18:10:42,774 INFO scenarioforge.builders.topology - [docker-node] compose prep node=pivot-172-27-207-0 src=provided out=/tmp/vulns/.compose-projects/pivot-172-27-207-0/docker-compose.yml rec_name=pivot-access-pivot-172-27-207-0 rec_path=/tmp/vulns/pivot-access/pivot-172-27-207-0/docker-compose.yml skip_iproute2_wrapper=False
+2026-08-11 18:10:42,774 INFO scenarioforge.utils.vuln_process - [vuln] preparing docker-compose for node=pivot-172-27-207-0 name=pivot-access-pivot-172-27-207-0 path=/tmp/vulns/pivot-access/pivot-172-27-207-0/docker-compose.yml
+2026-08-11 18:10:42,774 INFO scenarioforge.utils.vuln_process - [vuln] copying compose from local path=/tmp/vulns/pivot-access/pivot-172-27-207-0/docker-compose.yml dest=/tmp/vulns/pivot-access-pivot-172-27-207-0/docker-compose.yml
+2026-08-11 18:10:42,776 DEBUG scenarioforge.utils.vuln_process - [vuln] parsed compose yaml key=('pivot-access-pivot-172-27-207-0', '/tmp/vulns/pivot-access/pivot-172-27-207-0/docker-compose.yml') services=['pivot_ssh']
+2026-08-11 18:10:42,777 INFO scenarioforge.utils.vuln_process - [vuln] compose selected service node=pivot-172-27-207-0 service=pivot_ssh
+2026-08-11 18:10:42,781 INFO scenarioforge.utils.vuln_process - [vuln] wrote compose yaml node=pivot-172-27-207-0 services=['pivot-172-27-207-0'] dest=/tmp/vulns/docker-compose-pivot-172-27-207-0.yml
+2026-08-11 18:10:42,781 INFO scenarioforge.utils.vuln_process - [vuln] compose file ready for node=pivot-172-27-207-0 compose=/tmp/vulns/docker-compose-pivot-172-27-207-0.yml
+2026-08-11 18:10:42,781 INFO scenarioforge.utils.vuln_process - [vuln] compose verification: expected=1 present=1 missing=0
+2026-08-11 18:10:42,900 INFO scenarioforge.builders.topology - [docker-node] preflight begin node=pivot-172-27-207-0 compose=/tmp/vulns/.compose-projects/pivot-172-27-207-0/docker-compose.yml cmd=sudo -S -p  docker compose
+2026-08-11 18:10:42,908 INFO scenarioforge.builders.topology - [docker-node] preflight wrapper build service=pivot-172-27-207-0 image=coretg/dataset-segmented-firewall-pivot_run02-datasetsegmentedfirewallpivotrun02-pivot-172-27-207-0-8e6111e2d77b:iproute2 context=/tmp/vulns/docker-wrap-dataset-segmented-firewall-pivot_run02-datasetsegmentedfirewallpivotrun02-pivot-172-27-207-0-8e6111e2d77b dockerfile=/tmp/vulns/docker-wrap-dataset-segmented-firewall-pivot_run02-datasetsegmentedfirewallpivotrun02-pivot-172-27-207-0-8e6111e2d77b/Dockerfile
+2026-08-11 18:10:47,498 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker build --network host -t coretg/dataset-segmented-firewall-pivot_run02-datasetsegmentedfirewallpivotrun02-pivot-172-27-207-0-8e6111e2d77b:iproute2 -f /tmp/vulns/docker-wrap-dataset-segmented-firewall-pivot_run02-datasetsegmentedfirewallpivotrun02-pivot-172-27-207-0-8e6111e2d77b/Dockerfile /tmp/vulns/docker-wrap-dataset-segmented-firewall-pivot_run02-datasetsegmentedfirewallpivotrun02-pivot-172-27-207-0-8e6111e2d77b rc=0
+#14 exporting layers
+#14 exporting layers 0.9s done
+#14 exporting manifest sha256:13680ff0e6e9ca899e2f307212a74b3334880b473ed2065eb154fcbaf2d8253f 0.0s done
+#14 exporting config sha256:9e6c9049d187d479878d1bc05a52d2bb090f2c66cc308792b870b9536fbc78b6 0.0s done
+#14 exporting attestation manifest sha256:96981bd7f2c5198ccda6a922036347a543c3a2a04710ad6affc7a88edb44454a
+#14 exporting attestation manifest sha256:96981bd7f2c5198ccda6a922036347a543c3a2a04710ad6affc7a88edb44454a 0.1s done
+#14 exporting manifest list sha256:4f7b65dd9bc4a9311c97ce9084866808f101f1a73ec53d3a37e4bf219347dbfb 0.0s done
+#14 naming to docker.io/coretg/dataset-segmented-firewall-pivot_run02-datasetsegmentedfirewallpivotrun02-pivot-172-27-207-0-8e6111e2d77b:iproute2
+#14 naming to docker.io/coretg/dataset-segmented-firewall-pivot_run02-datasetsegmentedfirewallpivotrun02-pivot-172-27-207-0-8e6111e2d77b:iproute2 done
+#14 unpacking to docker.io/coretg/dataset-segmented-firewall-pivot_run02-datasetsegmentedfirewallpivotrun02-pivot-172-27-207-0-8e6111e2d77b:iproute2
+#14 unpacking to docker.io/coretg/dataset-segmented-firewall-pivot_run02-datasetsegmentedfirewallpivotrun02-pivot-172-27-207-0-8e6111e2d77b:iproute2 0.3s done
+#14 DONE 1.5s
+2026-08-11 18:10:47,595 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker image inspect --format {{json .Config}} lscr.io/linuxserver/openssh-server:latest rc=0
+{"ExposedPorts":{"2222/tcp":{}},"Env":["PATH=/lsiopy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin","PS1=$(whoami)@$(hostname):$(pwd)\\$ ","HOME=/root","TERM=xterm","S6_CMD_WAIT_FOR_SERVICES_MAXTIME=0","S6_VERBOSITY=1","S6_STAGE2_HOOK=/docker-mods","VIRTUAL_ENV=/lsiopy","LSIO_FIRST_PARTY=true"],"Entrypoint":["/init"],"Volumes":{"/config":{}},"WorkingDir":"/","Labels":{"build_version":"Linuxserver.io version:- 10.3_p1-r0-ls233 Build-date:- 2026-08-02T19:51:43+00:00","maintainer":"aptalca","org.opencontainers.image.authors":"linuxserver.io","org.opencontainers.image.created":"2026-08-02T19:51:43+00:00","org.opencontainers.image.description":"[Openssh-server](https://www.openssh.com/) is a sandboxed environment that allows ssh access without giving keys to the entire server.  Giving ssh access via private key often means giving full access to the server. This container creates a limited and sandboxed environment that others can ssh into.  The users only have access to the folders mapped and the processes running inside this container.","org.opencontainers.image.documentation":"https://docs.linuxserver.io/images/docker-openssh-server","org.opencontainers.image.licenses":"GPL-3.0-only","org.opencontainers.image.ref.name":"ff25fd881cf1868277b44a6370c147c1346d5c3b","org.opencontainers.image.revision":"ff25fd881cf1868277b44a6370c147c1346d5c3b","org.opencontainers.image.source":"https://github.com/linuxserver/docker-openssh-server","org.opencontainers.image.title":"Openssh-server","org.opencontainers.image.url":"https://github.com/linuxserver/docker-openssh-server/packages","org.opencontainers.image.vendor":"linuxserver.io","org.opencontainers.image.version":"10.3_p1-r0-ls233"}}
+2026-08-11 18:10:47,699 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker image inspect --format {{json .Config}} coretg/dataset-segmented-firewall-pivot_run02-datasetsegmentedfirewallpivotrun02-pivot-172-27-207-0-8e6111e2d77b:iproute2 rc=0
+{"User":"0","ExposedPorts":{"2222/tcp":{}},"Env":["PATH=/lsiopy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin","PS1=$(whoami)@$(hostname):$(pwd)\\$ ","HOME=/root","TERM=xterm","S6_CMD_WAIT_FOR_SERVICES_MAXTIME=0","S6_VERBOSITY=1","S6_STAGE2_HOOK=/docker-mods","VIRTUAL_ENV=/lsiopy","LSIO_FIRST_PARTY=true"],"Entrypoint":["/init"],"Volumes":{"/config":{}},"WorkingDir":"/","Labels":{"build_version":"Linuxserver.io version:- 10.3_p1-r0-ls233 Build-date:- 2026-08-02T19:51:43+00:00","maintainer":"aptalca","org.opencontainers.image.authors":"linuxserver.io","org.opencontainers.image.created":"2026-08-02T19:51:43+00:00","org.opencontainers.image.description":"[Openssh-server](https://www.openssh.com/) is a sandboxed environment that allows ssh access without giving keys to the entire server.  Giving ssh access via private key often means giving full access to the server. This container creates a limited and sandboxed environment that others can ssh into.  The users only have access to the folders mapped and the processes running inside this container.","org.opencontainers.image.documentation":"https://docs.linuxserver.io/images/docker-openssh-server","org.opencontainers.image.licenses":"GPL-3.0-only","org.opencontainers.image.ref.name":"ff25fd881cf1868277b44a6370c147c1346d5c3b","org.opencontainers.image.revision":"ff25fd881cf1868277b44a6370c147c1346d5c3b","org.opencontainers.image.source":"https://github.com/linuxserver/docker-openssh-server","org.opencontainers.image.title":"Openssh-server","org.opencontainers.image.url":"https://github.com/linuxserver/docker-openssh-server/packages","org.opencontainers.image.vendor":"linuxserver.io","org.opencontainers.image.version":"10.3_p1-r0-ls233"}}
+2026-08-11 18:10:47,881 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker compose -p pivot-172-27-207-0conf -f /tmp/vulns/.compose-projects/pivot-172-27-207-0/docker-compose.yml pull --ignore-buildable rc=0
+Image coretg/dataset-segmented-firewall-pivot_run02-datasetsegmentedfirewallpivotrun02-pivot-172-27-207-0-8e6111e2d77b:iproute2 Skipped
+2026-08-11 18:10:48,233 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker compose -p pivot-172-27-207-0conf -f /tmp/vulns/.compose-projects/pivot-172-27-207-0/docker-compose.yml up --no-start --no-build rc=0
+Container pivot-172-27-207-0 Creating 
+ Container pivot-172-27-207-0 Created
+2026-08-11 18:10:48,701 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker compose -p pivot-172-27-207-0conf -f /tmp/vulns/.compose-projects/pivot-172-27-207-0/docker-compose.yml up -d --no-build pivot-172-27-207-0 rc=0
+Container pivot-172-27-207-0 Starting 
+ Container pivot-172-27-207-0 Started
+2026-08-11 18:10:48,757 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker inspect --format {{.State.Pid}} {{.State.Status}} pivot-172-27-207-0 rc=0
+333921 running
+2026-08-11 18:10:48,928 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker exec pivot-172-27-207-0 ip link show rc=0
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+2026-08-11 18:10:54,274 INFO scenarioforge.builders.topology - [docker-node] preflight cmd=sudo -S -p  docker compose -p pivot-172-27-207-0conf -f /tmp/vulns/.compose-projects/pivot-172-27-207-0/docker-compose.yml down --remove-orphans rc=0
+Container pivot-172-27-207-0 Stopping 
+ Container pivot-172-27-207-0 Stopped 
+ Container pivot-172-27-207-0 Removing 
+ Container pivot-172-27-207-0 Removed
+2026-08-11 18:10:54,274 INFO scenarioforge.builders.topology - [docker-node] preflight done node=pivot-172-27-207-0 elapsed_ms=11374
+2026-08-11 18:10:54,275 INFO scenarioforge.builders.topology - [preview] add_host id=18 name=pivot-172-27-207-0 type=DOCKER pos=(808,1331)
+2026-08-11 18:10:54,280 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_node(18, name='pivot-172-27-207-0', _type=<NodeType name=DOCKER>, position=<Position>, image='') -> calling
+2026-08-11 18:10:54,280 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_node() ok in 0.2 ms -> <_RetryingProxy id=18>
+2026-08-11 18:10:54,280 INFO scenarioforge.builders.topology - [grpc.call] session.add_node name=pivot-172-27-207-0 requested_id=18 actual_id=18 type=DOCKER session_type=_LoggingProxy position=(808, 1331) attr_type=<_LoggingProxy for <_RetryingProxy for <NodeType.DOCKER: 15>>> attr_image= compose=None compose_name=None option_compose=None option_compose_name=None
+2026-08-11 18:10:54,280 INFO scenarioforge.builders.topology - [vuln-node] metadata lookup node=pivot-172-27-207-0 compose_path=/tmp/vulns/.compose-projects/pivot-172-27-207-0/docker-compose.yml record_keys=['EnableTrafficMount', 'Name', 'Path', 'PivotAccessProvider', 'ReplaceComposeServiceWithNode', 'ScenarioTag', 'Type', 'Vector', 'compose_path', 'compose_ports', 'compose_service', 'compose_service_selected', 'legacy_compose_path']
+2026-08-11 18:10:54,280 DEBUG scenarioforge.builders.topology - [vuln-node] node=pivot-172-27-207-0 compose file present locally path=/tmp/vulns/.compose-projects/pivot-172-27-207-0/docker-compose.yml size=884 bytes
+2026-08-11 18:10:54,283 DEBUG scenarioforge.builders.topology - [vuln-node] node=pivot-172-27-207-0 existing compose attr=None
+2026-08-11 18:10:54,283 DEBUG scenarioforge.builders.topology - [vuln-node] node=pivot-172-27-207-0 after attribute set compose=/tmp/vulns/.compose-projects/pivot-172-27-207-0/docker-compose.yml compose_name=pivot-172-27-207-0
+2026-08-11 18:10:54,283 INFO scenarioforge.builders.topology - [vuln-node] node=pivot-172-27-207-0 compose=/tmp/vulns/.compose-projects/pivot-172-27-207-0/docker-compose.yml compose_name=pivot-172-27-207-0 image=None exists=True size=884 session_edit=False
+2026-08-11 18:10:54,283 DEBUG scenarioforge.utils.services - Failed to remove service 'DefaultRoute' from node 18 (no supported API)
+2026-08-11 18:10:54,284 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=18, CoreTGPrereqs)
+2026-08-11 18:10:54,284 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=18, CoreTGPrereqs)
+2026-08-11 18:10:54,284 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=18, DockerDefaultRoute)
+2026-08-11 18:10:54,284 DEBUG scenarioforge.utils.services - Failed to remove service 'Traffic' from node 18 (no supported API)
+2026-08-11 18:10:54,284 INFO scenarioforge.builders.topology - [preview] Docker nodes created during preview realization: 5
+2026-08-11 18:10:54,285 INFO scenarioforge.builders.topology - [preview] add_switch id=15 name=rsw-1-1 pos=(808,500)
+2026-08-11 18:10:54,285 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_node(15, name='rsw-1-1', _type=<NodeType name=SWITCH>, position=<Position>) -> calling
+2026-08-11 18:10:54,285 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_node() ok in 0.2 ms -> <_RetryingProxy id=15>
+2026-08-11 18:10:54,285 INFO scenarioforge.builders.topology - [grpc.call] session.add_node name=rsw-1-1 requested_id=15 actual_id=15 type=SWITCH session_type=_LoggingProxy position=(808, 500) attr_type=<_LoggingProxy for <_RetryingProxy for <NodeType.SWITCH: 4>>> attr_image=None compose=None compose_name=None option_compose=None option_compose_name=None
+2026-08-11 18:10:54,286 INFO scenarioforge.builders.topology - [preview] add_switch id=16 name=rsw-2-1 pos=(1808,500)
+2026-08-11 18:10:54,286 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_node(16, name='rsw-2-1', _type=<NodeType name=SWITCH>, position=<Position>) -> calling
+2026-08-11 18:10:54,286 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_node() ok in 0.1 ms -> <_RetryingProxy id=16>
+2026-08-11 18:10:54,286 INFO scenarioforge.builders.topology - [grpc.call] session.add_node name=rsw-2-1 requested_id=16 actual_id=16 type=SWITCH session_type=_LoggingProxy position=(1808, 500) attr_type=<_LoggingProxy for <_RetryingProxy for <NodeType.SWITCH: 4>>> attr_image=None compose=None compose_name=None option_compose=None option_compose_name=None
+2026-08-11 18:10:54,286 INFO scenarioforge.builders.topology - [preview] add_switch id=17 name=rsw-3-1 pos=(808,1500)
+2026-08-11 18:10:54,287 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_node(17, name='rsw-3-1', _type=<NodeType name=SWITCH>, position=<Position>) -> calling
+2026-08-11 18:10:54,287 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_node() ok in 0.1 ms -> <_RetryingProxy id=17>
+2026-08-11 18:10:54,287 INFO scenarioforge.builders.topology - [grpc.call] session.add_node name=rsw-3-1 requested_id=17 actual_id=17 type=SWITCH session_type=_LoggingProxy position=(808, 1500) attr_type=<_LoggingProxy for <_RetryingProxy for <NodeType.SWITCH: 4>>> attr_image=None compose=None compose_name=None option_compose=None option_compose_name=None
+2026-08-11 18:10:54,288 INFO scenarioforge.builders.topology - [diag.link.call] attempting link a=1 b=15 dup=False iface1=r1-rsw15 iface2=rsw-1-1-r1
+2026-08-11 18:10:54,289 INFO scenarioforge.builders.topology - [grpc.try] variant=kw-guess-obj-ifaces a=1 b=15 iface1=r1-rsw15(0) 10.0.107.1/24 iface2=rsw-1-1-r1(0) None/None
+2026-08-11 18:10:54,289 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_link(node1=<_LoggingProxy id=1>, node2=<_LoggingProxy id=15>, iface1=<Interface id=0>, iface2=<Interface id=0>) -> calling
+2026-08-11 18:10:54,289 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_link() ok in 0.2 ms -> <_RetryingProxy>
+2026-08-11 18:10:54,289 INFO scenarioforge.builders.topology - [grpc.try.ok] variant=kw-guess-obj-ifaces a=1 b=15
+2026-08-11 18:10:54,289 INFO scenarioforge.builders.topology - [grpc] add_link a=1 b=15 via=kw-guess-obj-ifaces iface1=r1-rsw15(0) 10.0.107.1/24 iface2=rsw-1-1-r1(0) None/None
+2026-08-11 18:10:54,289 INFO scenarioforge.builders.topology - [diag.link.call] attempting link a=4 b=15 dup=False iface1=eth0 iface2=rsw-1-1-h4
+2026-08-11 18:10:54,290 INFO scenarioforge.builders.topology - [grpc.try] variant=kw-guess-obj-ifaces a=4 b=15 iface1=eth0(0) 10.0.107.3/24 iface2=rsw-1-1-h4(1) None/None
+2026-08-11 18:10:54,290 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_link(node1=<_LoggingProxy id=4>, node2=<_LoggingProxy id=15>, iface1=<Interface id=0>, iface2=<Interface id=1>) -> calling
+2026-08-11 18:10:54,290 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_link() ok in 0.2 ms -> <_RetryingProxy>
+2026-08-11 18:10:54,290 INFO scenarioforge.builders.topology - [grpc.try.ok] variant=kw-guess-obj-ifaces a=4 b=15
+2026-08-11 18:10:54,290 INFO scenarioforge.builders.topology - [grpc] add_link a=4 b=15 via=kw-guess-obj-ifaces iface1=eth0(0) 10.0.107.3/24 iface2=rsw-1-1-h4(1) None/None
+2026-08-11 18:10:54,290 INFO scenarioforge.builders.topology - [diag.link.call] attempting link a=7 b=15 dup=False iface1=eth0 iface2=rsw-1-1-h7
+2026-08-11 18:10:54,290 INFO scenarioforge.builders.topology - [grpc.try] variant=kw-guess-obj-ifaces a=7 b=15 iface1=eth0(0) 10.0.107.4/24 iface2=rsw-1-1-h7(2) None/None
+2026-08-11 18:10:54,291 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_link(node1=<_LoggingProxy id=7>, node2=<_LoggingProxy id=15>, iface1=<Interface id=0>, iface2=<Interface id=2>) -> calling
+2026-08-11 18:10:54,291 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_link() ok in 0.2 ms -> <_RetryingProxy>
+2026-08-11 18:10:54,291 INFO scenarioforge.builders.topology - [grpc.try.ok] variant=kw-guess-obj-ifaces a=7 b=15
+2026-08-11 18:10:54,291 INFO scenarioforge.builders.topology - [grpc] add_link a=7 b=15 via=kw-guess-obj-ifaces iface1=eth0(0) 10.0.107.4/24 iface2=rsw-1-1-h7(2) None/None
+2026-08-11 18:10:54,291 INFO scenarioforge.builders.topology - [diag.link.call] attempting link a=10 b=15 dup=False iface1=eth0 iface2=rsw-1-1-h10
+2026-08-11 18:10:54,291 INFO scenarioforge.builders.topology - [grpc.try] variant=kw-guess-obj-ifaces a=10 b=15 iface1=eth0(0) 10.0.107.5/24 iface2=rsw-1-1-h10(3) None/None
+2026-08-11 18:10:54,291 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_link(node1=<_LoggingProxy id=10>, node2=<_LoggingProxy id=15>, iface1=<Interface id=0>, iface2=<Interface id=3>) -> calling
+2026-08-11 18:10:54,292 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_link() ok in 0.2 ms -> <_RetryingProxy>
+2026-08-11 18:10:54,292 INFO scenarioforge.builders.topology - [grpc.try.ok] variant=kw-guess-obj-ifaces a=10 b=15
+2026-08-11 18:10:54,292 INFO scenarioforge.builders.topology - [grpc] add_link a=10 b=15 via=kw-guess-obj-ifaces iface1=eth0(0) 10.0.107.5/24 iface2=rsw-1-1-h10(3) None/None
+2026-08-11 18:10:54,292 INFO scenarioforge.builders.topology - [diag.link.call] attempting link a=13 b=15 dup=False iface1=eth0 iface2=rsw-1-1-h13
+2026-08-11 18:10:54,292 INFO scenarioforge.builders.topology - [grpc.try] variant=kw-guess-obj-ifaces a=13 b=15 iface1=eth0(0) 10.0.107.6/24 iface2=rsw-1-1-h13(4) None/None
+2026-08-11 18:10:54,292 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_link(node1=<_LoggingProxy id=13>, node2=<_LoggingProxy id=15>, iface1=<Interface id=0>, iface2=<Interface id=4>) -> calling
+2026-08-11 18:10:54,292 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_link() ok in 0.2 ms -> <_RetryingProxy>
+2026-08-11 18:10:54,293 INFO scenarioforge.builders.topology - [grpc.try.ok] variant=kw-guess-obj-ifaces a=13 b=15
+2026-08-11 18:10:54,293 INFO scenarioforge.builders.topology - [grpc] add_link a=13 b=15 via=kw-guess-obj-ifaces iface1=eth0(0) 10.0.107.6/24 iface2=rsw-1-1-h13(4) None/None
+2026-08-11 18:10:54,294 INFO scenarioforge.builders.topology - [diag.link.call] attempting link a=2 b=16 dup=False iface1=r2-rsw16 iface2=rsw-2-1-r2
+2026-08-11 18:10:54,294 INFO scenarioforge.builders.topology - [grpc.try] variant=kw-guess-obj-ifaces a=2 b=16 iface1=r2-rsw16(0) 10.61.107.1/24 iface2=rsw-2-1-r2(0) None/None
+2026-08-11 18:10:54,294 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_link(node1=<_LoggingProxy id=2>, node2=<_LoggingProxy id=16>, iface1=<Interface id=0>, iface2=<Interface id=0>) -> calling
+2026-08-11 18:10:54,294 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_link() ok in 0.2 ms -> <_RetryingProxy>
+2026-08-11 18:10:54,294 INFO scenarioforge.builders.topology - [grpc.try.ok] variant=kw-guess-obj-ifaces a=2 b=16
+2026-08-11 18:10:54,294 INFO scenarioforge.builders.topology - [grpc] add_link a=2 b=16 via=kw-guess-obj-ifaces iface1=r2-rsw16(0) 10.61.107.1/24 iface2=rsw-2-1-r2(0) None/None
+2026-08-11 18:10:54,294 INFO scenarioforge.builders.topology - [diag.link.call] attempting link a=5 b=16 dup=False iface1=eth0 iface2=rsw-2-1-h5
+2026-08-11 18:10:54,295 INFO scenarioforge.builders.topology - [grpc.try] variant=kw-guess-obj-ifaces a=5 b=16 iface1=eth0(0) 10.61.107.3/24 iface2=rsw-2-1-h5(1) None/None
+2026-08-11 18:10:54,295 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_link(node1=<_LoggingProxy id=5>, node2=<_LoggingProxy id=16>, iface1=<Interface id=0>, iface2=<Interface id=1>) -> calling
+2026-08-11 18:10:54,295 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_link() ok in 0.2 ms -> <_RetryingProxy>
+2026-08-11 18:10:54,295 INFO scenarioforge.builders.topology - [grpc.try.ok] variant=kw-guess-obj-ifaces a=5 b=16
+2026-08-11 18:10:54,295 INFO scenarioforge.builders.topology - [grpc] add_link a=5 b=16 via=kw-guess-obj-ifaces iface1=eth0(0) 10.61.107.3/24 iface2=rsw-2-1-h5(1) None/None
+2026-08-11 18:10:54,295 INFO scenarioforge.builders.topology - [diag.link.call] attempting link a=8 b=16 dup=False iface1=eth0 iface2=rsw-2-1-h8
+2026-08-11 18:10:54,295 INFO scenarioforge.builders.topology - [grpc.try] variant=kw-guess-obj-ifaces a=8 b=16 iface1=eth0(0) 10.61.107.4/24 iface2=rsw-2-1-h8(2) None/None
+2026-08-11 18:10:54,296 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_link(node1=<_LoggingProxy id=8>, node2=<_LoggingProxy id=16>, iface1=<Interface id=0>, iface2=<Interface id=2>) -> calling
+2026-08-11 18:10:54,296 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_link() ok in 0.1 ms -> <_RetryingProxy>
+2026-08-11 18:10:54,296 INFO scenarioforge.builders.topology - [grpc.try.ok] variant=kw-guess-obj-ifaces a=8 b=16
+2026-08-11 18:10:54,296 INFO scenarioforge.builders.topology - [grpc] add_link a=8 b=16 via=kw-guess-obj-ifaces iface1=eth0(0) 10.61.107.4/24 iface2=rsw-2-1-h8(2) None/None
+2026-08-11 18:10:54,296 INFO scenarioforge.builders.topology - [diag.link.call] attempting link a=11 b=16 dup=False iface1=eth0 iface2=rsw-2-1-h11
+2026-08-11 18:10:54,296 INFO scenarioforge.builders.topology - [grpc.try] variant=kw-guess-obj-ifaces a=11 b=16 iface1=eth0(0) 10.61.107.5/24 iface2=rsw-2-1-h11(3) None/None
+2026-08-11 18:10:54,296 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_link(node1=<_LoggingProxy id=11>, node2=<_LoggingProxy id=16>, iface1=<Interface id=0>, iface2=<Interface id=3>) -> calling
+2026-08-11 18:10:54,296 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_link() ok in 0.1 ms -> <_RetryingProxy>
+2026-08-11 18:10:54,296 INFO scenarioforge.builders.topology - [grpc.try.ok] variant=kw-guess-obj-ifaces a=11 b=16
+2026-08-11 18:10:54,296 INFO scenarioforge.builders.topology - [grpc] add_link a=11 b=16 via=kw-guess-obj-ifaces iface1=eth0(0) 10.61.107.5/24 iface2=rsw-2-1-h11(3) None/None
+2026-08-11 18:10:54,296 INFO scenarioforge.builders.topology - [diag.link.call] attempting link a=14 b=16 dup=False iface1=eth0 iface2=rsw-2-1-h14
+2026-08-11 18:10:54,297 INFO scenarioforge.builders.topology - [grpc.try] variant=kw-guess-obj-ifaces a=14 b=16 iface1=eth0(0) 10.61.107.6/24 iface2=rsw-2-1-h14(4) None/None
+2026-08-11 18:10:54,297 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_link(node1=<_LoggingProxy id=14>, node2=<_LoggingProxy id=16>, iface1=<Interface id=0>, iface2=<Interface id=4>) -> calling
+2026-08-11 18:10:54,297 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_link() ok in 0.1 ms -> <_RetryingProxy>
+2026-08-11 18:10:54,297 INFO scenarioforge.builders.topology - [grpc.try.ok] variant=kw-guess-obj-ifaces a=14 b=16
+2026-08-11 18:10:54,297 INFO scenarioforge.builders.topology - [grpc] add_link a=14 b=16 via=kw-guess-obj-ifaces iface1=eth0(0) 10.61.107.6/24 iface2=rsw-2-1-h14(4) None/None
+2026-08-11 18:10:54,297 INFO scenarioforge.builders.topology - [diag.link.call] attempting link a=3 b=17 dup=False iface1=r3-rsw17 iface2=rsw-3-1-r3
+2026-08-11 18:10:54,297 INFO scenarioforge.builders.topology - [grpc.try] variant=kw-guess-obj-ifaces a=3 b=17 iface1=r3-rsw17(0) 172.27.207.1/24 iface2=rsw-3-1-r3(0) None/None
+2026-08-11 18:10:54,297 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_link(node1=<_LoggingProxy id=3>, node2=<_LoggingProxy id=17>, iface1=<Interface id=0>, iface2=<Interface id=0>) -> calling
+2026-08-11 18:10:54,298 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_link() ok in 0.1 ms -> <_RetryingProxy>
+2026-08-11 18:10:54,298 INFO scenarioforge.builders.topology - [grpc.try.ok] variant=kw-guess-obj-ifaces a=3 b=17
+2026-08-11 18:10:54,298 INFO scenarioforge.builders.topology - [grpc] add_link a=3 b=17 via=kw-guess-obj-ifaces iface1=r3-rsw17(0) 172.27.207.1/24 iface2=rsw-3-1-r3(0) None/None
+2026-08-11 18:10:54,298 INFO scenarioforge.builders.topology - [diag.link.call] attempting link a=6 b=17 dup=False iface1=eth0 iface2=rsw-3-1-h6
+2026-08-11 18:10:54,298 INFO scenarioforge.builders.topology - [grpc.try] variant=kw-guess-obj-ifaces a=6 b=17 iface1=eth0(0) 172.27.207.3/24 iface2=rsw-3-1-h6(1) None/None
+2026-08-11 18:10:54,298 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_link(node1=<_LoggingProxy id=6>, node2=<_LoggingProxy id=17>, iface1=<Interface id=0>, iface2=<Interface id=1>) -> calling
+2026-08-11 18:10:54,298 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_link() ok in 0.1 ms -> <_RetryingProxy>
+2026-08-11 18:10:54,298 INFO scenarioforge.builders.topology - [grpc.try.ok] variant=kw-guess-obj-ifaces a=6 b=17
+2026-08-11 18:10:54,298 INFO scenarioforge.builders.topology - [grpc] add_link a=6 b=17 via=kw-guess-obj-ifaces iface1=eth0(0) 172.27.207.3/24 iface2=rsw-3-1-h6(1) None/None
+2026-08-11 18:10:54,298 INFO scenarioforge.builders.topology - [diag.link.call] attempting link a=9 b=17 dup=False iface1=eth0 iface2=rsw-3-1-h9
+2026-08-11 18:10:54,298 INFO scenarioforge.builders.topology - [grpc.try] variant=kw-guess-obj-ifaces a=9 b=17 iface1=eth0(0) 172.27.207.4/24 iface2=rsw-3-1-h9(2) None/None
+2026-08-11 18:10:54,298 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_link(node1=<_LoggingProxy id=9>, node2=<_LoggingProxy id=17>, iface1=<Interface id=0>, iface2=<Interface id=2>) -> calling
+2026-08-11 18:10:54,299 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_link() ok in 0.1 ms -> <_RetryingProxy>
+2026-08-11 18:10:54,299 INFO scenarioforge.builders.topology - [grpc.try.ok] variant=kw-guess-obj-ifaces a=9 b=17
+2026-08-11 18:10:54,299 INFO scenarioforge.builders.topology - [grpc] add_link a=9 b=17 via=kw-guess-obj-ifaces iface1=eth0(0) 172.27.207.4/24 iface2=rsw-3-1-h9(2) None/None
+2026-08-11 18:10:54,299 INFO scenarioforge.builders.topology - [diag.link.call] attempting link a=12 b=17 dup=False iface1=eth0 iface2=rsw-3-1-h12
+2026-08-11 18:10:54,299 INFO scenarioforge.builders.topology - [grpc.try] variant=kw-guess-obj-ifaces a=12 b=17 iface1=eth0(0) 172.27.207.5/24 iface2=rsw-3-1-h12(3) None/None
+2026-08-11 18:10:54,299 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_link(node1=<_LoggingProxy id=12>, node2=<_LoggingProxy id=17>, iface1=<Interface id=0>, iface2=<Interface id=3>) -> calling
+2026-08-11 18:10:54,299 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_link() ok in 0.1 ms -> <_RetryingProxy>
+2026-08-11 18:10:54,299 INFO scenarioforge.builders.topology - [grpc.try.ok] variant=kw-guess-obj-ifaces a=12 b=17
+2026-08-11 18:10:54,299 INFO scenarioforge.builders.topology - [grpc] add_link a=12 b=17 via=kw-guess-obj-ifaces iface1=eth0(0) 172.27.207.5/24 iface2=rsw-3-1-h12(3) None/None
+2026-08-11 18:10:54,299 INFO scenarioforge.builders.topology - [diag.link.call] attempting link a=18 b=17 dup=False iface1=eth0 iface2=rsw-3-1-h18
+2026-08-11 18:10:54,299 INFO scenarioforge.builders.topology - [grpc.try] variant=kw-guess-obj-ifaces a=18 b=17 iface1=eth0(0) 172.27.207.2/24 iface2=rsw-3-1-h18(4) None/None
+2026-08-11 18:10:54,300 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_link(node1=<_LoggingProxy id=18>, node2=<_LoggingProxy id=17>, iface1=<Interface id=0>, iface2=<Interface id=4>) -> calling
+2026-08-11 18:10:54,300 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_link() ok in 0.1 ms -> <_RetryingProxy>
+2026-08-11 18:10:54,300 INFO scenarioforge.builders.topology - [grpc.try.ok] variant=kw-guess-obj-ifaces a=18 b=17
+2026-08-11 18:10:54,300 INFO scenarioforge.builders.topology - [grpc] add_link a=18 b=17 via=kw-guess-obj-ifaces iface1=eth0(0) 172.27.207.2/24 iface2=rsw-3-1-h18(4) None/None
+2026-08-11 18:10:54,300 INFO scenarioforge.builders.topology - No routing protocol was selected for 3 routers; using OSPFv2 so attached LANs remain reachable
+2026-08-11 18:10:54,300 INFO scenarioforge.builders.topology - [diag.link.call] attempting link a=1 b=2 dup=False iface1=r1-proto-2 iface2=r2-proto-1
+2026-08-11 18:10:54,300 INFO scenarioforge.builders.topology - [grpc.try] variant=kw-guess-obj-ifaces a=1 b=2 iface1=r1-proto-2(1) 10.0.46.1/24 iface2=r2-proto-1(1) 10.0.46.2/24
+2026-08-11 18:10:54,300 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_link(node1=<_LoggingProxy id=1>, node2=<_LoggingProxy id=2>, iface1=<Interface id=1>, iface2=<Interface id=1>) -> calling
+2026-08-11 18:10:54,300 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_link() ok in 0.1 ms -> <_RetryingProxy>
+2026-08-11 18:10:54,300 INFO scenarioforge.builders.topology - [grpc.try.ok] variant=kw-guess-obj-ifaces a=1 b=2
+2026-08-11 18:10:54,301 INFO scenarioforge.builders.topology - [grpc] add_link a=1 b=2 via=kw-guess-obj-ifaces iface1=r1-proto-2(1) 10.0.46.1/24 iface2=r2-proto-1(1) 10.0.46.2/24
+2026-08-11 18:10:54,301 INFO scenarioforge.builders.topology - [diag.link.call] attempting link a=1 b=3 dup=False iface1=r1-proto-3 iface2=r3-proto-1
+2026-08-11 18:10:54,301 INFO scenarioforge.builders.topology - [grpc.try] variant=kw-guess-obj-ifaces a=1 b=3 iface1=r1-proto-3(2) 192.168.49.1/24 iface2=r3-proto-1(1) 192.168.49.2/24
+2026-08-11 18:10:54,301 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_link(node1=<_LoggingProxy id=1>, node2=<_LoggingProxy id=3>, iface1=<Interface id=2>, iface2=<Interface id=1>) -> calling
+2026-08-11 18:10:54,301 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_link() ok in 0.1 ms -> <_RetryingProxy>
+2026-08-11 18:10:54,301 INFO scenarioforge.builders.topology - [grpc.try.ok] variant=kw-guess-obj-ifaces a=1 b=3
+2026-08-11 18:10:54,301 INFO scenarioforge.builders.topology - [grpc] add_link a=1 b=3 via=kw-guess-obj-ifaces iface1=r1-proto-3(2) 192.168.49.1/24 iface2=r3-proto-1(1) 192.168.49.2/24
+2026-08-11 18:10:54,301 INFO scenarioforge.builders.topology - [diag.link.call] attempting link a=2 b=3 dup=False iface1=r2-proto-3 iface2=r3-proto-2
+2026-08-11 18:10:54,302 INFO scenarioforge.builders.topology - [grpc.try] variant=kw-guess-obj-ifaces a=2 b=3 iface1=r2-proto-3(2) 172.20.113.1/24 iface2=r3-proto-2(2) 172.20.113.2/24
+2026-08-11 18:10:54,302 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_link(node1=<_LoggingProxy id=2>, node2=<_LoggingProxy id=3>, iface1=<Interface id=2>, iface2=<Interface id=2>) -> calling
+2026-08-11 18:10:54,302 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.add_link() ok in 0.1 ms -> <_RetryingProxy>
+2026-08-11 18:10:54,302 INFO scenarioforge.builders.topology - [grpc.try.ok] variant=kw-guess-obj-ifaces a=2 b=3
+2026-08-11 18:10:54,302 INFO scenarioforge.builders.topology - [grpc] add_link a=2 b=3 via=kw-guess-obj-ifaces iface1=r2-proto-3(2) 172.20.113.1/24 iface2=r3-proto-2(2) 172.20.113.2/24
+2026-08-11 18:10:54,303 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=4, DefaultRoute)
+2026-08-11 18:10:54,303 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=5, DefaultRoute)
+2026-08-11 18:10:54,303 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=6, DefaultRoute)
+2026-08-11 18:10:54,303 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=7, DefaultRoute)
+2026-08-11 18:10:54,303 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=8, DefaultRoute)
+2026-08-11 18:10:54,303 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=9, DefaultRoute)
+2026-08-11 18:10:54,303 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=10, DefaultRoute)
+2026-08-11 18:10:54,304 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=10, SSH)
+2026-08-11 18:10:54,304 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=8, SSH)
+2026-08-11 18:10:54,304 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=7, SSH)
+2026-08-11 18:10:54,304 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=5, HTTP)
+2026-08-11 18:10:54,305 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=4, HTTP)
+2026-08-11 18:10:54,305 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=9, HTTP)
+2026-08-11 18:10:54,305 INFO scenarioforge.builders.topology - [preview] topology realized from persisted preview: routers=3 hosts=12 switches=3
+2026-08-11 18:10:54,305 DEBUG scenarioforge.utils.services - Failed to remove service 'DefaultRoute' from node 11 (no supported API)
+2026-08-11 18:10:54,305 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=11, CoreTGPrereqs)
+2026-08-11 18:10:54,306 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=11, CoreTGPrereqs)
+2026-08-11 18:10:54,306 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=11, DockerDefaultRoute)
+2026-08-11 18:10:54,306 INFO scenarioforge.builders.topology - DockerDefaultRoute not confirmed after enforcement on docker node id=11 name=docker-8 (context=segmented-preview); this can be a CORE service readback limitation for Docker nodes
+2026-08-11 18:10:54,306 DEBUG scenarioforge.utils.services - Failed to remove service 'DefaultRoute' from node 12 (no supported API)
+2026-08-11 18:10:54,306 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=12, CoreTGPrereqs)
+2026-08-11 18:10:54,306 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=12, CoreTGPrereqs)
+2026-08-11 18:10:54,307 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=12, DockerDefaultRoute)
+2026-08-11 18:10:54,307 INFO scenarioforge.builders.topology - DockerDefaultRoute not confirmed after enforcement on docker node id=12 name=docker-9 (context=segmented-preview); this can be a CORE service readback limitation for Docker nodes
+2026-08-11 18:10:54,307 DEBUG scenarioforge.utils.services - Failed to remove service 'DefaultRoute' from node 13 (no supported API)
+2026-08-11 18:10:54,307 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=13, CoreTGPrereqs)
+2026-08-11 18:10:54,307 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=13, CoreTGPrereqs)
+2026-08-11 18:10:54,307 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=13, DockerDefaultRoute)
+2026-08-11 18:10:54,308 INFO scenarioforge.builders.topology - DockerDefaultRoute not confirmed after enforcement on docker node id=13 name=docker-10 (context=segmented-preview); this can be a CORE service readback limitation for Docker nodes
+2026-08-11 18:10:54,308 DEBUG scenarioforge.utils.services - Failed to remove service 'DefaultRoute' from node 14 (no supported API)
+2026-08-11 18:10:54,308 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=14, CoreTGPrereqs)
+2026-08-11 18:10:54,308 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=14, CoreTGPrereqs)
+2026-08-11 18:10:54,308 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=14, DockerDefaultRoute)
+2026-08-11 18:10:54,308 INFO scenarioforge.builders.topology - DockerDefaultRoute not confirmed after enforcement on docker node id=14 name=docker-11 (context=segmented-preview); this can be a CORE service readback limitation for Docker nodes
+2026-08-11 18:10:54,309 DEBUG scenarioforge.utils.services - Failed to remove service 'DefaultRoute' from node 18 (no supported API)
+2026-08-11 18:10:54,309 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=18, CoreTGPrereqs)
+2026-08-11 18:10:54,309 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=18, CoreTGPrereqs)
+2026-08-11 18:10:54,309 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=18, DockerDefaultRoute)
+2026-08-11 18:10:54,309 INFO scenarioforge.builders.topology - DockerDefaultRoute not confirmed after enforcement on docker node id=18 name=pivot-172-27-207-0 (context=segmented-preview); this can be a CORE service readback limitation for Docker nodes
+2026-08-11 18:10:54,310 INFO root - Preview parity: preview_attached=True preview_realized=True
+2026-08-11 18:10:54,310 INFO root - PHASE: Topology built (routers=3 hosts=12)
+2026-08-11 18:10:54,310 INFO root - Docker nodes created: 5 -> docker-10, docker-11, docker-8, docker-9, pivot-172-27-207-0
+2026-08-11 18:10:54,311 INFO root - Pivoting: pivot[1] ssh fallback not applicable to docker-10; using existing flag-node-generator access instead
+2026-08-11 18:10:54,311 INFO root - Pivoting: pivot[2] ssh fallback not applicable to docker-10; using existing flag-node-generator access instead
+2026-08-11 18:10:54,311 INFO root - Pivoting: pivot[3] ssh fallback not applicable to docker-10; using existing flag-node-generator access instead
+2026-08-11 18:10:54,311 INFO root - Applied pivot exposure metadata: targets=3 flow_targets=3 warnings=0
+2026-08-11 18:10:54,312 INFO root - PHASE: HITL attachment
+2026-08-11 18:10:54,314 INFO root - Cleared 14 artifact(s) from /tmp/traffic left by an earlier run
+2026-08-11 18:10:54,314 INFO root - Cleared 4 artifact(s) from /tmp/segmentation left by an earlier run
+2026-08-11 18:10:54,314 INFO root - PHASE: Segmentation
+2026-08-11 18:10:54,315 INFO root - Segmentation config: density=0.450, items=2
+2026-08-11 18:10:54,315 INFO root - Segmentation: enforcing the 4 rule(s) the saved plan decided; not planning again
+2026-08-11 18:10:54,334 INFO scenarioforge.utils.segmentation - Segmentation: prepared output dir /tmp/segmentation (removed 0 items)
+2026-08-11 18:10:54,335 INFO scenarioforge.utils.segmentation - Segmentation: applied 4 rule(s) from the plan; no new policy was drawn
+2026-08-11 18:10:54,335 INFO scenarioforge.utils.pivot_access - Pivot access: 1 subnet(s) are walled off only from other walled-off subnets (10.61.107.0/24). Reaching their providers is not gated behind the outer pivot -- every provider is directly reachable, and the ordering between them is carried by the challenges rather than by the network.
+2026-08-11 18:10:54,336 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=1, CoreTGPrereqs)
+2026-08-11 18:10:54,336 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=1, Segmentation)
+2026-08-11 18:10:54,336 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=2, CoreTGPrereqs)
+2026-08-11 18:10:54,336 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=2, Segmentation)
+2026-08-11 18:10:54,337 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=3, CoreTGPrereqs)
+2026-08-11 18:10:54,337 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=3, Segmentation)
+2026-08-11 18:10:54,337 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=11, CoreTGPrereqs)
+2026-08-11 18:10:54,337 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=11, Segmentation)
+2026-08-11 18:10:54,337 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=12, CoreTGPrereqs)
+2026-08-11 18:10:54,337 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=12, Segmentation)
+2026-08-11 18:10:54,338 INFO scenarioforge.utils.segmentation - Pivot access: 2 provider(s) across 2 walled-off subnet(s) (0 reused, 0 need SSH, 2 to add)
+2026-08-11 18:10:54,338 INFO scenarioforge.utils.segmentation - Segmentation scripts written to /tmp/segmentation (rules=12 on 5 nodes; NAT=1; FW=3; CUSTOM=0; slots=0)
+2026-08-11 18:10:54,338 INFO root - Applied segmentation rules: 12
+2026-08-11 18:10:54,447 INFO root - Image already present, not pulling: lscr.io/linuxserver/openssh-server:latest
+2026-08-11 18:10:54,447 INFO root - Pivot access: docker-8 is reachable at 10.61.107.5 (ssh:80) [node added for this], opening 10.61.107.0/24
+2026-08-11 18:10:54,447 INFO root - Pivot access: docker-9 is reachable at 172.27.207.5 (ssh:22) [node added for this], opening 172.27.207.0/24
+2026-08-11 18:10:54,447 INFO root - Pivot access: 1 subnet(s) imply a pivot behind a pivot; that ordering is carried by the challenges, not by the network (nested pivots are not supported yet)
+2026-08-11 18:10:54,447 INFO root - PHASE: Traffic
+2026-08-11 18:10:54,449 DEBUG scenarioforge.parsers.traffic - Parsed traffic: density=0.85 items=[('TCP', 1.0, 'continuous', 512.0, 1.0, 10.0), ('UDP', 1.0, 'burst', 256.0, 2.0, 20.0)]
+2026-08-11 18:10:54,449 INFO root - Traffic config: density=0.850, items=2
+2026-08-11 18:10:54,449 INFO root - Traffic: writing the 7 flow(s) the saved plan decided; not generating again
+2026-08-11 18:10:54,449 INFO scenarioforge.utils.traffic - Traffic: writing the 7 flow(s) the saved plan decided; no new flows were drawn
+2026-08-11 18:10:54,468 INFO root - Enabling Traffic service on node 7
+2026-08-11 18:10:54,468 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=7, CoreTGPrereqs)
+2026-08-11 18:10:54,468 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=7, Traffic)
+2026-08-11 18:10:54,469 INFO root - Traffic service enabled on node 7
+2026-08-11 18:10:54,469 INFO root - Enabling Traffic service on node 13
+2026-08-11 18:10:54,469 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=13, CoreTGPrereqs)
+2026-08-11 18:10:54,469 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=13, Traffic)
+2026-08-11 18:10:54,469 INFO root - Traffic service enabled on node 13
+2026-08-11 18:10:54,469 INFO root - Enabling Traffic service on node 9
+2026-08-11 18:10:54,470 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=9, CoreTGPrereqs)
+2026-08-11 18:10:54,470 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=9, Traffic)
+2026-08-11 18:10:54,470 INFO root - Traffic service enabled on node 9
+2026-08-11 18:10:54,470 INFO root - Enabling Traffic service on node 14
+2026-08-11 18:10:54,470 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=14, CoreTGPrereqs)
+2026-08-11 18:10:54,470 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=14, Traffic)
+2026-08-11 18:10:54,470 INFO root - Traffic service enabled on node 14
+2026-08-11 18:10:54,471 INFO root - Enabling Traffic service on node 6
+2026-08-11 18:10:54,471 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=6, CoreTGPrereqs)
+2026-08-11 18:10:54,471 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=6, Traffic)
+2026-08-11 18:10:54,471 INFO root - Traffic service enabled on node 6
+2026-08-11 18:10:54,471 INFO root - Enabling Traffic service on node 12
+2026-08-11 18:10:54,471 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=12, CoreTGPrereqs)
+2026-08-11 18:10:54,472 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=12, Traffic)
+2026-08-11 18:10:54,472 INFO root - Traffic service enabled on node 12
+2026-08-11 18:10:54,472 INFO root - Enabling Traffic service on node 5
+2026-08-11 18:10:54,472 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=5, CoreTGPrereqs)
+2026-08-11 18:10:54,472 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=5, Traffic)
+2026-08-11 18:10:54,473 INFO root - Traffic service enabled on node 5
+2026-08-11 18:10:54,473 INFO root - Enabling Traffic service on node 10
+2026-08-11 18:10:54,473 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=10, CoreTGPrereqs)
+2026-08-11 18:10:54,473 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=10, Traffic)
+2026-08-11 18:10:54,473 INFO root - Traffic service enabled on node 10
+2026-08-11 18:10:54,474 INFO root - Enabling Traffic service on node 8
+2026-08-11 18:10:54,474 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=8, CoreTGPrereqs)
+2026-08-11 18:10:54,474 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=8, Traffic)
+2026-08-11 18:10:54,474 INFO root - Traffic service enabled on node 8
+2026-08-11 18:10:54,477 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=1, CoreTGPrereqs)
+2026-08-11 18:10:54,477 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=1, Segmentation)
+2026-08-11 18:10:54,477 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=2, CoreTGPrereqs)
+2026-08-11 18:10:54,478 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=2, Segmentation)
+2026-08-11 18:10:54,478 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=3, CoreTGPrereqs)
+2026-08-11 18:10:54,478 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=3, Segmentation)
+2026-08-11 18:10:54,479 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=1, CoreTGPrereqs)
+2026-08-11 18:10:54,479 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=1, Segmentation)
+2026-08-11 18:10:54,479 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=2, CoreTGPrereqs)
+2026-08-11 18:10:54,479 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=2, Segmentation)
+2026-08-11 18:10:54,480 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=3, CoreTGPrereqs)
+2026-08-11 18:10:54,480 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=3, Segmentation)
+2026-08-11 18:10:54,481 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=1, CoreTGPrereqs)
+2026-08-11 18:10:54,481 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=1, Segmentation)
+2026-08-11 18:10:54,482 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=2, CoreTGPrereqs)
+2026-08-11 18:10:54,482 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=2, Segmentation)
+2026-08-11 18:10:54,482 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=3, CoreTGPrereqs)
+2026-08-11 18:10:54,482 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=3, Segmentation)
+2026-08-11 18:10:54,483 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=1, CoreTGPrereqs)
+2026-08-11 18:10:54,483 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=1, Segmentation)
+2026-08-11 18:10:54,483 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=2, CoreTGPrereqs)
+2026-08-11 18:10:54,483 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=2, Segmentation)
+2026-08-11 18:10:54,483 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=3, CoreTGPrereqs)
+2026-08-11 18:10:54,483 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=3, Segmentation)
+2026-08-11 18:10:54,484 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=1, CoreTGPrereqs)
+2026-08-11 18:10:54,484 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=1, Segmentation)
+2026-08-11 18:10:54,484 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=2, CoreTGPrereqs)
+2026-08-11 18:10:54,485 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=2, Segmentation)
+2026-08-11 18:10:54,485 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=3, CoreTGPrereqs)
+2026-08-11 18:10:54,485 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=3, Segmentation)
+2026-08-11 18:10:54,486 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=1, CoreTGPrereqs)
+2026-08-11 18:10:54,486 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=1, Segmentation)
+2026-08-11 18:10:54,486 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=2, CoreTGPrereqs)
+2026-08-11 18:10:54,486 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=2, Segmentation)
+2026-08-11 18:10:54,486 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=3, CoreTGPrereqs)
+2026-08-11 18:10:54,486 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=3, Segmentation)
+2026-08-11 18:10:54,486 INFO scenarioforge.utils.segmentation - Segmentation-Allow: inserted 30 allow rules across 11 nodes
+2026-08-11 18:10:54,488 INFO root - Inserted allow rules for generated traffic
+2026-08-11 18:10:54,490 INFO root - Flow verification: all 7 flows allowed
+2026-08-11 18:10:54,491 DEBUG root - Node 7 traffic flows: receivers=0, senders=1
+2026-08-11 18:10:54,491 DEBUG root - Node 13 traffic flows: receivers=1, senders=1
+2026-08-11 18:10:54,491 DEBUG root - Node 9 traffic flows: receivers=1, senders=1
+2026-08-11 18:10:54,491 DEBUG root - Node 14 traffic flows: receivers=1, senders=1
+2026-08-11 18:10:54,492 DEBUG root - Node 6 traffic flows: receivers=2, senders=0
+2026-08-11 18:10:54,492 DEBUG root - Node 12 traffic flows: receivers=0, senders=1
+2026-08-11 18:10:54,492 DEBUG root - Node 5 traffic flows: receivers=1, senders=1
+2026-08-11 18:10:54,492 DEBUG root - Node 10 traffic flows: receivers=0, senders=1
+2026-08-11 18:10:54,493 DEBUG root - Node 8 traffic flows: receivers=1, senders=0
+2026-08-11 18:10:54,493 INFO root - Traffic configs written to /tmp/traffic (receivers=7 on 6 nodes; senders=7 on 7 nodes; up to 85% of hosts)
+2026-08-11 18:10:54,493 INFO root - PHASE: Vulnerabilities
+2026-08-11 18:10:54,494 DEBUG scenarioforge.parsers.vulnerabilities - Parsed vulnerabilities: density=0.0 items=[{'selected': 'Specific', 'factor': 1.0, 'v_metric': 'Count', 'v_count': 1, 'v_name': 'drupal/CVE-2019-6341', 'v_path': '/tmp/scenarioforge/runs/cli-491e59bd/drupal-cve-2019-6341/docker-compose.yml'}]
+2026-08-11 18:10:54,494 INFO root - No vulnerabilities selected (empty catalog or criteria)
+2026-08-11 18:10:54,495 INFO scenarioforge.utils.vuln_process - [vuln] preparing docker-compose for node=docker-8 name=drupal/CVE-2019-6341 path=/tmp/scenarioforge/runs/cli-491e59bd/drupal-cve-2019-6341/docker-compose.yml
+2026-08-11 18:10:54,495 INFO scenarioforge.utils.vuln_process - [vuln] copying compose from local path=/tmp/scenarioforge/runs/cli-491e59bd/drupal-cve-2019-6341/docker-compose.yml dest=/tmp/vulns/drupal-cve-2019-6341/docker-compose.yml
+2026-08-11 18:10:54,496 DEBUG scenarioforge.utils.vuln_process - [vuln] parsed compose yaml key=('drupal/CVE-2019-6341', '/tmp/scenarioforge/runs/cli-491e59bd/drupal-cve-2019-6341/docker-compose.yml') services=['web']
+2026-08-11 18:10:54,497 INFO scenarioforge.utils.vuln_process - [vuln] compose selected service node=docker-8 service=web
+2026-08-11 18:10:54,497 INFO scenarioforge.utils.vuln_process - [injects] prepare injects source_dir=/tmp/vulns/flag_generators_runs/flow-datasetsegmentedfirewallpivotrun02/04_encoded_base64_dispatch_docker-8/artifacts outputs_manifest=/tmp/vulns/flag_generators_runs/flow-datasetsegmentedfirewallpivotrun02/04_encoded_base64_dispatch_docker-8/outputs.json inject_files=['artifacts/dispatch_note.b64']
+2026-08-11 18:10:54,497 INFO scenarioforge.utils.vuln_process - [injects] expanded injects=['artifacts/dispatch_note.b64']
+2026-08-11 18:10:54,497 INFO scenarioforge.utils.vuln_process - [injects] applying injects to service=web mode=copy map={'dispatch_note.b64': '/flow_injects'}
+2026-08-11 18:10:54,497 INFO scenarioforge.utils.vuln_process - [injects] clearing destination directories before copy: ['/flow_injects']
+2026-08-11 18:10:54,501 INFO scenarioforge.utils.vuln_process - [vuln] wrote compose yaml node=docker-8 services=['inject_copy', 'docker-8'] dest=/tmp/vulns/docker-compose-docker-8.yml
+2026-08-11 18:10:54,502 INFO scenarioforge.utils.vuln_process - [vuln] compose file ready for node=docker-8 compose=/tmp/vulns/docker-compose-docker-8.yml
+2026-08-11 18:10:54,502 INFO scenarioforge.utils.vuln_process - [vuln] preparing docker-compose for node=docker-9 name=SSH: Password Finance Terminal path=/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/02_ssh_password_finance_terminal_docker-9/docker-compose.yml
+2026-08-11 18:10:54,502 INFO scenarioforge.utils.vuln_process - [vuln] copying compose from local path=/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/02_ssh_password_finance_terminal_docker-9/docker-compose.yml dest=/tmp/vulns/ssh-password-finance-terminal/docker-compose.yml
+2026-08-11 18:10:54,508 DEBUG scenarioforge.utils.vuln_process - [vuln] parsed compose yaml key=('SSH: Password Finance Terminal', '/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/02_ssh_password_finance_terminal_docker-9/docker-compose.yml') services=['node']
+2026-08-11 18:10:54,510 INFO scenarioforge.utils.vuln_process - [vuln] compose selected service node=docker-9 service=node
+2026-08-11 18:10:54,510 INFO scenarioforge.utils.vuln_process - [injects] prepare injects source_dir=/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/02_ssh_password_finance_terminal_docker-9 outputs_manifest=/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/02_ssh_password_finance_terminal_docker-9/outputs.json inject_files=['workspace']
+2026-08-11 18:10:54,510 INFO scenarioforge.utils.vuln_process - [injects] expanded injects=['workspace']
+2026-08-11 18:10:54,511 INFO scenarioforge.utils.vuln_process - [injects] applying injects to service=node mode=copy map={'workspace': '/flow_injects'}
+2026-08-11 18:10:54,511 INFO scenarioforge.utils.vuln_process - [injects] clearing destination directories before copy: ['/flow_injects']
+2026-08-11 18:10:54,511 INFO scenarioforge.utils.vuln_process - [vuln] injected iproute2 install into build-only Dockerfile node=docker-9 service=node dockerfile=/tmp/vulns/ssh-password-finance-terminal/./Dockerfile
+2026-08-11 18:10:54,515 INFO scenarioforge.utils.vuln_process - [vuln] wrote compose yaml node=docker-9 services=['inject_copy', 'docker-9'] dest=/tmp/vulns/docker-compose-docker-9.yml
+2026-08-11 18:10:54,515 INFO scenarioforge.utils.vuln_process - [vuln] compose file ready for node=docker-9 compose=/tmp/vulns/docker-compose-docker-9.yml
+2026-08-11 18:10:54,515 INFO scenarioforge.utils.vuln_process - [vuln] preparing docker-compose for node=docker-10 name=Git: HTTP Bare Repository path=/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/01_git_http_bare_repo_docker-10/docker-compose.yml
+2026-08-11 18:10:54,515 INFO scenarioforge.utils.vuln_process - [vuln] copying compose from local path=/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/01_git_http_bare_repo_docker-10/docker-compose.yml dest=/tmp/vulns/git-http-bare-repository/docker-compose.yml
+2026-08-11 18:10:54,519 DEBUG scenarioforge.utils.vuln_process - [vuln] parsed compose yaml key=('Git: HTTP Bare Repository', '/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/01_git_http_bare_repo_docker-10/docker-compose.yml') services=['node']
+2026-08-11 18:10:54,520 INFO scenarioforge.utils.vuln_process - [vuln] compose selected service node=docker-10 service=node
+2026-08-11 18:10:54,520 INFO scenarioforge.utils.vuln_process - [injects] prepare injects source_dir=/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/01_git_http_bare_repo_docker-10 outputs_manifest=/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/01_git_http_bare_repo_docker-10/outputs.json inject_files=['service']
+2026-08-11 18:10:54,520 INFO scenarioforge.utils.vuln_process - [injects] expanded injects=['service']
+2026-08-11 18:10:54,520 INFO scenarioforge.utils.vuln_process - [injects] applying injects to service=node mode=copy map={'service': '/flow_injects'}
+2026-08-11 18:10:54,521 INFO scenarioforge.utils.vuln_process - [injects] clearing destination directories before copy: ['/flow_injects']
+2026-08-11 18:10:54,521 INFO scenarioforge.utils.vuln_process - [vuln] injected iproute2 install into build-only Dockerfile node=docker-10 service=node dockerfile=/tmp/vulns/git-http-bare-repository/./Dockerfile
+2026-08-11 18:10:54,528 INFO scenarioforge.utils.vuln_process - [vuln] wrote compose yaml node=docker-10 services=['inject_copy', 'docker-10'] dest=/tmp/vulns/docker-compose-docker-10.yml
+2026-08-11 18:10:54,528 INFO scenarioforge.utils.vuln_process - [vuln] compose file ready for node=docker-10 compose=/tmp/vulns/docker-compose-docker-10.yml
+2026-08-11 18:10:54,528 INFO scenarioforge.utils.vuln_process - [vuln] preparing docker-compose for node=docker-11 name=Git: Deploy Key Repository path=/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/03_git_deploy_key_repo_docker-11/docker-compose.yml
+2026-08-11 18:10:54,528 INFO scenarioforge.utils.vuln_process - [vuln] copying compose from local path=/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/03_git_deploy_key_repo_docker-11/docker-compose.yml dest=/tmp/vulns/git-deploy-key-repository/docker-compose.yml
+2026-08-11 18:10:54,532 DEBUG scenarioforge.utils.vuln_process - [vuln] parsed compose yaml key=('Git: Deploy Key Repository', '/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/03_git_deploy_key_repo_docker-11/docker-compose.yml') services=['node']
+2026-08-11 18:10:54,532 INFO scenarioforge.utils.vuln_process - [vuln] compose selected service node=docker-11 service=node
+2026-08-11 18:10:54,533 INFO scenarioforge.utils.vuln_process - [injects] prepare injects source_dir=/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/03_git_deploy_key_repo_docker-11 outputs_manifest=/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/03_git_deploy_key_repo_docker-11/outputs.json inject_files=['service']
+2026-08-11 18:10:54,533 INFO scenarioforge.utils.vuln_process - [injects] expanded injects=['service']
+2026-08-11 18:10:54,533 INFO scenarioforge.utils.vuln_process - [injects] applying injects to service=node mode=copy map={'service': '/flow_injects'}
+2026-08-11 18:10:54,533 INFO scenarioforge.utils.vuln_process - [injects] clearing destination directories before copy: ['/flow_injects']
+2026-08-11 18:10:54,534 INFO scenarioforge.utils.vuln_process - [vuln] injected iproute2 install into build-only Dockerfile node=docker-11 service=node dockerfile=/tmp/vulns/git-deploy-key-repository/./Dockerfile
+2026-08-11 18:10:54,539 INFO scenarioforge.utils.vuln_process - [vuln] wrote compose yaml node=docker-11 services=['inject_copy', 'docker-11'] dest=/tmp/vulns/docker-compose-docker-11.yml
+2026-08-11 18:10:54,539 INFO scenarioforge.utils.vuln_process - [vuln] compose file ready for node=docker-11 compose=/tmp/vulns/docker-compose-docker-11.yml
+2026-08-11 18:10:54,539 INFO scenarioforge.utils.vuln_process - [vuln] preparing docker-compose for node=pivot-172-27-207-0 name=pivot-access-pivot-172-27-207-0 path=/tmp/vulns/pivot-access/pivot-172-27-207-0/docker-compose.yml
+2026-08-11 18:10:54,540 INFO scenarioforge.utils.vuln_process - [vuln] copying compose from local path=/tmp/vulns/pivot-access/pivot-172-27-207-0/docker-compose.yml dest=/tmp/vulns/pivot-access-pivot-172-27-207-0/docker-compose.yml
+2026-08-11 18:10:54,541 DEBUG scenarioforge.utils.vuln_process - [vuln] parsed compose yaml key=('pivot-access-pivot-172-27-207-0', '/tmp/vulns/pivot-access/pivot-172-27-207-0/docker-compose.yml') services=['pivot_ssh']
+2026-08-11 18:10:54,541 INFO scenarioforge.utils.vuln_process - [vuln] compose selected service node=pivot-172-27-207-0 service=pivot_ssh
+2026-08-11 18:10:54,546 INFO scenarioforge.utils.vuln_process - [vuln] wrote compose yaml node=pivot-172-27-207-0 services=['pivot-172-27-207-0'] dest=/tmp/vulns/docker-compose-pivot-172-27-207-0.yml
+2026-08-11 18:10:54,547 INFO scenarioforge.utils.vuln_process - [vuln] compose file ready for node=pivot-172-27-207-0 compose=/tmp/vulns/docker-compose-pivot-172-27-207-0.yml
+2026-08-11 18:10:54,547 INFO scenarioforge.utils.vuln_process - [vuln] compose verification: expected=5 present=5 missing=0
+2026-08-11 18:10:54,547 INFO root - Prepared docker compose files (all docker nodes): 5 for 5 docker nodes
+2026-08-11 18:10:54,548 INFO root - Compose assignments summary written for 5 docker nodes
+2026-08-11 18:10:54,550 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=1, CoreTGPrereqs)
+2026-08-11 18:10:54,550 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=1, Segmentation)
+2026-08-11 18:10:54,551 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=2, CoreTGPrereqs)
+2026-08-11 18:10:54,551 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=2, Segmentation)
+2026-08-11 18:10:54,552 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=1, CoreTGPrereqs)
+2026-08-11 18:10:54,552 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=1, Segmentation)
+2026-08-11 18:10:54,552 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=2, CoreTGPrereqs)
+2026-08-11 18:10:54,553 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=2, Segmentation)
+2026-08-11 18:10:54,554 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=1, CoreTGPrereqs)
+2026-08-11 18:10:54,554 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=1, Segmentation)
+2026-08-11 18:10:54,554 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=2, CoreTGPrereqs)
+2026-08-11 18:10:54,554 DEBUG scenarioforge.utils.services - node_obj.services.add(node_id=2, Segmentation)
+2026-08-11 18:10:54,554 INFO scenarioforge.utils.segmentation - Segmentation-Compose-Allow: inserted 6 compose port allow rules across 2 nodes
+2026-08-11 18:10:54,557 INFO root - Inserted compose port allow rules for docker service ports: 6
+2026-08-11 18:10:54,557 DEBUG root - Docker node compose assignment node=docker-10 Name=Git: HTTP Bare Repository Path=/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/01_git_http_bare_repo_docker-10/docker-compose.yml Vector=flag-nodegen out=/tmp/vulns/.compose-projects/docker-10/docker-compose.yml exists=True
+2026-08-11 18:10:54,557 DEBUG root - Docker node compose assignment node=docker-11 Name=Git: Deploy Key Repository Path=/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/03_git_deploy_key_repo_docker-11/docker-compose.yml Vector=flag-nodegen out=/tmp/vulns/.compose-projects/docker-11/docker-compose.yml exists=True
+2026-08-11 18:10:54,557 DEBUG root - Docker node compose assignment node=docker-8 Name=drupal/CVE-2019-6341 Path=/tmp/scenarioforge/runs/cli-491e59bd/drupal-cve-2019-6341/docker-compose.yml Vector= out=/tmp/vulns/.compose-projects/docker-8/docker-compose.yml exists=True
+2026-08-11 18:10:54,558 DEBUG root - Docker node compose assignment node=docker-9 Name=SSH: Password Finance Terminal Path=/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/02_ssh_password_finance_terminal_docker-9/docker-compose.yml Vector=flag-nodegen out=/tmp/vulns/.compose-projects/docker-9/docker-compose.yml exists=True
+2026-08-11 18:10:54,558 DEBUG root - Docker node compose assignment node=pivot-172-27-207-0 Name=pivot-access-pivot-172-27-207-0 Path=/tmp/vulns/pivot-access/pivot-172-27-207-0/docker-compose.yml Vector=pivot-access out=/tmp/vulns/.compose-projects/pivot-172-27-207-0/docker-compose.yml exists=True
+2026-08-11 18:10:54,558 INFO root - PHASE: Report
+2026-08-11 18:10:54,564 INFO root - Scenario summary written to /tmp/scenarioforge/reports/scenario_report_08-11-26-18-10-54-493332.json
+2026-08-11 18:10:54,565 INFO root - Scenario report written to /tmp/scenarioforge/reports/scenario_report_08-11-26-18-10-54-493332.md
+Scenario report written to /tmp/scenarioforge/reports/scenario_report_08-11-26-18-10-54-493332.md
+2026-08-11 18:10:54,565 INFO root - Scenario summary written to /tmp/scenarioforge/reports/scenario_report_08-11-26-18-10-54-493332.json
+Scenario summary written to /tmp/scenarioforge/reports/scenario_report_08-11-26-18-10-54-493332.json
+2026-08-11 18:10:54,565 INFO root - PHASE: Start CORE session
+2026-08-11 18:10:54,817 INFO root - CORE_SESSION_ID: 1
+2026-08-11 18:10:54,817 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.start_session(<_LoggingProxy id=1>) -> calling
+2026-08-11 18:10:54,817 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.to_proto() -> calling
+2026-08-11 18:10:54,819 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.to_proto() ok in 1.8 ms -> <Session id=1>
+2026-08-11 18:11:05,889 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.start_session() ok in 11071.5 ms -> <tuple>
+2026-08-11 18:11:05,889 INFO root - CORE session start requested
+2026-08-11 18:11:05,890 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.get_sessions() -> calling
+2026-08-11 18:11:05,892 DEBUG scenarioforge.grpc - [grpc] _RetryingProxy.get_sessions() ok in 2.5 ms -> <list>
+2026-08-11 18:11:06,457 INFO scenarioforge.builders.topology - [docker-node] host-side default route node=docker-10 already set
+2026-08-11 18:11:06,458 INFO scenarioforge.builders.topology - [docker-node] host-side default route node=docker-11 already set
+2026-08-11 18:11:06,458 INFO scenarioforge.builders.topology - [docker-node] host-side default route node=docker-8 already set
+2026-08-11 18:11:06,458 INFO scenarioforge.builders.topology - [docker-node] host-side default route node=docker-9 already set
+2026-08-11 18:11:06,458 INFO scenarioforge.builders.topology - [docker-node] host-side default route node=pivot-172-27-207-0 already set
+2026-08-11 18:11:06,458 INFO root - docker node docker-10 default route: already set
+2026-08-11 18:11:06,458 INFO root - docker node docker-11 default route: already set
+2026-08-11 18:11:06,459 INFO root - docker node docker-8 default route: already set
+2026-08-11 18:11:06,459 INFO root - docker node docker-9 default route: already set
+2026-08-11 18:11:06,459 INFO root - docker node pivot-172-27-207-0 default route: already set
+2026-08-11 18:11:08,091 INFO root - Routing control plane configured on: router-1, router-2, router-3
+2026-08-11 18:11:08,116 INFO root - Scenario summary written to /tmp/scenarioforge/reports/scenario_report_08-11-26-18-10-54-493332.json
+2026-08-11 18:11:08,116 INFO root - CORE session started and validated
+CORE_SESSION_VALIDATION_JSON: {"configuration_tolerated":false,"runtime_ok":true,"session_id":1,"state":"runtime","validation_ok":true}
+[remote] Verified CORE session 1 is RUNTIME on 129.108.4.45:10006.
+[validate] Copying Flow artifacts into running containers...
+[2026-08-11 18:11:10,143] INFO in app_backend: [core.remote] (remote.vulns_inventory(before_copy.cli-postrun)) executing via /opt/core/venv/bin/python3
+[2026-08-11 18:11:11,193] INFO in app_backend: [core.remote] (docker.copy_flow_artifacts(cli-postrun)) executing via /opt/core/venv/bin/python3
+[2026-08-11 18:11:25,485] INFO in app_backend: [core.remote] (docker.exec.verify_flow_artifacts(cli-postrun)) executing via /opt/core/venv/bin/python3
+[2026-08-11 18:11:27,977] INFO in app_backend: [core.remote] (docker.exec.listener_snapshot(cli-postrun)) executing via /opt/core/venv/bin/python3
+[validate] Flow artifact copy targets: 5/5 succeeded.
+[2026-08-11 18:11:30,269] INFO in app_backend: Established SSH tunnel corevm@129.108.4.45:10006 -> 129.108.4.45:50051 (local 65256)
+[2026-08-11 18:11:31,331] INFO in app_backend: [core.remote] (core.save_xml) executing via /opt/core/venv/bin/python3
+[2026-08-11 18:11:36,966] INFO in app_backend: _session_docker_nodes_from_xml parsing /Users/jcacosta/Documents/GitHub/scenarioforge-eval/verify-supply-fix/dataset-segmented-firewall-pivot_run02/core-post/session-1.xml
+[2026-08-11 18:11:36,966] INFO in app_backend: _session_docker_nodes_from_xml found 5 nodes: ['docker-8', 'docker-9', 'docker-10', 'docker-11', 'pivot-172-27-207-0']
+[2026-08-11 18:11:38,473] INFO in app_backend: [core.remote] (docker.compose.assignments) executing via /opt/core/venv/bin/python3
+[2026-08-11 18:11:39,395] INFO in app_backend: [core.remote] (docker.exec.injects_status) executing via /opt/core/venv/bin/python3
+[2026-08-11 18:11:46,323] INFO in app_backend: [core.remote] (flow.artifacts.validate) executing via /opt/core/venv/bin/python3
+
+Post-execution validation: PASSED
+  Nodes validated: 0; Docker containers running: 4
+  Validation summary: /Users/jcacosta/Documents/GitHub/scenarioforge-eval/verify-supply-fix/dataset-segmented-firewall-pivot_run02/core-post/validation-session-1.json
+VALIDATION_SUMMARY_JSON: {"actual_nodes":[],"actual_nodes_detail":[],"actual_vuln_nodes":["docker-8","docker-9","docker-10","docker-11","pivot-172-27-207-0"],"cli_post_execution_validation":true,"docker_missing":[],"docker_nodes":["docker-8","docker-9","docker-10","docker-11","pivot-172-27-207-0"],"docker_not_running":[],"docker_not_running_details":[],"docker_restarting":[],"docker_running":["docker-8","docker-9","docker-10","docker-11"],"docker_start_pending":[],"expected_docker_nodes":["docker-8","docker-9","docker-10","docker-11","pivot-172-27-207-0"],"expected_nodes":[],"expected_vuln_nodes":["docker-8"],"extra_docker_nodes":[],"extra_node_ids":[],"extra_nodes":[],"flag_verification_checked":[],"flag_verification_details":[],"flag_verification_failed":[],"flow_live_paths_checked":12,"flow_live_paths_detail":[{"exists_local":false,"generator_id":"git_http_bare_repo","is_remote":true,"missing_local":false,"node_id":"13","path":"/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/01_git_http_bare_repo_docker-10","path_type":"artifacts_dir"},{"exists_local":false,"generator_id":"git_http_bare_repo","is_remote":true,"missing_local":false,"node_id":"13","path":"/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/01_git_http_bare_repo_docker-10","path_type":"inject_source_dir"},{"exists_local":false,"generator_id":"git_http_bare_repo","is_remote":true,"missing_local":false,"node_id":"13","path":"/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/01_git_http_bare_repo_docker-10/service","path_type":"inject_source"},{"exists_local":false,"generator_id":"ssh_password_finance_terminal","is_remote":true,"missing_local":false,"node_id":"12","path":"/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/02_ssh_password_finance_terminal_docker-9","path_type":"artifacts_dir"},{"exists_local":false,"generator_id":"ssh_password_finance_terminal","is_remote":true,"missing_local":false,"node_id":"12","path":"/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/02_ssh_password_finance_terminal_docker-9","path_type":"inject_source_dir"},{"exists_local":false,"generator_id":"ssh_password_finance_terminal","is_remote":true,"missing_local":false,"node_id":"12","path":"/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/02_ssh_password_finance_terminal_docker-9/workspace","path_type":"inject_source"},{"exists_local":false,"generator_id":"git_deploy_key_repo","is_remote":true,"missing_local":false,"node_id":"14","path":"/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/03_git_deploy_key_repo_docker-11","path_type":"artifacts_dir"},{"exists_local":false,"generator_id":"git_deploy_key_repo","is_remote":true,"missing_local":false,"node_id":"14","path":"/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/03_git_deploy_key_repo_docker-11","path_type":"inject_source_dir"},{"exists_local":false,"generator_id":"git_deploy_key_repo","is_remote":true,"missing_local":false,"node_id":"14","path":"/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/03_git_deploy_key_repo_docker-11/service","path_type":"inject_source"},{"exists_local":false,"generator_id":"encoded_base64_dispatch","is_remote":true,"missing_local":false,"node_id":"11","path":"/tmp/vulns/flag_generators_runs/flow-datasetsegmentedfirewallpivotrun02/04_encoded_base64_dispatch_docker-8","path_type":"artifacts_dir"},{"exists_local":false,"generator_id":"encoded_base64_dispatch","is_remote":true,"missing_local":false,"node_id":"11","path":"/tmp/vulns/flag_generators_runs/flow-datasetsegmentedfirewallpivotrun02/04_encoded_base64_dispatch_docker-8","path_type":"inject_source_dir"},{"exists_local":false,"generator_id":"encoded_base64_dispatch","is_remote":true,"missing_local":false,"node_id":"11","path":"/tmp/vulns/flag_generators_runs/flow-datasetsegmentedfirewallpivotrun02/04_encoded_base64_dispatch_docker-8/artifacts/dispatch_note.b64","path_type":"inject_source"}],"flow_live_paths_missing":[],"flow_live_paths_missing_count":0,"generator_injects_missing":[],"generator_outputs_missing":[],"generator_validation_detail":[{"artifacts_dir":"/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/01_git_http_bare_repo_docker-10","container_check_error":"","container_checked":[],"container_missing":[],"container_name":"docker-10","flag_delivery_mode":"file","flag_file_path":"/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/01_git_http_bare_repo_docker-10/service/repo/config","generator_id":"git_http_bare_repo","generator_name":"Git: HTTP Bare Repository","generator_type":"flag-node-generator","inject_checked":["/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/01_git_http_bare_repo_docker-10/service","/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/01_git_http_bare_repo_docker-10/service/repo/config"],"inject_missing":[],"node_id":"13","node_name":"docker-10","outputs_checked":["/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/01_git_http_bare_repo_docker-10/service/repo/config","/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/01_git_http_bare_repo_docker-10/docker-compose.yml"],"outputs_manifest":"/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/01_git_http_bare_repo_docker-10/outputs.json","outputs_manifest_exists":true,"outputs_missing":[],"outputs_resolved":{"File(path)":"/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/01_git_http_bare_repo_docker-10/docker-compose.yml","FlagFile(path)":"/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/01_git_http_bare_repo_docker-10/service/repo/config"},"run_dir":"/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/01_git_http_bare_repo_docker-10"},{"artifacts_dir":"/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/02_ssh_password_finance_terminal_docker-9","container_check_error":"","container_checked":[],"container_missing":[],"container_name":"docker-9","flag_delivery_mode":"file","flag_file_path":"/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/02_ssh_password_finance_terminal_docker-9/workspace/finance/reconciliations/q2-be5c3328a0.csv","generator_id":"ssh_password_finance_terminal","generator_name":"SSH: Password Finance Terminal","generator_type":"flag-node-generator","inject_checked":["/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/02_ssh_password_finance_terminal_docker-9/workspace","/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/02_ssh_password_finance_terminal_docker-9/workspace/finance/reconciliations/q2-be5c3328a0.csv"],"inject_missing":[],"node_id":"12","node_name":"docker-9","outputs_checked":["/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/02_ssh_password_finance_terminal_docker-9/workspace/finance/reconciliations/q2-be5c3328a0.csv","/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/02_ssh_password_finance_terminal_docker-9/docker-compose.yml"],"outputs_manifest":"/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/02_ssh_password_finance_terminal_docker-9/outputs.json","outputs_manifest_exists":true,"outputs_missing":[],"outputs_resolved":{"File(path)":"/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/02_ssh_password_finance_terminal_docker-9/docker-compose.yml","FlagFile(path)":"/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/02_ssh_password_finance_terminal_docker-9/workspace/finance/reconciliations/q2-be5c3328a0.csv"},"run_dir":"/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/02_ssh_password_finance_terminal_docker-9"},{"artifacts_dir":"/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/03_git_deploy_key_repo_docker-11","container_check_error":"","container_checked":[],"container_missing":[],"container_name":"docker-11","flag_delivery_mode":"file","flag_file_path":"/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/03_git_deploy_key_repo_docker-11/service/repo/deploy.env","generator_id":"git_deploy_key_repo","generator_name":"Git: Deploy Key Repository","generator_type":"flag-node-generator","inject_checked":["/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/03_git_deploy_key_repo_docker-11/service","/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/03_git_deploy_key_repo_docker-11/service/repo/deploy.env"],"inject_missing":[],"node_id":"14","node_name":"docker-11","outputs_checked":["/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/03_git_deploy_key_repo_docker-11/service/repo/deploy.env","/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/03_git_deploy_key_repo_docker-11/docker-compose.yml"],"outputs_manifest":"/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/03_git_deploy_key_repo_docker-11/outputs.json","outputs_manifest_exists":true,"outputs_missing":[],"outputs_resolved":{"File(path)":"/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/03_git_deploy_key_repo_docker-11/docker-compose.yml","FlagFile(path)":"/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/03_git_deploy_key_repo_docker-11/service/repo/deploy.env"},"run_dir":"/tmp/vulns/flag_node_generators_runs/flow-datasetsegmentedfirewallpivotrun02/03_git_deploy_key_repo_docker-11"},{"artifacts_dir":"/tmp/vulns/flag_generators_runs/flow-datasetsegmentedfirewallpivotrun02/04_encoded_base64_dispatch_docker-8","container_check_error":"","container_checked":[],"container_missing":[],"container_name":"docker-8","flag_delivery_mode":"embedded","flag_file_path":"","generator_id":"encoded_base64_dispatch","generator_name":"Encoded: Base64 Dispatch Note","generator_type":"flag-generator","inject_checked":["/tmp/vulns/flag_generators_runs/flow-datasetsegmentedfirewallpivotrun02/04_encoded_base64_dispatch_docker-8/artifacts/dispatch_note.b64"],"inject_missing":[],"node_id":"11","node_name":"docker-8","outputs_checked":["/tmp/vulns/flag_generators_runs/flow-datasetsegmentedfirewallpivotrun02/04_encoded_base64_dispatch_docker-8/artifacts/dispatch_note.b64"],"outputs_manifest":"/tmp/vulns/flag_generators_runs/flow-datasetsegmentedfirewallpivotrun02/04_encoded_base64_dispatch_docker-8/outputs.json","outputs_manifest_exists":true,"outputs_missing":[],"outputs_resolved":{"File(path)":"/tmp/vulns/flag_generators_runs/flow-datasetsegmentedfirewallpivotrun02/04_encoded_base64_dispatch_docker-8/artifacts/dispatch_note.b64"},"run_dir":"/tmp/vulns/flag_generators_runs/flow-datasetsegmentedfirewallpivotrun02/04_encoded_base64_dispatch_docker-8"}],"inject_dirs_expected":["/flow_injects"],"inject_files_expected":["/flow_injects/service","/flow_injects/workspace","/flow_injects/dispatch_note.b64"],"inject_files_expected_by_node":{"docker-10":["/flow_injects/service"],"docker-11":["/flow_injects/service"],"docker-8":["/flow_injects/dispatch_note.b64"],"docker-9":["/flow_injects/workspace"]},"inject_nodes_expected":["docker-8","docker-9","docker-10","docker-11"],"injects_detail":["docker-8: 1 file(s) in /flow_injects (e.g., /flow_injects/dispatch_note.b64); expected /flow_injects/dispatch_note.b64","docker-9: 3 file(s) in /flow_injects (e.g., /flow_injects/workspace/finance/exports/vendors.csv, /flow_injects/workspace/finance/reconciliations/q2-be5c3328a0.csv, /flow_injects/workspace/finance/README.txt); expected /flow_injects/workspace","docker-10: 3 file(s) in /flow_injects (e.g., /flow_injects/service/repo/config, /flow_injects/service/repo/HEAD, /flow_injects/service/config.json); expected /flow_injects/service","docker-11: 3 file(s) in /flow_injects (e.g., /flow_injects/service/repo/deploy.env, /flow_injects/service/repo/README.md, /flow_injects/service/config.json); expected /flow_injects/service"],"injects_missing":[],"injects_unreadable":[],"injects_unreadable_details":[],"missing_docker_nodes":[],"missing_node_ids":[],"missing_nodes":[],"missing_vuln_nodes":[],"ok":true,"port_unreachable":[],"port_unreachable_details":[],"ports_checked":[],"scenario_xml_path":"/Users/jcacosta/Documents/GitHub/scenarioforge-eval/verify-supply-fix/dataset-segmented-firewall-pivot_run02/scenario.xml","session_id":1,"session_xml_path":"/Users/jcacosta/Documents/GitHub/scenarioforge-eval/verify-supply-fix/dataset-segmented-firewall-pivot_run02/core-post/session-1.xml","topology_port_unreachable":[],"topology_port_unreachable_details":[],"topology_probe_checked":false,"topology_probe_error":null}
+[2026-08-11 18:11:47,517] INFO in app_backend: [core.remote] (core.get_sessions) executing via /opt/core/venv/bin/python3
+[2026-08-11 18:11:48,236] INFO in app_backend: [core.grpc] remote returned 1 session(s)
+[check-artifacts] Waiting 15s for routing convergence and services to settle...
+[check-artifacts] Running checks against session 1...
+[check-artifacts] Step 1/9: Collecting session state & validating nodes…
+[2026-08-11 18:12:04,285] INFO in app_backend: Established SSH tunnel corevm@129.108.4.45:10006 -> 129.108.4.45:50051 (local 65365)
+[2026-08-11 18:12:05,376] INFO in app_backend: [core.remote] (core.save_xml) executing via /opt/core/venv/bin/python3
+[2026-08-11 18:12:12,577] INFO in app_backend: _session_docker_nodes_from_xml parsing /Users/jcacosta/Documents/GitHub/scenarioforge-eval/verify-supply-fix/dataset-segmented-firewall-pivot_run02/artifact-check/session-1.xml
+[2026-08-11 18:12:12,577] INFO in app_backend: _session_docker_nodes_from_xml found 5 nodes: ['docker-8', 'docker-9', 'docker-10', 'docker-11', 'pivot-172-27-207-0']
+[2026-08-11 18:12:14,182] INFO in app_backend: [core.remote] (docker.compose.assignments) executing via /opt/core/venv/bin/python3
+[2026-08-11 18:12:15,230] INFO in app_backend: [core.remote] (docker.exec.injects_status) executing via /opt/core/venv/bin/python3
+[2026-08-11 18:12:22,033] INFO in app_backend: [core.remote] (flow.artifacts.validate) executing via /opt/core/venv/bin/python3
+[check-artifacts] Step 3/9: Ports open
+[2026-08-11 18:12:23,235] INFO in app_backend: [core.remote] (check_artifacts.segmentation) executing via /opt/core/venv/bin/python3
+[2026-08-11 18:12:27,218] INFO in app_backend: [core.remote] (check_artifacts.ports) executing via /opt/core/venv/bin/python3
+[check-artifacts] Step 6/9: Required traffic agents running
+[2026-08-11 18:12:34,985] INFO in app_backend: [core.remote] (check_artifacts.traffic) executing via /opt/core/venv/bin/python3
+[check-artifacts] Step 8/9: Flow pivot paths traversable (source → target)
+[2026-08-11 18:12:47,142] INFO in app_backend: [core.remote] (check_artifacts.flow_pivot) executing via /opt/core/venv/bin/python3
+[check-artifacts] Step 9/9: Pivot providers reachable from the participant
+[2026-08-11 18:12:55,707] INFO in app_backend: [core.remote] (check_artifacts.hitl_path) executing via /opt/core/venv/bin/python3
+
+Artifact checks — scenario datasetsegmentedfirewallpivotrun02, session 1
+------------------------------------------------------------------------
+[PASS ] Containers running on correct nodes: All 5 expected containers present.
+[PASS ] Services running: All 4 services running.
+[PASS ] Ports open: All 24 stable service port target(s) reachable (24 listening across 15 node(s)). (7 probed from their traffic source.)
+[PASS ] Inject files placed: All 4 expected inject file(s) placed.
+[PASS ] Firewall/segmentation rules in place: Segmentation in place: 48 rule(s), 3 node(s) with firewall rules, 45 script(s).
+[PASS ] Required traffic agents running: 7 traffic flow(s); 9 node(s) running traffic
+[PASS ] Required traffic reaches its destination: All 7 required traffic flow(s) reach their destination. (7 TCP flow(s) verified in both directions; 7 confirmed by bytes counted at the destination.)
+[PASS ] Flow pivot paths traversable (source → target): All 3 Flow pivot path(s) traversable from their source nodes.
+[PASS ] Pivot providers reachable from the participant: All 2 pivot provider(s) reachable from an address outside each walled-off subnet (no participant network is configured, so this does not prove the real participant network reaches them), verified live from a router outside each walled-off subnet.
+------------------------------------------------------------------------
+Overall: pass — 9 pass
+CHECK_ARTIFACTS_SUMMARY_JSON: {"checks": [{"items": [{"detail": "present", "name": "docker-8", "status": "pass"}, {"detail": "present", "name": "docker-9", "status": "pass"}, {"detail": "present", "name": "docker-10", "status": "pass"}, {"detail": "present", "name": "docker-11", "status": "pass"}, {"detail": "present", "name": "pivot-172-27-207-0", "status": "pass"}], "key": "containers", "label": "Containers running on correct nodes", "status": "pass", "summary": "All 5 expected containers present."}, {"items": [{"detail": "running", "name": "docker-8", "status": "pass"}, {"detail": "running", "name": "docker-9", "status": "pass"}, {"detail": "running", "name": "docker-10", "status": "pass"}, {"detail": "running", "name": "docker-11", "status": "pass"}], "key": "services", "label": "Services running", "status": "pass", "summary": "All 4 services running."}, {"items": [{"detail": "listening on 5013, 19418", "name": "docker-10 (10.0.107.6)", "status": "pass"}, {"detail": "listening on 5014, 19418", "name": "docker-11 (10.61.107.6)", "status": "pass"}, {"detail": "listening on 80", "name": "docker-8 (10.61.107.5)", "status": "pass"}, {"detail": "listening on 22", "name": "docker-9 (172.27.207.5)", "status": "pass"}, {"detail": "listening on 2222", "name": "pivot-172-27-207-0 (172.27.207.2)", "status": "pass"}, {"detail": "listening on 2601, 2604", "name": "router-1 (10.0.107.1)", "status": "pass"}, {"detail": "listening on 2601, 2604", "name": "router-2 (10.61.107.1)", "status": "pass"}, {"detail": "listening on 2601, 2604", "name": "router-3 (172.27.207.1)", "status": "pass"}, {"detail": "listening on 80", "name": "workstation-1 (10.0.107.3)", "status": "pass"}, {"detail": "listening on 80, 5005", "name": "workstation-2 (10.61.107.3)", "status": "pass"}, {"detail": "listening on 5006, 5007", "name": "workstation-3 (172.27.207.3)", "status": "pass"}, {"detail": "listening on 22", "name": "workstation-4 (10.0.107.4)", "status": "pass"}, {"detail": "listening on 22, 5008", "name": "workstation-5 (10.61.107.4)", "status": "pass"}, {"detail": "listening on 80, 5009", "name": "workstation-6 (172.27.207.4)", "status": "pass"}, {"detail": "listening on 22", "name": "workstation-7 (10.0.107.5)", "status": "pass"}], "key": "ports", "label": "Ports open", "status": "pass", "summary": "All 24 stable service port target(s) reachable (24 listening across 15 node(s)). (7 probed from their traffic source.)"}, {"items": [], "key": "injects", "label": "Inject files placed", "status": "pass", "summary": "All 4 expected inject file(s) placed."}, {"items": [{"detail": "all 7 traffic flow(s) pass the segmentation rules", "name": "traffic flows permitted", "status": "pass"}, {"detail": "48 rule(s) generated for this run", "name": "segmentation rules", "status": "pass"}, {"detail": "45 segmentation script(s) generated", "name": "CORE VM", "status": "pass"}, {"detail": "13 firewall rule(s) applied", "name": "router-1 (vnode)", "status": "pass"}, {"detail": "15 firewall rule(s) applied", "name": "router-2 (vnode)", "status": "pass"}, {"detail": "8 firewall rule(s) applied", "name": "router-3 (vnode)", "status": "pass"}], "key": "segmentation", "label": "Firewall/segmentation rules in place", "status": "pass", "summary": "Segmentation in place: 48 rule(s), 3 node(s) with firewall rules, 45 script(s)."}, {"items": [{"detail": "7 configured flow(s) recorded", "name": "traffic flows", "status": "pass"}, {"detail": "1 traffic process(es) running; 11,002,690 bytes sent; 3 error(s)", "name": "docker-10", "status": "pass"}, {"detail": "1 traffic process(es) running; 11,002,690 bytes sent; 3 error(s)", "name": "docker-11", "status": "pass"}, {"detail": "1 traffic process(es) running; 11,002,690 bytes sent; 3 error(s)", "name": "docker-9", "status": "pass"}, {"detail": "1 traffic process(es) running", "name": "workstation-2", "status": "pass"}, {"detail": "1 traffic process(es) running", "name": "workstation-3", "status": "pass"}, {"detail": "1 traffic process(es) running", "name": "workstation-4", "status": "pass"}, {"detail": "1 traffic process(es) running", "name": "workstation-5", "status": "pass"}, {"detail": "1 traffic process(es) running", "name": "workstation-6", "status": "pass"}, {"detail": "1 traffic process(es) running", "name": "workstation-7", "status": "pass"}], "key": "traffic", "label": "Required traffic agents running", "status": "pass", "summary": "7 traffic flow(s); 9 node(s) running traffic"}, {"items": [{"detail": "TCP handshake completed \u2014 the path works in both directions (the destination's SYN-ACK came back); the receiving agent has counted 12,984,720 bytes", "name": "workstation-4 \u2192 docker-10 (10.0.107.6) [TCP:5013]", "status": "pass"}, {"detail": "TCP handshake completed \u2014 the path works in both directions (the destination's SYN-ACK came back); the receiving agent has counted 12,270,115 bytes", "name": "workstation-6 \u2192 docker-11 (10.61.107.6) [TCP:5014]", "status": "pass"}, {"detail": "TCP handshake completed \u2014 the path works in both directions (the destination's SYN-ACK came back); the receiving agent has counted 12,032,350 bytes", "name": "docker-11 \u2192 workstation-3 (172.27.207.3) [TCP:5006]", "status": "pass"}, {"detail": "TCP handshake completed \u2014 the path works in both directions (the destination's SYN-ACK came back); the receiving agent has counted 11,399,620 bytes", "name": "docker-9 \u2192 workstation-2 (10.61.107.3) [TCP:5005]", "status": "pass"}, {"detail": "TCP handshake completed \u2014 the path works in both directions (the destination's SYN-ACK came back); the receiving agent has counted 11,189,365 bytes", "name": "workstation-7 \u2192 workstation-6 (172.27.207.4) [TCP:5009]", "status": "pass"}, {"detail": "TCP handshake completed \u2014 the path works in both directions (the destination's SYN-ACK came back); the receiving agent has counted 12,034,315 bytes", "name": "docker-10 \u2192 workstation-5 (10.61.107.4) [TCP:5008]", "status": "pass"}, {"detail": "TCP handshake completed \u2014 the path works in both directions (the destination's SYN-ACK came back); the receiving agent has counted 11,981,260 bytes", "name": "workstation-2 \u2192 workstation-3 (172.27.207.3) [TCP:5007]", "status": "pass"}], "key": "reachability", "label": "Required traffic reaches its destination", "status": "pass", "summary": "All 7 required traffic flow(s) reach their destination. (7 TCP flow(s) verified in both directions; 7 confirmed by bytes counted at the destination.)"}, {"items": [{"detail": "TCP handshake completed on target listening port; the path works in both directions", "name": "docker-10 \u2192 docker-9 (172.27.207.5:22)", "status": "pass"}, {"detail": "TCP handshake completed on target listening port; the path works in both directions", "name": "docker-10 \u2192 docker-11 (10.61.107.6:19418)", "status": "pass"}, {"detail": "TCP handshake completed on Flow target port; the path works in both directions", "name": "docker-10 \u2192 docker-8 (10.61.107.5:80)", "status": "pass"}], "key": "flow_pivot", "label": "Flow pivot paths traversable (source \u2192 target)", "status": "pass", "summary": "All 3 Flow pivot path(s) traversable from their source nodes."}, {"items": [{"detail": "reachable from outside the walled-off subnet on port 80; verified live from router outside 10.61.107.0/24 at 10.0.107.1 -- the target answered SYN-ACK and the reply returned along the participant path", "name": "docker-8 (10.61.107.5:80) for 10.61.107.0/24", "status": "pass"}, {"detail": "reachable from outside the walled-off subnet on port 22; verified live from router outside 172.27.207.0/24 at 10.0.107.1 -- the target answered SYN-ACK and the reply returned along the participant path", "name": "docker-9 (172.27.207.5:22) for 172.27.207.0/24", "status": "pass"}], "key": "pivot_access", "label": "Pivot providers reachable from the participant", "status": "pass", "summary": "All 2 pivot provider(s) reachable from an address outside each walled-off subnet (no participant network is configured, so this does not prove the real participant network reaches them), verified live from a router outside each walled-off subnet."}], "ok": true, "overall": "pass", "overall_summary": "9 pass", "scenario": "datasetsegmentedfirewallpivotrun02", "session_id": 1, "strict": true}

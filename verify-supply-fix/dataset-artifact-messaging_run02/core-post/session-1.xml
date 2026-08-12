@@ -1,0 +1,441 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<scenario>
+  <networks>
+    <network id="10" name="rsw-1-1" icon="" canvas="0" type="SWITCH">
+      <position x="1658.0" y="1000.0" lat="47.57007977901736" lon="-122.10997548823941" alt="2.0"/>
+    </network>
+    <network id="11" name="rsw-1-2" icon="" canvas="0" type="SWITCH">
+      <position x="342.0" y="1000.0" lat="47.57007977901736" lon="-122.1277082319479" alt="2.0"/>
+    </network>
+  </networks>
+  <devices>
+    <device id="1" name="router-1" icon="" canvas="0" type="router" class="" image="" compose="" compose_name="">
+      <position x="1000.0" y="1000.0" lat="47.57007977901736" lon="-122.11884186009367" alt="2.0"/>
+      <services>
+        <service name="zebra"/>
+        <service name="IPForward"/>
+      </services>
+    </device>
+    <device id="2" name="workstation-1" icon="" canvas="0" type="PC" class="" image="" compose="" compose_name="">
+      <position x="1940.0" y="1000.0" lat="47.57007977901736" lon="-122.10617561458757" alt="2.0"/>
+      <services>
+        <service name="DefaultRoute"/>
+      </services>
+    </device>
+    <device id="3" name="workstation-2" icon="" canvas="0" type="PC" class="" image="" compose="" compose_name="">
+      <position x="1477.0" y="1313.0" lat="47.56723414450775" lon="-122.11241441423579" alt="2.0"/>
+      <services>
+        <service name="DefaultRoute"/>
+        <service name="HTTP"/>
+      </services>
+    </device>
+    <device id="4" name="workstation-3" icon="" canvas="0" type="PC" class="" image="" compose="" compose_name="">
+      <position x="1477.0" y="687.0" lat="47.572925258921046" lon="-122.11241441423579" alt="2.0"/>
+      <services>
+        <service name="DefaultRoute"/>
+        <service name="CoreTGPrereqs"/>
+        <service name="Traffic"/>
+        <service name="SSH"/>
+      </services>
+    </device>
+    <device id="5" name="workstation-4" icon="" canvas="0" type="PC" class="" image="" compose="" compose_name="">
+      <position x="704.0" y="1000.0" lat="47.57007977901736" lon="-122.12283037995515" alt="2.0"/>
+      <services>
+        <service name="DefaultRoute"/>
+        <service name="CoreTGPrereqs"/>
+        <service name="Traffic"/>
+      </services>
+    </device>
+    <device id="6" name="workstation-5" icon="" canvas="0" type="PC" class="" image="" compose="" compose_name="">
+      <position x="454.0" y="1344.0" lat="47.56695230008746" lon="-122.1261990622706" alt="2.0"/>
+      <services>
+        <service name="DefaultRoute"/>
+        <service name="CoreTGPrereqs"/>
+        <service name="Traffic"/>
+      </services>
+    </device>
+    <device id="7" name="docker-6" icon="" canvas="0" type="docker" class="docker" image="" compose="/tmp/vulns/.compose-projects/docker-6/docker-compose.yml" compose_name="docker-6" image_compatibility="False" docker_command="tail -f /dev/null" run_image_default="False">
+      <position x="60.0" y="1213.0" lat="47.568143309720334" lon="-122.13150810559975" alt="2.0"/>
+      <services>
+        <service name="DockerDefaultRoute"/>
+        <service name="CoreTGPrereqs"/>
+        <service name="Traffic"/>
+      </services>
+    </device>
+    <device id="8" name="docker-7" icon="" canvas="0" type="docker" class="docker" image="" compose="/tmp/vulns/.compose-projects/docker-7/docker-compose.yml" compose_name="docker-7" image_compatibility="False" docker_command="tail -f /dev/null" run_image_default="False">
+      <position x="60.0" y="787.0" lat="47.57201617671708" lon="-122.13150810559975" alt="2.0"/>
+      <services>
+        <service name="DockerDefaultRoute"/>
+        <service name="CoreTGPrereqs"/>
+        <service name="Traffic"/>
+      </services>
+    </device>
+    <device id="9" name="docker-8" icon="" canvas="0" type="docker" class="docker" image="" compose="/tmp/vulns/.compose-projects/docker-8/docker-compose.yml" compose_name="docker-8" image_compatibility="False" docker_command="tail -f /dev/null" run_image_default="False">
+      <position x="454.0" y="656.0" lat="47.573207071199946" lon="-122.1261990622706" alt="2.0"/>
+      <services>
+        <service name="DockerDefaultRoute"/>
+        <service name="CoreTGPrereqs"/>
+        <service name="Traffic"/>
+      </services>
+    </device>
+  </devices>
+  <links>
+    <link node1="3" node2="10">
+      <iface1 id="0" name="eth0" mac="02:00:00:00:00:05" ip4="10.0.56.4" ip4_mask="24"/>
+      <iface2 id="2" name="veth10.2.1" mac="02:00:00:00:00:06"/>
+      <options delay="0" bandwidth="0" loss="0.0" dup="0" jitter="0" unidirectional="0" buffer="0"/>
+    </link>
+    <link node1="2" node2="10">
+      <iface1 id="0" name="eth0" mac="02:00:00:00:00:03" ip4="10.0.56.3" ip4_mask="24"/>
+      <iface2 id="1" name="veth10.1.1" mac="02:00:00:00:00:04"/>
+      <options delay="0" bandwidth="0" loss="0.0" dup="0" jitter="0" unidirectional="0" buffer="0"/>
+    </link>
+    <link node1="1" node2="11">
+      <iface1 id="1" name="r1-rsw11" mac="02:00:00:00:00:09" ip4="10.76.143.1" ip4_mask="24"/>
+      <iface2 id="0" name="veth11.0.1" mac="02:00:00:00:00:0a"/>
+      <options delay="0" bandwidth="0" loss="0.0" dup="0" jitter="0" unidirectional="0" buffer="0"/>
+    </link>
+    <link node1="5" node2="11">
+      <iface1 id="0" name="eth0" mac="02:00:00:00:00:0b" ip4="10.76.143.3" ip4_mask="24"/>
+      <iface2 id="1" name="veth11.1.1" mac="02:00:00:00:00:0c"/>
+      <options delay="0" bandwidth="0" loss="0.0" dup="0" jitter="0" unidirectional="0" buffer="0"/>
+    </link>
+    <link node1="6" node2="11">
+      <iface1 id="0" name="eth0" mac="02:00:00:00:00:0d" ip4="10.76.143.4" ip4_mask="24"/>
+      <iface2 id="2" name="veth11.2.1" mac="02:00:00:00:00:0e"/>
+      <options delay="0" bandwidth="0" loss="0.0" dup="0" jitter="0" unidirectional="0" buffer="0"/>
+    </link>
+    <link node1="4" node2="10">
+      <iface1 id="0" name="eth0" mac="02:00:00:00:00:07" ip4="10.0.56.5" ip4_mask="24"/>
+      <iface2 id="3" name="veth10.3.1" mac="02:00:00:00:00:08"/>
+      <options delay="0" bandwidth="0" loss="0.0" dup="0" jitter="0" unidirectional="0" buffer="0"/>
+    </link>
+    <link node1="9" node2="11">
+      <iface1 id="0" name="eth0" mac="02:00:00:00:00:13" ip4="10.76.143.7" ip4_mask="24"/>
+      <iface2 id="5" name="veth11.5.1" mac="02:00:00:00:00:14"/>
+      <options delay="0" bandwidth="0" loss="0.0" dup="0" jitter="0" unidirectional="0" buffer="0"/>
+    </link>
+    <link node1="1" node2="10">
+      <iface1 id="0" name="r1-rsw10" mac="02:00:00:00:00:01" ip4="10.0.56.1" ip4_mask="24"/>
+      <iface2 id="0" name="veth10.0.1" mac="02:00:00:00:00:02"/>
+      <options delay="0" bandwidth="0" loss="0.0" dup="0" jitter="0" unidirectional="0" buffer="0"/>
+    </link>
+    <link node1="8" node2="11">
+      <iface1 id="0" name="eth0" mac="02:00:00:00:00:11" ip4="10.76.143.6" ip4_mask="24"/>
+      <iface2 id="4" name="veth11.4.1" mac="02:00:00:00:00:12"/>
+      <options delay="0" bandwidth="0" loss="0.0" dup="0" jitter="0" unidirectional="0" buffer="0"/>
+    </link>
+    <link node1="7" node2="11">
+      <iface1 id="0" name="eth0" mac="02:00:00:00:00:0f" ip4="10.76.143.5" ip4_mask="24"/>
+      <iface2 id="3" name="veth11.3.1" mac="02:00:00:00:00:10"/>
+      <options delay="0" bandwidth="0" loss="0.0" dup="0" jitter="0" unidirectional="0" buffer="0"/>
+    </link>
+  </links>
+  <service_configurations>
+    <service name="zebra" node="1">
+      <startup>
+        <command>bash quaggaboot.sh zebra</command>
+      </startup>
+      <shutdown>
+        <command>pkill -f zebra</command>
+      </shutdown>
+      <validate>
+        <command>pidof zebra</command>
+      </validate>
+      <directories>
+        <directory>/usr/local/etc/quagga</directory>
+        <directory>/var/run/quagga</directory>
+      </directories>
+      <files>
+        <file>/usr/local/etc/quagga/Quagga.conf</file>
+        <file>quaggaboot.sh</file>
+        <file>/usr/local/etc/quagga/vtysh.conf</file>
+      </files>
+      <executables>
+        <executable>zebra</executable>
+      </executables>
+    </service>
+    <service name="IPForward" node="1">
+      <startup>
+        <command>bash ipforward.sh</command>
+      </startup>
+      <files>
+        <file>ipforward.sh</file>
+      </files>
+      <executables>
+        <executable>sysctl</executable>
+      </executables>
+    </service>
+    <service name="DefaultRoute" node="2">
+      <startup>
+        <command>bash defaultroute.sh</command>
+      </startup>
+      <files>
+        <file>defaultroute.sh</file>
+      </files>
+      <executables>
+        <executable>ip</executable>
+      </executables>
+    </service>
+    <service name="DefaultRoute" node="3">
+      <startup>
+        <command>bash defaultroute.sh</command>
+      </startup>
+      <files>
+        <file>defaultroute.sh</file>
+      </files>
+      <executables>
+        <executable>ip</executable>
+      </executables>
+    </service>
+    <service name="HTTP" node="3">
+      <startup>
+        <command>chown www-data /var/lock/apache2</command>
+        <command>apache2ctl start</command>
+      </startup>
+      <shutdown>
+        <command>apache2ctl stop</command>
+      </shutdown>
+      <validate>
+        <command>pidof apache2</command>
+      </validate>
+      <directories>
+        <directory>/etc/apache2</directory>
+        <directory>/var/run/apache2</directory>
+        <directory>/var/log/apache2</directory>
+        <directory>/run/lock</directory>
+        <directory>/var/lock/apache2</directory>
+        <directory>/var/www</directory>
+      </directories>
+      <files>
+        <file>/etc/apache2/apache2.conf</file>
+        <file>/etc/apache2/envvars</file>
+        <file>/var/www/index.html</file>
+      </files>
+      <executables>
+        <executable>apache2ctl</executable>
+      </executables>
+    </service>
+    <service name="DefaultRoute" node="4">
+      <startup>
+        <command>bash defaultroute.sh</command>
+      </startup>
+      <files>
+        <file>defaultroute.sh</file>
+      </files>
+      <executables>
+        <executable>ip</executable>
+      </executables>
+    </service>
+    <service name="CoreTGPrereqs" node="4">
+      <startup>
+        <command>/bin/sh -c 'f=runprereqs.sh; [ -f "$f" ] || f=/runprereqs.sh; exec sh "$f"'</command>
+      </startup>
+      <files>
+        <file>/runprereqs.sh</file>
+      </files>
+    </service>
+    <service name="Traffic" node="4">
+      <startup>
+        <command>/bin/sh -c 'f=runtraffic.sh; [ -f "$f" ] || f=/runtraffic.sh; exec sh "$f"' &amp;</command>
+      </startup>
+      <files>
+        <file>/runtraffic.sh</file>
+      </files>
+      <dependencies>
+        <dependency>CoreTGPrereqs</dependency>
+      </dependencies>
+    </service>
+    <service name="SSH" node="4">
+      <startup>
+        <command>bash startsshd.sh</command>
+      </startup>
+      <shutdown>
+        <command>pkill -f sshd</command>
+      </shutdown>
+      <directories>
+        <directory>/etc/ssh</directory>
+        <directory>/var/run/sshd</directory>
+      </directories>
+      <files>
+        <file>startsshd.sh</file>
+        <file>/etc/ssh/sshd_config</file>
+      </files>
+      <executables>
+        <executable>sshd</executable>
+      </executables>
+    </service>
+    <service name="DefaultRoute" node="5">
+      <startup>
+        <command>bash defaultroute.sh</command>
+      </startup>
+      <files>
+        <file>defaultroute.sh</file>
+      </files>
+      <executables>
+        <executable>ip</executable>
+      </executables>
+    </service>
+    <service name="CoreTGPrereqs" node="5">
+      <startup>
+        <command>/bin/sh -c 'f=runprereqs.sh; [ -f "$f" ] || f=/runprereqs.sh; exec sh "$f"'</command>
+      </startup>
+      <files>
+        <file>/runprereqs.sh</file>
+      </files>
+    </service>
+    <service name="Traffic" node="5">
+      <startup>
+        <command>/bin/sh -c 'f=runtraffic.sh; [ -f "$f" ] || f=/runtraffic.sh; exec sh "$f"' &amp;</command>
+      </startup>
+      <files>
+        <file>/runtraffic.sh</file>
+      </files>
+      <dependencies>
+        <dependency>CoreTGPrereqs</dependency>
+      </dependencies>
+    </service>
+    <service name="DefaultRoute" node="6">
+      <startup>
+        <command>bash defaultroute.sh</command>
+      </startup>
+      <files>
+        <file>defaultroute.sh</file>
+      </files>
+      <executables>
+        <executable>ip</executable>
+      </executables>
+    </service>
+    <service name="CoreTGPrereqs" node="6">
+      <startup>
+        <command>/bin/sh -c 'f=runprereqs.sh; [ -f "$f" ] || f=/runprereqs.sh; exec sh "$f"'</command>
+      </startup>
+      <files>
+        <file>/runprereqs.sh</file>
+      </files>
+    </service>
+    <service name="Traffic" node="6">
+      <startup>
+        <command>/bin/sh -c 'f=runtraffic.sh; [ -f "$f" ] || f=/runtraffic.sh; exec sh "$f"' &amp;</command>
+      </startup>
+      <files>
+        <file>/runtraffic.sh</file>
+      </files>
+      <dependencies>
+        <dependency>CoreTGPrereqs</dependency>
+      </dependencies>
+    </service>
+    <service name="DockerDefaultRoute" node="7">
+      <startup>
+        <command>/bin/sh -c 'f=defaultroute.sh; [ -f "$f" ] || f=/defaultroute.sh; exec sh "$f"'</command>
+      </startup>
+      <files>
+        <file>/defaultroute.sh</file>
+      </files>
+      <dependencies>
+        <dependency>CoreTGPrereqs</dependency>
+      </dependencies>
+    </service>
+    <service name="CoreTGPrereqs" node="7">
+      <startup>
+        <command>/bin/sh -c 'f=runprereqs.sh; [ -f "$f" ] || f=/runprereqs.sh; exec sh "$f"'</command>
+      </startup>
+      <files>
+        <file>/runprereqs.sh</file>
+      </files>
+    </service>
+    <service name="Traffic" node="7">
+      <startup>
+        <command>/bin/sh -c 'f=runtraffic.sh; [ -f "$f" ] || f=/runtraffic.sh; exec sh "$f"' &amp;</command>
+      </startup>
+      <files>
+        <file>/runtraffic.sh</file>
+      </files>
+      <dependencies>
+        <dependency>CoreTGPrereqs</dependency>
+      </dependencies>
+    </service>
+    <service name="DockerDefaultRoute" node="8">
+      <startup>
+        <command>/bin/sh -c 'f=defaultroute.sh; [ -f "$f" ] || f=/defaultroute.sh; exec sh "$f"'</command>
+      </startup>
+      <files>
+        <file>/defaultroute.sh</file>
+      </files>
+      <dependencies>
+        <dependency>CoreTGPrereqs</dependency>
+      </dependencies>
+    </service>
+    <service name="CoreTGPrereqs" node="8">
+      <startup>
+        <command>/bin/sh -c 'f=runprereqs.sh; [ -f "$f" ] || f=/runprereqs.sh; exec sh "$f"'</command>
+      </startup>
+      <files>
+        <file>/runprereqs.sh</file>
+      </files>
+    </service>
+    <service name="Traffic" node="8">
+      <startup>
+        <command>/bin/sh -c 'f=runtraffic.sh; [ -f "$f" ] || f=/runtraffic.sh; exec sh "$f"' &amp;</command>
+      </startup>
+      <files>
+        <file>/runtraffic.sh</file>
+      </files>
+      <dependencies>
+        <dependency>CoreTGPrereqs</dependency>
+      </dependencies>
+    </service>
+    <service name="DockerDefaultRoute" node="9">
+      <startup>
+        <command>/bin/sh -c 'f=defaultroute.sh; [ -f "$f" ] || f=/defaultroute.sh; exec sh "$f"'</command>
+      </startup>
+      <files>
+        <file>/defaultroute.sh</file>
+      </files>
+      <dependencies>
+        <dependency>CoreTGPrereqs</dependency>
+      </dependencies>
+    </service>
+    <service name="CoreTGPrereqs" node="9">
+      <startup>
+        <command>/bin/sh -c 'f=runprereqs.sh; [ -f "$f" ] || f=/runprereqs.sh; exec sh "$f"'</command>
+      </startup>
+      <files>
+        <file>/runprereqs.sh</file>
+      </files>
+    </service>
+    <service name="Traffic" node="9">
+      <startup>
+        <command>/bin/sh -c 'f=runtraffic.sh; [ -f "$f" ] || f=/runtraffic.sh; exec sh "$f"' &amp;</command>
+      </startup>
+      <files>
+        <file>/runtraffic.sh</file>
+      </files>
+      <dependencies>
+        <dependency>CoreTGPrereqs</dependency>
+      </dependencies>
+    </service>
+  </service_configurations>
+  <session_origin lat="47.57917022705078" lon="-122.13231658935547" alt="2.0" scale="150.0"/>
+  <session_options>
+    <configuration name="controlnet" value=""/>
+    <configuration name="controlnet0" value=""/>
+    <configuration name="controlnet1" value=""/>
+    <configuration name="controlnet2" value=""/>
+    <configuration name="controlnet3" value=""/>
+    <configuration name="controlnet_updown_script" value=""/>
+    <configuration name="enablerj45" value="1"/>
+    <configuration name="preservedir" value="0"/>
+    <configuration name="enablesdt" value="0"/>
+    <configuration name="sdturl" value="tcp://127.0.0.1:50000/"/>
+    <configuration name="ovs" value="0"/>
+    <configuration name="platform_id_start" value="1"/>
+    <configuration name="nem_id_start" value="1"/>
+    <configuration name="link_enabled" value="1"/>
+    <configuration name="loss_threshold" value="30"/>
+    <configuration name="link_interval" value="1"/>
+    <configuration name="link_timeout" value="4"/>
+    <configuration name="mtu" value="0"/>
+    <configuration name="checksums" value="0"/>
+  </session_options>
+</scenario>

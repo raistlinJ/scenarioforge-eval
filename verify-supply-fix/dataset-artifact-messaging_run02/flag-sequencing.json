@@ -1,0 +1,1240 @@
+{
+  "base_preview_plan_path": "/Users/jcacosta/Documents/GitHub/scenarioforge-eval/verify-supply-fix/dataset-artifact-messaging_run02/scenario.xml",
+  "best_effort": true,
+  "chain": [
+    {
+      "id": "7",
+      "interfaces": [],
+      "ip4": "10.76.143.5",
+      "ipv4": "",
+      "is_vuln": false,
+      "name": "docker-6",
+      "type": "docker"
+    },
+    {
+      "id": "8",
+      "interfaces": [],
+      "ip4": "10.76.143.6",
+      "ipv4": "",
+      "is_vuln": false,
+      "name": "docker-7",
+      "type": "docker"
+    },
+    {
+      "id": "9",
+      "interfaces": [],
+      "ip4": "10.76.143.7",
+      "ipv4": "",
+      "is_vuln": false,
+      "name": "docker-8",
+      "type": "docker"
+    }
+  ],
+  "cleanup_deleted_run_dirs": [],
+  "cleanup_generated_artifacts": false,
+  "created_run_dirs": [
+    "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/01_146_docker-6",
+    "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/02_142_docker-7",
+    "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/03_143_docker-8"
+  ],
+  "dependency_level": 3,
+  "elapsed_s": 39.596,
+  "failed_run_dirs": [],
+  "flag_assignments": [
+    {
+      "access_instructions": {
+        "steps": [
+          {
+            "instructions": "```bash\nnc {{NODE}} {{PORT}}\n```\n",
+            "step": 1,
+            "title": "Connect to the generated service"
+          },
+          {
+            "instructions": "```text\nINFO\nLIST\nGET {{FLAG_FILE}}\n```\n",
+            "step": 2,
+            "title": "Enumerate and retrieve the marker"
+          },
+          {
+            "instructions": "Record the flag and any credential or service context before continuing.",
+            "step": 3,
+            "title": "Record the recovered marker"
+          }
+        ],
+        "title": "DMARC Report Queue"
+      },
+      "actual_outputs": [
+        "Directory(host, path)",
+        "Endpoint(path)",
+        "ExposedSecret(service)",
+        "File(path)",
+        "Flag(flag_id)",
+        "FlagDelivery(mode)",
+        "FlagFile(path)",
+        "PortForward(host, port)",
+        "Version(service)"
+      ],
+      "artifacts_dir": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/01_146_docker-6",
+      "config": {
+        "Knowledge(ip)": "10.76.143.5",
+        "challenge": "challenge_datasetartifactmessagingrun02_7",
+        "env_name": "env_datasetartifactmessagingrun02_7",
+        "flag_prefix": "FLAG",
+        "flag_seed": "1786497194",
+        "host_ip": "10.76.143.5",
+        "ip4": "10.76.143.5",
+        "ipv4": "10.76.143.5",
+        "key_len": 16,
+        "node_name": "docker-6",
+        "secret": "FLOWSECRET_2087511509:1786497194_datasetartifactmessagingrun02_7_1786497194:1786497206623",
+        "seed": "2087511509:1786497194:datasetartifactmessagingrun02:7:146:0:1786497206623",
+        "seed_ts": 1786497206623,
+        "service_port": 2526,
+        "target_ip": "10.76.143.5",
+        "username_prefix": "user"
+      },
+      "declared_outputs": [
+        "Directory(host, path)",
+        "Endpoint(path)",
+        "ExposedSecret(service)",
+        "File(path)",
+        "Flag(flag_id)",
+        "FlagDelivery(mode)",
+        "FlagFile(path)",
+        "PortForward(host, port)",
+        "Version(service)"
+      ],
+      "description": "Mail-report queue fixture with an aggregate report containing a flagged forensic note.",
+      "description_hints": [],
+      "flag_generator": "Mail",
+      "generated": true,
+      "generation_note": "ok",
+      "generator_catalog": "flag_node_generators",
+      "hint": "Read the DMARC aggregate report and inspect the forensic note field.",
+      "hint_level_templates": {
+        "high": [
+          "Connect to the generated service",
+          "Enumerate and retrieve the marker",
+          "Record the recovered marker: Record the flag and any credential or service context before continuing."
+        ],
+        "low": [
+          "Read the DMARC aggregate report and inspect the forensic note field."
+        ],
+        "medium": [
+          "File/artifact: {{OUTPUT.File(path):basename}}"
+        ]
+      },
+      "hint_levels": {
+        "high": [
+          "Connect to the generated service",
+          "Enumerate and retrieve the marker",
+          "Record the recovered marker: Record the flag and any credential or service context before continuing."
+        ],
+        "low": [
+          "Read the DMARC aggregate report and inspect the forensic note field."
+        ],
+        "medium": [
+          "File/artifact: dmarc-aggregate.xml"
+        ]
+      },
+      "hint_next_node_id": "",
+      "hint_template": "Read the DMARC aggregate report and inspect the forensic note field.",
+      "hint_templates": [
+        "Read the DMARC aggregate report and inspect the forensic note field."
+      ],
+      "hints": [
+        "Read the DMARC aggregate report and inspect the forensic note field."
+      ],
+      "id": "146",
+      "inject_candidate_paths": [
+        "/var/spool/dmarc",
+        "/srv/mail/dmarc_reports",
+        "/opt/mail/reports",
+        "/tmp/dmarc_queue"
+      ],
+      "inject_files": [
+        "service"
+      ],
+      "inject_source_dir": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/01_146_docker-6",
+      "input_defs": [
+        {
+          "name": "seed",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "node_name",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "flag_prefix",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "default": 2526,
+          "name": "service_port",
+          "required": false,
+          "type": "number"
+        }
+      ],
+      "input_fields": [
+        "flag_prefix",
+        "node_name",
+        "seed",
+        "service_port"
+      ],
+      "input_fields_optional": [
+        "flag_prefix",
+        "service_port"
+      ],
+      "input_fields_required": [
+        "node_name",
+        "seed"
+      ],
+      "inputs": [
+        "Knowledge(ip)",
+        "node_name",
+        "seed"
+      ],
+      "inputs_match": true,
+      "inputs_mismatch": {
+        "declared_required": [
+          "node_name",
+          "seed"
+        ],
+        "dropped": [],
+        "missing_required": [],
+        "ok": true,
+        "provided": [
+          "Knowledge(ip)",
+          "challenge",
+          "env_name",
+          "flag_prefix",
+          "flag_seed",
+          "host_ip",
+          "ip4",
+          "ipv4",
+          "key_len",
+          "node_name",
+          "secret",
+          "seed",
+          "seed_ts",
+          "service_port",
+          "target_ip",
+          "username_prefix"
+        ],
+        "unset_required": []
+      },
+      "language": "python",
+      "name": "Mail: DMARC Report Queue",
+      "next_node_id": "8",
+      "next_node_name": "docker-7",
+      "node_id": "7",
+      "output_defs": [
+        {
+          "name": "Flag(flag_id)",
+          "type": ""
+        },
+        {
+          "name": "FlagDelivery(mode)",
+          "type": ""
+        },
+        {
+          "name": "FlagFile(path)",
+          "type": ""
+        },
+        {
+          "name": "File(path)",
+          "type": "file"
+        },
+        {
+          "name": "Directory(host, path)",
+          "type": "dir"
+        },
+        {
+          "name": "PortForward(host, port)",
+          "type": ""
+        },
+        {
+          "name": "Endpoint(path)",
+          "type": ""
+        },
+        {
+          "name": "Version(service)",
+          "type": ""
+        },
+        {
+          "name": "ExposedSecret(service)",
+          "type": ""
+        }
+      ],
+      "output_fields": [
+        "Directory(host, path)",
+        "Endpoint(path)",
+        "ExposedSecret(service)",
+        "File(path)",
+        "Flag(flag_id)",
+        "FlagDelivery(mode)",
+        "FlagFile(path)",
+        "PortForward(host, port)",
+        "Version(service)"
+      ],
+      "outputs": [
+        "Directory(host, path)",
+        "Endpoint(path)",
+        "ExposedSecret(service)",
+        "File(path)",
+        "Flag(flag_id)",
+        "FlagDelivery(mode)",
+        "FlagFile(path)",
+        "PortForward(host, port)",
+        "Version(service)"
+      ],
+      "outputs_manifest": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/01_146_docker-6/outputs.json",
+      "outputs_match": true,
+      "outputs_mismatch": {
+        "actual": [
+          "Directory(host, path)",
+          "Endpoint(path)",
+          "ExposedSecret(service)",
+          "File(path)",
+          "Flag(flag_id)",
+          "FlagDelivery(mode)",
+          "FlagFile(path)",
+          "PortForward(host, port)",
+          "Version(service)"
+        ],
+        "declared": [
+          "Directory(host, path)",
+          "Endpoint(path)",
+          "ExposedSecret(service)",
+          "File(path)",
+          "Flag(flag_id)",
+          "FlagDelivery(mode)",
+          "FlagFile(path)",
+          "PortForward(host, port)",
+          "Version(service)"
+        ],
+        "extra": [],
+        "missing": [],
+        "ok": true
+      },
+      "produces": [
+        "Directory(host, path)",
+        "Endpoint(path)",
+        "ExposedSecret(service)",
+        "File(path)",
+        "Flag(flag_id)",
+        "FlagDelivery(mode)",
+        "FlagFile(path)",
+        "PortForward(host, port)",
+        "Version(service)"
+      ],
+      "promoted_first_step_hint_lines": [],
+      "promoted_first_step_hint_templates": [],
+      "promoted_first_step_hints": [],
+      "requires": [
+        "Knowledge(ip)"
+      ],
+      "resolved_inputs": {
+        "Knowledge(ip)": "10.76.143.5",
+        "challenge": "challenge_datasetartifactmessagingrun02_7",
+        "env_name": "env_datasetartifactmessagingrun02_7",
+        "flag_prefix": "FLAG",
+        "flag_seed": "1786497194",
+        "host_ip": "10.76.143.5",
+        "ip4": "10.76.143.5",
+        "ipv4": "10.76.143.5",
+        "key_len": 16,
+        "node_name": "docker-6",
+        "secret": "FLOWSECRET_2087511509:1786497194_datasetartifactmessagingrun02_7_1786497194:1786497206623",
+        "seed": "2087511509:1786497194:datasetartifactmessagingrun02:7:146:0:1786497206623",
+        "seed_ts": 1786497206623,
+        "service_port": 2526,
+        "target_ip": "10.76.143.5",
+        "username_prefix": "user"
+      },
+      "resolved_outputs": {
+        "Directory(host, path)": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/01_146_docker-6/service",
+        "Endpoint(path)": "/reports/dmarc-aggregate.xml",
+        "ExposedSecret(service)": "dmarc_report_note",
+        "File(path)": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/01_146_docker-6/docker-compose.yml",
+        "Flag(flag_id)": "FLAG{5b22f5c624470235e353}",
+        "FlagDelivery(mode)": "file",
+        "FlagFile(path)": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/01_146_docker-6/service/reports/dmarc-aggregate.xml",
+        "PortForward(host, port)": 2526,
+        "Version(service)": "dmarc-simulated-mail"
+      },
+      "resolved_paths": {
+        "artifacts_dir": {
+          "is_remote": true,
+          "path": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/01_146_docker-6"
+        },
+        "inject_source_dir": {
+          "is_remote": true,
+          "path": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/01_146_docker-6"
+        },
+        "inject_sources": [
+          {
+            "is_remote": true,
+            "path": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/01_146_docker-6/service"
+          }
+        ]
+      },
+      "type": "flag-node-generator",
+      "vuln_metadata_missing": [],
+      "vuln_provides": [],
+      "vuln_requires": [],
+      "vulnerabilities": []
+    },
+    {
+      "access_instructions": {
+        "steps": [
+          {
+            "instructions": "```bash\nnc {{NODE}} {{PORT}}\n```\n",
+            "step": 1,
+            "title": "Connect to the generated service"
+          },
+          {
+            "instructions": "```text\nINFO\nAUTH {{USERNAME}} {{PASSWORD}}\nFETCH {{FLAG_FILE}}\nGET {{FLAG_FILE}}\n```\n",
+            "step": 2,
+            "title": "Enumerate and retrieve the marker"
+          },
+          {
+            "instructions": "Record the flag and any credential or service context before continuing.",
+            "step": 3,
+            "title": "Record the recovered marker"
+          }
+        ],
+        "title": "IMAP Archive Mailbox"
+      },
+      "actual_outputs": [
+        "Credential(user, password)",
+        "Directory(host, path)",
+        "Endpoint(path)",
+        "ExposedSecret(service)",
+        "File(path)",
+        "Flag(flag_id)",
+        "FlagDelivery(mode)",
+        "FlagFile(path)",
+        "PortForward(host, port)",
+        "Version(service)"
+      ],
+      "artifacts_dir": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/02_142_docker-7",
+      "chain_supplied_input_hints": [
+        "Sequence 2 required supplied input: Credential(user, password)=user_bf4f40 / pass_bb08da7e7c37."
+      ],
+      "chain_supplied_input_values": {
+        "Credential(user, password)": "user_bf4f40:pass_bb08da7e7c37"
+      },
+      "chain_supplied_inputs": [
+        "Credential(user, password)"
+      ],
+      "chain_supplied_original_optional_inputs": [
+        "Credential(user, password)"
+      ],
+      "chain_supplied_parallel_start": true,
+      "chain_supplied_required_title": "Required by sequence 2",
+      "chain_supplied_requirement_label": "Seq 2 required",
+      "chain_supplied_sequence_index": 2,
+      "config": {
+        "Credential(user, password)": "user_bf4f40:pass_bb08da7e7c37",
+        "Knowledge(ip)": "10.76.143.6",
+        "challenge": "challenge_datasetartifactmessagingrun02_8",
+        "env_name": "env_datasetartifactmessagingrun02_8",
+        "flag_prefix": "FLAG",
+        "flag_seed": "1786497194",
+        "host_ip": "10.76.143.6",
+        "ip4": "10.76.143.6",
+        "ipv4": "10.76.143.6",
+        "key_len": 16,
+        "node_name": "docker-7",
+        "secret": "FLOWSECRET_2087511509:1786497194_datasetartifactmessagingrun02_8_1786497194:1786497220504",
+        "seed": "2087511509:1786497194:datasetartifactmessagingrun02:8:142:0:1786497220504",
+        "seed_ts": 1786497220504,
+        "service_port": 2143,
+        "target_ip": "10.76.143.6",
+        "username_prefix": "user"
+      },
+      "config_overrides": {
+        "Credential(user, password)": "user_bf4f40:pass_bb08da7e7c37"
+      },
+      "declared_outputs": [
+        "Credential(user, password)",
+        "Directory(host, path)",
+        "Endpoint(path)",
+        "ExposedSecret(service)",
+        "File(path)",
+        "Flag(flag_id)",
+        "FlagDelivery(mode)",
+        "FlagFile(path)",
+        "PortForward(host, port)",
+        "Version(service)"
+      ],
+      "description": "IMAP-style mailbox requiring credentials and exposing an archived handoff message.",
+      "description_hints": [],
+      "flag_generator": "Mail",
+      "generated": true,
+      "generation_note": "ok",
+      "generator_catalog": "flag_node_generators",
+      "hint": "Authenticate to the IMAP-style mailbox and fetch the archived handoff message.",
+      "hint_level_templates": {
+        "high": [
+          "Connect to the generated service",
+          "Enumerate and retrieve the marker",
+          "Record the recovered marker: Record the flag and any credential or service context before continuing."
+        ],
+        "low": [
+          "Authenticate to the IMAP-style mailbox and fetch the archived handoff message."
+        ],
+        "medium": [
+          "Credential artifact: {{OUTPUT.Credential(user,password)}}"
+        ]
+      },
+      "hint_levels": {
+        "high": [
+          "Connect to the generated service",
+          "Enumerate and retrieve the marker",
+          "Record the recovered marker: Record the flag and any credential or service context before continuing."
+        ],
+        "low": [
+          "Authenticate to the IMAP-style mailbox and fetch the archived handoff message."
+        ],
+        "medium": [
+          "Credential artifact: user_bf4f40:pass_bb08da7e7c37"
+        ]
+      },
+      "hint_next_node_id": "",
+      "hint_template": "Authenticate to the IMAP-style mailbox and fetch the archived handoff message.",
+      "hint_templates": [
+        "Authenticate to the IMAP-style mailbox and fetch the archived handoff message."
+      ],
+      "hints": [
+        "Authenticate to the IMAP-style mailbox and fetch the archived handoff message."
+      ],
+      "id": "142",
+      "inject_candidate_paths": [
+        "/var/mail/archive",
+        "/srv/mail/imap_archive",
+        "/opt/mail/archive",
+        "/tmp/mail_archive"
+      ],
+      "inject_files": [
+        "service"
+      ],
+      "inject_source_dir": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/02_142_docker-7",
+      "input_defs": [
+        {
+          "name": "seed",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "node_name",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "flag_prefix",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "default": 2143,
+          "name": "service_port",
+          "required": false,
+          "type": "number"
+        },
+        {
+          "flow_supply_when_first": true,
+          "name": "Credential(user, password)",
+          "required": true,
+          "sensitive": true,
+          "type": "string"
+        }
+      ],
+      "input_fields": [
+        "Credential(user, password)",
+        "flag_prefix",
+        "node_name",
+        "seed",
+        "service_port"
+      ],
+      "input_fields_optional": [
+        "flag_prefix",
+        "service_port"
+      ],
+      "input_fields_required": [
+        "Credential(user, password)",
+        "node_name",
+        "seed"
+      ],
+      "inputs": [
+        "Credential(user, password)",
+        "Knowledge(ip)",
+        "node_name",
+        "seed"
+      ],
+      "inputs_match": true,
+      "inputs_mismatch": {
+        "declared_required": [
+          "Credential(user, password)",
+          "node_name",
+          "seed"
+        ],
+        "dropped": [],
+        "missing_required": [],
+        "ok": true,
+        "provided": [
+          "Credential(user, password)",
+          "Knowledge(ip)",
+          "challenge",
+          "env_name",
+          "flag_prefix",
+          "flag_seed",
+          "host_ip",
+          "ip4",
+          "ipv4",
+          "key_len",
+          "node_name",
+          "secret",
+          "seed",
+          "seed_ts",
+          "service_port",
+          "target_ip",
+          "username_prefix"
+        ],
+        "unset_required": []
+      },
+      "language": "python",
+      "name": "Mail: IMAP Archive Mailbox",
+      "next_node_id": "9",
+      "next_node_name": "docker-8",
+      "node_id": "8",
+      "output_defs": [
+        {
+          "name": "Flag(flag_id)",
+          "type": ""
+        },
+        {
+          "name": "FlagDelivery(mode)",
+          "type": ""
+        },
+        {
+          "name": "FlagFile(path)",
+          "type": ""
+        },
+        {
+          "name": "File(path)",
+          "type": "file"
+        },
+        {
+          "name": "Directory(host, path)",
+          "type": "dir"
+        },
+        {
+          "name": "PortForward(host, port)",
+          "type": ""
+        },
+        {
+          "name": "Endpoint(path)",
+          "type": ""
+        },
+        {
+          "name": "Version(service)",
+          "type": ""
+        },
+        {
+          "name": "Credential(user, password)",
+          "type": ""
+        },
+        {
+          "name": "ExposedSecret(service)",
+          "type": ""
+        }
+      ],
+      "output_fields": [
+        "Credential(user, password)",
+        "Directory(host, path)",
+        "Endpoint(path)",
+        "ExposedSecret(service)",
+        "File(path)",
+        "Flag(flag_id)",
+        "FlagDelivery(mode)",
+        "FlagFile(path)",
+        "PortForward(host, port)",
+        "Version(service)"
+      ],
+      "outputs": [
+        "Credential(user, password)",
+        "Directory(host, path)",
+        "Endpoint(path)",
+        "ExposedSecret(service)",
+        "File(path)",
+        "Flag(flag_id)",
+        "FlagDelivery(mode)",
+        "FlagFile(path)",
+        "PortForward(host, port)",
+        "Version(service)"
+      ],
+      "outputs_manifest": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/02_142_docker-7/outputs.json",
+      "outputs_match": true,
+      "outputs_mismatch": {
+        "actual": [
+          "Credential(user, password)",
+          "Directory(host, path)",
+          "Endpoint(path)",
+          "ExposedSecret(service)",
+          "File(path)",
+          "Flag(flag_id)",
+          "FlagDelivery(mode)",
+          "FlagFile(path)",
+          "PortForward(host, port)",
+          "Version(service)"
+        ],
+        "declared": [
+          "Credential(user, password)",
+          "Directory(host, path)",
+          "Endpoint(path)",
+          "ExposedSecret(service)",
+          "File(path)",
+          "Flag(flag_id)",
+          "FlagDelivery(mode)",
+          "FlagFile(path)",
+          "PortForward(host, port)",
+          "Version(service)"
+        ],
+        "extra": [],
+        "missing": [],
+        "ok": true
+      },
+      "produces": [
+        "Credential(user, password)",
+        "Directory(host, path)",
+        "Endpoint(path)",
+        "ExposedSecret(service)",
+        "File(path)",
+        "Flag(flag_id)",
+        "FlagDelivery(mode)",
+        "FlagFile(path)",
+        "PortForward(host, port)",
+        "Version(service)"
+      ],
+      "promoted_first_step_hint_lines": [],
+      "promoted_first_step_hint_templates": [],
+      "promoted_first_step_hints": [],
+      "requires": [
+        "Credential(user, password)",
+        "Knowledge(ip)"
+      ],
+      "resolved_inputs": {
+        "Credential(user, password)": "user_bf4f40:pass_bb08da7e7c37",
+        "Knowledge(ip)": "10.76.143.6",
+        "challenge": "challenge_datasetartifactmessagingrun02_8",
+        "env_name": "env_datasetartifactmessagingrun02_8",
+        "flag_prefix": "FLAG",
+        "flag_seed": "1786497194",
+        "host_ip": "10.76.143.6",
+        "ip4": "10.76.143.6",
+        "ipv4": "10.76.143.6",
+        "key_len": 16,
+        "node_name": "docker-7",
+        "secret": "FLOWSECRET_2087511509:1786497194_datasetartifactmessagingrun02_8_1786497194:1786497220504",
+        "seed": "2087511509:1786497194:datasetartifactmessagingrun02:8:142:0:1786497220504",
+        "seed_ts": 1786497220504,
+        "service_port": 2143,
+        "target_ip": "10.76.143.6",
+        "username_prefix": "user"
+      },
+      "resolved_outputs": {
+        "Credential(user, password)": "user_bf4f40:pass_bb08da7e7c37",
+        "Directory(host, path)": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/02_142_docker-7/service",
+        "Endpoint(path)": "/Archive/0042.eml",
+        "ExposedSecret(service)": "imap_archived_message",
+        "File(path)": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/02_142_docker-7/docker-compose.yml",
+        "Flag(flag_id)": "FLAG{87e1ef6491a181514970}",
+        "FlagDelivery(mode)": "file",
+        "FlagFile(path)": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/02_142_docker-7/service/Archive/0042.eml",
+        "PortForward(host, port)": 2143,
+        "Version(service)": "imap-simulated-imap"
+      },
+      "resolved_paths": {
+        "artifacts_dir": {
+          "is_remote": true,
+          "path": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/02_142_docker-7"
+        },
+        "inject_source_dir": {
+          "is_remote": true,
+          "path": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/02_142_docker-7"
+        },
+        "inject_sources": [
+          {
+            "is_remote": true,
+            "path": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/02_142_docker-7/service"
+          }
+        ]
+      },
+      "type": "flag-node-generator",
+      "vuln_metadata_missing": [],
+      "vuln_provides": [],
+      "vuln_requires": [],
+      "vulnerabilities": []
+    },
+    {
+      "access_instructions": {
+        "steps": [
+          {
+            "instructions": "```bash\nnc {{NODE}} {{PORT}}\n```\n",
+            "step": 1,
+            "title": "Connect to the generated service"
+          },
+          {
+            "instructions": "```text\nINFO\nQUEUE\nGET {{FLAG_FILE}}\n```\n",
+            "step": 2,
+            "title": "Enumerate and retrieve the marker"
+          },
+          {
+            "instructions": "Record the flag and any credential or service context before continuing.",
+            "step": 3,
+            "title": "Record the recovered marker"
+          }
+        ],
+        "title": "SMTP Bounce Spool"
+      },
+      "actual_outputs": [
+        "Directory(host, path)",
+        "Endpoint(path)",
+        "File(path)",
+        "Flag(flag_id)",
+        "FlagDelivery(mode)",
+        "FlagFile(path)",
+        "Misconfiguration(service)",
+        "PortForward(host, port)",
+        "Version(service)"
+      ],
+      "artifacts_dir": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/03_143_docker-8",
+      "config": {
+        "Knowledge(ip)": "10.76.143.7",
+        "challenge": "challenge_datasetartifactmessagingrun02_9",
+        "env_name": "env_datasetartifactmessagingrun02_9",
+        "flag_prefix": "FLAG",
+        "flag_seed": "1786497194",
+        "host_ip": "10.76.143.7",
+        "ip4": "10.76.143.7",
+        "ipv4": "10.76.143.7",
+        "key_len": 16,
+        "node_name": "docker-8",
+        "secret": "FLOWSECRET_2087511509:1786497194_datasetartifactmessagingrun02_9_1786497194:1786497227293",
+        "seed": "2087511509:1786497194:datasetartifactmessagingrun02:9:143:0:1786497227293",
+        "seed_ts": 1786497227293,
+        "service_port": 2525,
+        "target_ip": "10.76.143.7",
+        "username_prefix": "user"
+      },
+      "declared_outputs": [
+        "Directory(host, path)",
+        "Endpoint(path)",
+        "File(path)",
+        "Flag(flag_id)",
+        "FlagDelivery(mode)",
+        "FlagFile(path)",
+        "Misconfiguration(service)",
+        "PortForward(host, port)",
+        "Version(service)"
+      ],
+      "description": "SMTP relay fixture exposing a bounced message spool with a flagged delivery diagnostic.",
+      "description_hints": [],
+      "flag_generator": "Mail",
+      "generated": true,
+      "generation_note": "ok",
+      "generator_catalog": "flag_node_generators",
+      "hint": "Inspect the SMTP bounce spool for the delivery diagnostic.",
+      "hint_level_templates": {
+        "high": [
+          "Connect to the generated service",
+          "Enumerate and retrieve the marker",
+          "Record the recovered marker: Record the flag and any credential or service context before continuing."
+        ],
+        "low": [
+          "Inspect the SMTP bounce spool for the delivery diagnostic."
+        ],
+        "medium": [
+          "File/artifact: {{OUTPUT.File(path):basename}}"
+        ]
+      },
+      "hint_levels": {
+        "high": [
+          "Connect to the generated service",
+          "Enumerate and retrieve the marker",
+          "Record the recovered marker: Record the flag and any credential or service context before continuing."
+        ],
+        "low": [
+          "Inspect the SMTP bounce spool for the delivery diagnostic."
+        ],
+        "medium": [
+          "File/artifact: bounce-2401.eml"
+        ]
+      },
+      "hint_next_node_id": "",
+      "hint_template": "Inspect the SMTP bounce spool for the delivery diagnostic.",
+      "hint_templates": [
+        "Inspect the SMTP bounce spool for the delivery diagnostic."
+      ],
+      "hints": [
+        "Inspect the SMTP bounce spool for the delivery diagnostic."
+      ],
+      "id": "143",
+      "inject_candidate_paths": [
+        "/var/spool/mail/bounce",
+        "/srv/mail/spool",
+        "/opt/mail/queue",
+        "/tmp/smtp_spool"
+      ],
+      "inject_files": [
+        "service"
+      ],
+      "inject_source_dir": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/03_143_docker-8",
+      "input_defs": [
+        {
+          "name": "seed",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "node_name",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "flag_prefix",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "default": 2525,
+          "name": "service_port",
+          "required": false,
+          "type": "number"
+        }
+      ],
+      "input_fields": [
+        "flag_prefix",
+        "node_name",
+        "seed",
+        "service_port"
+      ],
+      "input_fields_optional": [
+        "flag_prefix",
+        "service_port"
+      ],
+      "input_fields_required": [
+        "node_name",
+        "seed"
+      ],
+      "inputs": [
+        "Knowledge(ip)",
+        "node_name",
+        "seed"
+      ],
+      "inputs_match": true,
+      "inputs_mismatch": {
+        "declared_required": [
+          "node_name",
+          "seed"
+        ],
+        "dropped": [],
+        "missing_required": [],
+        "ok": true,
+        "provided": [
+          "Knowledge(ip)",
+          "challenge",
+          "env_name",
+          "flag_prefix",
+          "flag_seed",
+          "host_ip",
+          "ip4",
+          "ipv4",
+          "key_len",
+          "node_name",
+          "secret",
+          "seed",
+          "seed_ts",
+          "service_port",
+          "target_ip",
+          "username_prefix"
+        ],
+        "unset_required": []
+      },
+      "language": "python",
+      "name": "Mail: SMTP Bounce Spool",
+      "next_node_id": "",
+      "next_node_name": "",
+      "node_id": "9",
+      "output_defs": [
+        {
+          "name": "Flag(flag_id)",
+          "type": ""
+        },
+        {
+          "name": "FlagDelivery(mode)",
+          "type": ""
+        },
+        {
+          "name": "FlagFile(path)",
+          "type": ""
+        },
+        {
+          "name": "File(path)",
+          "type": "file"
+        },
+        {
+          "name": "Directory(host, path)",
+          "type": "dir"
+        },
+        {
+          "name": "PortForward(host, port)",
+          "type": ""
+        },
+        {
+          "name": "Endpoint(path)",
+          "type": ""
+        },
+        {
+          "name": "Version(service)",
+          "type": ""
+        },
+        {
+          "name": "Misconfiguration(service)",
+          "type": ""
+        }
+      ],
+      "output_fields": [
+        "Directory(host, path)",
+        "Endpoint(path)",
+        "File(path)",
+        "Flag(flag_id)",
+        "FlagDelivery(mode)",
+        "FlagFile(path)",
+        "Misconfiguration(service)",
+        "PortForward(host, port)",
+        "Version(service)"
+      ],
+      "outputs": [
+        "Directory(host, path)",
+        "Endpoint(path)",
+        "File(path)",
+        "Flag(flag_id)",
+        "FlagDelivery(mode)",
+        "FlagFile(path)",
+        "Misconfiguration(service)",
+        "PortForward(host, port)",
+        "Version(service)"
+      ],
+      "outputs_manifest": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/03_143_docker-8/outputs.json",
+      "outputs_match": true,
+      "outputs_mismatch": {
+        "actual": [
+          "Directory(host, path)",
+          "Endpoint(path)",
+          "File(path)",
+          "Flag(flag_id)",
+          "FlagDelivery(mode)",
+          "FlagFile(path)",
+          "Misconfiguration(service)",
+          "PortForward(host, port)",
+          "Version(service)"
+        ],
+        "declared": [
+          "Directory(host, path)",
+          "Endpoint(path)",
+          "File(path)",
+          "Flag(flag_id)",
+          "FlagDelivery(mode)",
+          "FlagFile(path)",
+          "Misconfiguration(service)",
+          "PortForward(host, port)",
+          "Version(service)"
+        ],
+        "extra": [],
+        "missing": [],
+        "ok": true
+      },
+      "produces": [
+        "Directory(host, path)",
+        "Endpoint(path)",
+        "File(path)",
+        "Flag(flag_id)",
+        "FlagDelivery(mode)",
+        "FlagFile(path)",
+        "Misconfiguration(service)",
+        "PortForward(host, port)",
+        "Version(service)"
+      ],
+      "promoted_first_step_hint_lines": [],
+      "promoted_first_step_hint_templates": [],
+      "promoted_first_step_hints": [],
+      "requires": [
+        "Knowledge(ip)"
+      ],
+      "resolved_inputs": {
+        "Knowledge(ip)": "10.76.143.7",
+        "challenge": "challenge_datasetartifactmessagingrun02_9",
+        "env_name": "env_datasetartifactmessagingrun02_9",
+        "flag_prefix": "FLAG",
+        "flag_seed": "1786497194",
+        "host_ip": "10.76.143.7",
+        "ip4": "10.76.143.7",
+        "ipv4": "10.76.143.7",
+        "key_len": 16,
+        "node_name": "docker-8",
+        "secret": "FLOWSECRET_2087511509:1786497194_datasetartifactmessagingrun02_9_1786497194:1786497227293",
+        "seed": "2087511509:1786497194:datasetartifactmessagingrun02:9:143:0:1786497227293",
+        "seed_ts": 1786497227293,
+        "service_port": 2525,
+        "target_ip": "10.76.143.7",
+        "username_prefix": "user"
+      },
+      "resolved_outputs": {
+        "Directory(host, path)": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/03_143_docker-8/service",
+        "Endpoint(path)": "/spool/bounce-2401.eml",
+        "File(path)": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/03_143_docker-8/docker-compose.yml",
+        "Flag(flag_id)": "FLAG{f330d6dcb33b0f706d97}",
+        "FlagDelivery(mode)": "file",
+        "FlagFile(path)": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/03_143_docker-8/service/spool/bounce-2401.eml",
+        "Misconfiguration(service)": "smtp_spool_readable",
+        "PortForward(host, port)": 2525,
+        "Version(service)": "smtp-simulated-smtp"
+      },
+      "resolved_paths": {
+        "artifacts_dir": {
+          "is_remote": true,
+          "path": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/03_143_docker-8"
+        },
+        "inject_source_dir": {
+          "is_remote": true,
+          "path": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/03_143_docker-8"
+        },
+        "inject_sources": [
+          {
+            "is_remote": true,
+            "path": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/03_143_docker-8/service"
+          }
+        ]
+      },
+      "type": "flag-node-generator",
+      "vuln_metadata_missing": [],
+      "vuln_provides": [],
+      "vuln_requires": [],
+      "vulnerabilities": []
+    }
+  ],
+  "flags_enabled": true,
+  "flow_errors": [],
+  "flow_errors_detail": "assignments=3 assignments_with_id=3 chain_nodes=3 chain_ids=7,8,9",
+  "flow_valid": true,
+  "generation_failures": [],
+  "generation_skipped": [],
+  "generator_execution_mode": "remote",
+  "generator_execution_requested": true,
+  "generator_runs": [
+    {
+      "generator_id": "146",
+      "log_path": "/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/logs/flow_generator_logs/146_docker-6_08-11-26-19-13-26-5e814cac05.log",
+      "manifest": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/01_146_docker-6/outputs.json",
+      "node_id": "7",
+      "node_name": "docker-6",
+      "note": "ok",
+      "ok": true,
+      "out_dir": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/01_146_docker-6",
+      "stderr": "",
+      "stdout": "9.78MB 0.8s\n#6 sha256:26c307b5e35a59ce911f5fde5b9458120ec8734e831ea2da5649a9ad14abfd3d 23.07MB / 29.78MB 0.9s\n#6 sha256:26c307b5e35a59ce911f5fde5b9458120ec8734e831ea2da5649a9ad14abfd3d 29.78MB / 29.78MB 1.1s\n#6 sha256:26c307b5e35a59ce911f5fde5b9458120ec8734e831ea2da5649a9ad14abfd3d 29.78MB / 29.78MB 1.3s done\n#6 extracting sha256:26c307b5e35a59ce911f5fde5b9458120ec8734e831ea2da5649a9ad14abfd3d\n#6 extracting sha256:26c307b5e35a59ce911f5fde5b9458120ec8734e831ea2da5649a9ad14abfd3d 1.2s done\n#6 DONE 2.9s\n\n#6 [1/3] FROM docker.io/library/python:3.11-slim@sha256:90744cff8f32887f075c47d747a173ff333e9e98801667af93c357fa9f5e28ff\n#6 extracting sha256:2835c55197170c643a531e330159e6c5c215f044e97d1cde2ee1f3056c5ad840\n#6 extracting sha256:2835c55197170c643a531e330159e6c5c215f044e97d1cde2ee1f3056c5ad840 0.2s done\n#6 DONE 3.1s\n\n#6 [1/3] FROM docker.io/library/python:3.11-slim@sha256:90744cff8f32887f075c47d747a173ff333e9e98801667af93c357fa9f5e28ff\n#6 extracting sha256:bbaff5426d0f7209ef9826582b46945e0e6851829b308e906c9c05874cf70915\n#6 extracting sha256:bbaff5426d0f7209ef9826582b46945e0e6851829b308e906c9c05874cf70915 0.9s done\n#6 DONE 4.0s\n\n#6 [1/3] FROM docker.io/library/python:3.11-slim@sha256:90744cff8f32887f075c47d747a173ff333e9e98801667af93c357fa9f5e28ff\n#6 extracting sha256:0fc9203b193a8869d7e8cdb9754932db059f4a0d5b9812b000b47d1f5d0b4488 0.0s done\n#6 DONE 4.1s\n\n#7 [2/3] WORKDIR /app\n#7 DONE 2.3s\n\n#8 [3/3] COPY generator.py /app/generator.py\n#8 DONE 0.1s\n\n#9 exporting to image\n#9 exporting layers\n#9 exporting layers 0.3s done\n#9 exporting manifest sha256:e365ba8c028c8d929b32ba8244104a0dc8e97be2158c4943cc0cc14cb740c583 0.0s done\n#9 exporting config sha256:64ecd77f8a7c617fbde00ab6bec669c64ffc1514be3775f4dc454f4b4db27e5a 0.0s done\n#9 exporting attestation manifest sha256:e9790590f9cda634863e3e081011e96e3f8df17399cf35e740559fa66b42033d\n#9 exporting attestation manifest sha256:e9790590f9cda634863e3e081011e96e3f8df17399cf35e740559fa66b42033d 0.1s done\n#9 exporting manifest list sha256:a299cb845c937b726b05ac13095bcccacc8cfeed7600ef458019d6a626fea7a7 0.0s done\n#9 naming to docker.io/library/coretg-gen-p-07-01-26-15-10-01-013acf-36-generator-76496c39c50c:latest\n#9 naming to docker.io/library/coretg-gen-p-07-01-26-15-10-01-013acf-36-generator-76496c39c50c:latest done\n#9 unpacking to docker.io/library/coretg-gen-p-07-01-26-15-10-01-013acf-36-generator-76496c39c50c:latest 0.1s done\n#9 DONE 0.8s\n\n#10 resolving provenance for metadata file\n#10 DONE 0.0s\nImage coretg-gen-p-07-01-26-15-10-01-013acf-36-generator-76496c39c50c:latest Pulling \n Image coretg-gen-p-07-01-26-15-10-01-013acf-36-generator-76496c39c50c:latest pull access denied for coretg-gen-p-07-01-26-15-10-01-013acf-36-generator-76496c39c50c, repository does not exist or may require 'docker login' \n Image coretg-gen-p-07-01-26-15-10-01-013acf-36-generator-76496c39c50c:latest Building \n Image coretg-gen-p-07-01-26-15-10-01-013acf-36-generator-76496c39c50c:latest Built \n Container fg_p-07-01-26-15-10-01-013acf-36_442084_1786497209-generator-run-02a2d108b339 Creating \n Container fg_p-07-01-26-15-10-01-013acf-36_442084_1786497209-generator-run-02a2d108b339 Created\n[cleanup] compose project=fg_p-07-01-26-15-10-01-013acf-36_442084_1786497209\n[cleanup] running: /usr/bin/docker compose -f /tmp/scenarioforge/outputs/installed_generators/flag_node_generators/p_07-01-26-15-10-01-013acf__36/docker-compose.hostnet.442084_1786497209093.yml -p fg_p-07-01-26-15-10-01-013acf-36_442084_1786497209 down --remove-orphans\n[cleanup] compose down rc=0\n{\n  \"generator_id\": \"mail_dmarc_report_queue\",\n  \"outputs\": {\n    \"Flag(flag_id)\": \"FLAG{5b22f5c624470235e353}\",\n    \"FlagDelivery(mode)\": \"file\",\n    \"FlagFile(path)\": \"reports/dmarc-aggregate.xml\",\n    \"File(path)\": \"docker-compose.yml\",\n    \"Directory(host, path)\": \"service\",\n    \"PortForward(host, port)\": 2526,\n    \"Endpoint(path)\": \"/reports/dmarc-aggregate.xml\",\n    \"Version(service)\": \"dmarc-simulated-mail\",\n    \"ExposedSecret(service)\": \"dmarc_report_note\"\n  }\n}\n\n",
+      "type": "flag-node-generator"
+    },
+    {
+      "generator_id": "142",
+      "log_path": "/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/logs/flow_generator_logs/142_docker-7_08-11-26-19-13-40-ab61dc5eec.log",
+      "manifest": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/02_142_docker-7/outputs.json",
+      "node_id": "8",
+      "node_name": "docker-7",
+      "note": "ok",
+      "ok": true,
+      "out_dir": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/02_142_docker-7",
+      "stderr": "",
+      "stdout": "[compose] generator source digest 66e46fd26045 for /tmp/scenarioforge/outputs/installed_generators/flag_node_generators/p_07-01-26-15-10-01-013acf__32\n[compose] generator image coretg-gen-p-07-01-26-15-10-01-013acf-32-generator-66e46fd26045:latest not cached; will build now\n#1 [internal] load local bake definitions\n#1 reading from stdin 783B done\n#1 DONE 0.0s\n\n#2 [internal] load build definition from Dockerfile\n#2 transferring dockerfile: 144B done\n#2 DONE 0.0s\n\n#3 [internal] load metadata for docker.io/library/python:3.11-slim\n#3 DONE 0.2s\n\n#4 [internal] load .dockerignore\n#4 transferring context: 2B done\n#4 DONE 0.1s\n\n#5 [1/3] FROM docker.io/library/python:3.11-slim@sha256:90744cff8f32887f075c47d747a173ff333e9e98801667af93c357fa9f5e28ff\n#5 resolve docker.io/library/python:3.11-slim@sha256:90744cff8f32887f075c47d747a173ff333e9e98801667af93c357fa9f5e28ff 0.1s done\n#5 DONE 0.1s\n\n#6 [internal] load build context\n#6 transferring context: 64.68kB done\n#6 DONE 0.1s\n\n#7 [2/3] WORKDIR /app\n#7 CACHED\n\n#8 [3/3] COPY generator.py /app/generator.py\n#8 CACHED\n\n#9 exporting to image\n#9 exporting layers done\n#9 exporting manifest sha256:09d671c90752b55087c2ca02a3260d0877427f71351f06ea23d3bc64119db20d 0.0s done\n#9 exporting config sha256:6d86649ed1e878a54c0877bd5f9b9d60b0f8f138646b8c9455189b09830fecb7 0.0s done\n#9 exporting attestation manifest sha256:8608e8e5d6e830bf705090dec053b53fb38cc3438ec53942fa5641e17ede5cb5 0.1s done\n#9 exporting manifest list sha256:c0a7ba1614a2d22d2ef965ef58f26454c574e50a1fb5c33d380fa9c63c5374ef 0.0s done\n#9 naming to docker.io/library/coretg-gen-p-07-01-26-15-10-01-013acf-32-generator-66e46fd26045:latest done\n#9 unpacking to docker.io/library/coretg-gen-p-07-01-26-15-10-01-013acf-32-generator-66e46fd26045:latest 0.0s done\n#9 DONE 0.3s\n\n#10 resolving provenance for metadata file\n#10 DONE 0.0s\nImage coretg-gen-p-07-01-26-15-10-01-013acf-32-generator-66e46fd26045:latest Pulling \n Image coretg-gen-p-07-01-26-15-10-01-013acf-32-generator-66e46fd26045:latest pull access denied for coretg-gen-p-07-01-26-15-10-01-013acf-32-generator-66e46fd26045, repository does not exist or may require 'docker login' \n Image coretg-gen-p-07-01-26-15-10-01-013acf-32-generator-66e46fd26045:latest Building \n Image coretg-gen-p-07-01-26-15-10-01-013acf-32-generator-66e46fd26045:latest Built \n Container fg_p-07-01-26-15-10-01-013acf-32_442366_1786497222-generator-run-a32ced257845 Creating \n Container fg_p-07-01-26-15-10-01-013acf-32_442366_1786497222-generator-run-a32ced257845 Created\n[cleanup] compose project=fg_p-07-01-26-15-10-01-013acf-32_442366_1786497222\n[cleanup] running: /usr/bin/docker compose -f /tmp/scenarioforge/outputs/installed_generators/flag_node_generators/p_07-01-26-15-10-01-013acf__32/docker-compose.hostnet.442366_1786497222837.yml -p fg_p-07-01-26-15-10-01-013acf-32_442366_1786497222 down --remove-orphans\n[cleanup] compose down rc=0\n{\n  \"generator_id\": \"mail_imap_archive_mailbox\",\n  \"outputs\": {\n    \"Flag(flag_id)\": \"FLAG{87e1ef6491a181514970}\",\n    \"FlagDelivery(mode)\": \"file\",\n    \"FlagFile(path)\": \"Archive/0042.eml\",\n    \"File(path)\": \"docker-compose.yml\",\n    \"Directory(host, path)\": \"service\",\n    \"PortForward(host, port)\": 2143,\n    \"Endpoint(path)\": \"/Archive/0042.eml\",\n    \"Version(service)\": \"imap-simulated-imap\",\n    \"Credential(user, password)\": \"user_bf4f40:pass_bb08da7e7c37\",\n    \"ExposedSecret(service)\": \"imap_archived_message\"\n  }\n}\n\n",
+      "type": "flag-node-generator"
+    },
+    {
+      "generator_id": "143",
+      "log_path": "/Users/jcacosta/Documents/GitHub/scenarioforge/outputs/logs/flow_generator_logs/143_docker-8_08-11-26-19-13-47-b6b68590a5.log",
+      "manifest": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/03_143_docker-8/outputs.json",
+      "node_id": "9",
+      "node_name": "docker-8",
+      "note": "ok",
+      "ok": true,
+      "out_dir": "/tmp/vulns/flag_node_generators_runs/flow-datasetartifactmessagingrun02/03_143_docker-8",
+      "stderr": "",
+      "stdout": "[compose] generator source digest 7282999c8290 for /tmp/scenarioforge/outputs/installed_generators/flag_node_generators/p_07-01-26-15-10-01-013acf__33\n[compose] generator image coretg-gen-p-07-01-26-15-10-01-013acf-33-generator-7282999c8290:latest not cached; will build now\n#1 [internal] load local bake definitions\n#1 reading from stdin 783B done\n#1 DONE 0.0s\n\n#2 [internal] load build definition from Dockerfile\n#2 transferring dockerfile: 144B done\n#2 DONE 0.1s\n\n#3 [internal] load metadata for docker.io/library/python:3.11-slim\n#3 DONE 0.2s\n\n#4 [internal] load .dockerignore\n#4 transferring context: 2B done\n#4 DONE 0.1s\n\n#5 [1/3] FROM docker.io/library/python:3.11-slim@sha256:90744cff8f32887f075c47d747a173ff333e9e98801667af93c357fa9f5e28ff\n#5 resolve docker.io/library/python:3.11-slim@sha256:90744cff8f32887f075c47d747a173ff333e9e98801667af93c357fa9f5e28ff 0.1s done\n#5 DONE 0.1s\n\n#6 [internal] load build context\n#6 transferring context: 64.68kB done\n#6 DONE 0.1s\n\n#7 [2/3] WORKDIR /app\n#7 CACHED\n\n#8 [3/3] COPY generator.py /app/generator.py\n#8 CACHED\n\n#9 exporting to image\n#9 exporting layers done\n#9 exporting manifest sha256:8f54d04ba3e2fb6d3f415c7ca3978d9ed95030238af54cb8554f9e8912fc989f 0.1s done\n#9 exporting config sha256:6ef844c5e343e1ffc007678ac4988eeafb850a1b3d15de5df37a077d0d12e1e8 0.0s done\n#9 exporting attestation manifest sha256:aca79553082928da03bfa11e158f7a7eca83bcc09378c64faa3929086dc6cf0b 0.1s done\n#9 exporting manifest list sha256:3b378ed01b07db4ae46f5a47246cfcb2a17f487ddb063e3205a6d27b2f9a71ac\n#9 exporting manifest list sha256:3b378ed01b07db4ae46f5a47246cfcb2a17f487ddb063e3205a6d27b2f9a71ac 0.0s done\n#9 naming to docker.io/library/coretg-gen-p-07-01-26-15-10-01-013acf-33-generator-7282999c8290:latest done\n#9 unpacking to docker.io/library/coretg-gen-p-07-01-26-15-10-01-013acf-33-generator-7282999c8290:latest 0.0s done\n#9 DONE 0.4s\n\n#10 resolving provenance for metadata file\n#10 DONE 0.0s\nImage coretg-gen-p-07-01-26-15-10-01-013acf-33-generator-7282999c8290:latest Pulling \n Image coretg-gen-p-07-01-26-15-10-01-013acf-33-generator-7282999c8290:latest pull access denied for coretg-gen-p-07-01-26-15-10-01-013acf-33-generator-7282999c8290, repository does not exist or may require 'docker login' \n Image coretg-gen-p-07-01-26-15-10-01-013acf-33-generator-7282999c8290:latest Building \n Image coretg-gen-p-07-01-26-15-10-01-013acf-33-generator-7282999c8290:latest Built \n Container fg_p-07-01-26-15-10-01-013acf-33_442614_1786497229-generator-run-7f4a66a693c0 Creating \n Container fg_p-07-01-26-15-10-01-013acf-33_442614_1786497229-generator-run-7f4a66a693c0 Created\n[cleanup] compose project=fg_p-07-01-26-15-10-01-013acf-33_442614_1786497229\n[cleanup] running: /usr/bin/docker compose -f /tmp/scenarioforge/outputs/installed_generators/flag_node_generators/p_07-01-26-15-10-01-013acf__33/docker-compose.hostnet.442614_1786497229800.yml -p fg_p-07-01-26-15-10-01-013acf-33_442614_1786497229 down --remove-orphans\n[cleanup] compose down rc=0\n{\n  \"generator_id\": \"mail_smtp_bounce_spool\",\n  \"outputs\": {\n    \"Flag(flag_id)\": \"FLAG{f330d6dcb33b0f706d97}\",\n    \"FlagDelivery(mode)\": \"file\",\n    \"FlagFile(path)\": \"spool/bounce-2401.eml\",\n    \"File(path)\": \"docker-compose.yml\",\n    \"Directory(host, path)\": \"service\",\n    \"PortForward(host, port)\": 2525,\n    \"Endpoint(path)\": \"/spool/bounce-2401.eml\",\n    \"Version(service)\": \"smtp-simulated-smtp\",\n    \"Misconfiguration(service)\": \"smtp_spool_readable\"\n  }\n}\n\n",
+      "type": "flag-node-generator"
+    }
+  ],
+  "host_ip_map": {
+    "2": "10.0.56.3",
+    "3": "10.0.56.4",
+    "4": "10.0.56.5",
+    "5": "10.76.143.3",
+    "6": "10.76.143.4",
+    "7": "10.76.143.5",
+    "8": "10.76.143.6",
+    "9": "10.76.143.7"
+  },
+  "image_counts": {
+    "cached": 0,
+    "pending": 0,
+    "pulled": 3,
+    "total": 3
+  },
+  "length": 3,
+  "ok": true,
+  "phase": "flag-sequencing",
+  "phase_timings": {
+    "finalize_response_s": 0.0,
+    "prepare_generator_state_s": 0.312,
+    "prepare_remote_runtime_s": 8.294,
+    "run_generators_or_prepare_assignments_s": 26.799,
+    "solve_chain_and_assignments_s": 2.237,
+    "total_elapsed_s": 38.481
+  },
+  "preview_plan_path": "/Users/jcacosta/Documents/GitHub/scenarioforge-eval/verify-supply-fix/dataset-artifact-messaging_run02/scenario.xml",
+  "progress_log": [
+    "Running generator 1/3: 146 @ docker-6",
+    "Completed generator 1/3: 146 -> ok",
+    "[images] building=1 cached=0 pending=2",
+    "Running generator 2/3: 142 @ docker-7",
+    "Completed generator 2/3: 142 -> ok",
+    "[images] building=2 cached=0 pending=1",
+    "Running generator 3/3: 143 @ docker-8",
+    "Completed generator 3/3: 143 -> ok",
+    "[images] building=3 cached=0 pending=0"
+  ],
+  "requested_length": 1,
+  "scenario": "datasetartifactmessagingrun02",
+  "stats": {
+    "compose_backed_total": 3,
+    "docker_nonvuln_total": 3,
+    "docker_slot_total": 0,
+    "docker_total": 3,
+    "eligible_total": 3,
+    "flag_gen_slot_total": 0,
+    "flag_generator_eligible_total": 0,
+    "flag_node_generator_eligible_total": 3,
+    "generic_docker_total": 0,
+    "mandatory_challenge_total": 3,
+    "specified_flag_node_generator_total": 3,
+    "specified_vulnerability_total": 0,
+    "topology_flag_node_generator_total": 3,
+    "vuln_total": 0,
+    "vulnerability_slot_total": 0
+  },
+  "xml_path": "/Users/jcacosta/Documents/GitHub/scenarioforge-eval/verify-supply-fix/dataset-artifact-messaging_run02/scenario.xml"
+}

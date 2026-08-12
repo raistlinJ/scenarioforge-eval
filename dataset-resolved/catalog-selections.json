@@ -3681,7 +3681,7 @@
       "name": "dataset-catalog-coverage-034",
       "vulnerabilities": [
         "jira/CVE-2019-11581",
-        "jmeter/CVE-2018-1297",
+        "vite/CVE-2025-30208",
         "joomla/CVE-2015-8562"
       ]
     },
@@ -3868,8 +3868,8 @@
       "name": "dataset-catalog-coverage-045",
       "vulnerabilities": [
         "nexus/CVE-2019-7238",
-        "nexus/CVE-2020-10199",
-        "nexus/CVE-2020-10204"
+        "bash/CVE-2014-6271",
+        "appweb/CVE-2018-8715"
       ]
     },
     {

@@ -28,11 +28,23 @@ vulns:
   enabled: true
   count: 3
   specific:
+  # nexus/CVE-2020-10199 and nexus/CVE-2020-10204 were pinned here and made this
+  # dataset unrunnable: both are vulhub/nexus:3.21.1, whose OrientDB 2.2.36
+  # loses a race bootstrapping its databases on first boot, logs "Failed to
+  # start nexus" and then deadlocks in OSGi teardown. The JVM never exits, so
+  # Docker reports the container running with RestartCount=0, `restart:
+  # on-failure` never fires, and nothing serves on 8081 for the whole run.
+  # Upstream defect with no fix available -- see their red catalog notes.
+  #
+  # nexus/CVE-2019-7238 stays: it is vulhub/nexus:3.14.0, unaffected, and was
+  # verified healthy in the same run that wedged the other two. Nexus coverage
+  # is therefore kept. The two replacements are non-JVM on purpose (a JVM node
+  # here needs 93-138s to boot) and each has passed in another dataset.
   - name: nexus/CVE-2019-7238
     count: 1
-  - name: nexus/CVE-2020-10199
+  - name: bash/CVE-2014-6271
     count: 1
-  - name: nexus/CVE-2020-10204
+  - name: appweb/CVE-2018-8715
     count: 1
 flag_node_generators:
   enabled: true
