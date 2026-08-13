@@ -37,3 +37,4 @@ htmlcov/
 # kept out of the results directory so they never reach its batch metrics.
 # Same machine-local run output as the two above.
 /verify-*
+/dataset-out
