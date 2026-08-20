@@ -1,0 +1,19 @@
+# Everything at once. The longest prompt in the suite, and the one most likely
+# to need its retry -- longer prompts are what hit the 480s provider cap.
+name: "ai-mixed-stress"
+iterations: 1
+seed: 20260810
+ai:
+  prompt: >-
+    three routers, six docker hosts, ssh and http services, two vulnerabilities,
+    two flag node generators, a firewall, and light background traffic
+  timeout_s: 480
+  retries: 1
+hitl:
+  use_env: false
+validation:
+  policy: "strict"
+  check_artifacts:
+    enabled: true
+    delay_seconds: 60
+    strict: false

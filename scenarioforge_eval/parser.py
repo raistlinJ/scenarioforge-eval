@@ -11,6 +11,21 @@ SERVICE_NAME_ALIASES = {
     'dhcpclient': 'DHCPClient',
 }
 
+# ScenarioForge clamps the AI provider timeout to this ceiling in three places
+# (webapp/routes/ai_provider.py), so a spec asking for more silently gets less.
+# Clamping here instead keeps the spec honest about the budget it actually gets.
+AI_TIMEOUT_CEILING_S = 480.0
+AI_TIMEOUT_FLOOR_S = 5.0
+
+# The bridge only engages when a mode is set explicitly.  Left unset, generation
+# falls back to asking the provider for direct JSON, which reasoning models that
+# emit <think> blocks fail with "did not return valid JSON for scenario
+# generation".  Eval runs always want the bridge, so default it on.
+DEFAULT_AI_BRIDGE_MODE = 'mcp-python-sdk'
+
+# bridge_mode is handled separately: it defaults on rather than inheriting.
+AI_PROVIDER_OVERRIDE_KEYS = ('provider', 'model', 'base_url')
+
 TRAFFIC_PROFILES = {
     'light': {
         'density': 0.35,
@@ -144,6 +159,70 @@ class SpecParser:
             'density': density,
             'items': items,
         }
+
+    def get_ai_spec(self, rng: random.Random | None = None) -> dict:
+        """Return normalized AI-generation parameters.
+
+        A bare top-level ``prompt:`` is shorthand for ``ai.prompt``.  Generation
+        is off unless a prompt exists, so every spec written before this section
+        resolves to the deterministic builder untouched.
+        """
+        ai = self.spec.get('ai')
+        if not isinstance(ai, dict):
+            ai = {}
+
+        raw_prompt = ai.get('prompt', self.spec.get('prompt'))
+        prompt = str(raw_prompt).strip() if raw_prompt not in (None, '') else ''
+
+        result = {
+            # An explicit `enabled` still wins, but a prompt is what makes the
+            # feature meaningful: `enabled: true` with nothing to generate from
+            # would only fail later inside the CLI phase.
+            'enabled': bool(prompt) and self._feature_enabled(ai, activation_keys=('prompt',)),
+            'prompt': prompt,
+            'retries': max(0, self._safe_int(ai.get('retries', 0))),
+        }
+
+        timeout_s = self._resolve_ai_timeout(ai.get('timeout_s'), rng=rng)
+        if timeout_s is not None:
+            result['timeout_s'] = timeout_s['value']
+            if 'requested' in timeout_s:
+                # Kept so the executor can warn that the authored budget was
+                # lowered rather than silently honouring a smaller one.
+                result['timeout_requested_s'] = timeout_s['requested']
+
+        # Bridge mode is a provider override like the rest, but unlike the rest
+        # it gets a default instead of inheriting an unset environment.
+        result['bridge_mode'] = str(ai.get('bridge_mode') or DEFAULT_AI_BRIDGE_MODE).strip() or DEFAULT_AI_BRIDGE_MODE
+
+        # An omitted override inherits the environment; an explicitly empty one
+        # does not become an override either, matching resolve_ai_settings().
+        for key in AI_PROVIDER_OVERRIDE_KEYS:
+            value = str(ai.get(key) or '').strip()
+            if value:
+                result[key] = value
+
+        return result
+
+    def _resolve_ai_timeout(self, raw, *, rng: random.Random | None = None) -> dict | None:
+        if raw in (None, ''):
+            return None
+        try:
+            value = float(self._resolve_value(raw, rng=rng))
+        except (TypeError, ValueError):
+            return None
+        clamped = min(max(value, AI_TIMEOUT_FLOOR_S), AI_TIMEOUT_CEILING_S)
+        resolved = {'value': clamped}
+        if clamped != value:
+            resolved['requested'] = value
+        return resolved
+
+    @staticmethod
+    def _safe_int(value, default: int = 0) -> int:
+        try:
+            return int(value)
+        except (TypeError, ValueError):
+            return default
 
     def get_vulns_spec(self, rng: random.Random | None = None) -> dict:
         v = self.spec.get('vulns', {})

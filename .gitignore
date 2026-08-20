@@ -38,3 +38,4 @@ htmlcov/
 # Same machine-local run output as the two above.
 /verify-*
 /dataset-out
+/ai-gen-dataset-out

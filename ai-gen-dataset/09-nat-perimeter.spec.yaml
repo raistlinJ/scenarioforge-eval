@@ -1,0 +1,18 @@
+# NAT plus a pivot, the harder half of the Segmentation section.
+name: "ai-nat-perimeter"
+iterations: 1
+seed: 20260809
+ai:
+  prompt: >-
+    three routers and five docker hosts behind a NAT perimeter,
+    with one host reachable only by pivoting through another
+  timeout_s: 480
+  retries: 1
+hitl:
+  use_env: false
+validation:
+  policy: "strict"
+  check_artifacts:
+    enabled: true
+    delay_seconds: 60
+    strict: false

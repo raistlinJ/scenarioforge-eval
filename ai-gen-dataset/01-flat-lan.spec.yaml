@@ -1,0 +1,23 @@
+# Smallest useful prompt: one router, a handful of hosts, nothing else.
+# Establishes the floor for prompt-driven topology generation.
+name: "ai-flat-lan"
+iterations: 1
+seed: 20260801
+ai:
+  prompt: "one router and four hosts on a single flat LAN"
+  timeout_s: 480
+  retries: 1
+flows:
+  # This prompt describes a plain network with no vulnerabilities or flag
+  # generators, so there is nothing for Flow to chain. Left at its default the
+  # evaluator enables sequencing anyway and the run fails with "No eligible
+  # nodes found in preview plan" -- declaring the intent is what turns that off.
+  enabled: false
+hitl:
+  use_env: false
+validation:
+  policy: "strict"
+  check_artifacts:
+    enabled: true
+    delay_seconds: 60
+    strict: false

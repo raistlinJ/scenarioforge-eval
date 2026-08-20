@@ -459,3 +459,78 @@ flag_node_generators:
 ```
 
 `include` and `exclude` use glob/substr matching against a generator's stable ID and display name. Counts may be greater than the number of eligible generator definitions; the evaluator then assigns multiple topology nodes to an enabled definition and records the exact resolved rows under `metadata.flag_node_generator_selection`. An empty eligible catalog is a direct XML-generation error.
+
+## AI Prompt Generation
+
+A spec can describe what it wants in prose instead of in resolved bounds. When an
+`ai` block carries a prompt, the evaluator generates the scenario XML through
+ScenarioForge's `ai` CLI phase — the same backend path the Web UI uses, MCP
+bridge included — and every later phase (`preview-plan`, `flag-sequencing`,
+`execute`, artifact checks, metrics, reporting) runs against the result
+unchanged, because the phase writes the same scenario XML the deterministic
+builder writes.
+
+```yaml
+name: "ai-demo-01"
+iterations: 1
+seed: 12345
+ai:
+  prompt: "two routers, three docker hosts, ssh service, and two flag node generators"
+  enabled: true      # defaults to true whenever a prompt is present
+  timeout_s: 480     # provider budget; ScenarioForge caps this at 480s
+  retries: 1         # extra attempts, applied only to timed-out generations
+```
+
+A bare top-level `prompt:` is shorthand for `ai.prompt`. Specs with no `ai` or
+`prompt` key are unaffected and keep using the deterministic spec-to-XML builder,
+so the `topology`/`services`/`vulns`/`flows` sections behave exactly as before.
+Because the prompt replaces those sections, a prompt-driven spec normally omits
+them.
+
+`--prompt "..."` overrides whatever prompt a spec carries, and `--no-ai` forces
+the deterministic path for a spec that has one.
+
+### Provider configuration
+
+Provider settings are **never** read from spec files or from this repository.
+They come from `CORETG_AI_*` in the ScenarioForge checkout's
+`.scenarioforge.env`, which the evaluator already loads:
+
+| key | meaning |
+| --- | --- |
+| `CORETG_AI_PROVIDER` | `ollama`, `litellm`, or `openai` |
+| `CORETG_AI_MODEL` | model name as the endpoint expects it |
+| `CORETG_AI_BASE_URL` | provider base URL |
+| `CORETG_AI_API_KEY` | key sent to the provider |
+| `CORETG_AI_API_KEY_USER` | username whose encrypted stored credential supplies the key |
+
+Optional per-spec `provider`, `model`, and `base_url` keys map onto the phase's
+`--ai-*` flags and beat the environment. An omitted key inherits the
+environment; an explicitly empty one is not treated as an override. API keys have
+no spec-level equivalent by design.
+
+The evaluator always requests the MCP bridge (`--ai-bridge-mode
+mcp-python-sdk`), overridable via `ai.bridge_mode`. Without an explicit bridge
+mode the request silently falls back to direct-JSON generation, which fails on
+reasoning models that emit `<think>` blocks. The `ai` phase also needs a local
+ScenarioForge user account to run as, so a headless environment needs that user
+database present.
+
+### Timeouts and reproducibility
+
+ScenarioForge clamps the provider timeout to 480 seconds. A larger `timeout_s`
+is lowered to that ceiling and the run records a warning rather than promising a
+budget it cannot get. The evaluator's own phase timeout is held above the
+provider budget so it never cuts off a generation that was still within it.
+Provider latency varies widely for the same prompt, so `retries` re-runs a
+generation that timed out; other failures (a 401, an unparseable response) fail
+the run immediately with the provider's own error text, and the batch continues
+to the next spec.
+
+AI generation is **not reproducible from a seed** — the same prompt and seed can
+yield different scenarios. Each run therefore records the prompt, the resolved
+provider/model/base URL (never the key), the applied bridge actions, and the
+generated XML under `metadata.ai_generation`, with the phase envelope in
+`ai.json`. The XML remains the reproducible artifact: reproduction bundles mark
+it `source: ai-prompt` with `seed_reproducible: false` so a reader can tell a
+replayable build from a one-off generation.

@@ -1,0 +1,28 @@
+# Scenario built by ScenarioForge's ai phase instead of the deterministic
+# spec-to-XML builder.  The prompt replaces the topology/services/vulns/flows
+# sections, so they are deliberately absent: whatever the model authors is what
+# the rest of the phase chain runs against.
+#
+# Provider settings are NOT configured here.  They come from CORETG_AI_* in the
+# ScenarioForge checkout's .scenarioforge.env, which the executor already loads.
+name: "ai-prompt-generated"
+iterations: 1
+seed: 20260819
+ai:
+  prompt: >-
+    two routers, three docker hosts, ssh service, and two flag node generators
+  enabled: true
+  # ScenarioForge clamps the provider timeout to 480s; asking for the ceiling
+  # keeps slow generations from being cut short by a smaller default.
+  timeout_s: 480
+  # Provider latency varies widely on the same prompt, so allow one retry.
+  # Only timed-out attempts are retried; a 401 fails the run immediately.
+  retries: 1
+hitl:
+  use_env: false
+validation:
+  policy: "strict"
+  check_artifacts:
+    enabled: true
+    delay_seconds: 60
+    strict: false

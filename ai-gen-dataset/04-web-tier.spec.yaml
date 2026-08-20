@@ -1,0 +1,16 @@
+# Two distinct services in one prompt, to see whether both land as rows.
+name: "ai-web-tier"
+iterations: 1
+seed: 20260804
+ai:
+  prompt: "one router with four docker hosts serving http, and ssh on every host"
+  timeout_s: 480
+  retries: 1
+hitl:
+  use_env: false
+validation:
+  policy: "strict"
+  check_artifacts:
+    enabled: true
+    delay_seconds: 60
+    strict: false

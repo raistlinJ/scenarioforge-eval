@@ -20,6 +20,66 @@
       "maximum": 2147483647,
       "description": "Optional reproducible base seed. Later iterations use incremented seeds."
     },
+    "prompt": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Shorthand for ai.prompt. Generating from a prompt replaces the deterministic topology/services/... build, so those sections are ignored for the run."
+    },
+    "ai": {
+      "type": "object",
+      "description": "Generate the scenario XML from a natural-language prompt through ScenarioForge's ai CLI phase instead of the deterministic spec->XML builder. Provider credentials are never read from here: they come from CORETG_AI_* in the ScenarioForge checkout's .scenarioforge.env.",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Defaults to true when a prompt is present, false otherwise."
+        },
+        "prompt": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Natural-language description of the scenario to generate."
+        },
+        "timeout_s": {
+          "description": "Provider timeout passed as --ai-timeout-seconds. ScenarioForge clamps this to 480s, so larger values are lowered and reported as a run warning.",
+          "oneOf": [
+            {
+              "type": "number",
+              "minimum": 5
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "number",
+                "minimum": 5
+              },
+              "minItems": 2,
+              "maxItems": 2
+            }
+          ]
+        },
+        "retries": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 0,
+          "description": "Extra attempts after a timed-out generation. Provider latency varies widely, so a retry is often enough; non-timeout failures are not retried."
+        },
+        "provider": {
+          "type": "string",
+          "description": "Overrides CORETG_AI_PROVIDER for this spec."
+        },
+        "model": {
+          "type": "string",
+          "description": "Overrides CORETG_AI_MODEL for this spec."
+        },
+        "base_url": {
+          "type": "string",
+          "description": "Overrides CORETG_AI_BASE_URL for this spec."
+        },
+        "bridge_mode": {
+          "type": "string",
+          "description": "Overrides CORETG_AI_BRIDGE_MODE. Defaults to mcp-python-sdk: without an explicit bridge mode the request silently falls back to direct-JSON generation, which reasoning models that emit <think> blocks fail."
+        }
+      }
+    },
     "topology": {
       "type": "object",
       "properties": {

@@ -8,6 +8,7 @@ reproducible while the installed ScenarioForge catalog remains unchanged.
 
 from __future__ import annotations
 
+import argparse
 import hashlib
 import random
 from pathlib import Path
@@ -118,7 +119,7 @@ def _resolved_spec(source: Path, iteration: int) -> dict:
     seed = _seed_for(source, iteration)
     rng = random.Random(seed)
     name = f"{parser.get_name()}_run{iteration:02d}"
-    return {
+    resolved = {
         "name": name,
         "iterations": 1,
         "seed": seed,
@@ -132,18 +133,49 @@ def _resolved_spec(source: Path, iteration: int) -> dict:
         "hitl": parser.get_hitl_spec(),
         "validation": parser.get_validation_spec(),
     }
+    # A prompt is not resolvable to fixed values the way a range is: the model
+    # decides the topology at run time. Carry the request so a resolved spec
+    # still reproduces the same *request*, and leave it out entirely for the
+    # deterministic suite so those files are unchanged.
+    ai = parser.get_ai_spec(rng=rng)
+    if not ai.get("enabled"):
+        return resolved
+
+    resolved["ai"] = ai
+    # Sections the prompt replaces are dropped unless the author wrote them:
+    # on the AI path `_generate_xml` never reads them, so resolving them from
+    # defaults only invites a reader to believe a scenario has 3 routers and 9
+    # hosts when its prompt asked for 2 and 3.
+    #
+    # `flows` is deliberately NOT in this list even though no prompt spec
+    # declares it. main.py rebuilds every section through the SpecParser
+    # getters on each run, so an omitted `flows` does not disable
+    # flag-sequencing -- it re-randomizes chain_length (3-5) per run, which is
+    # the one section that reaches the AI path at runtime and the opposite of
+    # what a "resolved" spec is for. Writing it out pins it.
+    for section in (
+        "topology",
+        "services",
+        "traffic",
+        "vulns",
+        "flag_node_generators",
+        "segmentation",
+    ):
+        if section not in parser.spec:
+            resolved.pop(section, None)
+    return resolved
 
 
-def main() -> None:
-    OUTPUT_DIR.mkdir(exist_ok=True)
+def generate(source_dir: Path, output_dir: Path) -> int:
+    output_dir.mkdir(parents=True, exist_ok=True)
     generated = 0
-    for source in sorted(SOURCE_DIR.glob("*.spec.yaml")):
+    for source in sorted(source_dir.glob("*.spec.yaml")):
         parser = SpecParser(str(source))
         iterations = max(0, int(parser.spec.get("iterations", 1)))
         for iteration in range(1, iterations + 1):
             source_name = source.name.removesuffix(".spec.yaml")
-            destination = OUTPUT_DIR / f"{source_name}-run{iteration:02d}.spec.yaml"
-            legacy_destination = OUTPUT_DIR / f"{source.stem}-run{iteration:02d}.spec.yaml"
+            destination = output_dir / f"{source_name}-run{iteration:02d}.spec.yaml"
+            legacy_destination = output_dir / f"{source.stem}-run{iteration:02d}.spec.yaml"
             if legacy_destination != destination and legacy_destination.exists():
                 legacy_destination.unlink()
             payload = _resolved_spec(source, iteration)
@@ -151,7 +183,19 @@ def main() -> None:
                 yaml.safe_dump(payload, sort_keys=False, allow_unicode=True), encoding="utf-8"
             )
             generated += 1
-    print(f"Generated {generated} fixed specs in {OUTPUT_DIR}")
+    print(f"Generated {generated} fixed specs in {output_dir}")
+    return generated
+
+
+def main() -> None:
+    # The prompt-driven suite resolves through exactly the same seeding and
+    # section normalization, so it gets directory arguments rather than a
+    # second copy of this script.
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--source-dir", type=Path, default=SOURCE_DIR)
+    ap.add_argument("--output-dir", type=Path, default=OUTPUT_DIR)
+    args = ap.parse_args()
+    generate(args.source_dir, args.output_dir)
 
 
 if __name__ == "__main__":

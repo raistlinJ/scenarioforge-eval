@@ -1,0 +1,23 @@
+name: ai-nat-perimeter_run01
+iterations: 1
+seed: 896563804
+flows:
+  enabled: true
+  chain_length: 5
+  allow_duplicates: false
+  include_all_topology_pivots: false
+hitl:
+  use_env: false
+validation:
+  policy: strict
+  check_artifacts:
+    enabled: true
+    delay_seconds: 60
+    strict: false
+ai:
+  enabled: true
+  prompt: three routers and five docker hosts behind a NAT perimeter, with one host
+    reachable only by pivoting through another
+  retries: 1
+  timeout_s: 480.0
+  bridge_mode: mcp-python-sdk

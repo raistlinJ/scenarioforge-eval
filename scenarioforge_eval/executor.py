@@ -29,6 +29,7 @@ except ImportError:
 
 try:
     from .metrics import MetricSpan, directory_metrics, file_metrics, rounded_seconds, text_metrics
+    from .parser import AI_TIMEOUT_CEILING_S
     from .reproduction import (
         REPRODUCTION_MODES,
         artifact_source_paths,
@@ -37,6 +38,7 @@ try:
     )
 except ImportError:
     from metrics import MetricSpan, directory_metrics, file_metrics, rounded_seconds, text_metrics
+    from parser import AI_TIMEOUT_CEILING_S
     from reproduction import (
         REPRODUCTION_MODES,
         artifact_source_paths,
@@ -103,6 +105,13 @@ class Executor:
         'error',
         'flow_artifact_copy_error',
     )
+    # Wall-clock the ai phase gets beyond the provider's own timeout, to cover
+    # the bridge's tool-call round-trips.
+    AI_PHASE_TIMEOUT_HEADROOM_S = 300
+    AI_RETRYABLE_ERROR_RE = re.compile(
+        r"tim(?:ed\s*out|eout)|read\s+timed\s+out|deadline\s+exceeded",
+        re.IGNORECASE,
+    )
     VALIDATION_WARNING_FIELDS = (
         'extra_nodes',
         'extra_docker_nodes',
@@ -138,6 +147,9 @@ class Executor:
         self._rng = random.Random(self.seed)
         self._vulnerability_selection: dict | None = None
         self._flag_node_generator_selection: dict | None = None
+        self._ai_generation: dict | None = None
+        self._ai_phase_results: list[dict] = []
+        self._ai_warnings: list[str] = []
         self._artifact_check_progress_active = False
         self._artifact_check_last_step = 0
         self._artifact_check_total_steps = 0
@@ -280,6 +292,7 @@ class Executor:
                 sf_path=self.sf_path,
                 eval_repo=os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                 artifact_overrides=artifact_overrides,
+                ai_generation=self._ai_generation,
             )
         finally:
             if staging_dir:
@@ -651,6 +664,25 @@ class Executor:
             'metrics': phase_result.get('metrics') or {},
         }
         result.setdefault('phase_results', {})[phase_result['phase']] = metadata
+
+    def _record_ai_generation(self, result: dict) -> None:
+        """Attach prompt-generation provenance and its phase artifacts."""
+        for phase_result in self._ai_phase_results:
+            self._record_phase_result(result, phase_result)
+            log_path = phase_result.get('log_path')
+            if log_path:
+                result.setdefault('artifacts', {})['ai_log'] = log_path
+        if self._ai_warnings:
+            warnings = result.setdefault('warnings', [])
+            for warning in self._ai_warnings:
+                if warning not in warnings:
+                    warnings.append(warning)
+        if not self._ai_generation:
+            return
+        result.setdefault('metadata', {})['ai_generation'] = self._ai_generation
+        ai_json = self._artifact_path('ai.json')
+        if ai_json and os.path.exists(ai_json):
+            result.setdefault('artifacts', {})['ai_json'] = ai_json
 
     def _record_internal_phase_result(self, result: dict, phase: str, metrics: dict) -> None:
         self._record_phase_result(
@@ -1145,8 +1177,10 @@ class Executor:
         json_output_name: str | None = None,
         log_name: str | None = None,
         allow_nonzero: bool = False,
+        timeout_s: int | None = None,
     ) -> dict:
         self._ensure_scenarioforge_repo_dirs()
+        phase_timeout_s = int(timeout_s or self.phase_timeout_s)
 
         cmd = [
             self._cli_python(),
@@ -1188,7 +1222,7 @@ class Executor:
                         capture_output=True,
                         text=True,
                         check=False,
-                        timeout=self.phase_timeout_s,
+                        timeout=phase_timeout_s,
                     )
                     returncode = proc.returncode
                     stdout_text = proc.stdout or ''
@@ -1219,7 +1253,7 @@ class Executor:
             'command': {
                 'argv': cmd,
                 'cwd': self.sf_path,
-                'timeout_s': self.phase_timeout_s,
+                'timeout_s': phase_timeout_s,
             },
             'returncode': returncode,
             'timed_out': timed_out,
@@ -1246,7 +1280,7 @@ class Executor:
 
         if timed_out:
             last_line = self._last_output_line(combined)
-            message = f"scenarioforge.cli {phase} timed out after {self.phase_timeout_s} seconds."
+            message = f"scenarioforge.cli {phase} timed out after {phase_timeout_s} seconds."
             if last_line:
                 message = f"{message} Last output: {last_line}"
             raise PhaseExecutionError(
@@ -1925,7 +1959,25 @@ class Executor:
             }],
         }
 
+    def _ai_spec(self) -> dict:
+        ai_spec = self.spec.get('ai')
+        return ai_spec if isinstance(ai_spec, dict) else {}
+
+    def _ai_generation_requested(self) -> bool:
+        ai_spec = self._ai_spec()
+        return bool(ai_spec.get('enabled')) and bool(str(ai_spec.get('prompt') or '').strip())
+
     def _generate_xml(self) -> str:
+        """Build the scenario XML, from a prompt when the spec asks for one.
+
+        Both routes write the same XML in the same place, so every later phase
+        is unaware of which one produced it.
+        """
+        if self._ai_generation_requested():
+            return self._generate_xml_from_prompt()
+        return self._generate_xml_from_spec()
+
+    def _generate_xml_from_spec(self) -> str:
         """Uses the UI's XML generator to build a random topology XML."""
         from webapp import app_backend as backend
         self._load_runtime_env()
@@ -1990,10 +2042,30 @@ class Executor:
         if seg_spec.get('enabled', seg_spec.get('randomize')):
             scen_payload['sections']['Segmentation'] = self._build_segmentation_section(seg_spec)
             
+        core_defaults = self._apply_core_and_hitl(backend, scen_payload)
+        scenarios_inline = [scen_payload]
+        
+        # Build XML
+        tree = backend._build_scenarios_xml({'scenarios': scenarios_inline, 'core': core_defaults})
+        xml_path = os.path.join(self.out_dir, 'scenario.xml')
+        backend._write_xml_tree_atomic(tree, xml_path)
+        return xml_path
+
+    def _apply_core_and_hitl(self, backend, scen_payload: dict) -> dict:
+        """Attach the resolved CORE connection and HITL block to a scenario.
+
+        Returns the CORE defaults for the document-level <CoreConnection>.  The
+        embedded SSH password is what tells the evaluator a run can be delegated
+        to the CORE VM, so a scenario missing it is treated as local-only and
+        fails preflight.
+        """
         core_defaults = deepcopy(backend._core_backend_defaults(include_password=True))
         if core_defaults:
             scen_payload['hitl'] = dict(scen_payload.get('hitl') or {})
-            scen_payload['hitl'].setdefault('core', deepcopy(core_defaults))
+            # Not setdefault: a scenario parsed back from XML carries an explicit
+            # `core: None`, which setdefault would leave in place.
+            if not scen_payload['hitl'].get('core'):
+                scen_payload['hitl']['core'] = deepcopy(core_defaults)
         
         # Inject HITL
         hitl_spec = self.spec.get('hitl', {})
@@ -2010,14 +2082,190 @@ class Executor:
                     ],
                     'core': deepcopy(core_defaults) if core_defaults else None,
                 }
-            
-        scenarios_inline = [scen_payload]
-        
-        # Build XML
-        tree = backend._build_scenarios_xml({'scenarios': scenarios_inline, 'core': core_defaults})
+        return core_defaults
+
+    def _ai_phase_extra_args(self, ai_spec: dict) -> list[str]:
+        """Flags for the ai phase.  Omitted overrides inherit CORETG_AI_*."""
+        extra_args = ['--prompt', str(ai_spec.get('prompt') or '').strip(), '--force']
+
+        # Never --ai-skip-bridge: an eval run always wants tool-driven authoring.
+        bridge_mode = str(ai_spec.get('bridge_mode') or '').strip()
+        if bridge_mode:
+            extra_args.extend(['--ai-bridge-mode', bridge_mode])
+
+        for key, flag in (
+            ('provider', '--ai-provider'),
+            ('model', '--ai-model'),
+            ('base_url', '--ai-base-url'),
+        ):
+            value = str(ai_spec.get(key) or '').strip()
+            if value:
+                extra_args.extend([flag, value])
+
+        timeout_s = ai_spec.get('timeout_s')
+        if isinstance(timeout_s, (int, float)) and not isinstance(timeout_s, bool):
+            extra_args.extend(['--ai-timeout-seconds', str(float(timeout_s))])
+        return extra_args
+
+    def _ai_phase_timeout(self, ai_spec: dict) -> int:
+        """Wall-clock budget for the ai phase.
+
+        The provider timeout bounds a single request, but a bridged run makes
+        several tool-call round-trips, so the evaluator's own ceiling has to sit
+        well above it or it cuts off a generation that was still within budget.
+        """
+        provider_timeout = ai_spec.get('timeout_s')
+        if not isinstance(provider_timeout, (int, float)) or isinstance(provider_timeout, bool):
+            provider_timeout = AI_TIMEOUT_CEILING_S
+        return max(self.phase_timeout_s, int(provider_timeout) + self.AI_PHASE_TIMEOUT_HEADROOM_S)
+
+    def _ai_phase_error(self, phase_result: dict | None) -> str:
+        """The provider's own error text, which the phase JSON carries.
+
+        The exception message alone is not enough: the phase prints its envelope
+        indented, so the last output line is a closing brace rather than a cause.
+        """
+        payload = (phase_result or {}).get('plan_payload')
+        if not isinstance(payload, dict):
+            return ''
+        error = str(payload.get('error') or '').strip()
+        status = payload.get('status')
+        if error and status not in (None, ''):
+            return f'{error} (status {status})'
+        return error
+
+    def _ai_error_is_retryable(self, phase_result: dict | None, message: str) -> bool:
+        if (phase_result or {}).get('timed_out'):
+            return True
+        return bool(self.AI_RETRYABLE_ERROR_RE.search(f'{self._ai_phase_error(phase_result)} {message}'))
+
+    def _generate_xml_from_prompt(self) -> str:
+        """Generate the scenario XML through ScenarioForge's ai CLI phase.
+
+        AI generation is not reproducible from a seed, so what gets recorded is
+        the request and the XML it produced -- the XML stays the reproducible
+        artifact that every later phase and any replay works from.
+        """
+        self._load_runtime_env()
+        ai_spec = self._ai_spec()
         xml_path = os.path.join(self.out_dir, 'scenario.xml')
+        scenario_name = self.spec.get('name', 'eval')
+        extra_args = self._ai_phase_extra_args(ai_spec)
+        attempts = max(1, self._safe_int(ai_spec.get('retries'), 0) + 1)
+        phase_timeout_s = self._ai_phase_timeout(ai_spec)
+
+        generation: dict = {
+            'prompt': str(ai_spec.get('prompt') or '').strip(),
+            'bridge_mode': str(ai_spec.get('bridge_mode') or ''),
+            'retries': attempts - 1,
+            'attempts': 0,
+            'xml_path': xml_path,
+            'command_args': list(extra_args),
+        }
+        for key in ('timeout_s', 'timeout_requested_s'):
+            if ai_spec.get(key) is not None:
+                generation[key] = ai_spec[key]
+        for key in ('provider', 'model', 'base_url'):
+            if str(ai_spec.get(key) or '').strip():
+                generation.setdefault('overrides', {})[key] = str(ai_spec[key]).strip()
+        self._ai_generation = generation
+
+        if 'timeout_requested_s' in generation:
+            self._ai_warnings.append(
+                'ScenarioForge caps the AI provider timeout at '
+                f'{AI_TIMEOUT_CEILING_S:.0f}s; ai.timeout_s '
+                f"{generation['timeout_requested_s']:.0f}s was lowered to "
+                f"{generation['timeout_s']:.0f}s."
+            )
+
+        last_error: PhaseExecutionError | None = None
+        for attempt in range(1, attempts + 1):
+            suffix = '' if attempt == 1 else f'-attempt{attempt}'
+            generation['attempts'] = attempt
+            try:
+                phase_result = self._run_cli_phase(
+                    'ai',
+                    xml_path,
+                    scenario_name,
+                    seed=self.seed,
+                    extra_args=extra_args,
+                    json_output_name=f'ai{suffix}.json',
+                    log_name=f'ai{suffix}.log',
+                    timeout_s=phase_timeout_s,
+                )
+            except PhaseExecutionError as exc:
+                self._ai_phase_results.append(exc.phase_result)
+                provider_error = self._ai_phase_error(exc.phase_result)
+                generation['error'] = provider_error or str(exc)
+                self._record_ai_settings(generation, exc.phase_result)
+                last_error = exc
+                if attempt < attempts and self._ai_error_is_retryable(exc.phase_result, str(exc)):
+                    print(
+                        f'>> ai generation attempt {attempt}/{attempts} timed out; retrying'
+                    )
+                    continue
+                break
+
+            self._ai_phase_results.append(phase_result)
+            generation.pop('error', None)
+            self._record_ai_settings(generation, phase_result)
+            self._apply_core_connection_to_generated_xml(xml_path)
+            return xml_path
+
+        message = self._ai_phase_error(getattr(last_error, 'phase_result', None))
+        raise PhaseExecutionError(
+            'scenarioforge.cli ai failed to generate a scenario from the prompt'
+            + (f': {message}' if message else f'. {last_error}'),
+            getattr(last_error, 'phase_result', {'phase': 'ai'}),
+        )
+
+    def _apply_core_connection_to_generated_xml(self, xml_path: str) -> None:
+        """Embed this evaluator's CORE connection in a prompt-generated XML.
+
+        The ai phase writes the scenario the model authored, but its CORE block
+        comes from ScenarioForge's own defaults and carries no SSH password.
+        Without one the evaluator cannot tell that the run is delegable to the
+        CORE VM, so it preflights loopback gRPC and fails before topo.  Loading
+        and re-emitting through the same backend helpers the deterministic route
+        uses leaves the authored sections untouched and makes the two XMLs agree
+        on the connection.
+        """
+        from webapp import app_backend as backend
+
+        payload = backend._parse_scenarios_xml(xml_path)
+        scenarios = (payload or {}).get('scenarios') or []
+        if not scenarios:
+            return
+        core_defaults = None
+        for scenario in scenarios:
+            core_defaults = self._apply_core_and_hitl(backend, scenario)
+        payload['core'] = core_defaults
+        tree = backend._build_scenarios_xml(payload)
         backend._write_xml_tree_atomic(tree, xml_path)
-        return xml_path
+
+    def _record_ai_settings(self, generation: dict, phase_result: dict | None) -> None:
+        """Copy the resolved provider identity out of the phase JSON.
+
+        The API key is dropped rather than carried in its redacted form: nothing
+        downstream needs even a length, and run outputs get shared.
+        """
+        payload = (phase_result or {}).get('plan_payload')
+        if not isinstance(payload, dict):
+            return
+        settings = payload.get('settings')
+        if isinstance(settings, dict):
+            resolved = {
+                key: value
+                for key, value in settings.items()
+                if key not in {'api_key', 'api_key_source'}
+            }
+            generation['settings'] = resolved
+            for key in ('provider', 'model', 'base_url'):
+                if resolved.get(key):
+                    generation[key] = resolved[key]
+        for key in ('scenario', 'acting_user', 'applied_actions', 'written', 'overwritten'):
+            if payload.get(key) is not None:
+                generation[key] = payload[key]
 
     def _resolve_xml_scenario_name(self, xml_path: str) -> str:
         """Return the canonical scenario name written into the generated XML."""
@@ -2085,6 +2333,9 @@ class Executor:
                 result['stages']['scenario_xml'] = 'PASS'
             finally:
                 self._record_internal_phase_result(result, 'scenario-xml', scenario_span.finish())
+                # Recorded in `finally` so a failed generation still reports the
+                # prompt and the provider it was sent to.
+                self._record_ai_generation(result)
             
             if self.target_phase == 'topology':
                 print(">> Phase: topo")
