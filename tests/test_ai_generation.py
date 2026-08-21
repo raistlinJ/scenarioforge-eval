@@ -19,6 +19,7 @@ import yaml
 from scenarioforge_eval.executor import Executor, PhaseExecutionError
 from scenarioforge_eval.main import _apply_ai_overrides
 from scenarioforge_eval.parser import (
+    AI_BRIDGE_TIMEOUT_CEILING_S,
     AI_TIMEOUT_CEILING_S,
     DEFAULT_AI_BRIDGE_MODE,
     SpecParser,
@@ -61,11 +62,28 @@ class AiSpecParsingTests(unittest.TestCase):
 
         self.assertFalse(resolved['enabled'])
 
-    def test_timeout_is_clamped_to_the_scenarioforge_ceiling(self):
+    def test_bridged_timeout_is_clamped_to_the_lower_bridge_ceiling(self):
+        """The bridge clamps harder than the direct path, and eval runs bridge.
+
+        ScenarioForge applies min(max(t, 5), 480) on the direct JSON path but
+        _normalize_bridge_timeout_seconds (high=240) on the MCP bridge. Since
+        every eval run requests the bridge, reporting the 480 ceiling would
+        promise a budget the run never gets -- observed live as a generation
+        that failed at "timed out after 240s" while its settings said 480.
+        """
         resolved = _parser_for({'ai': {'prompt': 'p', 'timeout_s': 900}}).get_ai_spec()
 
-        self.assertEqual(resolved['timeout_s'], AI_TIMEOUT_CEILING_S)
+        self.assertEqual(resolved['timeout_s'], AI_BRIDGE_TIMEOUT_CEILING_S)
+        self.assertEqual(resolved['timeout_ceiling_s'], AI_BRIDGE_TIMEOUT_CEILING_S)
         self.assertEqual(resolved['timeout_requested_s'], 900.0)
+        self.assertLess(AI_BRIDGE_TIMEOUT_CEILING_S, AI_TIMEOUT_CEILING_S)
+
+    def test_a_480s_request_is_reported_as_lowered_not_honoured(self):
+        # Every shipped prompt spec asks for 480; each one is really getting 240.
+        resolved = _parser_for({'ai': {'prompt': 'p', 'timeout_s': 480}}).get_ai_spec()
+
+        self.assertEqual(resolved['timeout_s'], 240.0)
+        self.assertEqual(resolved['timeout_requested_s'], 480.0)
 
     def test_timeout_within_the_ceiling_is_not_reported_as_clamped(self):
         resolved = _parser_for({'ai': {'prompt': 'p', 'timeout_s': 120}}).get_ai_spec()
@@ -228,9 +246,9 @@ class AiExecutorRoutingTests(unittest.TestCase):
             # generation the provider was still entitled to finish.
             executor.phase_timeout_s = 300
 
-            budget = executor._ai_phase_timeout({'timeout_s': AI_TIMEOUT_CEILING_S})
+            budget = executor._ai_phase_timeout({'timeout_s': AI_BRIDGE_TIMEOUT_CEILING_S})
 
-        self.assertGreater(budget, AI_TIMEOUT_CEILING_S)
+        self.assertGreater(budget, AI_BRIDGE_TIMEOUT_CEILING_S)
 
     def test_ai_phase_timeout_never_shortens_a_larger_batch_timeout(self):
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -513,7 +531,7 @@ class AiSpecFixtureTests(unittest.TestCase):
         self.assertTrue(resolved['enabled'])
         self.assertIn('two routers', resolved['prompt'])
         self.assertEqual(resolved['bridge_mode'], DEFAULT_AI_BRIDGE_MODE)
-        self.assertLessEqual(resolved['timeout_s'], AI_TIMEOUT_CEILING_S)
+        self.assertLessEqual(resolved['timeout_s'], AI_BRIDGE_TIMEOUT_CEILING_S)
 
 
 if __name__ == '__main__':
