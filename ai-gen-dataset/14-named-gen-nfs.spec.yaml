@@ -1,0 +1,27 @@
+# NFS is the largest category (8 entries); checks the right two are picked.
+name: "ai-named-gen-nfs"
+iterations: 1
+seed: 20260814
+ai:
+  prompt: >-
+    two routers and four docker hosts with the "NFS: Legal Hold Archive" and
+    "NFS: Build Cache Share" flag node generators
+  timeout_s: 480
+  retries: 1
+# What the prompt asked for, used to grade the generated scenario.
+# Only declared fields are scored.
+expected:
+  routers: 2
+  hosts: 4
+  flag_node_generators: 2
+  generator_names:
+  - 'NFS: Legal Hold Archive'
+  - 'NFS: Build Cache Share'
+hitl:
+  use_env: false
+validation:
+  policy: "strict"
+  check_artifacts:
+    enabled: true
+    delay_seconds: 60
+    strict: false

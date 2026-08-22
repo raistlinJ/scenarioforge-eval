@@ -1,0 +1,31 @@
+name: ai-pivot-with-generator_run01
+iterations: 1
+seed: 1820978793
+flows:
+  enabled: true
+  chain_length: 5
+  allow_duplicates: false
+  include_all_topology_pivots: false
+hitl:
+  use_env: false
+validation:
+  policy: strict
+  check_artifacts:
+    enabled: true
+    delay_seconds: 60
+    strict: false
+expected:
+  routers: 3
+  hosts: 5
+  flag_node_generators: 1
+  generator_names:
+  - 'SSH: Key Ops Bastion'
+  segmentation:
+  - Firewall
+ai:
+  enabled: true
+  prompt: 'three routers and five docker hosts behind a firewall with the "SSH: Key
+    Ops Bastion" flag node generator and one host reachable only by pivoting'
+  retries: 1
+  timeout_s: 480.0
+  bridge_mode: mcp-python-sdk

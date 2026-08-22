@@ -133,6 +133,13 @@ def _resolved_spec(source: Path, iteration: int) -> dict:
         "hitl": parser.get_hitl_spec(),
         "validation": parser.get_validation_spec(),
     }
+    # Ground truth for accuracy scoring travels with the resolved spec: a run is
+    # graded from the file it was launched with, not from its source.
+    if isinstance(parser.spec.get("expected"), dict):
+        resolved["expected"] = parser.spec["expected"]
+    # Difficulty band travels too, so results can be broken down by tier.
+    if parser.spec.get("tier") is not None:
+        resolved["tier"] = parser.spec["tier"]
     # A prompt is not resolvable to fixed values the way a range is: the model
     # decides the topology at run time. Carry the request so a resolved spec
     # still reproduces the same *request*, and leave it out entirely for the

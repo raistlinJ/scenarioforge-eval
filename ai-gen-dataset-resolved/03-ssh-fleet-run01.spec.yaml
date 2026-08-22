@@ -14,6 +14,11 @@ validation:
     enabled: true
     delay_seconds: 60
     strict: false
+expected:
+  routers: 2
+  hosts: 5
+  services:
+  - SSH
 ai:
   enabled: true
   prompt: two routers and five docker hosts, every host running the ssh service

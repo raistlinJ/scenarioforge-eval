@@ -6,6 +6,13 @@ ai:
   prompt: "two routers and five docker hosts, every host running the ssh service"
   timeout_s: 480
   retries: 1
+# What the prompt asked for, used to grade the generated scenario.
+# Only declared fields are scored.
+expected:
+  routers: 2
+  hosts: 5
+  services:
+  - SSH
 hitl:
   use_env: false
 validation:

@@ -15,6 +15,8 @@ class Reporter:
         'target_phase', 'seed', 'success', 'failed_stage', 'failed_at',
         'ai_generated', 'ai_provider', 'ai_model', 'ai_base_url', 'ai_attempts',
         'ai_prompt',
+        'ai_provider_request_count', 'ai_prompt_tokens',
+        'ai_completion_tokens', 'ai_total_tokens', 'ai_cached_tokens',
         'started_at', 'ended_at', 'duration_s', 'router_count', 'host_count',
         'node_count', 'service_count', 'vulnerability_count', 'flow_enabled',
         'flow_chain_length', 'challenge_count', 'chain_count',
@@ -172,6 +174,7 @@ class Reporter:
         check_artifacts_summary = execute_result.get('check_artifacts_summary') or {}
         content = metrics.get('content') or {}
         ai_generation = (result.get('metadata') or {}).get('ai_generation') or {}
+        provider_usage = ai_generation.get('provider_usage') or {}
         failed_stage = self._first_failed_stage(result)
 
         return {
@@ -191,6 +194,11 @@ class Reporter:
             'ai_base_url': ai_generation.get('base_url', ''),
             'ai_attempts': ai_generation.get('attempts', ''),
             'ai_prompt': ai_generation.get('prompt', ''),
+            'ai_provider_request_count': provider_usage.get('request_count', 0),
+            'ai_prompt_tokens': provider_usage.get('prompt_tokens', 0),
+            'ai_completion_tokens': provider_usage.get('completion_tokens', 0),
+            'ai_total_tokens': provider_usage.get('total_tokens', 0),
+            'ai_cached_tokens': provider_usage.get('cached_tokens', 0),
             'started_at': run.get('started_at', ''),
             'ended_at': run.get('ended_at', ''),
             'duration_s': run.get('duration_s', 0.0),
@@ -350,6 +358,13 @@ class Reporter:
                 'duration_s': self._number_summary([row.get('duration_s') for row in run_rows]),
                 'artifact_total_size_bytes': sum(int(row.get('artifact_total_size_bytes') or 0) for row in run_rows),
                 'estimated_output_tokens': sum(int(row.get('estimated_output_tokens') or 0) for row in run_rows),
+                'provider_usage': {
+                    'request_count': sum(int(row.get('ai_provider_request_count') or 0) for row in run_rows),
+                    'prompt_tokens': self._number_summary([row.get('ai_prompt_tokens') for row in run_rows]),
+                    'completion_tokens': self._number_summary([row.get('ai_completion_tokens') for row in run_rows]),
+                    'total_tokens': self._number_summary([row.get('ai_total_tokens') for row in run_rows]),
+                    'cached_tokens': self._number_summary([row.get('ai_cached_tokens') for row in run_rows]),
+                },
                 'cpu_total_s': self._number_summary([row.get('cpu_total_s') for row in run_rows]),
                 'max_rss_bytes': max((int(row.get('max_rss_bytes') or 0) for row in run_rows), default=0),
             },
@@ -441,6 +456,11 @@ class Reporter:
                 handle.write(f"| Model | {run_row.get('ai_model', '')} |\n")
                 handle.write(f"| Base URL | {run_row.get('ai_base_url', '')} |\n")
                 handle.write(f"| Attempts | {run_row.get('ai_attempts', '')} |\n")
+                handle.write(f"| Provider requests | {run_row.get('ai_provider_request_count', 0)} |\n")
+                handle.write(f"| Prompt tokens | {run_row.get('ai_prompt_tokens', 0)} |\n")
+                handle.write(f"| Completion tokens | {run_row.get('ai_completion_tokens', 0)} |\n")
+                handle.write(f"| Total tokens | {run_row.get('ai_total_tokens', 0)} |\n")
+                handle.write(f"| Cached tokens | {run_row.get('ai_cached_tokens', 0)} |\n")
                 prompt = str(run_row.get('ai_prompt', '')).replace('|', '\\|').replace('\n', ' ')
                 handle.write(f"| Prompt | {prompt} |\n\n")
 

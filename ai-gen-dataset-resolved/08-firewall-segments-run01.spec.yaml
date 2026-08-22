@@ -14,6 +14,11 @@ validation:
     enabled: true
     delay_seconds: 60
     strict: false
+expected:
+  routers: 2
+  hosts: 4
+  segmentation:
+  - Firewall
 ai:
   enabled: true
   prompt: two routers, four docker hosts, and a firewall separating two subnets

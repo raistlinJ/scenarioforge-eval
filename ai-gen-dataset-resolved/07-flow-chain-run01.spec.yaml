@@ -14,6 +14,10 @@ validation:
     enabled: true
     delay_seconds: 60
     strict: false
+expected:
+  routers: 2
+  hosts: 4
+  flag_node_generators: 3
 ai:
   enabled: true
   prompt: two routers and four docker hosts with three flag node generators chained

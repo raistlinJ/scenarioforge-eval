@@ -1,0 +1,27 @@
+# Mail category spans SMTP/IMAP/POP3 entries.
+name: "ai-named-gen-mail"
+iterations: 1
+seed: 20260816
+ai:
+  prompt: >-
+    two routers and three docker hosts with the "Mail: SMTP Open Relay
+    Queue" and "Mail: Shared IMAP Mailbox" flag node generators
+  timeout_s: 480
+  retries: 1
+# What the prompt asked for, used to grade the generated scenario.
+# Only declared fields are scored.
+expected:
+  routers: 2
+  hosts: 3
+  flag_node_generators: 2
+  generator_names:
+  - 'Mail: SMTP Open Relay Queue'
+  - 'Mail: Shared IMAP Mailbox'
+hitl:
+  use_env: false
+validation:
+  policy: "strict"
+  check_artifacts:
+    enabled: true
+    delay_seconds: 60
+    strict: false

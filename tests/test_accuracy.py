@@ -61,10 +61,11 @@ class ObserveTests(unittest.TestCase):
     def setUp(self):
         self.observed = observe_scenario(_xml(SCENARIO))
 
-    def test_hosts_sum_across_every_host_role(self):
-        # Docker and PC rows both contribute; counting only one role would
-        # silently under-report a scenario that mixes them.
-        self.assertEqual(self.observed['hosts'], 5)
+    def test_hosts_sum_across_every_host_bearing_section(self):
+        # Docker and PC rows contribute five ordinary hosts. The vulnerability
+        # and two flag-node generators each materialize another CORE host, so
+        # the same topology-level definition used for direct CORE XML totals 8.
+        self.assertEqual(self.observed['hosts'], 8)
 
     def test_routers_come_from_the_routing_section(self):
         self.assertEqual(self.observed['routers'], 2)
@@ -95,7 +96,7 @@ class ScoreTests(unittest.TestCase):
     def test_count_mismatch_fails_with_detail(self):
         score = score_scenario({'hosts': 9}, _xml(SCENARIO))
         self.assertFalse(score['checks']['hosts']['ok'])
-        self.assertIn('expected 9, got 5', score['checks']['hosts']['detail'])
+        self.assertIn('expected 9, got 8', score['checks']['hosts']['detail'])
 
     def test_named_entries_match_case_insensitively(self):
         score = score_scenario({'generator_names': ['ssh: key ops bastion']}, _xml(SCENARIO))
@@ -128,8 +129,8 @@ class ScoreTests(unittest.TestCase):
 
 class AggregateTests(unittest.TestCase):
     def test_aggregate_counts_scenarios_checks_and_per_field(self):
-        good = score_scenario({'routers': 2, 'hosts': 5}, _xml(SCENARIO))
-        bad = score_scenario({'routers': 9, 'hosts': 5}, _xml(SCENARIO))
+        good = score_scenario({'routers': 2, 'hosts': 8}, _xml(SCENARIO))
+        bad = score_scenario({'routers': 9, 'hosts': 8}, _xml(SCENARIO))
         agg = aggregate([good, bad])
 
         self.assertEqual(agg['scenarios'], 2)

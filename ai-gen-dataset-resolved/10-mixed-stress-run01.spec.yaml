@@ -14,6 +14,17 @@ validation:
     enabled: true
     delay_seconds: 60
     strict: false
+expected:
+  routers: 3
+  hosts: 6
+  services:
+  - SSH
+  - HTTP
+  vulnerabilities: 2
+  flag_node_generators: 2
+  segmentation:
+  - Firewall
+  traffic: true
 ai:
   enabled: true
   prompt: three routers, six docker hosts, ssh and http services, two vulnerabilities,

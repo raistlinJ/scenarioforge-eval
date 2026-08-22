@@ -6,6 +6,12 @@ ai:
   prompt: "two routers, three docker hosts, and one vulnerable service to exploit"
   timeout_s: 480
   retries: 1
+# What the prompt asked for, used to grade the generated scenario.
+# Only declared fields are scored.
+expected:
+  routers: 2
+  hosts: 3
+  vulnerabilities: 1
 hitl:
   use_env: false
 validation:

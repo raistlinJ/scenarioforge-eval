@@ -1,0 +1,35 @@
+name: ai-full-stress_run01
+iterations: 1
+seed: 1884347155
+flows:
+  enabled: true
+  chain_length: 5
+  allow_duplicates: false
+  include_all_topology_pivots: false
+hitl:
+  use_env: false
+validation:
+  policy: strict
+  check_artifacts:
+    enabled: true
+    delay_seconds: 60
+    strict: false
+expected:
+  routers: 4
+  hosts: 8
+  services:
+  - SSH
+  - HTTPS
+  vulnerabilities: 3
+  flag_node_generators: 3
+  segmentation:
+  - Firewall
+  - NAT
+  traffic: true
+ai:
+  enabled: true
+  prompt: four routers, eight docker hosts, ssh and https services, three vulnerabilities,
+    three flag node generators, one firewall, one NAT, and light background traffic
+  retries: 1
+  timeout_s: 480.0
+  bridge_mode: mcp-python-sdk

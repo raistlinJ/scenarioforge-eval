@@ -1,0 +1,32 @@
+name: ai-named-mixed-struts-ssh_run01
+iterations: 1
+seed: 271600590
+flows:
+  enabled: true
+  chain_length: 5
+  allow_duplicates: false
+  include_all_topology_pivots: false
+hitl:
+  use_env: false
+validation:
+  policy: strict
+  check_artifacts:
+    enabled: true
+    delay_seconds: 60
+    strict: false
+expected:
+  routers: 2
+  hosts: 4
+  vulnerabilities: 1
+  vulnerability_names:
+  - struts2/s2-061
+  flag_node_generators: 1
+  generator_names:
+  - 'SSH: Key Ops Bastion'
+ai:
+  enabled: true
+  prompt: 'two routers and four docker hosts running the struts2/s2-061 vulnerability
+    and the "SSH: Key Ops Bastion" flag node generator'
+  retries: 1
+  timeout_s: 480.0
+  bridge_mode: mcp-python-sdk

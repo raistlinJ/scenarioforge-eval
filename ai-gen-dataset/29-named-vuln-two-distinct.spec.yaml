@@ -1,0 +1,27 @@
+# Two named vulnerabilities from different families in one prompt.
+name: "ai-named-vuln-two-distinct"
+iterations: 1
+seed: 20260829
+ai:
+  prompt: >-
+    two routers and four docker hosts running the solr/CVE-2019-0193 and
+    couchdb/CVE-2017-12635 vulnerabilities
+  timeout_s: 480
+  retries: 1
+# What the prompt asked for, used to grade the generated scenario.
+# Only declared fields are scored.
+expected:
+  routers: 2
+  hosts: 4
+  vulnerabilities: 2
+  vulnerability_names:
+  - solr/CVE-2019-0193
+  - couchdb/CVE-2017-12635
+hitl:
+  use_env: false
+validation:
+  policy: "strict"
+  check_artifacts:
+    enabled: true
+    delay_seconds: 60
+    strict: false

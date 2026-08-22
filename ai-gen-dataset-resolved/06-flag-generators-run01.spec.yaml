@@ -14,6 +14,12 @@ validation:
     enabled: true
     delay_seconds: 60
     strict: false
+expected:
+  routers: 2
+  hosts: 3
+  services:
+  - SSH
+  flag_node_generators: 2
 ai:
   enabled: true
   prompt: two routers, three docker hosts, ssh service, and two flag node generators

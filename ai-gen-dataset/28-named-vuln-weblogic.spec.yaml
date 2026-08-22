@@ -1,0 +1,26 @@
+# Application-server family.
+name: "ai-named-vuln-weblogic"
+iterations: 1
+seed: 20260828
+ai:
+  prompt: >-
+    two routers and three docker hosts running the weblogic/CVE-2017-10271
+    vulnerability
+  timeout_s: 480
+  retries: 1
+# What the prompt asked for, used to grade the generated scenario.
+# Only declared fields are scored.
+expected:
+  routers: 2
+  hosts: 3
+  vulnerabilities: 1
+  vulnerability_names:
+  - weblogic/CVE-2017-10271
+hitl:
+  use_env: false
+validation:
+  policy: "strict"
+  check_artifacts:
+    enabled: true
+    delay_seconds: 60
+    strict: false

@@ -14,6 +14,9 @@ validation:
     enabled: true
     delay_seconds: 60
     strict: false
+expected:
+  routers: 1
+  hosts: 4
 ai:
   enabled: true
   prompt: one router and four hosts on a single flat LAN

@@ -83,6 +83,17 @@ class ReporterPromptArtifactTests(unittest.TestCase):
                     'spec_file': '/tmp/spec.spec.yaml',
                     'iteration_index': 1,
                     'iteration_count': 1,
+                    'ai_generation': {
+                        'provider': 'openai',
+                        'model': 'test-model',
+                        'provider_usage': {
+                            'request_count': 2,
+                            'prompt_tokens': 100,
+                            'completion_tokens': 25,
+                            'total_tokens': 125,
+                            'cached_tokens': 10,
+                        },
+                    },
                 },
                 'phase_results': {
                     'preview-plan': {
@@ -167,6 +178,8 @@ class ReporterPromptArtifactTests(unittest.TestCase):
             self.assertEqual(summary['runs']['total'], 1)
             self.assertEqual(summary['runs']['successes'], 1)
             self.assertEqual(summary['runs']['estimated_output_tokens'], 2)
+            self.assertEqual(summary['runs']['provider_usage']['request_count'], 2)
+            self.assertEqual(summary['runs']['provider_usage']['total_tokens']['total'], 125.0)
             self.assertEqual(summary['phases']['preview-plan']['count'], 1)
             self.assertEqual(summary['content']['challenges']['total'], 4)
             self.assertEqual(summary['content']['chains']['length_gt_1'], 1)
@@ -184,6 +197,9 @@ class ReporterPromptArtifactTests(unittest.TestCase):
                 run_rows = list(csv.DictReader(handle))
             self.assertEqual(run_rows[0]['spec_name'], 'spec-a')
             self.assertEqual(run_rows[0]['estimated_output_tokens'], '2')
+            self.assertEqual(run_rows[0]['ai_prompt_tokens'], '100')
+            self.assertEqual(run_rows[0]['ai_completion_tokens'], '25')
+            self.assertEqual(run_rows[0]['ai_total_tokens'], '125')
             self.assertEqual(run_rows[0]['challenge_count'], '4')
             self.assertEqual(run_rows[0]['chains_length_gt_1'], '1')
             self.assertEqual(run_rows[0]['average_chain_length'], '4.0')

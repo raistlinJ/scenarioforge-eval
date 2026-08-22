@@ -150,6 +150,19 @@ def _ai_payload(**overrides) -> dict:
         'prompt': 'two routers',
         'acting_user': 'eval-operator',
         'applied_actions': [{'tool': 'set_node_info'}],
+        'provider_usage': {
+            'request_count': 1,
+            'prompt_tokens': 100,
+            'completion_tokens': 25,
+            'total_tokens': 125,
+            'cached_tokens': 0,
+        },
+        'provider_usage_requests': [{
+            'prompt_tokens': 100,
+            'completion_tokens': 25,
+            'total_tokens': 125,
+            'cached_tokens': 0,
+        }],
         'settings': {
             'provider': 'openai',
             'model': 'test-model',
@@ -286,6 +299,8 @@ class AiExecutorRoutingTests(unittest.TestCase):
         self.assertEqual(generation['applied_actions'], [{'tool': 'set_node_info'}])
         self.assertEqual(generation['acting_user'], 'eval-operator')
         self.assertEqual(generation['attempts'], 1)
+        self.assertEqual(generation['provider_usage']['total_tokens'], 125)
+        self.assertEqual(generation['provider_usage_requests'][0]['completion_tokens'], 25)
         # The key never travels with the run record, redacted or not.
         self.assertNotIn('api_key', generation['settings'])
         self.assertNotIn('api_key_source', generation['settings'])

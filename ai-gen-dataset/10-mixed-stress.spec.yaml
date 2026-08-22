@@ -9,6 +9,19 @@ ai:
     two flag node generators, a firewall, and light background traffic
   timeout_s: 480
   retries: 1
+# What the prompt asked for, used to grade the generated scenario.
+# Only declared fields are scored.
+expected:
+  routers: 3
+  hosts: 6
+  services:
+  - SSH
+  - HTTP
+  vulnerabilities: 2
+  flag_node_generators: 2
+  segmentation:
+  - Firewall
+  traffic: true
 hitl:
   use_env: false
 validation:

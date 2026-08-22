@@ -11,10 +11,14 @@ SERVICE_NAME_ALIASES = {
     'dhcpclient': 'DHCPClient',
 }
 
-# ScenarioForge clamps the AI provider timeout to this ceiling in three places
-# (webapp/routes/ai_provider.py), so a spec asking for more silently gets less.
-# Clamping here instead keeps the spec honest about the budget it actually gets.
+# ScenarioForge applies two different ceilings, and which one you get depends
+# on whether the MCP bridge is engaged:
+#   direct JSON path  min(max(t, 5.0), 480.0)          -> 480s
+#   MCP bridge path   _normalize_bridge_timeout_seconds -> 240s
+# Eval runs always request the bridge, so the effective budget is the lower one.
+# Reporting 480 for a bridged run states a budget the run never had.
 AI_TIMEOUT_CEILING_S = 480.0
+AI_BRIDGE_TIMEOUT_CEILING_S = 240.0
 AI_TIMEOUT_FLOOR_S = 5.0
 
 # The bridge only engages when a mode is set explicitly.  Left unset, generation
@@ -183,17 +187,19 @@ class SpecParser:
             'retries': max(0, self._safe_int(ai.get('retries', 0))),
         }
 
-        timeout_s = self._resolve_ai_timeout(ai.get('timeout_s'), rng=rng)
+        # Bridge mode is a provider override like the rest, but unlike the rest
+        # it gets a default instead of inheriting an unset environment.
+        result['bridge_mode'] = str(ai.get('bridge_mode') or DEFAULT_AI_BRIDGE_MODE).strip() or DEFAULT_AI_BRIDGE_MODE
+
+        ceiling = AI_BRIDGE_TIMEOUT_CEILING_S if result['bridge_mode'] else AI_TIMEOUT_CEILING_S
+        result['timeout_ceiling_s'] = ceiling
+        timeout_s = self._resolve_ai_timeout(ai.get('timeout_s'), ceiling=ceiling, rng=rng)
         if timeout_s is not None:
             result['timeout_s'] = timeout_s['value']
             if 'requested' in timeout_s:
                 # Kept so the executor can warn that the authored budget was
                 # lowered rather than silently honouring a smaller one.
                 result['timeout_requested_s'] = timeout_s['requested']
-
-        # Bridge mode is a provider override like the rest, but unlike the rest
-        # it gets a default instead of inheriting an unset environment.
-        result['bridge_mode'] = str(ai.get('bridge_mode') or DEFAULT_AI_BRIDGE_MODE).strip() or DEFAULT_AI_BRIDGE_MODE
 
         # An omitted override inherits the environment; an explicitly empty one
         # does not become an override either, matching resolve_ai_settings().
@@ -204,14 +210,15 @@ class SpecParser:
 
         return result
 
-    def _resolve_ai_timeout(self, raw, *, rng: random.Random | None = None) -> dict | None:
+    def _resolve_ai_timeout(self, raw, *, ceiling: float = AI_TIMEOUT_CEILING_S,
+                           rng: random.Random | None = None) -> dict | None:
         if raw in (None, ''):
             return None
         try:
             value = float(self._resolve_value(raw, rng=rng))
         except (TypeError, ValueError):
             return None
-        clamped = min(max(value, AI_TIMEOUT_FLOOR_S), AI_TIMEOUT_CEILING_S)
+        clamped = min(max(value, AI_TIMEOUT_FLOOR_S), ceiling)
         resolved = {'value': clamped}
         if clamped != value:
             resolved['requested'] = value

@@ -13,6 +13,11 @@ flows:
   # evaluator enables sequencing anyway and the run fails with "No eligible
   # nodes found in preview plan" -- declaring the intent is what turns that off.
   enabled: false
+# What the prompt asked for, used to grade the generated scenario.
+# Only declared fields are scored.
+expected:
+  routers: 1
+  hosts: 4
 hitl:
   use_env: false
 validation:

@@ -2171,10 +2171,11 @@ class Executor:
         self._ai_generation = generation
 
         if 'timeout_requested_s' in generation:
+            ceiling = ai_spec.get('timeout_ceiling_s') or AI_TIMEOUT_CEILING_S
+            via = ' via the MCP bridge' if ai_spec.get('bridge_mode') else ''
             self._ai_warnings.append(
-                'ScenarioForge caps the AI provider timeout at '
-                f'{AI_TIMEOUT_CEILING_S:.0f}s; ai.timeout_s '
-                f"{generation['timeout_requested_s']:.0f}s was lowered to "
+                f'ScenarioForge caps the AI provider timeout at {ceiling:.0f}s{via}; '
+                f"ai.timeout_s {generation['timeout_requested_s']:.0f}s was lowered to "
                 f"{generation['timeout_s']:.0f}s."
             )
 
@@ -2266,6 +2267,10 @@ class Executor:
         for key in ('scenario', 'acting_user', 'applied_actions', 'written', 'overwritten'):
             if payload.get(key) is not None:
                 generation[key] = payload[key]
+        if isinstance(payload.get('provider_usage'), dict):
+            generation['provider_usage'] = dict(payload['provider_usage'])
+        if isinstance(payload.get('provider_usage_requests'), list):
+            generation['provider_usage_requests'] = list(payload['provider_usage_requests'])
 
     def _resolve_xml_scenario_name(self, xml_path: str) -> str:
         """Return the canonical scenario name written into the generated XML."""
