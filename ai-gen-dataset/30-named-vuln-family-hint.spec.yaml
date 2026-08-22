@@ -1,0 +1,24 @@
+# Names a family rather than an exact entry, exercising the query hint path.
+name: "ai-named-vuln-family-hint"
+iterations: 1
+seed: 20260830
+ai:
+  prompt: >-
+    two routers and three docker hosts with two spring framework
+    vulnerabilities
+  timeout_s: 480
+  retries: 1
+# What the prompt asked for, used to grade the generated scenario.
+# Only declared fields are scored.
+expected:
+  routers: 2
+  hosts: 3
+  vulnerabilities: 2
+hitl:
+  use_env: false
+validation:
+  policy: "strict"
+  check_artifacts:
+    enabled: true
+    delay_seconds: 60
+    strict: false

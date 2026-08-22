@@ -1,0 +1,27 @@
+# HTTPS plus LDAP, the two remaining service families.
+name: "ai-named-gen-https-ldap"
+iterations: 1
+seed: 20260820
+ai:
+  prompt: >-
+    two routers and three docker hosts with the "HTTPS: SQLi Invoice Portal"
+    and "LDAP: Anonymous Directory" flag node generators
+  timeout_s: 480
+  retries: 1
+# What the prompt asked for, used to grade the generated scenario.
+# Only declared fields are scored.
+expected:
+  routers: 2
+  hosts: 3
+  flag_node_generators: 2
+  generator_names:
+  - 'HTTPS: SQLi Invoice Portal'
+  - 'LDAP: Anonymous Directory'
+hitl:
+  use_env: false
+validation:
+  policy: "strict"
+  check_artifacts:
+    enabled: true
+    delay_seconds: 60
+    strict: false

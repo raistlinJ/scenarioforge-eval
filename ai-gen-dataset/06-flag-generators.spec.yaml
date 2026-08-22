@@ -1,0 +1,25 @@
+# Two flag node generators: the shape Flow needs a distinct generator per node
+# for, and the case an older ScenarioForge pinned to a single generator.
+name: "ai-flag-generators"
+iterations: 1
+seed: 20260806
+ai:
+  prompt: "two routers, three docker hosts, ssh service, and two flag node generators"
+  timeout_s: 480
+  retries: 1
+# What the prompt asked for, used to grade the generated scenario.
+# Only declared fields are scored.
+expected:
+  routers: 2
+  hosts: 3
+  services:
+  - SSH
+  flag_node_generators: 2
+hitl:
+  use_env: false
+validation:
+  policy: "strict"
+  check_artifacts:
+    enabled: true
+    delay_seconds: 60
+    strict: false

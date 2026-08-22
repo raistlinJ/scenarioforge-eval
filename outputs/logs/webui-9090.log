@@ -16,3 +16,9 @@
 2026-06-19 13:00:25,909 INFO root: PHASE: Planning complete (routers=0 hosts=10)
 2026-06-19 13:18:41,343 INFO webapp.app_backend: [remote-sync] starting repo sync to CORE VM
 2026-06-19 13:18:41,343 INFO webapp.app_backend: [remote-sync] starting repo sync to CORE VM
+2026-08-21 07:39:35,269 ERROR webapp.app_backend: Failed to register ai_provider routes.
+Traceback (most recent call last):
+  File "/Users/jcacosta/Documents/GitHub/scenarioforge-eval/../scenarioforge/webapp/app_backend.py", line 54216, in <module>
+    _ai_provider_routes.register(
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: partially initialized module 'webapp.routes.ai_provider' has no attribute 'register' (most likely due to a circular import)

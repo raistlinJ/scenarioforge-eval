@@ -1,0 +1,29 @@
+# Both named, same service family.
+name: "ai-named-mixed-tomcat-http"
+iterations: 1
+seed: 20260832
+ai:
+  prompt: >-
+    two routers and four docker hosts running the tomcat/CVE-2017-12615
+    vulnerability and the "HTTP: SQLi Customer Lookup" flag node generator
+  timeout_s: 480
+  retries: 1
+# What the prompt asked for, used to grade the generated scenario.
+# Only declared fields are scored.
+expected:
+  routers: 2
+  hosts: 4
+  vulnerabilities: 1
+  vulnerability_names:
+  - tomcat/CVE-2017-12615
+  flag_node_generators: 1
+  generator_names:
+  - 'HTTP: SQLi Customer Lookup'
+hitl:
+  use_env: false
+validation:
+  policy: "strict"
+  check_artifacts:
+    enabled: true
+    delay_seconds: 60
+    strict: false

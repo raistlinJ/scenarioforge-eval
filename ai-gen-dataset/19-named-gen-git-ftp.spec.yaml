@@ -1,0 +1,27 @@
+# Crosses two small categories in one prompt.
+name: "ai-named-gen-git-ftp"
+iterations: 1
+seed: 20260819
+ai:
+  prompt: >-
+    two routers and three docker hosts with the "Git: Deploy Key Repository"
+    and "FTP: Anonymous Finance Drop" flag node generators
+  timeout_s: 480
+  retries: 1
+# What the prompt asked for, used to grade the generated scenario.
+# Only declared fields are scored.
+expected:
+  routers: 2
+  hosts: 3
+  flag_node_generators: 2
+  generator_names:
+  - 'Git: Deploy Key Repository'
+  - 'FTP: Anonymous Finance Drop'
+hitl:
+  use_env: false
+validation:
+  policy: "strict"
+  check_artifacts:
+    enabled: true
+    delay_seconds: 60
+    strict: false

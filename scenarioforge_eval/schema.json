@@ -20,6 +20,95 @@
       "maximum": 2147483647,
       "description": "Optional reproducible base seed. Later iterations use incremented seeds."
     },
+    "prompt": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Shorthand for ai.prompt. Generating from a prompt replaces the deterministic topology/services/... build, so those sections are ignored for the run."
+    },
+    "ai": {
+      "type": "object",
+      "description": "Generate the scenario XML from a natural-language prompt through ScenarioForge's ai CLI phase instead of the deterministic spec->XML builder. Provider credentials are never read from here: they come from CORETG_AI_* in the ScenarioForge checkout's .scenarioforge.env.",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Defaults to true when a prompt is present, false otherwise."
+        },
+        "prompt": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Natural-language description of the scenario to generate."
+        },
+        "timeout_s": {
+          "description": "Provider timeout passed as --ai-timeout-seconds. ScenarioForge clamps this to 480s, so larger values are lowered and reported as a run warning.",
+          "oneOf": [
+            {
+              "type": "number",
+              "minimum": 5
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "number",
+                "minimum": 5
+              },
+              "minItems": 2,
+              "maxItems": 2
+            }
+          ]
+        },
+        "retries": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 0,
+          "description": "Extra attempts after a timed-out generation. Provider latency varies widely, so a retry is often enough; non-timeout failures are not retried."
+        },
+        "provider": {
+          "type": "string",
+          "description": "Overrides CORETG_AI_PROVIDER for this spec."
+        },
+        "model": {
+          "type": "string",
+          "description": "Overrides CORETG_AI_MODEL for this spec."
+        },
+        "base_url": {
+          "type": "string",
+          "description": "Overrides CORETG_AI_BASE_URL for this spec."
+        },
+        "bridge_mode": {
+          "type": "string",
+          "description": "Overrides CORETG_AI_BRIDGE_MODE. Defaults to mcp-python-sdk: without an explicit bridge mode the request silently falls back to direct-JSON generation, which reasoning models that emit <think> blocks fail."
+        }
+      }
+    },
+    "tier": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Optional difficulty band, used to report where the gap between authoring methods opens up rather than only a single aggregate number."
+    },
+    "expected": {
+      "type": "object",
+      "description": "Machine-readable statement of what the prompt asked for, used to grade a generated scenario against its intent. Only declared fields are scored, so a prompt that says nothing about a section is not penalised for its absence. Written by hand rather than parsed from the prompt at scoring time: a grader that re-reads the same English would agree with whatever the generator did to it.",
+      "properties": {
+        "routers": {"type": "integer", "minimum": 0},
+        "hosts": {"type": "integer", "minimum": 0},
+        "services": {"type": "array", "items": {"type": "string"}},
+        "vulnerabilities": {"type": "integer", "minimum": 0},
+        "vulnerability_names": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Exact catalog names the prompt named, for example struts2/s2-061."
+        },
+        "flag_node_generators": {"type": "integer", "minimum": 0},
+        "generator_names": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Exact catalog display names the prompt named, for example \"SSH: Key Ops Bastion\"."
+        },
+        "segmentation": {"type": "array", "items": {"type": "string", "enum": ["Firewall", "NAT"]}},
+        "traffic": {"type": "boolean"},
+        "hitl": {"type": "boolean"}
+      }
+    },
     "topology": {
       "type": "object",
       "properties": {

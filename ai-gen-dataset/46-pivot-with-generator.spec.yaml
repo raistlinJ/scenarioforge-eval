@@ -1,0 +1,28 @@
+# Segmentation pivot combined with a named generator.
+name: "ai-pivot-with-generator"
+iterations: 1
+seed: 20260846
+ai:
+  prompt: >-
+    three routers and five docker hosts behind a firewall with the "SSH: Key
+    Ops Bastion" flag node generator and one host reachable only by pivoting
+  timeout_s: 480
+  retries: 1
+# What the prompt asked for, used to grade the generated scenario.
+# Only declared fields are scored.
+expected:
+  routers: 3
+  hosts: 5
+  flag_node_generators: 1
+  generator_names:
+  - 'SSH: Key Ops Bastion'
+  segmentation:
+  - Firewall
+hitl:
+  use_env: false
+validation:
+  policy: "strict"
+  check_artifacts:
+    enabled: true
+    delay_seconds: 60
+    strict: false

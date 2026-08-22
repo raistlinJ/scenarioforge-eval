@@ -1,0 +1,34 @@
+name: ai-mixed-stress_run01
+iterations: 1
+seed: 2063388458
+flows:
+  enabled: true
+  chain_length: 5
+  allow_duplicates: false
+  include_all_topology_pivots: false
+hitl:
+  use_env: false
+validation:
+  policy: strict
+  check_artifacts:
+    enabled: true
+    delay_seconds: 60
+    strict: false
+expected:
+  routers: 3
+  hosts: 6
+  services:
+  - SSH
+  - HTTP
+  vulnerabilities: 2
+  flag_node_generators: 2
+  segmentation:
+  - Firewall
+  traffic: true
+ai:
+  enabled: true
+  prompt: three routers, six docker hosts, ssh and http services, two vulnerabilities,
+    two flag node generators, a firewall, and light background traffic
+  retries: 1
+  timeout_s: 480.0
+  bridge_mode: mcp-python-sdk

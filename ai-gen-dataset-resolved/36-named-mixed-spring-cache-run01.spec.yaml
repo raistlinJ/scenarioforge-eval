@@ -1,0 +1,34 @@
+name: ai-named-mixed-spring-cache_run01
+iterations: 1
+seed: 1146486257
+flows:
+  enabled: true
+  chain_length: 5
+  allow_duplicates: false
+  include_all_topology_pivots: false
+hitl:
+  use_env: false
+validation:
+  policy: strict
+  check_artifacts:
+    enabled: true
+    delay_seconds: 60
+    strict: false
+expected:
+  routers: 2
+  hosts: 4
+  services:
+  - SSH
+  vulnerabilities: 1
+  vulnerability_names:
+  - spring/CVE-2016-4977
+  flag_node_generators: 1
+  generator_names:
+  - 'Cache: Exposed Redis Keys'
+ai:
+  enabled: true
+  prompt: 'two routers and four docker hosts running the spring/CVE-2016-4977 vulnerability
+    and the "Cache: Exposed Redis Keys" flag node generator with ssh service'
+  retries: 1
+  timeout_s: 480.0
+  bridge_mode: mcp-python-sdk

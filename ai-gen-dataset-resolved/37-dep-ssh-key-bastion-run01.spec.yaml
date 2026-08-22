@@ -1,0 +1,30 @@
+name: ai-dep-ssh-key-bastion_run01
+iterations: 1
+seed: 1726575760
+flows:
+  enabled: true
+  chain_length: 3
+  allow_duplicates: false
+  include_all_topology_pivots: false
+hitl:
+  use_env: false
+validation:
+  policy: strict
+  check_artifacts:
+    enabled: true
+    delay_seconds: 60
+    strict: false
+expected:
+  routers: 2
+  hosts: 4
+  flag_node_generators: 2
+  generator_names:
+  - 'SSH: Key Ops Bastion'
+  - 'Dependency Consumer: SSH Key Bastion'
+ai:
+  enabled: true
+  prompt: 'two routers and four docker hosts with the "SSH: Key Ops Bastion" and "Dependency
+    Consumer: SSH Key Bastion" flag node generators chained together'
+  retries: 1
+  timeout_s: 480.0
+  bridge_mode: mcp-python-sdk

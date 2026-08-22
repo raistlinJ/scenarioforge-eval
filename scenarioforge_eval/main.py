@@ -406,6 +406,18 @@ class BatchStatusFooter:
         return " | ".join(parts)
 
 
+def _apply_ai_overrides(ai_spec: dict, args: argparse.Namespace) -> dict:
+    """Let the command line override the spec's prompt, in both directions."""
+    if getattr(args, 'no_ai', False):
+        ai_spec['enabled'] = False
+        return ai_spec
+    prompt = str(getattr(args, 'prompt', None) or '').strip()
+    if prompt:
+        ai_spec['prompt'] = prompt
+        ai_spec['enabled'] = True
+    return ai_spec
+
+
 def resolve_target_phase(args: argparse.Namespace) -> str:
     if args.execute:
         return 'execute'
@@ -439,6 +451,20 @@ def main():
             "includes locally available generated flow artifacts."
         ),
     )
+    parser.add_argument(
+        '--prompt',
+        default=None,
+        help=(
+            "Generate the scenario from this natural-language prompt through ScenarioForge's "
+            "ai phase, overriding any prompt the spec carries. Provider settings come from "
+            "CORETG_AI_* in the ScenarioForge checkout, never from the spec."
+        ),
+    )
+    parser.add_argument(
+        '--no-ai',
+        action='store_true',
+        help="Ignore any spec prompt and build the scenario with the deterministic spec-to-XML builder",
+    )
     parser.add_argument('--verbose', '-v', action='store_true', help="Enable verbose debug logging")
     parser.add_argument(
         '--stop-on-error',
@@ -465,6 +491,9 @@ def main():
         ),
     )
     args = parser.parse_args()
+
+    if args.no_ai and args.prompt:
+        parser.error('--prompt and --no-ai cannot be combined')
 
     if args.verbose:
         logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -542,7 +571,9 @@ def main():
                 'segmentation': spec.get_segmentation_spec(rng=iteration_rng),
                 'hitl': spec.get_hitl_spec(),
                 'validation': spec.get_validation_spec(),
+                'ai': spec.get_ai_spec(rng=iteration_rng),
             }
+            _apply_ai_overrides(resolved_spec['ai'], args)
             
             footer.start_iteration(spec_name, iteration_seed)
             

@@ -104,6 +104,9 @@ class MainCliPhaseSelectionTests(unittest.TestCase):
             def get_validation_spec(self):
                 return {'policy': 'strict'}
 
+            def get_ai_spec(self, rng=None):
+                return {'enabled': False, 'prompt': '', 'retries': 0}
+
         class _FakeExecutor:
             def __init__(
                 self,
@@ -183,6 +186,9 @@ class MainCliPhaseSelectionTests(unittest.TestCase):
 
             def get_validation_spec(self):
                 return {'policy': 'strict'}
+
+            def get_ai_spec(self, rng=None):
+                return {'enabled': False, 'prompt': '', 'retries': 0}
 
         class _FakeExecutor:
             def __init__(
@@ -363,6 +369,9 @@ class MainCliPhaseSelectionTests(unittest.TestCase):
 
             def get_validation_spec(self):
                 return {'policy': 'strict'}
+
+            def get_ai_spec(self, rng=None):
+                return {'enabled': False, 'prompt': '', 'retries': 0}
 
         class _FakeExecutor:
             VALIDATION_ERROR_FIELDS = ('missing_nodes',)

@@ -38,3 +38,10 @@ htmlcov/
 # Same machine-local run output as the two above.
 /verify-*
 /dataset-out
+/ai-gen-dataset-out
+/comparison-out
+/temporary-results
+/frontier-experimentation
+/armb-out/cmp-router-triangle_run01
+/armb-out
+/outputs

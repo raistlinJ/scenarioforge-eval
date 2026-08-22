@@ -120,6 +120,33 @@ def _flow_summary(payloads: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
+def _generation_summary(ai_generation: dict[str, Any] | None) -> dict[str, Any]:
+    """Describe how the scenario was authored.
+
+    A seed reproduces the deterministic builder, but not a model: the same
+    prompt and seed can yield a different scenario. The archived XML is
+    therefore the reproducible artifact, and this records what produced it so a
+    reader can tell a replayable build from a one-off generation.
+    """
+    if not isinstance(ai_generation, dict) or not ai_generation:
+        return {"source": "spec", "seed_reproducible": True}
+    summary: dict[str, Any] = {
+        "source": "ai-prompt",
+        # The XML in this archive is authoritative; re-running the prompt is not
+        # expected to reproduce it.
+        "seed_reproducible": False,
+        "prompt": str(ai_generation.get("prompt") or ""),
+    }
+    for key in ("provider", "model", "base_url", "bridge_mode", "scenario", "attempts"):
+        value = ai_generation.get(key)
+        if value not in (None, ""):
+            summary[key] = value
+    applied_actions = ai_generation.get("applied_actions")
+    if applied_actions not in (None, ""):
+        summary["applied_actions"] = applied_actions
+    return summary
+
+
 def _referenced_artifact_paths(payloads: list[dict[str, Any]]) -> list[str]:
     directory_keys = {"artifacts_dir", "run_dir", "inject_source_dir"}
     file_keys = {"outputs_manifest"}
@@ -207,6 +234,7 @@ def create_reproduction_bundle(
     sf_path: str,
     eval_repo: str,
     artifact_overrides: dict[str, str] | None = None,
+    ai_generation: dict[str, Any] | None = None,
 ) -> tuple[str, dict[str, Any]]:
     """Create a replay or artifact-bearing reproduction archive."""
     if mode not in REPRODUCTION_MODES or mode == "xml":
@@ -279,6 +307,7 @@ def create_reproduction_bundle(
         },
         "seed": seed,
         "flow": _flow_summary(payloads),
+        "generation": _generation_summary(ai_generation),
         "artifact_sources": artifact_sources,
         "versions": {
             "scenarioforge": _git_revision(sf_repo),

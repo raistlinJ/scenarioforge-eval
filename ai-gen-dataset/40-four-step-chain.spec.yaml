@@ -1,0 +1,24 @@
+# Longer chain than any spec in 01-10.
+name: "ai-four-step-chain"
+iterations: 1
+seed: 20260840
+ai:
+  prompt: >-
+    two routers and six docker hosts with four distinct flag node generators
+    chained into a four step capture the flag path
+  timeout_s: 480
+  retries: 1
+# What the prompt asked for, used to grade the generated scenario.
+# Only declared fields are scored.
+expected:
+  routers: 2
+  hosts: 6
+  flag_node_generators: 4
+hitl:
+  use_env: false
+validation:
+  policy: "strict"
+  check_artifacts:
+    enabled: true
+    delay_seconds: 60
+    strict: false

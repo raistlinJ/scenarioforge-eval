@@ -1,0 +1,30 @@
+name: ai-named-gen-mail_run01
+iterations: 1
+seed: 1642340884
+flows:
+  enabled: true
+  chain_length: 3
+  allow_duplicates: false
+  include_all_topology_pivots: false
+hitl:
+  use_env: false
+validation:
+  policy: strict
+  check_artifacts:
+    enabled: true
+    delay_seconds: 60
+    strict: false
+expected:
+  routers: 2
+  hosts: 3
+  flag_node_generators: 2
+  generator_names:
+  - 'Mail: SMTP Open Relay Queue'
+  - 'Mail: Shared IMAP Mailbox'
+ai:
+  enabled: true
+  prompt: 'two routers and three docker hosts with the "Mail: SMTP Open Relay Queue"
+    and "Mail: Shared IMAP Mailbox" flag node generators'
+  retries: 1
+  timeout_s: 480.0
+  bridge_mode: mcp-python-sdk

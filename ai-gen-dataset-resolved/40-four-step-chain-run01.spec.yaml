@@ -1,0 +1,27 @@
+name: ai-four-step-chain_run01
+iterations: 1
+seed: 1949753500
+flows:
+  enabled: true
+  chain_length: 4
+  allow_duplicates: false
+  include_all_topology_pivots: false
+hitl:
+  use_env: false
+validation:
+  policy: strict
+  check_artifacts:
+    enabled: true
+    delay_seconds: 60
+    strict: false
+expected:
+  routers: 2
+  hosts: 6
+  flag_node_generators: 4
+ai:
+  enabled: true
+  prompt: two routers and six docker hosts with four distinct flag node generators
+    chained into a four step capture the flag path
+  retries: 1
+  timeout_s: 480.0
+  bridge_mode: mcp-python-sdk
