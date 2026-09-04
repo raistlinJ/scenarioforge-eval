@@ -568,6 +568,7 @@ def main():
                 'vulns': spec.get_vulns_spec(rng=iteration_rng),
                 'flag_node_generators': spec.get_flag_node_generators_spec(rng=iteration_rng),
                 'flows': spec.get_flows_spec(rng=iteration_rng),
+                'artifacts': spec.get_artifacts_spec(),
                 'segmentation': spec.get_segmentation_spec(rng=iteration_rng),
                 'hitl': spec.get_hitl_spec(),
                 'validation': spec.get_validation_spec(),

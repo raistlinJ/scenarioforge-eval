@@ -540,6 +540,13 @@ class ExecutorCliPipelineTests(unittest.TestCase):
             'services': {'enabled': False, 'count': 0},
             'vulns': {'enabled': False, 'count': 0},
             'flows': {'enabled': True, 'chain_length': 3, 'allow_duplicates': False},
+            'artifacts': {
+                'attack_graph': {
+                    'enabled': True,
+                    'formats': ['json', 'dot', 'afb'],
+                    'output_prefix': 'eval-graph',
+                },
+            },
             'segmentation': {'enabled': False, 'density': 0.0},
             'hitl': {'use_env': True},
             'validation': {'policy': 'strict'},
@@ -567,12 +574,22 @@ class ExecutorCliPipelineTests(unittest.TestCase):
                     'log_name': log_name,
                     'allow_nonzero': allow_nonzero,
                 })
+                plan_payload = {}
+                if phase == 'attack-graph':
+                    plan_payload = {
+                        'ok': True,
+                        'outputs': {
+                            'json': os.path.join(temp_dir, 'attack-graphs', 'eval-graph.attack-graph.json'),
+                            'dot': os.path.join(temp_dir, 'attack-graphs', 'eval-graph.attack-graph.dot'),
+                            'afb': os.path.join(temp_dir, 'attack-graphs', 'eval-graph.attack-flow.afb'),
+                        },
+                    }
                 return {
                     'phase': phase,
                     'returncode': 0,
                     'combined_output': '',
                     'log_path': os.path.join(temp_dir, log_name or f'{phase}.log'),
-                    'plan_payload': {},
+                    'plan_payload': plan_payload,
                     'session_id': '42' if phase == 'execute' else None,
                     'validation_summary': {'ok': True} if phase == 'execute' else None,
                     'report_path': None,
@@ -597,17 +614,48 @@ class ExecutorCliPipelineTests(unittest.TestCase):
                 self.assertEqual(snapshot.read(), source.read())
             self.assertTrue(result['artifacts']['preview_plan_json'].endswith('preview-plan.json'))
             self.assertTrue(result['artifacts']['flag_sequencing_json'].endswith('flag-sequencing.json'))
+            self.assertTrue(result['artifacts']['attack_graph_export_json'].endswith('attack-graph-export.json'))
+            self.assertTrue(result['artifacts']['attack_graph_json'].endswith('eval-graph.attack-graph.json'))
+            self.assertTrue(result['artifacts']['attack_graph_dot'].endswith('eval-graph.attack-graph.dot'))
+            self.assertTrue(result['artifacts']['attack_graph_afb'].endswith('eval-graph.attack-flow.afb'))
             self.assertTrue(result['artifacts']['execute_log'].endswith('execute.log'))
             self.assertTrue(result['artifacts']['execute_validation_json'].endswith('execute-validation.json'))
-            self.assertEqual([call['phase'] for call in calls], ['preview-plan', 'flag-sequencing', 'execute'])
+            self.assertEqual(
+                [call['phase'] for call in calls],
+                ['preview-plan', 'flag-sequencing', 'attack-graph', 'execute'],
+            )
             self.assertEqual({call['seed'] for call in calls}, {12345})
             self.assertEqual(calls[0]['json_output_name'], 'preview-plan.json')
             self.assertEqual(calls[1]['json_output_name'], 'flag-sequencing.json')
             self.assertIn('--flow-mode', calls[1]['extra_args'])
-            self.assertIn('--post-execution-validation', calls[2]['extra_args'])
-            self.assertEqual(calls[2]['log_name'], 'execute.log')
+            self.assertEqual(calls[2]['json_output_name'], 'attack-graph-export.json')
+            self.assertEqual(calls[2]['extra_args'].count('--format'), 3)
+            self.assertIn('--output-dir', calls[2]['extra_args'])
+            self.assertIn('--force', calls[2]['extra_args'])
+            self.assertIn('--output-prefix', calls[2]['extra_args'])
+            self.assertIn('--post-execution-validation', calls[3]['extra_args'])
+            self.assertEqual(calls[3]['log_name'], 'execute.log')
             with open(result['artifacts']['seed_txt'], 'r', encoding='utf-8') as handle:
                 self.assertEqual(handle.read().strip(), '12345')
+
+    def test_attack_graph_artifacts_require_enabled_flows(self):
+        spec = {
+            'name': 'no-flow-graph',
+            'seed': 12345,
+            'flows': {'enabled': False, 'chain_length': 0},
+            'artifacts': {
+                'attack_graph': {'enabled': True, 'formats': ['json']},
+            },
+        }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            executor = Executor(spec=spec, out_dir=temp_dir, sf_path=temp_dir)
+            with mock.patch.object(executor, '_generate_xml') as generate_xml:
+                result = executor.run()
+
+        self.assertFalse(result['success'])
+        self.assertIn('artifacts.attack_graph requires flows.enabled', result['error'])
+        generate_xml.assert_not_called()
 
     def test_run_cli_phase_parses_last_validation_marker_on_nonzero_exit(self):
         spec = {

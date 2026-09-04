@@ -95,6 +95,9 @@ class MainCliPhaseSelectionTests(unittest.TestCase):
             def get_flows_spec(self, rng=None):
                 return {'enabled': False, 'chain_length': 0}
 
+            def get_artifacts_spec(self):
+                return {'attack_graph': {'enabled': False, 'formats': ['json', 'dot']}}
+
             def get_segmentation_spec(self, rng=None):
                 return {'enabled': False, 'density': 0.0}
 
@@ -177,6 +180,9 @@ class MainCliPhaseSelectionTests(unittest.TestCase):
 
             def get_flows_spec(self, rng=None):
                 return {'enabled': False, 'chain_length': 0}
+
+            def get_artifacts_spec(self):
+                return {'attack_graph': {'enabled': False, 'formats': ['json', 'dot']}}
 
             def get_segmentation_spec(self, rng=None):
                 return {'enabled': False, 'density': 0.0}
@@ -360,6 +366,9 @@ class MainCliPhaseSelectionTests(unittest.TestCase):
 
             def get_flows_spec(self, rng=None):
                 return {'enabled': False, 'chain_length': 0}
+
+            def get_artifacts_spec(self):
+                return {'attack_graph': {'enabled': False, 'formats': ['json', 'dot']}}
 
             def get_segmentation_spec(self, rng=None):
                 return {'enabled': False, 'density': 0.0}

@@ -101,6 +101,48 @@ class SupportedValuePassThroughTests(unittest.TestCase):
         finally:
             parsed.close()
 
+    def test_attack_graph_artifact_formats_are_normalized(self):
+        parsed = _ParsedSpec(
+            """
+            artifacts:
+              attack_graph:
+                formats: [JSON, dot, afb]
+                output_prefix: evaluation-graph
+            """
+        )
+        try:
+            self.assertEqual(
+                parsed.parser.get_artifacts_spec(),
+                {
+                    'attack_graph': {
+                        'enabled': True,
+                        'formats': ['json', 'dot', 'afb'],
+                        'output_prefix': 'evaluation-graph',
+                    },
+                },
+            )
+        finally:
+            parsed.close()
+
+    def test_attack_graph_all_expands_to_every_format(self):
+        parsed = _ParsedSpec(
+            """
+            artifacts:
+              attack_graph:
+                enabled: true
+                formats: all
+            """
+        )
+        try:
+            artifact_spec = parsed.parser.get_artifacts_spec()
+        finally:
+            parsed.close()
+
+        self.assertEqual(
+            artifact_spec['attack_graph']['formats'],
+            ['json', 'dot', 'pdf', 'afb'],
+        )
+
     def test_segmentation_settings_reach_the_xml_writer_model(self):
         parsed = _ParsedSpec(
             """
@@ -158,6 +200,17 @@ class SupportedValueSchemaTests(unittest.TestCase):
         }
         self.assertTrue(expected <= set(segmentation))
         self.assertEqual(segmentation['nat_mode']['enum'], ['SNAT', 'MASQUERADE'])
+
+    def test_attack_graph_artifacts_are_declared_in_the_schema(self):
+        with open(os.path.join(HERE, 'scenarioforge_eval', 'schema.json')) as handle:
+            schema = json.load(handle)
+
+        attack_graph = schema['properties']['artifacts']['properties']['attack_graph']
+        format_variants = attack_graph['properties']['formats']['oneOf']
+        self.assertEqual(
+            format_variants[0]['enum'],
+            ['json', 'dot', 'pdf', 'afb', 'all'],
+        )
 
 
 if __name__ == '__main__':

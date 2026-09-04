@@ -289,6 +289,59 @@ class SpecParser:
                 result[key] = flows[key]
         return result
 
+    def get_artifacts_spec(self) -> dict:
+        """Return normalized optional export requests for each evaluation run."""
+        artifacts = self.spec.get('artifacts', {})
+        if not isinstance(artifacts, dict):
+            artifacts = {}
+        attack_graph = artifacts.get('attack_graph', {})
+        if not isinstance(attack_graph, dict):
+            attack_graph = {}
+
+        raw_formats = attack_graph.get('formats')
+        if raw_formats in (None, ''):
+            formats = ['json', 'dot']
+        else:
+            if isinstance(raw_formats, str):
+                raw_formats = [raw_formats]
+            if not isinstance(raw_formats, (list, tuple)):
+                raise ValueError('artifacts.attack_graph.formats must be a string or list')
+            formats = []
+            for raw_format in raw_formats:
+                format_name = str(raw_format or '').strip().lower()
+                if format_name and format_name not in formats:
+                    formats.append(format_name)
+
+        allowed_formats = ('json', 'dot', 'pdf', 'afb')
+        if 'all' in formats:
+            formats = list(allowed_formats)
+        invalid_formats = [name for name in formats if name not in allowed_formats]
+        if invalid_formats:
+            raise ValueError(
+                'artifacts.attack_graph.formats contains unsupported values: '
+                + ', '.join(invalid_formats)
+            )
+        if not formats:
+            raise ValueError('artifacts.attack_graph.formats must not be empty')
+
+        result = {
+            'attack_graph': {
+                'enabled': (
+                    bool(attack_graph.get('enabled'))
+                    if 'enabled' in attack_graph
+                    else any(
+                        self._has_activation_value(attack_graph, key)
+                        for key in ('formats', 'output_prefix')
+                    )
+                ),
+                'formats': formats,
+            },
+        }
+        output_prefix = str(attack_graph.get('output_prefix') or '').strip()
+        if output_prefix:
+            result['attack_graph']['output_prefix'] = output_prefix
+        return result
+
     def get_segmentation_spec(self, rng: random.Random | None = None) -> dict:
         seg = self.spec.get('segmentation', {})
         items = []

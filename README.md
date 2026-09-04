@@ -1,6 +1,6 @@
 # ScenarioForge-Eval
 
-ScenarioForge-Eval is a batch-testing harness and evaluation tool for `scenarioforge`. It allows you to define scenario specifications in `.spec.yaml` files and automatically executes the current ScenarioForge CLI pipeline: `preview-plan`, optional `flag-sequencing`, and `execute`, or `topo` when requested.
+ScenarioForge-Eval is a batch-testing harness and evaluation tool for `scenarioforge`. It allows you to define scenario specifications in `.spec.yaml` files and automatically executes the current ScenarioForge CLI pipeline: `preview-plan`, optional `flag-sequencing` and attack-graph export, and `execute`, or `topo` when requested.
 
 ## Features
 
@@ -9,6 +9,7 @@ ScenarioForge-Eval is a batch-testing harness and evaluation tool for `scenariof
 - **Automated Logging**: Output success/failure reports, per-phase logs, and parsed validation artifacts.
 - **Batch Metrics**: Captures per-run and per-phase timing, estimated output tokens, artifact sizes, CPU/resource counters, pass rates, and validation outcomes.
 - **Live Artifact Checks**: Optionally validates the running CORE session after execute — containers, services, ports, injects, segmentation, traffic agents, pivot access, and reachability — and grades the run on the result.
+- **Attack-Graph Exports**: Optionally saves JSON, Graphviz DOT, PDF, and Attack Flow Builder artifacts from each resolved Flow chain.
 - **Compatibility Tracking**: Persists one random seed per iteration, reuses the same authoritative XML across phases, and serializes runtime phases that share one CORE VM target.
 - **AI-Friendly Error Reporting**: Automatically writes an AI-ready Markdown prompt with the stack trace plus captured phase artifacts when a scenario fails, while redacting embedded CORE SSH passwords from copied XML.
 
@@ -44,11 +45,34 @@ flag_node_generators:
   count: 2
 flows:
   randomize: true
+artifacts:
+  attack_graph:
+    formats: [json, dot]
 validation:
   policy: strict
 ```
 
 For Flow specs, prefer `chain_length`. The evaluator also accepts legacy `flows.count` as an alias.
+
+Attack-graph artifacts are requested under `artifacts.attack_graph`. The section
+requires Flow to be enabled because the exporter reads the resolved chain embedded
+by `flag-sequencing`:
+
+```yaml
+flows:
+  enabled: true
+  chain_length: 4
+artifacts:
+  attack_graph:
+    enabled: true
+    formats: [json, dot, pdf, afb]
+    output_prefix: evaluation-graph  # optional; defaults to the scenario name
+```
+
+You can also use `formats: all`. Supplying `formats` or `output_prefix` enables the
+export unless `enabled: false` is set explicitly. With no formats specified, enabled
+exports default to JSON and DOT. PDF output requires the Graphviz `dot` executable in
+the ScenarioForge environment.
 
 Run the evaluator by passing the directory containing your `.spec.yaml` files (or a single file), along with the path to the `scenarioforge` codebase.
 
@@ -227,6 +251,8 @@ Common per-run artifacts include:
 - `seed.txt`
 - `preview-plan.json` and `preview-plan.log`
 - `flag-sequencing.json` and `flag-sequencing.log` when Flow is enabled
+- `attack-graph-export.json`, `attack-graph.log`, and requested files under
+  `attack-graphs/` when `artifacts.attack_graph` is enabled
 - `execute.log`
 - `execute-validation.json` for full execute runs
 - `execute-check-artifacts.json` when `validation.check_artifacts.enabled` is set

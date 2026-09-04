@@ -1314,6 +1314,55 @@ class Executor:
             )
         return phase_result
 
+    def _export_attack_graph_artifacts(
+        self,
+        result: dict,
+        xml_path: str,
+        scenario_name: str,
+        attack_graph_spec: dict,
+    ) -> None:
+        """Run ScenarioForge's attack-graph exporter and register its outputs."""
+        output_dir = self._artifact_path('attack-graphs')
+        extra_args = ['--output-dir', output_dir, '--force']
+        for format_name in attack_graph_spec.get('formats') or ('json', 'dot'):
+            extra_args.extend(['--format', str(format_name)])
+        output_prefix = str(attack_graph_spec.get('output_prefix') or '').strip()
+        if output_prefix:
+            extra_args.extend(['--output-prefix', output_prefix])
+
+        print(">> Phase: attack-graph")
+        result['artifacts']['attack_graph_export_json'] = self._artifact_path(
+            'attack-graph-export.json'
+        )
+        result['artifacts']['attack_graph_log'] = self._artifact_path('attack-graph.log')
+        try:
+            phase_result = self._run_cli_phase(
+                'attack-graph',
+                xml_path,
+                scenario_name,
+                seed=self.seed,
+                extra_args=extra_args,
+                json_output_name='attack-graph-export.json',
+                log_name='attack-graph.log',
+            )
+        except PhaseExecutionError as exc:
+            self._record_phase_result(result, exc.phase_result)
+            raise
+
+        self._record_phase_result(result, phase_result)
+        payload = phase_result.get('plan_payload') or {}
+        outputs = payload.get('outputs') if isinstance(payload, dict) else None
+        if not isinstance(outputs, dict):
+            raise RuntimeError(
+                'scenarioforge.cli attack-graph succeeded without reporting its output files. '
+                'See attack-graph.log'
+            )
+        for format_name in ('json', 'dot', 'pdf', 'afb'):
+            output_path = outputs.get(format_name)
+            if output_path:
+                result['artifacts'][f'attack_graph_{format_name}'] = output_path
+        result['stages']['attack_graph'] = 'PASS'
+
     def _run_dangerous_cleanup(self) -> dict:
         self._ensure_scenarioforge_repo_dirs()
 
@@ -2322,6 +2371,30 @@ class Executor:
         }
         
         try:
+            flows_spec = self.spec.get('flows', {})
+            artifacts_spec = self.spec.get('artifacts', {})
+            attack_graph_spec = (
+                artifacts_spec.get('attack_graph', {})
+                if isinstance(artifacts_spec, dict)
+                else {}
+            )
+            attack_graph_enabled = bool(
+                isinstance(attack_graph_spec, dict)
+                and attack_graph_spec.get('enabled', False)
+            )
+            if attack_graph_enabled and not flows_spec.get(
+                'enabled', flows_spec.get('randomize')
+            ):
+                raise ValueError(
+                    'artifacts.attack_graph requires flows.enabled: true so flag-sequencing '
+                    'can embed a non-empty FlowState before export'
+                )
+            if attack_graph_enabled and self.target_phase == 'topology':
+                raise ValueError(
+                    'artifacts.attack_graph cannot be used with --topology; use '
+                    '--flag-sequencing or --execute'
+                )
+
             # ── Phase 1: Scenario XML generation ──
             print(">> Phase: scenario-xml")
             scenario_span = MetricSpan('self')
@@ -2376,7 +2449,6 @@ class Executor:
             result['stages']['preview_plan'] = 'PASS'
 
             # ── Phase 3: Flag sequencing ──
-            flows_spec = self.spec.get('flows', {})
             runtime_lock_context = self._shared_vm_lock(xml_path) if self.target_phase in {'execute', 'flag-sequencing'} else nullcontext(None)
             execute_phase = None
             with runtime_lock_context as lock_info:
@@ -2480,6 +2552,16 @@ class Executor:
                     result['stages']['flag_sequencing'] = 'PASS'
                 else:
                     result['stages']['flag_sequencing'] = 'SKIP'
+
+                if attack_graph_enabled:
+                    self._export_attack_graph_artifacts(
+                        result,
+                        xml_path,
+                        scenario_name,
+                        attack_graph_spec,
+                    )
+                else:
+                    result['stages']['attack_graph'] = 'SKIP'
 
                 if self.target_phase == 'flag-sequencing':
                     result['success'] = True

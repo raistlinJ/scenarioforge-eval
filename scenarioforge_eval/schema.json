@@ -599,6 +599,45 @@
         }
       }
     },
+    "artifacts": {
+      "type": "object",
+      "description": "Optional artifacts exported from each resolved evaluation run.",
+      "properties": {
+        "attack_graph": {
+          "type": "object",
+          "description": "Export attack-graph artifacts from the FlowState embedded by flag sequencing. Requires flows.enabled and a non-topology run.",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "description": "Enable attack-graph export. Supplying formats or output_prefix also enables it unless explicitly set false."
+            },
+            "formats": {
+              "description": "One or more attack-graph formats. Defaults to json and dot when export is enabled.",
+              "oneOf": [
+                {
+                  "type": "string",
+                  "enum": ["json", "dot", "pdf", "afb", "all"]
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": ["json", "dot", "pdf", "afb", "all"]
+                  },
+                  "minItems": 1,
+                  "uniqueItems": true
+                }
+              ]
+            },
+            "output_prefix": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Optional filename prefix. Defaults to the resolved scenario name."
+            }
+          }
+        }
+      }
+    },
     "segmentation": {
       "type": "object",
       "properties": {
